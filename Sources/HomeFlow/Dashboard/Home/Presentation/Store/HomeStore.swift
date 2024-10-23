@@ -666,6 +666,10 @@ public class HomeStore: ObservableObject {
     loginResponder.gotoToLogin()
   }
 
+  public func navigateToOrderProcess(_ advocate: Advocate) {
+    onlineAdvocateNavigator.navigateToOrderProcess(advocate)
+  }
+
   //MARK: - BottomSheet
 
   func showCategoryBottomSheet() {

@@ -558,6 +558,9 @@ public struct HomeView: View {
                 isProbono: advocate.isProbono,
                 onTap: {
                   store.navigateToDetailAdvocate(advocate)
+                },
+                onTapConsultation: {
+                  store.navigateToOrderProcess(advocate)
                 }
               )
             }
