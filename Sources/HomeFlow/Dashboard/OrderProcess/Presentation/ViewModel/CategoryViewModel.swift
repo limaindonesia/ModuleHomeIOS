@@ -7,21 +7,26 @@
 
 import Foundation
 
-public struct CategoryViewModel {
+public class CategoryViewModel {
 
-  public let id: Int
-  public let name: String
+  public var id: Int
+  public var name: String
 
   public init() {
     self.id = 0
     self.name = ""
   }
 
-  public init(
-    id: Int,
-    name: String
-  ) {
+  public init(id: Int, name: String) {
     self.id = id
+    self.name = name
+  }
+
+  public func setID(_ id: Int) {
+    self.id = id
+  }
+
+  public func setName(_ name: String) {
     self.name = name
   }
 

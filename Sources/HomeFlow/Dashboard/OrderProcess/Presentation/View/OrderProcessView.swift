@@ -14,45 +14,65 @@ public struct OrderProcessView: View {
   @ObservedObject var store: OrderProcessStore
 
   public var body: some View {
-    VStack {
-      ScrollView {
-        VStack(spacing: 12) {
-          lawyerInfoView(
-            imageURL: store.lawyerInfoViewModel.imageURL,
-            name: store.lawyerInfoViewModel.name,
-            agency: store.lawyerInfoViewModel.agency,
-            price: store.lawyerInfoViewModel.price,
-            originalPrice: store.lawyerInfoViewModel.originalPrice,
-            isDiscount: store.lawyerInfoViewModel.isDiscount,
-            isProbono: store.lawyerInfoViewModel.isProbono,
-            timeStr: store.lawyerInfoViewModel.getTimeRemaining()
-          )
-          .padding(.horizontal, 16)
-
-          issueView()
+    ZStack {
+      VStack {
+        ScrollView {
+          VStack(spacing: 12) {
+            lawyerInfoView(
+              imageURL: store.lawyerInfoViewModel.imageURL,
+              name: store.lawyerInfoViewModel.name,
+              agency: store.lawyerInfoViewModel.agency,
+              price: store.lawyerInfoViewModel.price,
+              originalPrice: store.lawyerInfoViewModel.originalPrice,
+              isDiscount: store.lawyerInfoViewModel.isDiscount,
+              isProbono: store.lawyerInfoViewModel.isProbono,
+              timeStr: store.lawyerInfoViewModel.getTimeRemaining()
+            )
             .padding(.horizontal, 16)
 
-          requestProbonoView()
+            issueView {
+              store.showChangeCategory()
+            }
             .padding(.horizontal, 16)
+
+            requestProbonoView()
+              .padding(.horizontal, 16)
+          }
+          .padding(.top, 16)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+        Spacer()
+
+        PaymentBottomView(
+          title: "Biaya",
+          price: store.lawyerInfoViewModel.price,
+          buttonText: "Ke Pembayaran",
+          onTap: {
+            store.showOrderInfoBottomSheet()
+          }
+        )
+        .padding(.horizontal, 16)
       }
 
-      HStack {
-        VStack {
-          Text("Biaya")
-            .bodyLexend(size: 12)
-
-          Text("Rp60.000")
-            .foregroundColor(Color.buttonActiveColor)
-            .titleLexend(size: 14)
-        }
-
-        PositiveButton(title: "Ke Pembayaran") {
-
+      BottomSheetView(isPresented: $store.isPresentBottomSheet) {
+        OrderInfoBottomSheetView {
+          store.navigateToPayment()
         }
       }
+
+      BottomSheetView(isPresented: $store.isPresentChangeCategoryIssue) {
+        ChangeCategoryIssueView(
+          issues: store.issues, 
+          selectedID: store.getSelectedCategoryID()
+        ) { category in
+          store.setSelected(category)
+        } onTap: { _ in
+          store.dismissChangeCategory()
+        }
+      }
+
     }
+    .ignoresSafeArea(.keyboard)
   }
 
   @ViewBuilder
@@ -102,7 +122,9 @@ public struct OrderProcessView: View {
             thickness: 1
           )
 
-          DiscountView()
+          if isDiscount {
+            DiscountView()
+          }
         }
 
         Circle()
@@ -127,7 +149,7 @@ public struct OrderProcessView: View {
   }
 
   @ViewBuilder
-  func issueView() -> some View {
+  func issueView(onTap: @escaping () -> Void) -> some View {
     VStack(alignment: .leading, spacing: 8) {
       Text("Tuliskan Deskripsi Masalah")
         .foregroundColor(.titleColor)
@@ -173,7 +195,7 @@ public struct OrderProcessView: View {
         .padding(.top, 16)
 
       HStack {
-        Text("Perkawinan & Perceraian")
+        Text(store.getIssueName())
           .foregroundColor(Color.primaryInfo600)
           .bodyLexend(size: 14)
           .padding(.horizontal, 8)
@@ -184,7 +206,7 @@ public struct OrderProcessView: View {
         Spacer()
 
         Button{
-
+          onTap()
         } label: {
           Text("Ubah")
             .foregroundColor(Color.buttonActiveColor)
@@ -247,6 +269,14 @@ public struct OrderProcessView: View {
 
 #Preview {
   OrderProcessView(
-    store: OrderProcessStore(advocate: .init())
+    store: OrderProcessStore(
+      advocate: .init(),
+      category: .init(id: 0, name: ""),
+      sktmModel: .init(),
+      userSessionDataSource: MockUserSessionDataSource(),
+      repository: MockOrderProcessRepository(),
+      treatmentRepository: MockTreatmentRepository(),
+      paymentNavigator: MockNavigator()
+    )
   )
 }

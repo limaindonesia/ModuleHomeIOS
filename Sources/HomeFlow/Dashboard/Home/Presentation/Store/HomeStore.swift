@@ -65,7 +65,7 @@ public class HomeStore: ObservableObject {
   @Published public var userCases: UserCases = .init()
   @Published public var isPresentPromotionBanner: Bool = false
   @Published public var showShimmer: Bool = false
-  @Published private var sktmModel: ClientGetSKTM? = nil
+  @Published public var sktmModel: ClientGetSKTM? = nil
 
   //Variables
   private var socket: AprodhitKit.SocketServiceProtocol!
@@ -664,10 +664,6 @@ public class HomeStore: ObservableObject {
 
   public func navigateToLogin() {
     loginResponder.gotoToLogin()
-  }
-
-  public func navigateToOrderProcess(_ advocate: Advocate) {
-    onlineAdvocateNavigator.navigateToOrderProcess(advocate)
   }
 
   //MARK: - BottomSheet

@@ -9,10 +9,15 @@ import Foundation
 import SwiftUI
 import UIKit
 import GnDKit
+import AprodhitKit
+import Combine
 
 public class OrderProcessViewController: NiblessViewController {
 
   private let store: OrderProcessStore
+
+  //Variable
+  private var subscriptions = Set<AnyCancellable>()
 
   public init(store: OrderProcessStore) {
     self.store = store
@@ -49,6 +54,31 @@ public class OrderProcessViewController: NiblessViewController {
 
     view.backgroundColor = UIColor.gray050
 
+    observeStore()
+
+  }
+
+  private func observeStore() {
+    store.$isPresentChangeCategoryIssue
+      .filter { $0 == true }
+      .receive(on: RunLoop.main)
+      .sink { _ in
+        self.showChangeCategoryPopUp()
+      }.store(in: &subscriptions)
+  }
+
+  private func showChangeCategoryPopUp() {
+    
+  }
+
+  deinit {
+    GLogger(
+      .info,
+      layer: "Presentation",
+      message: String(
+        describing: OrderProcessViewController.self
+      )
+    )
   }
 
 }

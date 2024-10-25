@@ -554,19 +554,17 @@ public struct HomeView: View {
                 totalConsultation: advocate.getTotalConsultation(),
                 price: advocate.getPrice(),
                 originalPrice: advocate.getOriginalPrice(),
-                isDiscount: advocate.isDiscount, 
+                isDiscount: advocate.isDiscount,
+                
                 isProbono: advocate.isProbono,
                 onTap: {
                   store.navigateToDetailAdvocate(advocate)
                 },
-                onTapConsultation: {
-                  store.navigateToOrderProcess(advocate)
-                }
+                onTapConsultation: {}
               )
             }
           }
           .padding(.horizontal, 16)
-          .animation(.spring(duration: 0.5, blendDuration: 0.6))
         }
 
       }
