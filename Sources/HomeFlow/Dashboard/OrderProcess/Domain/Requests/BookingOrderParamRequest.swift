@@ -38,7 +38,7 @@ public struct BookingOrderParamRequest: Paramable {
     ]
 
     return [
-      "type": "",
+      "type" : type,
       "consultation" : consultation
     ]
   }

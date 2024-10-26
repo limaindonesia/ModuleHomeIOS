@@ -8,7 +8,35 @@
 import Foundation
 import AprodhitKit
 
-/*public struct MockHomeRepository: HomeRepositoryLogic, SKTMRepositoryLogic {
+public struct MockHomeRepository: HomeRepositoryLogic, SKTMRepositoryLogic {
+
+  public func fetchSkills(params: CategoryParamRequest?) async throws -> [AdvocateSkills] {
+    try await Task.sleep(nanoseconds: 1 * 1_000_000_000)
+    var entities: [AdvocateSkills] = []
+    var i = 0
+    while i < 7 {
+      entities.append(.init())
+      i += 1
+    }
+
+    return entities
+  }
+  
+  public func fetchOngoingUserCases(
+    headers: [String : String],
+    parameters: UserCasesParamRequest
+  ) async throws -> [UserCases] {
+
+    fatalError()
+  }
+  
+  public func fetchPaymentStatus(
+    headers: [String : String],
+    parameters: PaymentStatusRequest
+  ) async throws -> PaymentStatusEntity {
+
+    fatalError()
+  }
 
   public init() {}
 
@@ -23,25 +51,6 @@ import AprodhitKit
       AdvocateEntity(),
       AdvocateEntity()
     ]
-  }
-
-  public func fetchSkills(params: CategoryParamRequest?) async throws -> [SkillEntity] {
-    try await Task.sleep(nanoseconds: 1 * 1_000_000_000)
-    var entities: [SkillEntity] = []
-    var i = 0
-    while i < 7 {
-      entities.append(
-        SkillEntity(
-          id: i+1,
-          skillName: "skill name\(i+1)"
-        )
-      )
-
-      i += 1
-    }
-
-    return entities
-
   }
 
   public func fetchTopAdvocates() async throws -> (
@@ -103,4 +112,3 @@ import AprodhitKit
   }
 
 }
-*/

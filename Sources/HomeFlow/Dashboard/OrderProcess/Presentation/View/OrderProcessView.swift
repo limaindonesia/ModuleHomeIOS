@@ -26,7 +26,7 @@ public struct OrderProcessView: View {
               originalPrice: store.lawyerInfoViewModel.originalPrice,
               isDiscount: store.lawyerInfoViewModel.isDiscount,
               isProbono: store.lawyerInfoViewModel.isProbono,
-              timeStr: store.lawyerInfoViewModel.getTimeRemaining()
+              timeStr: store.timeConsultation
             )
             .padding(.horizontal, 16)
 
@@ -167,7 +167,7 @@ public struct OrderProcessView: View {
           text: $store.issueText,
           textStyle: .lexendFont(style: .caption(size: 12)),
           textColor: UIColor.gray500,
-          backgroudColor: UIColor.gray050
+          backgroundColor: UIColor.gray050
         )
         .overlay(
           RoundedRectangle(cornerRadius: 6).stroke(Color.gray500)

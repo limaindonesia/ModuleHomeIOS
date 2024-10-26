@@ -12,7 +12,12 @@
 		<key>HomeFlow.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>12</integer>
+			<integer>13</integer>
+		</dict>
+		<key>HomeFlowTests.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>26</integer>
 		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>

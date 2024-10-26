@@ -144,7 +144,7 @@ final class HomeRemoteDataSourceTests: XCTestCase {
   func test_fetchArticles_shouldReturnSuccess() async throws {
     //given
     let service = MockNetworkService()
-    let params = ArticleParamRequest(id: 290)
+    let params = ArticleParamRequest(name: "290")
     service.mockData = """
           {
             "success": true
@@ -164,7 +164,7 @@ final class HomeRemoteDataSourceTests: XCTestCase {
   func test_fetchArticles_shouldReturnFailure() async throws {
     //given
     let service = MockNetworkService()
-    let params = ArticleParamRequest(id: 290)
+    let params = ArticleParamRequest(name: "290")
     sut = HomeRemoteDataSourceImpl(service: service)
     service.mockError = NetworkErrorMessage(code: -1, description: "should error")
     var nError: NetworkErrorMessage!
@@ -204,10 +204,10 @@ final class HomeRemoteDataSourceTests: XCTestCase {
     //then
     XCTAssertEqual(nError?.code, -3)
   }
-  
+
 }
 
-struct MockHomeRemoteDataSource: HomeRemoteDataSourceLogic {
+struct MockHomeRemoteDataSource: HomeRemoteDataSourceLogic, SKTMRemoteDataSourceLogic {
 
   var mockModel: AdvocateGetResp?
   var mockError: NetworkErrorMessage?
@@ -283,6 +283,32 @@ struct MockHomeRemoteDataSource: HomeRemoteDataSourceLogic {
   }
 
   func fetchArticles(params: [String : Any]) async throws -> ArticleResponseModel {
+    fatalError()
+  }
+
+  func fetchSkills(params: [String : Any]?) async throws -> AprodhitKit.AdvocateSkillGetResp {
+    fatalError()
+  }
+
+  func fetchNewestArticle() async throws -> [HomeFlow.NewestArticleResponseModel] {
+    fatalError()
+  }
+
+  func fetchOngoingUserCases(
+    headers: [String : String],
+    parameters: [String : Any]
+  ) async throws -> AprodhitKit.UserCasesGetResp {
+    fatalError()
+  }
+
+  func fetchPaymentStatus(
+    headers: [String : String],
+    parameters: [String : Any]
+  ) async throws -> HomeFlow.PaymentStatusModel {
+    fatalError()
+  }
+
+  func fetchSKTM(headers: [String : String]) async throws -> AprodhitKit.ClientGetSKTM {
     fatalError()
   }
 

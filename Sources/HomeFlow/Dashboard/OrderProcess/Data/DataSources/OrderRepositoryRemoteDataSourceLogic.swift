@@ -33,7 +33,7 @@ public struct OrderProcessRemoteDataSource: OrderProcessRemoteDataSourceLogic {
     do {
       let data = try await service.request(
         with: Endpoint.CREATE_CONSULTATION,
-        withMethod: .get,
+        withMethod: .post,
         withHeaders: headers,
         withParameter: parameters,
         withEncoding: .json

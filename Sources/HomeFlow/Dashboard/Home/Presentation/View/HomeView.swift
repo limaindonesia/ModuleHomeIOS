@@ -29,8 +29,8 @@ public struct HomeView: View {
   public var body: some View {
     ZStack {
 
-      loadContent()
-
+      homeContentView()
+      
       BottomSheetView(isPresented: $store.isCategorySheetPresented) {
         categoryBottomSheetContent(
           models: store.selectedSkill?.types ?? [],

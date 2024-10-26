@@ -175,7 +175,7 @@ final class HomeRepositoryTests: XCTestCase {
     let params = AdvocateParamRequest(isOnline: true)
     let remoteDataSource = FakeHomeRemoteDataSource()
     sut = HomeRepositoryImpl(remoteDataSource: remoteDataSource)
-    var entities: [AdvocateEntity]?
+    var entities: [Advocate]?
 
     //when
     entities = try? await sut.fetchOnlineAdvocates(params: params)
@@ -202,7 +202,7 @@ final class HomeRepositoryTests: XCTestCase {
   func test_fetchArticle_usingJsonFromFile_andMapToEntity_withReturnSuccess() async {
     //given
     let remoteDataSource = FakeHomeRemoteDataSource()
-    let params = ArticleParamRequest(id: 6)
+    let params = ArticleParamRequest(name: "")
     sut = HomeRepositoryImpl(remoteDataSource: remoteDataSource)
     var entities: [ArticleEntity]?
 

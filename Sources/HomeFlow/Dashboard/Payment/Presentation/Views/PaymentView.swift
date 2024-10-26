@@ -23,12 +23,12 @@ struct PaymentView: View {
         ScrollView {
           VStack(spacing: 12) {
             lawyerInfoView(
-              orderID: "PC1295",
-              timeRemaining: "03:00",
-              imageURL: nil,
-              name: "Terry Hasibuan",
-              agency: "PBH Peradi",
-              consultationTime: "45 Menit"
+              orderID: store.getOrderNumber(),
+              timeRemaining: store.getTimeRemaining(),
+              imageURL: store.getAvatarImage(),
+              name: store.getLawyersName(),
+              agency: store.getAgency(),
+              consultationTime: store.timeConsultation
             )
 
             voucherCode {
@@ -48,7 +48,7 @@ struct PaymentView: View {
 
         PaymentBottomView(
           title: "Total Pembayaran",
-          price: "Rp650.000",
+          price: store.getLawyersPrice(),
           buttonText: "Bayar",
           onTap: {
 
@@ -282,7 +282,7 @@ struct PaymentView: View {
         HStack {
           Text("Biaya Sesi Konsultasi")
             .bodyLexend(size: 14)
-          
+
           Spacer()
 
           Text("Rp150.000")
@@ -316,10 +316,11 @@ struct PaymentView: View {
 #Preview {
   PaymentView(
     store: PaymentStore(
-      userSessionDataSource: MockUserSessionDataSource(), 
+      userSessionDataSource: MockUserSessionDataSource(),
       lawyerInfoViewModel: .init(),
       orderProcessRepository: MockOrderProcessRepository(),
-      paymentRepository: MockPaymentRepository()
+      paymentRepository: MockPaymentRepository(),
+      treatmentRepository: MockTreatmentRepository()
     )
   )
 }

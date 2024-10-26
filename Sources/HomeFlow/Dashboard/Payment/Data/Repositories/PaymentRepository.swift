@@ -28,8 +28,8 @@ public struct PaymentRepository: PaymentRepositoryLogic {
         parameters.toParam()
       )
 
-      return  json.data.map(OrderNumberEntity.map(from:))!
-
+      let entity = json.data.map(OrderNumberEntity.map(from:))!
+      return entity
     } catch {
       guard let error = error as? NetworkErrorMessage
       else {

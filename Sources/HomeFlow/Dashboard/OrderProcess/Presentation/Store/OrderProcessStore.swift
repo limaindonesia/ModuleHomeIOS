@@ -23,14 +23,14 @@ public class OrderProcessStore: ObservableObject {
 
   @Published public var issueText: String = ""
   @Published public var lawyerInfoViewModel: LawyerInfoViewModel = .init()
-  @Published public var categoryViewModel: CategoryViewModel = .init()
   @Published public var isPresentBottomSheet: Bool = false
-  @Published public var isLoading: Bool = false
-  @Published public var message: String = ""
   @Published public var treatmentViewModels: [TreatmentViewModel] = []
   @Published public var isPresentChangeCategoryIssue: Bool = false
+  @Published public var timeConsultation: String = ""
 
   private var userSessionData: UserSessionData?
+  public var isLoading: Bool = false
+  public var message: String = ""
 
   public init(
     advocate: Advocate,
@@ -49,8 +49,8 @@ public class OrderProcessStore: ObservableObject {
     self.repository = repository
     self.paymentNavigator = paymentNavigator
 
-    setLawyerInfo()
     issues = createIssueCategories()
+    setLawyerInfo()
 
     Task {
       await fetchUserSession()
@@ -95,8 +95,13 @@ public class OrderProcessStore: ObservableObject {
 
   private func fetchTreatment() async {
     do {
-      let entity = try await treatmentRepository.fetchTreatments()
-      treatmentViewModels = entity.map(TreatmentEntity.mapTo(_:))
+      let entities = try await treatmentRepository.fetchTreatments()
+
+      Task { @MainActor in
+        treatmentViewModels = entities.map(TreatmentEntity.mapTo(_:))
+        getTimeConsultation(from: entities)
+      }
+
     } catch {
       guard let error = error as? ErrorMessage else { return }
       indicateError(error: error)
@@ -104,6 +109,12 @@ public class OrderProcessStore: ObservableObject {
   }
 
   //MARK: - Other function
+
+  private func getTimeConsultation(from entities: [TreatmentEntity]) {
+    let type = lawyerInfoViewModel.isProbono ? "PROBONO" : "REGULAR"
+    let entity = entities.filter{ $0.type == type }.first!
+    timeConsultation = "\(entity.duration) Menit"
+  }
 
   private func fetchUserSession() async {
     do {
@@ -139,11 +150,9 @@ public class OrderProcessStore: ObservableObject {
   }
 
   public func setLawyerInfo() {
-    var time: TimeInterval = 45
     var sktmQuota: Int = 0
 
     if let quota = sktmModel?.data?.quota, quota > 0  {
-      time = 30
       sktmQuota = quota
     }
 
@@ -156,7 +165,6 @@ public class OrderProcessStore: ObservableObject {
       originalPrice: advocate.getOriginalPrice(),
       isDiscount: advocate.isDiscount,
       isProbono: sktmQuota > 0,
-      timeRemainig: time,
       orderNumber: ""
     )
   }
@@ -171,6 +179,7 @@ public class OrderProcessStore: ObservableObject {
 
   //MARK: - Navigator
 
+  @MainActor
   public func navigateToPayment() {
     hideOrderInfoBottomSheet()
 
@@ -178,9 +187,9 @@ public class OrderProcessStore: ObservableObject {
       let entity = await requestBookingOrder()
       guard let orderNumber = entity?.orderNumber else { return }
       lawyerInfoViewModel.setOrderNumber(orderNumber)
+      paymentNavigator.navigateToPayment(lawyerInfoViewModel)
     }
 
-//    paymentNavigator.navigateToPayment(lawyerInfoViewModel)
   }
 
   public func navigateToRequestProbono() {

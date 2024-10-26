@@ -185,7 +185,7 @@ public class HomeStore: ObservableObject {
     articles = await articleViewModels
   }
 
-  private func fetchOnlineAdvocates() async -> [Advocate] {
+  public func fetchOnlineAdvocates() async -> [Advocate] {
     var advocates: [Advocate] = []
 
     do {
@@ -230,7 +230,7 @@ public class HomeStore: ObservableObject {
     return skillViewModels
   }
 
-  private func fetchTopAdvocates() async -> ([TopAdvocateViewModel], [TopAgencyViewModel]) {
+  public func fetchTopAdvocates() async -> ([TopAdvocateViewModel], [TopAgencyViewModel]) {
     var advocates: [TopAdvocateViewModel] = []
     var agencies: [TopAgencyViewModel] = []
     do {
@@ -247,7 +247,7 @@ public class HomeStore: ObservableObject {
     return (advocates, agencies)
   }
 
-  private func fetchArticleCategory() async -> [CategoryArticleViewModel] {
+  public func fetchArticleCategory() async -> [CategoryArticleViewModel] {
     var viewModels: [CategoryArticleViewModel] = []
 
     do {
@@ -273,7 +273,7 @@ public class HomeStore: ObservableObject {
 
   }
 
-  private func fetchArticle(with name: String) async -> [ArticleViewModel] {
+  public func fetchArticle(with name: String) async -> [ArticleViewModel] {
     var viewModels: [ArticleViewModel] = []
     do {
       let entities = try await repository.fetchArticles(params: ArticleParamRequest(name: name))
@@ -496,6 +496,7 @@ public class HomeStore: ObservableObject {
     isRefreshing = false
     showAlert = true
     alertMessage = message
+    showShimmer = false
   }
 
   private func indicateError(error: ErrorMessage) {

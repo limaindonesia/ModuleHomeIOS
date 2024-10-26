@@ -15,8 +15,10 @@ public struct MockPaymentRepository: PaymentRepositoryLogic {
   public func requestOrderByNumber(
     _ headers: HeaderRequest,
     _ parameters: OrderNumberParamRequest
-  ) async throws -> OrderResponseModel {
-    fatalError()
+  ) async throws -> OrderNumberEntity {
+
+    return OrderNumberEntity()
+
   }
 
 }
