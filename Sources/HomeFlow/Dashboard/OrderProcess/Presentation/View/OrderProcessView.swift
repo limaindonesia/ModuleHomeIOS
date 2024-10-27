@@ -13,22 +13,21 @@ public struct OrderProcessView: View {
 
   @ObservedObject var store: OrderProcessStore
 
+  private init() {
+    self.store = .init()
+  }
+
+  public init(store: OrderProcessStore) {
+    self.store = store
+  }
+
   public var body: some View {
     ZStack {
       VStack {
         ScrollView {
           VStack(spacing: 12) {
-            lawyerInfoView(
-              imageURL: store.lawyerInfoViewModel.imageURL,
-              name: store.lawyerInfoViewModel.name,
-              agency: store.lawyerInfoViewModel.agency,
-              price: store.lawyerInfoViewModel.price,
-              originalPrice: store.lawyerInfoViewModel.originalPrice,
-              isDiscount: store.lawyerInfoViewModel.isDiscount,
-              isProbono: store.lawyerInfoViewModel.isProbono,
-              timeStr: store.timeConsultation
-            )
-            .padding(.horizontal, 16)
+            showLawyerInfo()
+              .padding(.horizontal, 16)
 
             issueView {
               store.showChangeCategory()
@@ -63,7 +62,7 @@ public struct OrderProcessView: View {
 
       BottomSheetView(isPresented: $store.isPresentChangeCategoryIssue) {
         ChangeCategoryIssueView(
-          issues: store.issues, 
+          issues: store.issues,
           selectedID: store.getSelectedCategoryID()
         ) { category in
           store.setSelected(category)
@@ -74,6 +73,34 @@ public struct OrderProcessView: View {
 
     }
     .ignoresSafeArea(.keyboard)
+  }
+
+  @ViewBuilder
+  func showLawyerInfo() -> some View {
+    if store.isProbono() {
+      LawyerInfoProbonoView(
+        imageURL: store.lawyerInfoViewModel.imageURL,
+        name: store.lawyerInfoViewModel.name,
+        agency: store.lawyerInfoViewModel.agency,
+        price: store.getPriceProbonoOnly(),
+        originalPrice: store.lawyerInfoViewModel.originalPrice,
+        isDiscount: store.lawyerInfoViewModel.isDiscount,
+        isProbono: store.lawyerInfoViewModel.isProbono,
+        timeStr: store.timeConsultation,
+        toggleActive: $store.isProbonoActive
+      )
+    } else {
+      lawyerInfoView(
+        imageURL: store.lawyerInfoViewModel.imageURL,
+        name: store.lawyerInfoViewModel.name,
+        agency: store.lawyerInfoViewModel.agency,
+        price: store.lawyerInfoViewModel.price,
+        originalPrice: store.lawyerInfoViewModel.originalPrice,
+        isDiscount: store.lawyerInfoViewModel.isDiscount,
+        isProbono: store.lawyerInfoViewModel.isProbono,
+        timeStr: store.timeConsultation
+      )
+    }
   }
 
   @ViewBuilder
@@ -273,15 +300,5 @@ public struct OrderProcessView: View {
 }
 
 #Preview {
-  OrderProcessView(
-    store: OrderProcessStore(
-      advocate: .init(),
-      category: .init(id: 0, name: ""),
-      sktmModel: .init(),
-      userSessionDataSource: MockUserSessionDataSource(),
-      repository: MockOrderProcessRepository(),
-      treatmentRepository: MockTreatmentRepository(),
-      paymentNavigator: MockNavigator()
-    )
-  )
+  OrderProcessView(store: .init())
 }

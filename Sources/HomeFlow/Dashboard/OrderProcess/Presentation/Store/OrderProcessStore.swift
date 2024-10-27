@@ -30,12 +30,23 @@ public class OrderProcessStore: ObservableObject {
   @Published public var timeConsultation: String = ""
   @Published public var issueTextError: String = ""
   @Published public var isTextValid: Bool = false
+  @Published public var isProbonoActive: Bool = false
 
   private var userSessionData: UserSessionData?
   public var isLoading: Bool = false
   public var message: String = ""
 
-  private var subcriptions = Set<AnyCancellable>()
+  private var subscriptions = Set<AnyCancellable>()
+
+  public init() {
+    self.advocate = .init()
+    self.category = .init()
+    self.sktmModel = .init()
+    self.userSessionDataSource = MockUserSessionDataSource()
+    self.treatmentRepository = MockTreatmentRepository()
+    self.repository = MockOrderProcessRepository()
+    self.paymentNavigator = MockNavigator()
+  }
 
   public init(
     advocate: Advocate,
@@ -117,6 +128,35 @@ public class OrderProcessStore: ObservableObject {
 
   //MARK: - Other function
 
+  public func setLawyerInfo() {
+    var sktmQuota: Int = 0
+
+    if let quota = sktmModel?.data?.quota, quota > 0  {
+      sktmQuota = quota
+    }
+
+    isProbonoActive = sktmQuota > 0
+
+    lawyerInfoViewModel = LawyerInfoViewModel(
+      id: advocate.id ?? 0,
+      imageURL: advocate.getImageName(),
+      name: advocate.getName(),
+      agency: advocate.agency_name ?? "",
+      price: advocate.getPrice(),
+      originalPrice: advocate.getOriginalPrice(),
+      isDiscount: advocate.isDiscount,
+      isProbono: sktmQuota > 0,
+      orderNumber: ""
+    )
+  }
+
+  public func isProbono() -> Bool {
+    guard let quota = sktmModel?.data?.quota else {
+      return false
+    }
+    return quota > 0
+  }
+
   private func getTimeConsultation(from entities: [TreatmentEntity]) {
     let type = lawyerInfoViewModel.isProbono ? "PROBONO" : "REGULAR"
     let entity = entities.filter{ $0.type == type }.first!
@@ -156,26 +196,6 @@ public class OrderProcessStore: ObservableObject {
     return category.name
   }
 
-  public func setLawyerInfo() {
-    var sktmQuota: Int = 0
-
-    if let quota = sktmModel?.data?.quota, quota > 0  {
-      sktmQuota = quota
-    }
-
-    lawyerInfoViewModel = LawyerInfoViewModel(
-      id: advocate.id ?? 0,
-      imageURL: advocate.getImageName(),
-      name: advocate.getName(),
-      agency: advocate.agency_name ?? "",
-      price: advocate.getPrice(),
-      originalPrice: advocate.getOriginalPrice(),
-      isDiscount: advocate.isDiscount,
-      isProbono: sktmQuota > 0,
-      orderNumber: ""
-    )
-  }
-
   public func showChangeCategory() {
     isPresentChangeCategoryIssue = true
   }
@@ -185,6 +205,13 @@ public class OrderProcessStore: ObservableObject {
   }
 
   public func getPrice() -> String {
+    return lawyerInfoViewModel.price
+  }
+
+  public func getPriceProbonoOnly() -> String {
+    if isProbonoActive {
+      return "Gratis"
+    }
     return lawyerInfoViewModel.price
   }
 
@@ -251,7 +278,14 @@ public class OrderProcessStore: ObservableObject {
       .sink { state in
         self.isTextValid = state
         self.issueTextError = state ? "Minimal 10 Karakter" : ""
-      }.store(in: &subcriptions)
+      }.store(in: &subscriptions)
+
+    $isProbonoActive
+      .receive(on: RunLoop.main)
+      .subscribe(on: RunLoop.main)
+      .sink { state in
+        self.lawyerInfoViewModel.setIsProbonoActive(state)
+      }.store(in: &subscriptions)
 
   }
 

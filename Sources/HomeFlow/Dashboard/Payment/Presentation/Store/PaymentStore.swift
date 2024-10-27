@@ -112,14 +112,6 @@ public class PaymentStore: ObservableObject {
     return lawyerInfoViewModel.name
   }
 
-  public func getLawyersPrice() -> String {
-    return lawyerInfoViewModel.price
-  }
-
-  public func getOriginalPrice() -> String {
-    return lawyerInfoViewModel.originalPrice
-  }
-
   public func getAgency() -> String {
     return lawyerInfoViewModel.agency
   }
