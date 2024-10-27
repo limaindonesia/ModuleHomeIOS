@@ -29,7 +29,7 @@ public struct HomeView: View {
   public var body: some View {
     ZStack {
 
-      homeContentView()
+      loadContent()
       
       BottomSheetView(isPresented: $store.isCategorySheetPresented) {
         categoryBottomSheetContent(
