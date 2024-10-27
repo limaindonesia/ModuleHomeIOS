@@ -82,6 +82,10 @@ public class PaymentStore: ObservableObject {
 
   //MARK: - Other function
 
+  public func isProbono() -> Bool {
+    return lawyerInfoViewModel.isProbono
+  }
+
   private func fetchUserSession() async {
     do {
       userSessionData = try await userSessionDataSource.fetchData()
@@ -158,6 +162,9 @@ public class PaymentStore: ObservableObject {
   }
 
   public func getTotalAmount() -> String {
+    if isProbono() {
+      return "Gratis"
+    }
     return orderNumberViewModel.totalAmount
   }
 

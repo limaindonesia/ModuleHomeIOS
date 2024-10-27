@@ -44,18 +44,24 @@ public struct OrderProcessView: View {
 
         PaymentBottomView(
           title: "Biaya",
-          price: store.isProbonoActive ? store.getPriceProbonoOnly() : store.getPrice(),
+          price: store.isProbonoActive
+          ? store.getPriceProbonoOnly()
+          : store.getPrice(),
           buttonText: "Ke Pembayaran",
           isButtonActive: store.isTextValid,
           onTap: {
-            store.showOrderInfoBottomSheet()
+            store.processNavigation()
           }
         )
         .padding(.horizontal, 16)
       }
 
       BottomSheetView(isPresented: $store.isPresentBottomSheet) {
-        OrderInfoBottomSheetView(price: store.getPrice()) {
+        OrderInfoBottomSheetView(
+          price: store.isProbonoActive
+          ? store.getPriceProbonoOnly()
+          : store.getPrice()
+        ) {
           store.navigateToPayment()
         }
       }

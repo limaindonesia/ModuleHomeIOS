@@ -150,6 +150,17 @@ public class OrderProcessStore: ObservableObject {
     )
   }
 
+  public func processNavigation() {
+    if isProbonoActive {
+      Task { 
+        await navigateToPayment()
+      }
+      return
+    }
+
+    showOrderInfoBottomSheet()
+  }
+
   public func isProbono() -> Bool {
     guard let quota = sktmModel?.data?.quota else {
       return false
@@ -224,8 +235,20 @@ public class OrderProcessStore: ObservableObject {
     Task {
       let entity = await requestBookingOrder()
       guard let orderNumber = entity?.orderNumber else { return }
-      lawyerInfoViewModel.setOrderNumber(orderNumber)
-      paymentNavigator.navigateToPayment(lawyerInfoViewModel)
+
+      let lawyerInfo = LawyerInfoViewModel(
+        id: lawyerInfoViewModel.id,
+        imageURL: lawyerInfoViewModel.imageURL,
+        name: lawyerInfoViewModel.name,
+        agency: lawyerInfoViewModel.agency,
+        price: lawyerInfoViewModel.price,
+        originalPrice: lawyerInfoViewModel.originalPrice,
+        isDiscount: lawyerInfoViewModel.isDiscount,
+        isProbono: isProbonoActive,
+        orderNumber: orderNumber
+      )
+
+      paymentNavigator.navigateToPayment(lawyerInfo)
     }
 
   }

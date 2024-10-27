@@ -20,7 +20,7 @@ struct PaymentView: View {
   var body: some View {
     ZStack {
       VStack {
-        ScrollView {
+        ScrollView(showsIndicators: false) {
           VStack(spacing: 12) {
             lawyerInfoView(
               orderID: store.getOrderNumber(),
@@ -31,11 +31,13 @@ struct PaymentView: View {
               consultationTime: store.timeConsultation
             )
 
-            voucherCode {
-              store.showVoucherBottomSheet()
-            }
+            if !store.isProbono() {
+              voucherCode {
+                store.showVoucherBottomSheet()
+              }
 
-            paymentOptions()
+              paymentOptions()
+            }
 
             paymentDetail()
 
