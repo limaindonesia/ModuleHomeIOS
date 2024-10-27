@@ -44,7 +44,7 @@ public struct OrderProcessView: View {
 
         PaymentBottomView(
           title: "Biaya",
-          price: store.getPrice(),
+          price: store.isProbonoActive ? store.getPriceProbonoOnly() : store.getPrice(),
           buttonText: "Ke Pembayaran",
           isButtonActive: store.isTextValid,
           onTap: {

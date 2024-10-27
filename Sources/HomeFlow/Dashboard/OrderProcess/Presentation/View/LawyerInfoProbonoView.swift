@@ -115,7 +115,7 @@ struct LawyerInfoProbonoView: View {
       .padding(.all, 12)
 
     }
-    .frame(maxWidth: .infinity, idealHeight: 160)
+    .frame(maxWidth: .infinity, minHeight: 160)
     .background(Color.white)
     .cornerRadius(12)
     .shadow(color: .gray200, radius: 8)
