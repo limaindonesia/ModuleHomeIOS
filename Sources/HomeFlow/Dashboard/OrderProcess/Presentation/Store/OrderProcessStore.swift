@@ -8,6 +8,7 @@
 import Foundation
 import AprodhitKit
 import GnDKit
+import Combine
 
 public class OrderProcessStore: ObservableObject {
 
@@ -27,10 +28,14 @@ public class OrderProcessStore: ObservableObject {
   @Published public var treatmentViewModels: [TreatmentViewModel] = []
   @Published public var isPresentChangeCategoryIssue: Bool = false
   @Published public var timeConsultation: String = ""
+  @Published public var issueTextError: String = ""
+  @Published public var isTextValid: Bool = false
 
   private var userSessionData: UserSessionData?
   public var isLoading: Bool = false
   public var message: String = ""
+
+  private var subcriptions = Set<AnyCancellable>()
 
   public init(
     advocate: Advocate,
@@ -56,6 +61,8 @@ public class OrderProcessStore: ObservableObject {
       await fetchUserSession()
       await fetchTreatment()
     }
+
+    observer()
 
   }
 
@@ -177,6 +184,10 @@ public class OrderProcessStore: ObservableObject {
     isPresentChangeCategoryIssue = false
   }
 
+  public func getPrice() -> String {
+    return lawyerInfoViewModel.price
+  }
+
   //MARK: - Navigator
 
   @MainActor
@@ -221,6 +232,27 @@ public class OrderProcessStore: ObservableObject {
 
   private func indicateSuccess(message: String) {
     isLoading = false
+  }
+
+  //MARK: - Observer
+
+  public func isValidText(_ text: String) -> AnyPublisher<Bool, Never> {
+    return Future<Bool, Never> { promise in
+      promise(.success(text.count > 10))
+    }.eraseToAnyPublisher()
+  }
+
+  private func observer() {
+    $issueText
+      .dropFirst()
+      .flatMap { self.isValidText($0) }
+      .receive(on: RunLoop.main)
+      .subscribe(on: RunLoop.main)
+      .sink { state in
+        self.isTextValid = state
+        self.issueTextError = state ? "Minimal 10 Karakter" : ""
+      }.store(in: &subcriptions)
+
   }
 
 }

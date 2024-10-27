@@ -45,8 +45,9 @@ public struct OrderProcessView: View {
 
         PaymentBottomView(
           title: "Biaya",
-          price: store.lawyerInfoViewModel.price,
+          price: store.getPrice(),
           buttonText: "Ke Pembayaran",
+          isButtonActive: store.isTextValid,
           onTap: {
             store.showOrderInfoBottomSheet()
           }
@@ -55,7 +56,7 @@ public struct OrderProcessView: View {
       }
 
       BottomSheetView(isPresented: $store.isPresentBottomSheet) {
-        OrderInfoBottomSheetView {
+        OrderInfoBottomSheetView(price: store.getPrice()) {
           store.navigateToPayment()
         }
       }
@@ -166,11 +167,15 @@ public struct OrderProcessView: View {
         TextView(
           text: $store.issueText,
           textStyle: .lexendFont(style: .caption(size: 12)),
-          textColor: UIColor.gray500,
-          backgroundColor: UIColor.gray050
+          textColor: .darkTextColor,
+          backgroundColor: .gray050
         )
         .overlay(
-          RoundedRectangle(cornerRadius: 6).stroke(Color.gray500)
+          RoundedRectangle(cornerRadius: 6)
+            .stroke(
+              store.isTextValid ? Color.gray500 : Color.red,
+              lineWidth: 2
+            )
         )
       }
       .frame(maxWidth: .infinity, idealHeight: 88)
@@ -179,7 +184,7 @@ public struct OrderProcessView: View {
       .padding(.horizontal, 12)
 
       Text("*Minimal 10 Karakter")
-        .foregroundColor(Color.gray500)
+        .foregroundColor(store.isTextValid ? Color.gray500 : Color.red)
         .bodyLexend(size: 12)
         .padding(.horizontal, 12)
         .padding(.bottom, 16)

@@ -48,7 +48,7 @@ struct PaymentView: View {
 
         PaymentBottomView(
           title: "Total Pembayaran",
-          price: store.getLawyersPrice(),
+          price: store.getTotalAmount(),
           buttonText: "Bayar",
           onTap: {
 
@@ -151,10 +151,11 @@ struct PaymentView: View {
         HStack(spacing: 2) {
 
           Image("ic_timer", bundle: .module)
-            .foregroundColor(Color.buttonActiveColor)
+            .renderingMode(.template)
+            .foregroundColor(Color.primaryInfo600)
 
           Text(consultationTime)
-            .foregroundColor(Color.buttonActiveColor)
+            .foregroundColor(Color.primaryInfo600)
             .titleLexend(size: 12)
         }
 
@@ -255,7 +256,7 @@ struct PaymentView: View {
         Text("Mohon perhatikan batas waktu pembayaran!")
           .captionLexend(size: 10)
 
-        Text("Bayar Sebelum DD MM YYYY HH:MM")
+        Text(store.getExpiredDate())
           .titleLexend(size: 14)
       }
       .padding(.vertical, 8)
@@ -278,17 +279,19 @@ struct PaymentView: View {
       Text("Rincian pembayaran")
         .titleLexend(size: 14)
 
-      ForEach(0..<3) { i in
-        HStack {
-          Text("Biaya Sesi Konsultasi")
-            .bodyLexend(size: 14)
-
-          Spacer()
-
-          Text("Rp150.000")
-            .foregroundColor(Color.gray600)
-            .bodyLexend(size: 14)
-        }
+      ForEach(store.getPaymentDetails()) { fee in
+        FeeRowView(
+          name: fee.name,
+          amount: fee.amount,
+          showInfo: fee.showInfo,
+          onTap: {
+            GLogger(
+              .info,
+              layer: "Presentation",
+              message: "did tap info"
+            )
+          }
+        )
       }
 
       Divider()
@@ -300,7 +303,7 @@ struct PaymentView: View {
 
         Spacer()
 
-        Text("Rp65.000")
+        Text(store.getTotalAmount())
           .titleLexend(size: 16)
       }
     }

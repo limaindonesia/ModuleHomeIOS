@@ -9,9 +9,14 @@ import SwiftUI
 
 struct OrderInfoBottomSheetView: View {
 
+  private let price: String
   private var onTap: () -> Void
 
-  init(onTap: @escaping () -> Void) {
+  init(
+    price: String,
+    onTap: @escaping () -> Void
+  ) {
+    self.price = price
     self.onTap = onTap
   }
 
@@ -99,13 +104,12 @@ struct OrderInfoBottomSheetView: View {
 
       PaymentBottomView(
         title: "Biaya",
-        price: "Rp65.000",
+        price: price,
         buttonText: "Ke Pembayaran",
         onTap: {
           onTap()
         }
       )
-      .padding(.horizontal, 16)
     }
   }
 
@@ -151,5 +155,8 @@ struct OrderInfoBottomSheetView: View {
 }
 
 #Preview {
-  OrderInfoBottomSheetView(onTap: {})
+  OrderInfoBottomSheetView(
+    price: "",
+    onTap: {}
+  )
 }

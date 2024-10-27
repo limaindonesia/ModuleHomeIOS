@@ -70,9 +70,23 @@ public struct OrderNumberEntity: Transformable {
   static func mapTo(_ entity: OrderNumberEntity) -> OrderNumberViewModel {
     return OrderNumberViewModel(
       expiredAt: entity.expiredAt,
-      lawyerFee: entity.lawyerFee,
-      adminFee: entity.adminFee,
-      discount: entity.discountFee
+      lawyerFee: FeeViewModel(
+        id: 1,
+        name: entity.lawyerFee.name,
+        amount: entity.lawyerFee.amount
+      ),
+      adminFee: FeeViewModel(
+        id: 2,
+        name: entity.adminFee.name,
+        amount: entity.adminFee.amount,
+        showInfo: true
+      ),
+      discount: FeeViewModel(
+        id: 3,
+        name: entity.discountFee.name,
+        amount: entity.discountFee.amount
+      ),
+      totalAmount: entity.total
     )
   }
 

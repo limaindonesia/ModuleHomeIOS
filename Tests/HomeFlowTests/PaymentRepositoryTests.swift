@@ -39,4 +39,28 @@ final class PaymentRepositoryTests: XCTestCase {
     XCTAssertNotNil(expiredAt)
   }
 
+  public func test_fetchOrderByNumber_andProcessTheExpiredTimeTo_DateTime() async {
+    //given
+    let remote = FakePaymentRemoteDataSource()
+    sut = PaymentRepository(remote: remote)
+    var expiredAt: String? = nil
+
+    //when
+    do {
+      let entity = try await sut.requestOrderByNumber(
+        HeaderRequest(token: ""),
+        OrderNumberParamRequest(orderNumber: "")
+      )
+
+      let date = Double(entity.expiredAt).epochToDate()
+      expiredAt = date.formatted(with: "dd MMMM yyyy HH:mm")
+
+    } catch {
+      expiredAt = nil
+    }
+
+    //then
+    XCTAssertEqual(expiredAt, "26 October 2024 14:13")
+  }
+  
 }

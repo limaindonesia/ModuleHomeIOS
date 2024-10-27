@@ -13,17 +13,20 @@ struct PaymentBottomView: View {
   private let title: String
   private let price: String
   private let buttonText: String
+  private let isButtonActive: Bool
   private var onTap: () -> Void
 
   init(
     title: String,
     price: String,
     buttonText: String,
+    isButtonActive: Bool = true,
     onTap: @escaping () -> Void
   ) {
     self.title = title
     self.price = price
     self.buttonText = buttonText
+    self.isButtonActive = isButtonActive
     self.onTap = onTap
   }
 
@@ -40,8 +43,13 @@ struct PaymentBottomView: View {
 
       Spacer()
 
-      PositiveButton(title: buttonText) {
-        onTap()
+      PositiveButton(
+        title: buttonText,
+        isActive: isButtonActive
+      ) {
+        if isButtonActive {
+          onTap()
+        }
       }
       .frame(width: 156, height: 40)
     }
@@ -53,6 +61,7 @@ struct PaymentBottomView: View {
     title: "Biaya",
     price: "Rp1.000.000",
     buttonText: "Ke Pembayaran",
+    isButtonActive: true,
     onTap: {
 
     }

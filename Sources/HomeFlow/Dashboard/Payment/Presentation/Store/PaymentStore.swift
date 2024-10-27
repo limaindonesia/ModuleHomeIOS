@@ -101,7 +101,7 @@ public class PaymentStore: ObservableObject {
   }
 
   public func getOrderNumber() -> String {
-    return String(describing: lawyerInfoViewModel.id)
+    return String(describing: lawyerInfoViewModel.orderNumber)
   }
 
   public func getAvatarImage() -> URL? {
@@ -124,20 +124,49 @@ public class PaymentStore: ObservableObject {
     return lawyerInfoViewModel.agency
   }
 
-  public func getTimeRemaining() -> String {
-    GLogger(
-      .info,
-      layer: "Presentation",
-      message: orderNumberViewModel
-    )
+  public func getExpiredDate() -> String {
+    return "Bayar sebelum \(orderNumberViewModel.expiredDate())"
+  }
 
-    GLogger(
-      .info,
-      layer: "Presentation",
-      message: orderNumberViewModel.getRemainingMinutes().timeString()
-    )
+  public func getTimeRemaining() -> String {
+    if orderNumberViewModel.expiredAt == 0 {
+      return "00:00"
+    }
 
     return orderNumberViewModel.getRemainingMinutes().timeString()
+  }
+
+  public func getPaymentDetails() -> [FeeViewModel] {
+    var items: [FeeViewModel] = []
+    items.append(orderNumberViewModel.lawyerFee)
+    items.append(orderNumberViewModel.adminFee)
+    items.append(orderNumberViewModel.discount)
+    return items
+  }
+
+  private func getLawyerFee() -> (String, String) {
+    return (
+      orderNumberViewModel.lawyerFee.name,
+      orderNumberViewModel.lawyerFee.amount
+    )
+  }
+
+  private func getAdminFee() -> (String, String) {
+    return (
+      orderNumberViewModel.adminFee.name,
+      orderNumberViewModel.adminFee.amount
+    )
+  }
+
+  private func getDiscount() -> (String, String) {
+    return (
+      orderNumberViewModel.discount.name,
+      orderNumberViewModel.discount.amount
+    )
+  }
+
+  public func getTotalAmount() -> String {
+    return orderNumberViewModel.totalAmount
   }
 
   //MARK: - Indicate
@@ -167,7 +196,6 @@ public class PaymentStore: ObservableObject {
   }
 
   private func observer() {
-
 
   }
 

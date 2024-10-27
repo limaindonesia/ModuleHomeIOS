@@ -10,11 +10,13 @@ import AprodhitKit
 
 public struct MockOrderProcessRepository: OrderProcessRepositoryLogic {
 
+  public init() {}
+  
   public func requestBookingOrder(
     _ headers: HeaderRequest,
     _ parameters: BookingOrderParamRequest
   ) async throws -> BookingOrderEntity {
-    fatalError()
+    return BookingOrderEntity(orderNumber: "PC-1837394")
   }
 
 }
