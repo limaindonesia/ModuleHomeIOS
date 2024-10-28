@@ -16,10 +16,10 @@ public struct FakePaymentRemoteDataSource: PaymentRemoteDataSourceLogic {
   public func requestOrderByNumber(
     _ headers: [String : String],
     _ parameters: [String : Any]
-  ) async throws -> OrderNumberResponseModel {
+  ) async throws -> OrderResponseModel {
 
     guard let data = try? loadJSONFromFile(
-      filename: "order_by_number",
+      filename: "order_number_with_voucher",
       inBundle: .module
     )
     else {
@@ -30,11 +30,16 @@ public struct FakePaymentRemoteDataSource: PaymentRemoteDataSourceLogic {
       )
     }
 
-    var model: OrderNumberResponseModel
+    var model: OrderResponseModel
 
     do {
-      model = try JSONDecoder().decode(OrderNumberResponseModel.self, from: data)
+      model = try JSONDecoder().decode(OrderResponseModel.self, from: data)
     } catch {
+      GLogger(
+        .info,
+        layer: "Data",
+        message: "error \(error)"
+      )
       throw ErrorMessage(
         id: -4,
         title: "Failed",
@@ -43,6 +48,53 @@ public struct FakePaymentRemoteDataSource: PaymentRemoteDataSourceLogic {
     }
 
     return model
+  }
+
+  public func requestUseVoucher(
+    _ headers: [String : String],
+    _ parameters: [String : Any]
+  ) async throws -> VoucherResponseModel {
+
+    guard let data = try? loadJSONFromFile(
+      filename: "voucher",
+      inBundle: .module
+    )
+    else {
+      throw ErrorMessage(
+        id: -7,
+        title: "Failed",
+        message: "File Not Found"
+      )
+    }
+
+    var model: VoucherResponseModel
+
+    do {
+      model = try JSONDecoder().decode(VoucherResponseModel.self, from: data)
+    } catch {
+      GLogger(
+        .info,
+        layer: "Data",
+        message: "error \(error)"
+      )
+      throw ErrorMessage(
+        id: -4,
+        title: "Failed",
+        message: "Parse Error"
+      )
+    }
+
+    return model
+
+  }
+
+  public func requestCreatePayment(
+    _ headers: [String : String],
+    _ parameters: [String : Any]
+  ) async throws -> PaymentResponseModel {
+
+    fatalError()
+
   }
 
 }

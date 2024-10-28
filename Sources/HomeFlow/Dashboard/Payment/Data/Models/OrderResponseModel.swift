@@ -9,7 +9,7 @@ import Foundation
 import GnDKit
 
 // MARK: - OrderNumberResponseModel
-public  struct OrderNumberResponseModel: Codable {
+public  struct OrderResponseModel: Codable {
   public let success: Bool?
   public let data: DataClass?
   public let message: String?
@@ -30,7 +30,7 @@ public  struct OrderNumberResponseModel: Codable {
     public let status: String?
     public let consultations: [Consultation]?
     public let orderItems: OrderItems?
-    public let orderAdjustments: [JSONNull]?
+    public let orderAdjustments: [OrderAdjustment]?
     public let paymentMethods: [PaymentMethod]?
     public let expiredAt: Int?
 
@@ -55,7 +55,7 @@ public  struct OrderNumberResponseModel: Codable {
       self.status = try container.decodeIfPresent(String.self, forKey: .status)
       self.consultations = try container.decodeIfPresent([Consultation].self, forKey: .consultations)
       self.orderItems = try container.decodeIfPresent(OrderItems.self, forKey: .orderItems)
-      self.orderAdjustments = try container.decodeIfPresent([JSONNull].self, forKey: .orderAdjustments)
+      self.orderAdjustments = try container.decodeIfPresent([OrderAdjustment].self, forKey: .orderAdjustments)
       self.paymentMethods = try container.decodeIfPresent([PaymentMethod].self, forKey: .paymentMethods)
       self.expiredAt = try container.decodeIfPresent(Int.self, forKey: .expiredAt)
     }
@@ -345,14 +345,33 @@ public  struct OrderNumberResponseModel: Codable {
     }
   }
 
+  public struct OrderAdjustment: Codable {
+    public let name, amount: String?
+
+    public init(name: String?, amount: String?) {
+      self.name = name
+      self.amount = amount
+    }
+
+    public init(from decoder: any Decoder) throws {
+      let container: KeyedDecodingContainer<OrderResponseModel.OrderAdjustment.CodingKeys> = try decoder.container(keyedBy: OrderResponseModel.OrderAdjustment.CodingKeys.self)
+      self.name = try container.decodeIfPresent(String.self, forKey: OrderResponseModel.OrderAdjustment.CodingKeys.name)
+      self.amount = try container.decodeIfPresent(String.self, forKey: OrderResponseModel.OrderAdjustment.CodingKeys.amount)
+    }
+  }
+
   // MARK: - OrderItems
   public struct OrderItems: Codable {
-    public let adminFee, lawyerFee, discount: AdminFee?
+    public let adminFee: AdminFee?
+    public let lawyerFee: AdminFee?
+    public let discount: AdminFee?
+    public let voucher: AdminFee?
 
     enum CodingKeys: String, CodingKey {
       case adminFee = "admin_fee"
       case lawyerFee = "lawyer_fee"
       case discount
+      case voucher
     }
 
     public init(from decoder: any Decoder) throws {
@@ -360,6 +379,7 @@ public  struct OrderNumberResponseModel: Codable {
       self.adminFee = try container.decodeIfPresent(AdminFee.self, forKey: .adminFee)
       self.lawyerFee = try container.decodeIfPresent(AdminFee.self, forKey: .lawyerFee)
       self.discount = try container.decodeIfPresent(AdminFee.self, forKey: .discount)
+      self.voucher = try container.decodeIfPresent(AdminFee.self, forKey: .voucher)
     }
   }
 
@@ -373,7 +393,7 @@ public  struct OrderNumberResponseModel: Codable {
       self.amount = try container.decodeIfPresent(String.self, forKey: .amount)
     }
   }
-
+  
   // MARK: - PaymentMethod
   public struct PaymentMethod: Codable {
     public let name: String?

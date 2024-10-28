@@ -22,10 +22,35 @@ public struct MockPaymentRepository: PaymentRepositoryLogic {
       lawyerFee: .init(),
       adminFee: .init(),
       discountFee: .init(),
+      voucher: nil,
       total: "Rp60.000",
       expiredAt: 1729926810
     )
 
+  }
+
+  public func requestUseVoucher(
+    headers: AprodhitKit.HeaderRequest,
+    parameters: VoucherParamRequest
+  ) async throws -> VoucherEntity {
+
+    VoucherEntity(
+      success: false,
+      code: "",
+      amount: "",
+      tnc: "",
+      descriptions: "",
+      duration: 0
+    )
+
+  }
+
+  public func requestCreatePayment(
+    headers: HeaderRequest,
+    parameters: PaymentParamRequest
+  ) async throws -> PaymentEntity {
+
+    PaymentEntity(urlString: "", roomKey: "")
   }
 
 }

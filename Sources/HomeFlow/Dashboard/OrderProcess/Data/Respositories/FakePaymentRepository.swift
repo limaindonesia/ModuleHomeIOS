@@ -12,7 +12,7 @@ import GnDKit
 public struct FakePaymentRepository: PaymentRepositoryLogic {
 
   private let remote: PaymentRemoteDataSourceLogic
-  
+
   public init(remote: PaymentRemoteDataSourceLogic) {
     self.remote = remote
   }
@@ -21,7 +21,7 @@ public struct FakePaymentRepository: PaymentRepositoryLogic {
     _ headers: HeaderRequest,
     _ parameters: OrderNumberParamRequest
   ) async throws -> OrderNumberEntity {
-    
+
     do {
       let response = try await remote.requestOrderByNumber(
         headers.toHeaders(),
@@ -48,5 +48,29 @@ public struct FakePaymentRepository: PaymentRepositoryLogic {
 
   }
 
+  public func requestUseVoucher(
+    headers: HeaderRequest,
+    parameters: VoucherParamRequest
+  ) async throws -> VoucherEntity {
+    return VoucherEntity(
+      success: false,
+      code: "",
+      amount: "",
+      tnc: "",
+      descriptions: "",
+      duration: 0
+    )
+  }
+
+  public func requestCreatePayment(
+    headers: HeaderRequest,
+    parameters: PaymentParamRequest
+  ) async throws -> PaymentEntity {
+
+    return PaymentEntity(
+      urlString: "",
+      roomKey: ""
+    )
+  }
 
 }

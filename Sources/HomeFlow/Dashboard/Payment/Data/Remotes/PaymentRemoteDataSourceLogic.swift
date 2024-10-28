@@ -13,7 +13,17 @@ public protocol PaymentRemoteDataSourceLogic {
   func requestOrderByNumber(
     _ headers: [String : String],
     _ parameters: [String : Any]
-  ) async throws -> OrderNumberResponseModel
+  ) async throws -> OrderResponseModel
+
+  func requestCreatePayment(
+    _ headers: [String : String],
+    _ parameters: [String : Any]
+  ) async throws -> PaymentResponseModel
+
+  func requestUseVoucher(
+    _ headers: [String : String],
+    _ parameters: [String : Any]
+  ) async throws -> VoucherResponseModel
 
 }
 
@@ -28,7 +38,7 @@ public struct PaymentRemoteDataSource: PaymentRemoteDataSourceLogic {
   public func requestOrderByNumber(
     _ headers: [String : String],
     _ parameters: [String : Any]
-  ) async throws -> OrderNumberResponseModel {
+  ) async throws -> OrderResponseModel {
 
     do {
       let data = try await service.request(
@@ -38,12 +48,50 @@ public struct PaymentRemoteDataSource: PaymentRemoteDataSourceLogic {
         withParameter: parameters,
         withEncoding: .url
       )
-      let json = try JSONDecoder().decode(OrderNumberResponseModel.self, from: data)
+      let json = try JSONDecoder().decode(OrderResponseModel.self, from: data)
       return json
     } catch {
       throw error
     }
 
+  }
+
+  public func requestCreatePayment(
+    _ headers: [String : String],
+    _ parameters: [String : Any]
+  ) async throws -> PaymentResponseModel {
+    do {
+      let data = try await service.request(
+        with: Endpoint.PAYMENT,
+        withMethod: .post,
+        withHeaders: headers,
+        withParameter: parameters,
+        withEncoding: .json
+      )
+      let json = try JSONDecoder().decode(PaymentResponseModel.self, from: data)
+      return json
+    } catch {
+      throw error
+    }
+  }
+
+  public func requestUseVoucher(
+    _ headers: [String : String],
+    _ parameters: [String : Any]
+  ) async throws -> VoucherResponseModel {
+    do {
+      let data = try await service.request(
+        with: Endpoint.USE_VOUCHER,
+        withMethod: .post,
+        withHeaders: headers,
+        withParameter: parameters,
+        withEncoding: .json
+      )
+      let json = try JSONDecoder().decode(VoucherResponseModel.self, from: data)
+      return json
+    } catch {
+      throw error
+    }
   }
 
 }

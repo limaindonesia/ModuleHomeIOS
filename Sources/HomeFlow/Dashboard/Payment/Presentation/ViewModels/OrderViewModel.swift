@@ -7,12 +7,13 @@
 
 import Foundation
 
-public class OrderNumberViewModel {
+public class OrderViewModel {
 
   public let expiredAt: Int
   public let lawyerFee: FeeViewModel
   public let adminFee: FeeViewModel
   public let discount: FeeViewModel
+  public let voucher: FeeViewModel?
   public let totalAmount: String
 
   public init() {
@@ -20,6 +21,7 @@ public class OrderNumberViewModel {
     self.lawyerFee = .init()
     self.adminFee = .init()
     self.discount = .init()
+    self.voucher = nil
     self.totalAmount = ""
   }
 
@@ -28,12 +30,14 @@ public class OrderNumberViewModel {
     lawyerFee: FeeViewModel,
     adminFee: FeeViewModel,
     discount: FeeViewModel,
+    voucher: FeeViewModel?,
     totalAmount: String
   ) {
     self.expiredAt = expiredAt
     self.lawyerFee = lawyerFee
     self.adminFee = adminFee
     self.discount = discount
+    self.voucher = voucher
     self.totalAmount = totalAmount
   }
 

@@ -15,4 +15,14 @@ public protocol PaymentRepositoryLogic {
     _ parameters: OrderNumberParamRequest
   ) async throws -> OrderNumberEntity
 
+  func requestUseVoucher(
+    headers: HeaderRequest,
+    parameters: VoucherParamRequest
+  ) async throws -> VoucherEntity
+
+  func requestCreatePayment(
+    headers: HeaderRequest,
+    parameters: PaymentParamRequest
+  ) async throws -> PaymentEntity
+
 }

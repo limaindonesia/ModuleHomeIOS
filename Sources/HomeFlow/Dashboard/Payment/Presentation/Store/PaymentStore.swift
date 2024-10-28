@@ -23,11 +23,13 @@ public class PaymentStore: ObservableObject {
   @Published public var isPresentVoucherBottomSheet: Bool = false
   @Published public var timeConsultation: String = ""
   @Published public var paymentTimeRemaining: TimeInterval = 0
-  @Published public var orderNumberViewModel: OrderNumberViewModel = .init()
+  @Published public var orderViewModel: OrderViewModel = .init()
   @Published public var activateButton: Bool = false
-  @Published public var voucher: String = ""
+  @Published public var voucherCode: String = ""
   @Published public var showXMark: Bool = false
   @Published public var voucherErrorText: String = ""
+  @Published public var voucherViewModel: VoucherViewModel = .init()
+  @Published public var voucherFilled: Bool = false
 
   private var treatmentViewModels: [TreatmentViewModel] = []
   private var message: String = ""
@@ -61,12 +63,24 @@ public class PaymentStore: ObservableObject {
   //MARK: - Fetch API
 
   @MainActor
+  public func applyVoucher() async {
+    let success = await requestVoucher()
+    if success {
+      await requestOrderByNumber()
+    }
+  }
+
+  @MainActor
   public func requestOrderByNumber() async {
     let headers = HeaderRequest(token: userSessionData?.remoteSession.remoteToken)
-    let parameters = OrderNumberParamRequest(orderNumber: lawyerInfoViewModel.orderNumber)
+    let parameters = OrderNumberParamRequest(
+      orderNumber: lawyerInfoViewModel.orderNumber,
+      voucherCode: voucherViewModel.code
+    )
+
     do {
       let entity = try await paymentRepository.requestOrderByNumber(headers, parameters)
-      orderNumberViewModel = OrderNumberEntity.mapTo(entity)
+      orderViewModel = OrderNumberEntity.mapTo(entity)
     } catch {
       guard let error = error as? ErrorMessage else { return }
       indicateError(error: error)
@@ -84,7 +98,55 @@ public class PaymentStore: ObservableObject {
     }
   }
 
+  @MainActor
+  private func requestVoucher() async -> Bool {
+    do {
+      let entity = try await paymentRepository.requestUseVoucher(
+        headers: HeaderRequest(token: userSessionData?.remoteSession.remoteToken),
+        parameters: VoucherParamRequest(
+          orderNumber: lawyerInfoViewModel.orderNumber,
+          voucherCode: voucherCode
+        )
+      )
+
+      voucherViewModel = VoucherEntity.mapTo(entity)
+      voucherFilled = entity.success
+      return entity.success
+
+    } catch {
+      guard let error = error as? ErrorMessage else { return false }
+      indicateError(error: error)
+
+      return false
+    }
+  }
+
+  @MainActor
+  public func requestCreatePayment() async {
+    do {
+      let _ = try await paymentRepository.requestCreatePayment(
+        headers: HeaderRequest(token: userSessionData?.remoteSession.remoteToken),
+        parameters: PaymentParamRequest(
+          orderNumber: lawyerInfoViewModel.orderNumber,
+          consultationGuideAnswerId: 2,
+          voucherCode: voucherCode
+        )
+      )
+    } catch {
+      guard let error = error as? ErrorMessage else { return }
+      indicateError(error: error)
+    }
+  }
+
   //MARK: - Other function
+
+  public func getVoucherText() -> String {
+    return "Hemat \(voucherViewModel.amount)"
+  }
+
+  public func getVoucherDuration() -> String {
+    return "Durasi konsultasi akan selama \(voucherViewModel.duration) menit"
+  }
 
   public func isProbono() -> Bool {
     return lawyerInfoViewModel.isProbono
@@ -125,43 +187,46 @@ public class PaymentStore: ObservableObject {
   }
 
   public func getExpiredDate() -> String {
-    return "Bayar sebelum \(orderNumberViewModel.expiredDate())"
+    return "Bayar sebelum \(orderViewModel.expiredDate())"
   }
 
   public func getTimeRemaining() -> String {
-    if orderNumberViewModel.expiredAt == 0 {
+    if orderViewModel.expiredAt == 0 {
       return "00:00"
     }
 
-    return orderNumberViewModel.getRemainingMinutes().timeString()
+    return orderViewModel.getRemainingMinutes().timeString()
   }
 
   public func getPaymentDetails() -> [FeeViewModel] {
     var items: [FeeViewModel] = []
-    items.append(orderNumberViewModel.lawyerFee)
-    items.append(orderNumberViewModel.adminFee)
-    items.append(orderNumberViewModel.discount)
+    if let voucher = orderViewModel.voucher {
+      items.append(voucher)
+    }
+    items.append(orderViewModel.lawyerFee)
+    items.append(orderViewModel.adminFee)
+    items.append(orderViewModel.discount)
     return items
   }
 
   private func getLawyerFee() -> (String, String) {
     return (
-      orderNumberViewModel.lawyerFee.name,
-      orderNumberViewModel.lawyerFee.amount
+      orderViewModel.lawyerFee.name,
+      orderViewModel.lawyerFee.amount
     )
   }
 
   private func getAdminFee() -> (String, String) {
     return (
-      orderNumberViewModel.adminFee.name,
-      orderNumberViewModel.adminFee.amount
+      orderViewModel.adminFee.name,
+      orderViewModel.adminFee.amount
     )
   }
 
   private func getDiscount() -> (String, String) {
     return (
-      orderNumberViewModel.discount.name,
-      orderNumberViewModel.discount.amount
+      orderViewModel.discount.name,
+      orderViewModel.discount.amount
     )
   }
 
@@ -169,7 +234,13 @@ public class PaymentStore: ObservableObject {
     if isProbono() {
       return "Gratis"
     }
-    return orderNumberViewModel.totalAmount
+    return orderViewModel.totalAmount
+  }
+
+  //MARK: - Navigator
+
+  public func navigateToWaitingRoom() {
+    
   }
 
   //MARK: - Indicate
@@ -198,8 +269,14 @@ public class PaymentStore: ObservableObject {
     isLoading = false
   }
 
+  public func showTNCBottomSheet() {
+    
+  }
+
+  //MARK: - Observer
+
   private func observer() {
-    $voucher
+    $voucherCode
       .receive(on: RunLoop.main)
       .subscribe(on: RunLoop.main)
       .sink { text in

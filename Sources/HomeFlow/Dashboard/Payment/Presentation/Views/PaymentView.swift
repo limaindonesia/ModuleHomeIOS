@@ -32,9 +32,7 @@ struct PaymentView: View {
             )
 
             if !store.isProbono() {
-              voucherCode {
-                store.showVoucherBottomSheet()
-              }
+              showVoucherView()
 
               paymentOptions()
             }
@@ -53,7 +51,7 @@ struct PaymentView: View {
           price: store.getTotalAmount(),
           buttonText: "Bayar",
           onTap: {
-
+            
           }
         )
         .padding(.horizontal, 16)
@@ -62,10 +60,13 @@ struct PaymentView: View {
       BottomSheetView(isPresented: $store.isPresentVoucherBottomSheet) {
         VoucherBottomSheetView(
           activateButton: $store.activateButton,
-          voucher: $store.voucher,
+          voucher: $store.voucherCode,
           showXMark: $store.showXMark,
           voucherErrorText: $store.voucherErrorText,
           onTap: { voucher in
+            Task { 
+              await store.applyVoucher()
+            }
           }
         )
       }
@@ -177,6 +178,74 @@ struct PaymentView: View {
   }
 
   @ViewBuilder
+  func showVoucherView() -> some View {
+    if store.voucherFilled {
+      voucherCodeFilled {
+        store.showVoucherBottomSheet()
+      } onTapTnc: {
+        store.showTNCBottomSheet()
+      }
+    } else {
+      voucherCode {
+        store.showVoucherBottomSheet()
+      }
+    }
+  }
+
+  @ViewBuilder
+  func voucherCodeFilled(
+    onTap: @escaping () -> Void,
+    onTapTnc: @escaping () -> Void
+  ) -> some View {
+    VStack(alignment: .leading, spacing: 8) {
+      Text("Kode Promo dan Voucher")
+        .titleLexend(size: 16)
+
+      HStack(spacing: 10) {
+        Image("ticket_discount", bundle: .module)
+
+        Text(store.voucherViewModel.code)
+          .foregroundColor(Color.darkTextColor)
+          .titleLexend(size: 14)
+
+        Spacer()
+
+        Text(store.getVoucherText())
+          .foregroundColor(Color.gray700)
+          .bodyLexend(size: 10)
+
+        Image("ic_chevron", bundle: .module)
+      }
+      .padding(.horizontal, 12)
+      .padding(.vertical, 8)
+      .frame(maxWidth: .infinity, alignment: .leading)
+      .background(Color.primaryInfo050)
+      .cornerRadius(8)
+
+      Text(store.getVoucherDuration())
+        .foregroundColor(Color.gray500)
+        .bodyLexend(size: 10)
+
+      Button {
+        onTapTnc()
+      } label: {
+        Text("Lihat Syarat dan Ketentuan")
+          .foregroundColor(Color.buttonActiveColor)
+          .bodyLexend(size: 12)
+      }
+    }
+    .padding(12)
+    .frame(maxWidth: .infinity, alignment: .topLeading)
+    .background(.white)
+    .cornerRadius(12)
+    .shadow(color: .gray200, radius: 5)
+    .shadow(color: Color.gray050, radius: 5, x: 0, y: 6)
+    .onTapGesture {
+      onTap()
+    }
+  }
+
+  @ViewBuilder
   func voucherCode(onTap: @escaping () -> Void) -> some View {
     VStack(alignment: .leading) {
       Text("Kode Promo dan Voucher")
@@ -212,10 +281,14 @@ struct PaymentView: View {
 
   @ViewBuilder
   func paymentOptions() -> some View {
-    VStack(alignment: .leading) {
+    VStack(alignment: .leading, spacing: 8) {
       Text("Metode Pembayaran")
         .foregroundColor(Color.darkTextColor)
         .titleLexend(size: 14)
+
+      Text("Anda akan memilih metode pembayaran dihalaman selanjutnya")
+        .foregroundColor(Color.gray600)
+        .bodyLexend(size: 12)
 
       HStack {
         HStack {
