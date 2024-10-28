@@ -60,9 +60,14 @@ struct PaymentView: View {
       }
 
       BottomSheetView(isPresented: $store.isPresentVoucherBottomSheet) {
-        VoucherBottomSheetView { voucher in
-
-        }
+        VoucherBottomSheetView(
+          activateButton: $store.activateButton,
+          voucher: $store.voucher,
+          showXMark: $store.showXMark,
+          voucherErrorText: $store.voucherErrorText,
+          onTap: { voucher in
+          }
+        )
       }
     }
   }
