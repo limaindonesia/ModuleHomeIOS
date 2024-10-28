@@ -11,6 +11,7 @@ import GnDKit
 import Network
 import Combine
 import Environment
+import AppsFlyerLib
 
 @MainActor
 public class HomeStore: ObservableObject {
@@ -373,6 +374,10 @@ public class HomeStore: ObservableObject {
   }
 
   //MARK: - Other function
+  
+  public func appsflyerConnect() {
+    
+  }
 
   public func onRefresh() async {
     indicateLoading()
