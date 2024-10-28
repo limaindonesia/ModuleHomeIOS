@@ -24,6 +24,10 @@ public class PaymentStore: ObservableObject {
   @Published public var timeConsultation: String = ""
   @Published public var paymentTimeRemaining: TimeInterval = 0
   @Published public var orderNumberViewModel: OrderNumberViewModel = .init()
+  @Published public var activateButton: Bool = false
+  @Published public var voucher: String = ""
+  @Published public var showXMark: Bool = false
+  @Published public var voucherErrorText: String = ""
 
   private var treatmentViewModels: [TreatmentViewModel] = []
   private var message: String = ""
@@ -195,7 +199,13 @@ public class PaymentStore: ObservableObject {
   }
 
   private func observer() {
-
+    $voucher
+      .receive(on: RunLoop.main)
+      .subscribe(on: RunLoop.main)
+      .sink { text in
+        self.activateButton = !text.isEmpty
+        self.showXMark = !text.isEmpty
+      }.store(in: &subscriptions)
   }
 
 }
