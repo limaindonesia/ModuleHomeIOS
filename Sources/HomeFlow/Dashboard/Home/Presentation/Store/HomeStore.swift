@@ -15,7 +15,7 @@ import AppsFlyerLib
 
 @MainActor
 public class HomeStore: ObservableObject {
-
+  
   //MARK: - Properties
   //Dependencies
   private let repository: HomeRepositoryLogic
@@ -31,10 +31,10 @@ public class HomeStore: ObservableObject {
   private let mainTabBarResponder: MainTabBarResponder
   private let ongoingNavigator: OngoingNavigator
   private let loginResponder: LoginResponder
-
+  
   public let monitor = NWPathMonitor()
   let dispatchQueue = DispatchQueue(label: "Monitor")
-
+  
   //State
   @Published public var onlinedAdvocates: [Advocate] = []
   @Published public var skills: [AdvocateSkills] = []
@@ -67,14 +67,14 @@ public class HomeStore: ObservableObject {
   @Published public var isPresentPromotionBanner: Bool = false
   @Published public var showShimmer: Bool = false
   @Published public var sktmModel: ClientGetSKTM? = nil
-
+  
   //Variables
   private var socket: AprodhitKit.SocketServiceProtocol!
   private var userSessionData: UserSessionData? = nil
   private var client: DataOPClient? = nil
   private var subscriptions = Set<AnyCancellable>()
   private var paymentStatus: PaymentStatusViewModel = .init()
-
+  
   public init(
     userSessionDataSource: UserSessionDataSourceLogic,
     repository: HomeRepositoryLogic,
@@ -90,7 +90,7 @@ public class HomeStore: ObservableObject {
     ongoingNavigator: OngoingNavigator,
     loginResponder: LoginResponder
   ) {
-
+    
     self.userSessionDataSource = userSessionDataSource
     self.repository = repository
     self.sktmRepository = sktmRepository
@@ -104,13 +104,13 @@ public class HomeStore: ObservableObject {
     self.mainTabBarResponder = mainTabBarResponder
     self.ongoingNavigator = ongoingNavigator
     self.loginResponder = loginResponder
-
+    
     checkPromotionBaner()
-
+    
     Task {
       showShimmer = true
       let result = await fetchUserSessionData()
-
+      
       if let session = result {
         isLoggedIn = true
         userSessionData = session
@@ -120,35 +120,35 @@ public class HomeStore: ObservableObject {
         isLoggedIn = false
         name = ""
       }
-
+      
       await fetchOngoingUserCases()
       await fetchAllAPI()
       await fetchSKTM()
-
+      
       showShimmer = false
     }
-
+    
     observer()
-
+    
   }
-
+  
   //MARK: - Socket
-
+  
   public func startSocket() {
     socket = AprodhitKit.SocketServiceImpl(socketURL: Environment.shared.socketURL)
     guard let socket = socket as? AprodhitKit.SocketServiceImpl else { return }
     socket.delegate = self
     socket.start()
   }
-
+  
   public func stopSocket() {
     if let socket = socket {
       socket.stop()
     }
   }
-
+  
   //MARK: - Fetch Data from Local
-
+  
   private func fetchUserSessionData() async -> UserSessionData? {
     do {
       return try await userSessionDataSource.fetchData()
@@ -156,7 +156,7 @@ public class HomeStore: ObservableObject {
       return nil
     }
   }
-
+  
   private func endUserSession() {
     Task {
       let removed = try? await userSessionDataSource.deleteData()
@@ -166,18 +166,18 @@ public class HomeStore: ObservableObject {
         name = ""
       }
     }
-
+    
   }
-
+  
   //MARK: - Fetch Data from API
-
+  
   public func fetchAllAPI() async {
     async let advocateViewModels = fetchOnlineAdvocates()
     async let skillViewModels = fetchSkills()
     async let (topAdvocatesVewModels, topAgencyCitiesViewModels) = fetchTopAdvocates()
     async let categoryViewModels = fetchArticleCategory()
     async let articleViewModels = fetchNewestArticle()
-
+    
     onlinedAdvocates = await advocateViewModels
     skills = await skillViewModels
     topAdvocates = await topAdvocatesVewModels
@@ -185,52 +185,52 @@ public class HomeStore: ObservableObject {
     categories = await categoryViewModels
     articles = await articleViewModels
   }
-
+  
   public func fetchOnlineAdvocates() async -> [Advocate] {
     var advocates: [Advocate] = []
-
+    
     do {
       let params = AdvocateParamRequest(isOnline: true)
       let items = try await repository.fetchOnlineAdvocates(params: params)
       showOnlineAdvocates = true
-
+      
       if items.count > 5 {
         for i in 0..<5 {
           advocates.append(items[i])
         }
         return advocates
       }
-
+      
       advocates = items
-
+      
     } catch {
       guard let error = error as? ErrorMessage
       else { return [] }
-
+      
       indicateError(error: error)
     }
-
+    
     return advocates
   }
-
+  
   private func fetchSkills() async -> [AdvocateSkills] {
     var skillViewModels: [AdvocateSkills] = []
-
+    
     do {
       let model = try await repository.fetchSkills(params: nil)
       skillViewModels = model
       showCategories = true
-
+      
     } catch {
       guard let error = error as? ErrorMessage
       else { return [] }
-
+      
       indicateError(error: error)
     }
-
+    
     return skillViewModels
   }
-
+  
   public func fetchTopAdvocates() async -> ([TopAdvocateViewModel], [TopAgencyViewModel]) {
     var advocates: [TopAdvocateViewModel] = []
     var agencies: [TopAgencyViewModel] = []
@@ -244,13 +244,13 @@ public class HomeStore: ObservableObject {
       else { return ([], []) }
       indicateError(error: error)
     }
-
+    
     return (advocates, agencies)
   }
-
+  
   public func fetchArticleCategory() async -> [CategoryArticleViewModel] {
     var viewModels: [CategoryArticleViewModel] = []
-
+    
     do {
       let entities = try await repository.fetchCategoryArticle()
       viewModels = entities.map(CategoryArticleEntity.mapTo(_:))
@@ -266,14 +266,14 @@ public class HomeStore: ObservableObject {
     } catch {
       guard let error = error as? ErrorMessage
       else { return [] }
-
+      
       indicateError(error: error)
     }
-
+    
     return viewModels
-
+    
   }
-
+  
   public func fetchArticle(with name: String) async -> [ArticleViewModel] {
     var viewModels: [ArticleViewModel] = []
     do {
@@ -284,10 +284,10 @@ public class HomeStore: ObservableObject {
       else { return [] }
       indicateError(error: error)
     }
-
+    
     return viewModels
   }
-
+  
   private func fetchNewestArticle() async -> [ArticleViewModel] {
     var viewModels: [ArticleViewModel] = []
     do {
@@ -298,10 +298,10 @@ public class HomeStore: ObservableObject {
       else { return [] }
       indicateError(error: error)
     }
-
+    
     return viewModels
   }
-
+  
   private func fetchSKTM() async {
     guard let data = userSessionData else { return }
     do {
@@ -314,36 +314,36 @@ public class HomeStore: ObservableObject {
       }
     }
   }
-
+  
   public func fetchOngoingUserCases() async {
-
+    
     guard let data = userSessionData else {
       return
     }
-
+    
     do {
       arrayOfuserCases = try await repository.fetchOngoingUserCases(
         headers: ["Authorization" : "Bearer \(data.remoteSession.remoteToken)"],
         parameters: UserCasesParamRequest(type: "ongoing")
       )
-
+      
       ongoingConsultation = !arrayOfuserCases.isEmpty
-
+      
       guard !arrayOfuserCases.isEmpty else { return }
       userCases = arrayOfuserCases[0]
-
+      
       await processWaitingForPayment(userCases)
-
+      
     } catch {
       if let error = error as? ErrorMessage {
         indicateError(error: error)
       }
     }
-
+    
   }
-
+  
   private func getPaymentStatus() async {
-
+    
     guard let data = userSessionData else {
       return
     }
@@ -352,39 +352,39 @@ public class HomeStore: ObservableObject {
         headers: ["Authorization" : "Bearer \(data.remoteSession.remoteToken)"],
         parameters: .init(orderNumber: userCases.order_no ?? "")
       )
-
+      
       paymentStatus = PaymentStatusEntity.mapTo(entity)
-
-//      if let _ = paymentStatus.getPaymentURL() {
-//        openURL()
-//        return
-//      }
-//
-//      if !paymentStatus.roomKey.isEmpty {
-//        navigateToWaitingRoom()
-//        return
-//      }
-
+      
+      //      if let _ = paymentStatus.getPaymentURL() {
+      //        openURL()
+      //        return
+      //      }
+      //
+      //      if !paymentStatus.roomKey.isEmpty {
+      //        navigateToWaitingRoom()
+      //        return
+      //      }
+      
     } catch {
       if let error = error as? ErrorMessage {
         indicateError(error: error)
       }
     }
-
+    
   }
-
+  
   //MARK: - Other function
   
   public func appsflyerConnect() {
     
   }
-
+  
   public func onRefresh() async {
     indicateLoading()
     hideTabBar = true
-
+    
     let result = await fetchUserSessionData()
-
+    
     if let session = result {
       isLoggedIn = true
       userSessionData = session
@@ -394,21 +394,21 @@ public class HomeStore: ObservableObject {
       isLoggedIn = false
       name = ""
     }
-
+    
     await fetchAllAPI()
     await fetchOngoingUserCases()
     await fetchSKTM()
-
+    
     indicateSuccess(message: "")
     hideTabBar = false
   }
-
+  
   public func checkPromotionBaner() {
     if Prefs.getStatusBanner() {
       showPromotionBanner()
     }
   }
-
+  
   public func getFourTopAdvocates() -> [TopAdvocateViewModel] {
     if !topAdvocates.isEmpty {
       var topAdvocates = topAdvocates[0 ..< topAdvocates.index(after: 3)]
@@ -422,14 +422,14 @@ public class HomeStore: ObservableObject {
           experience: 0
         )
       )
-
+      
       return Array(topAdvocates)
     }
     return []
   }
-
+  
   public func selectCategory(_ id: Int, name: String) async {
-
+    
     for i in 0 ..< categories.count {
       if categories[i].id == id {
         categories[i].setSelected(true)
@@ -437,16 +437,16 @@ public class HomeStore: ObservableObject {
         categories[i].setSelected(false)
       }
     }
-
+    
     if id == 111 {
       articles = await fetchNewestArticle()
       return
     }
-
+    
     articles = await fetchArticle(with: name)
-
+    
   }
-
+  
   func findOnProcessUserCasses(userCase: UserCases) -> Bool {
     if userCase.status == "ON_PROCESS" || userCase.status == "WAITING_FOR_APPROVAL"
         || userCase.status == "WAITING_FOR_PAYMENT" || userCase.status == "REJECTED"
@@ -456,7 +456,7 @@ public class HomeStore: ObservableObject {
     }
     return false
   }
-
+  
   func findOnProcessUserCassesFailed(userCase: UserCases) -> Bool {
     if userCase.status == "REJECTED"
         || userCase.status == "CLIENT_CANCELED"
@@ -465,37 +465,37 @@ public class HomeStore: ObservableObject {
     }
     return false
   }
-
+  
   private func processWaitingForPayment(_ item: UserCases) async {
-
+    
     if item.status == Constant.Home.Text.WAITING_FOR_PAYMENT
         && !item.order_no!.isEmpty {
-
+      
       await getPaymentStatus()
     }
-
+    
   }
-
+  
   private func processSKTMAndReplaceOnlineLawyerState(_ status: String) {
-
+    
     var arrayOfAdvocates: [Advocate] = onlinedAdvocates
-
+    
     if status == Constant.Home.Text.ACTIVE {
       for i in 0 ..< arrayOfAdvocates.count {
         arrayOfAdvocates[i].is_probono = true
       }
-
+      
       onlinedAdvocates = arrayOfAdvocates
     }
   }
-
+  
   //MARK: - Indicator
-
+  
   private func indicateLoading() {
     isLoading = true
     isRefreshing = false
   }
-
+  
   private func indicateError(message: String) {
     isLoading = false
     isRefreshing = false
@@ -503,22 +503,22 @@ public class HomeStore: ObservableObject {
     alertMessage = message
     showShimmer = false
   }
-
+  
   private func indicateError(error: ErrorMessage) {
     guard error.id == -6 else {
       indicateError(message: error.message)
       return
     }
-
+    
     isLoading = false
     unauthorized = true
   }
-
+  
   private func indicateSuccess(message: String) {
     isLoading = false
     isRefreshing = false
   }
-
+  
   public func dismissAlert() {
     if unauthorized {
       NLog(
@@ -528,19 +528,19 @@ public class HomeStore: ObservableObject {
       )
     }
   }
-
+  
   public func showPromotionBanner() {
     isPresentPromotionBanner = true
     hideTabBar = true
   }
-
+  
   public func dismissPromotionBanner() {
     isPresentPromotionBanner = false
     hideTabBar = false
   }
-
+  
   //MARK: - Navigator
-
+  
   public func navigateToSeeAllAdvocate() {
     onlineAdvocateNavigator.navigateToListAdvocate(
       categoryAdvocate: "",
@@ -550,7 +550,7 @@ public class HomeStore: ObservableObject {
       sktmModel: sktmModel
     )
   }
-
+  
   public func navigateToDetailAdvocate(_ advocate: Advocate) {
     let index = onlinedAdvocates.firstIndex { i in
       advocate.id == i.id
@@ -561,11 +561,11 @@ public class HomeStore: ObservableObject {
       sktmModel: sktmModel
     )
   }
-
+  
   public func navigateToDetailTopAdvocate() {
     topAdvocateNavigator.navigateToDetailTopLawyerAndAgency()
   }
-
+  
   public func navigateToDetailArticle(id: Int) {
     let article = articles.filter { $0.id == id }.first!
     articleNavigator.navigateToDetailArticle(
@@ -574,18 +574,18 @@ public class HomeStore: ObservableObject {
       content: article.content
     )
   }
-
+  
   public func navigateToSearch(with text: String) {
     searchNavigator.navigateToAdvocateListInSearchMode(
       searchText: text,
       sktmModel: sktmModel
     )
   }
-
+  
   public func navigateToDetailCategory() {
     categoryNavigator.navigateToDetailCategory(skills)
   }
-
+  
   public func navigateToAdvocateListWithSkill() {
     guard let skill = selectedSkill else { return }
     advocateListNavigator.navigateToAdvocateListWithSkill(
@@ -596,48 +596,48 @@ public class HomeStore: ObservableObject {
       sktmModel: sktmModel
     )
   }
-
+  
   public func navigateToAdvocateList() {
     advocateListNavigator.navigateToAdvocateList(
       listingType: Constant.Text.GENERAL,
       sktmModel: sktmModel
     )
   }
-
+  
   public func navigateToDetailSKTM() {
     guard let _ = userSessionData else {
       sktmNavigator.navigateToUploadSKTM()
       return
     }
-
+    
     guard let status = sktmModel?.data?.status else {
       sktmNavigator.navigateToUploadSKTM()
       return
     }
-
+    
     if status == "ON_PROCESS" || status == "ACTIVE"
         || status == "EMPTY_QUOTA" || status == "EXPIRED"
         || status == "FAILED" {
-
+      
       sktmNavigator.navigateToDetailSKTM(sktmModel)
     } else {
       sktmNavigator.navigateToUploadSKTM()
     }
-
+    
   }
-
+  
   public func navigateToDecisionTree() {
     sktmNavigator.navigateDecisionTree(sktmModel)
   }
-
+  
   public func navigateToUploadSKTM() {
     sktmNavigator.navigateToUploadSKTM()
   }
-
+  
   public func switchToProfile() {
     mainTabBarResponder.gotoProfile()
   }
-
+  
   public func navigateToWaitingRoom() {
     ongoingNavigator.navigateToWaitingRoom(
       userCases,
@@ -646,7 +646,7 @@ public class HomeStore: ObservableObject {
       status: findOnProcessUserCassesFailed(userCase: userCases)
     )
   }
-
+  
   public func navigateToConsultationChat() {
     ongoingNavigator.navigateToConsultationChat(
       userCases,
@@ -654,38 +654,38 @@ public class HomeStore: ObservableObject {
       clientName: client?.relation?.name ?? ""
     )
   }
-
+  
   public func navigateToPayment() {
     if let _ = paymentStatus.getPaymentURL() {
       openURL()
       return
     }
-
+    
     ongoingNavigator.navigateToPayment(userCases)
   }
-
+  
   public func openURL() {
     ongoingNavigator.navigateToPaymentURL(paymentStatus.getPaymentURL())
   }
-
+  
   public func navigateToLogin() {
     loginResponder.gotoToLogin()
   }
-
+  
   //MARK: - BottomSheet
-
+  
   func showCategoryBottomSheet() {
     isCategorySheetPresented = true
     hideTabBar = true
   }
-
+  
   func hideCategoryBottomSheet() {
     isCategorySheetPresented = false
     hideTabBar = false
   }
-
+  
   //MARK: - Observer
-
+  
   private func observer() {
     $unauthorized
       .dropFirst()
@@ -696,7 +696,7 @@ public class HomeStore: ObservableObject {
         guard let self = self else { return }
         endUserSession()
       }.store(in: &subscriptions)
-
+    
     $sktmModel
       .receive(on: RunLoop.main)
       .subscribe(on: RunLoop.main)
@@ -706,62 +706,63 @@ public class HomeStore: ObservableObject {
         }
       }.store(in: &subscriptions)
   }
-
+  
 }
 
 public protocol HomeStoreFactory {
-
+  
   func makeHomeStore() -> HomeStore
-
+  
 }
 
+@MainActor
 extension HomeStore: AprodhitKit.SocketServiceDelegate {
-
-  public func didPaymentUpdate() {
+  
+  nonisolated public func didPaymentUpdate() {
     GLogger(
       .info,
       layer: "Presentation",
       message: "Did Payment Updated"
     )
   }
-
-  public func didSKTMUpdate() {
+  
+  nonisolated public func didSKTMUpdate() {
     //    self.isUpdateSKTM = true
     Task {
       await fetchSKTM()
     }
-
+    
   }
-
-  public func didLawyerEndConsult() {
+  
+  nonisolated public func didLawyerEndConsult() {
     Task {
       await fetchOngoingUserCases()
     }
   }
-
-  public func didLawyerJoinRoom(data: NSDictionary) {
+  
+  nonisolated public func didLawyerJoinRoom(data: NSDictionary) {
     Task {
       await fetchOngoingUserCases()
     }
   }
-
-  public func didLawyerReject(data: NSDictionary) {
+  
+  nonisolated public func didLawyerReject(data: NSDictionary) {
     Task {
       await fetchOngoingUserCases()
     }
-
+    
     GLogger(
       .info,
       layer: "Presentation",
       message: "⚡️ socket lawyer reject"
     )
-
+    
   }
-
-  public func didLawyerRecall() {
+  
+  nonisolated public func didLawyerRecall() {
     print("lawyer recall succes")
   }
-
+  
   public func onConnected() {
     guard let socket = socket,
           let token = userSessionData?.remoteSession.remoteToken,
@@ -770,24 +771,24 @@ extension HomeStore: AprodhitKit.SocketServiceDelegate {
       print("⚡️ socket could not registerd")
       return
     }
-
+    
     socket.register(
       token: token,
       id: clientID
     )
   }
-
+  
   public func didUpdateOnlineLawyer() {
     Task {
       onlinedAdvocates = await fetchOnlineAdvocates()
     }
-
+    
     GLogger(
       .info,
       layer: "Presentation",
       message: "⚡️ socket update online lawyer"
     )
-
+    
   }
-
+  
 }

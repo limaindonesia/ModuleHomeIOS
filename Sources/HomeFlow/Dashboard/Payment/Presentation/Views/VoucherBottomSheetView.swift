@@ -15,19 +15,22 @@ struct VoucherBottomSheetView: View {
   @Binding var voucherErrorText: String
   
   private var onTap: (String) -> Void
+  private var onClear: () -> Void
   
   init(
     activateButton: Binding<Bool>,
     voucher: Binding<String>,
     showXMark: Binding<Bool>,
     voucherErrorText: Binding<String>,
-    onTap: @escaping (String) -> Void
+    onTap: @escaping (String) -> Void,
+    onClear: @escaping () -> Void
   ) {
     self._activateButton = activateButton
     self._voucher = voucher
     self._showXMark = showXMark
     self._voucherErrorText = voucherErrorText
     self.onTap = onTap
+    self.onClear = onClear
   }
   
   var body: some View {
@@ -44,13 +47,18 @@ struct VoucherBottomSheetView: View {
             let frame = proxy.frame(in: .local)
             
             TextField("Tulis kode", text: $voucher)
+              .textInputAutocapitalization(.characters)
+              .captionLexend(size: 16)
               .padding(.horizontal, 12)
               .padding(.trailing, 24)
               .frame(height: 40)
               .background(Color.gray050)
               .overlay {
                 RoundedRectangle(cornerRadius: 8)
-                  .stroke(Color.gray200, lineWidth: 1)
+                  .stroke(
+                    voucherErrorText.isEmpty ? Color.gray200 : Color.danger500,
+                    lineWidth: 1
+                  )
               }
             
             if showXMark {
@@ -60,6 +68,8 @@ struct VoucherBottomSheetView: View {
                 .position(x: frame.maxX - 20, y: frame.midY)
                 .onTapGesture {
                   voucher = ""
+                  voucherErrorText = ""
+                  onClear()
                 }
             }
           }
@@ -127,6 +137,7 @@ struct VoucherBottomSheetView: View {
     voucher: .constant(""),
     showXMark: .constant(false),
     voucherErrorText: .constant(""),
-    onTap: { _ in }
+    onTap: { _ in },
+    onClear: { }
   )
 }

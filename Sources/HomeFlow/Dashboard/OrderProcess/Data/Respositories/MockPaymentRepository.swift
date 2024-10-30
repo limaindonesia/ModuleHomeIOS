@@ -16,14 +16,15 @@ public struct MockPaymentRepository: PaymentRepositoryLogic {
   public func requestOrderByNumber(
     _ headers: HeaderRequest,
     _ parameters: OrderNumberParamRequest
-  ) async throws -> OrderNumberEntity {
+  ) async throws -> OrderEntity {
 
-    return OrderNumberEntity(
+    return OrderEntity(
       lawyerFee: .init(),
       adminFee: .init(),
       discountFee: .init(),
       voucher: nil,
       total: "Rp60.000",
+      totalAdjustment: 150000,
       expiredAt: 1729926810
     )
 
@@ -51,6 +52,13 @@ public struct MockPaymentRepository: PaymentRepositoryLogic {
   ) async throws -> PaymentEntity {
 
     PaymentEntity(urlString: "", roomKey: "")
+  }
+  
+  public func requestRemoveVoucher(
+    headers: HeaderRequest,
+    parameters: VoucherParamRequest
+  ) async throws -> Bool {
+    fatalError()
   }
 
 }

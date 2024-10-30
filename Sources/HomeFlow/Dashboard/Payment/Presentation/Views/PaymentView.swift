@@ -50,6 +50,7 @@ struct PaymentView: View {
           title: "Total Pembayaran",
           price: store.getTotalAmount(),
           buttonText: "Bayar",
+          isVoucherApplied: store.voucherFilled,
           onTap: {
             
           }
@@ -67,10 +68,21 @@ struct PaymentView: View {
             Task { 
               await store.applyVoucher()
             }
+          },
+          onClear: {
+            Task {
+              await store.removeVoucher()
+            }
           }
         )
       }
+    
+      BottomSheetView(isPresented: $store.isPresentTncBottomSheet) {
+        
+      }
+      
     }
+    
   }
 
   @ViewBuilder

@@ -15,6 +15,7 @@ public class OrderViewModel {
   public let discount: FeeViewModel
   public let voucher: FeeViewModel?
   public let totalAmount: String
+  public let totalAdjustment: Int
 
   public init() {
     self.expiredAt = 0
@@ -23,6 +24,7 @@ public class OrderViewModel {
     self.discount = .init()
     self.voucher = nil
     self.totalAmount = ""
+    self.totalAdjustment = 0
   }
 
   public init(
@@ -31,7 +33,8 @@ public class OrderViewModel {
     adminFee: FeeViewModel,
     discount: FeeViewModel,
     voucher: FeeViewModel?,
-    totalAmount: String
+    totalAmount: String,
+    totalAdjustment: Int
   ) {
     self.expiredAt = expiredAt
     self.lawyerFee = lawyerFee
@@ -39,6 +42,7 @@ public class OrderViewModel {
     self.discount = discount
     self.voucher = voucher
     self.totalAmount = totalAmount
+    self.totalAdjustment = totalAdjustment
   }
 
   public func getRemainingMinutes() -> TimeInterval {

@@ -8,11 +8,11 @@
 import Foundation
 import AprodhitKit
 
-public struct OrderNumberEntity: Transformable {
+public struct OrderEntity: Transformable {
 
   typealias D = OrderResponseModel.DataClass
 
-  typealias E = OrderNumberEntity
+  typealias E = OrderEntity
 
   typealias VM = OrderViewModel
 
@@ -21,6 +21,7 @@ public struct OrderNumberEntity: Transformable {
   public let discountFee: FeeEntity
   public let voucher: FeeEntity?
   public let total: String
+  public let totalAdjustment: Int
   public let expiredAt: Int
 
   init() {
@@ -29,6 +30,7 @@ public struct OrderNumberEntity: Transformable {
     self.discountFee = .init()
     self.voucher = nil
     self.total = ""
+    self.totalAdjustment = 0
     self.expiredAt = 0
   }
 
@@ -38,6 +40,7 @@ public struct OrderNumberEntity: Transformable {
     discountFee: FeeEntity,
     voucher: FeeEntity?,
     total: String,
+    totalAdjustment: Int,
     expiredAt: Int
   ) {
     self.lawyerFee = lawyerFee
@@ -46,9 +49,10 @@ public struct OrderNumberEntity: Transformable {
     self.voucher = voucher
     self.total = total
     self.expiredAt = expiredAt
+    self.totalAdjustment = totalAdjustment
   }
 
-  static func map(from data: OrderResponseModel.DataClass) -> OrderNumberEntity {
+  static func map(from data: OrderResponseModel.DataClass) -> OrderEntity {
     var voucherEntity: FeeEntity? = nil
     let lawyerFee = data.orderItems?.lawyerFee
     let adminFee = data.orderItems?.adminFee
@@ -61,7 +65,7 @@ public struct OrderNumberEntity: Transformable {
       )
     }
 
-    return OrderNumberEntity(
+    return OrderEntity(
       lawyerFee: FeeEntity(
         name: lawyerFee?.name ?? "",
         amount: lawyerFee?.amount ?? ""
@@ -76,11 +80,12 @@ public struct OrderNumberEntity: Transformable {
       ),
       voucher: voucherEntity,
       total: data.totalAmount ?? "",
+      totalAdjustment: data.totalAdjustment ?? 0,
       expiredAt: data.expiredAt ?? 0
     )
   }
 
-  static func mapTo(_ entity: OrderNumberEntity) -> OrderViewModel {
+  static func mapTo(_ entity: OrderEntity) -> OrderViewModel {
     var voucherViewModel: FeeViewModel? = nil
 
     if let voucher = entity.voucher {
@@ -110,7 +115,8 @@ public struct OrderNumberEntity: Transformable {
         amount: entity.discountFee.amount
       ),
       voucher: voucherViewModel,
-      totalAmount: entity.total
+      totalAmount: entity.total,
+      totalAdjustment: entity.totalAdjustment
     )
   }
 

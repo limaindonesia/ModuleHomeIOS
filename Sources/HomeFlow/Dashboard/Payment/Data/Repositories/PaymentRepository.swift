@@ -20,7 +20,7 @@ public struct PaymentRepository: PaymentRepositoryLogic {
   public func requestOrderByNumber(
     _ headers: HeaderRequest,
     _ parameters: OrderNumberParamRequest
-  ) async throws -> OrderNumberEntity {
+  ) async throws -> OrderEntity {
 
     do {
       let json = try await remote.requestOrderByNumber(
@@ -28,7 +28,7 @@ public struct PaymentRepository: PaymentRepositoryLogic {
         parameters.toParam()
       )
 
-      let entity = json.data.map(OrderNumberEntity.map(from:))!
+      let entity = json.data.map(OrderEntity.map(from:))!
       return entity
     } catch {
       guard let error = error as? NetworkErrorMessage
@@ -61,8 +61,7 @@ public struct PaymentRepository: PaymentRepositoryLogic {
       return VoucherEntity.map(from: json)
 
     } catch {
-      guard let error = error as? NetworkErrorMessage
-      else {
+      guard let error = error as? NetworkErrorMessage else {
         throw ErrorMessage(
           title: "Failed",
           message: "Uknown Failed"
@@ -94,6 +93,35 @@ public struct PaymentRepository: PaymentRepositoryLogic {
       )
 
       return entity
+
+    } catch {
+      guard let error = error as? NetworkErrorMessage
+      else {
+        throw ErrorMessage(
+          title: "Failed",
+          message: "Uknown Failed"
+        )
+      }
+
+      throw ErrorMessage(
+        id: error.code,
+        title: "Failed",
+        message: error.description
+      )
+    }
+  }
+  
+  public func requestRemoveVoucher(
+    headers: HeaderRequest,
+    parameters: VoucherParamRequest
+  ) async throws -> Bool {
+    do {
+      let json = try await remote.requestRemoveVoucher(
+        headers: headers.toHeaders(),
+        parameters: parameters.toParam()
+      )
+      
+      return true
 
     } catch {
       guard let error = error as? NetworkErrorMessage

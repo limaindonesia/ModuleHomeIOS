@@ -9,37 +9,42 @@ import Foundation
 import AprodhitKit
 
 public protocol PaymentRemoteDataSourceLogic {
-
+  
   func requestOrderByNumber(
     _ headers: [String : String],
     _ parameters: [String : Any]
   ) async throws -> OrderResponseModel
-
+  
   func requestCreatePayment(
     _ headers: [String : String],
     _ parameters: [String : Any]
   ) async throws -> PaymentResponseModel
-
+  
   func requestUseVoucher(
     _ headers: [String : String],
     _ parameters: [String : Any]
   ) async throws -> VoucherResponseModel
-
+  
+  func requestRemoveVoucher(
+    headers: [String : String],
+    parameters: [String : Any]
+  ) async throws -> Bool
+  
 }
 
 public struct PaymentRemoteDataSource: PaymentRemoteDataSourceLogic {
-
+  
   private let service: NetworkServiceLogic
-
+  
   public init(service: NetworkServiceLogic) {
     self.service = service
   }
-
+  
   public func requestOrderByNumber(
     _ headers: [String : String],
     _ parameters: [String : Any]
   ) async throws -> OrderResponseModel {
-
+    
     do {
       let data = try await service.request(
         with: Endpoint.ORDER_BY_NUMBER,
@@ -53,9 +58,9 @@ public struct PaymentRemoteDataSource: PaymentRemoteDataSourceLogic {
     } catch {
       throw error
     }
-
+    
   }
-
+  
   public func requestCreatePayment(
     _ headers: [String : String],
     _ parameters: [String : Any]
@@ -74,7 +79,7 @@ public struct PaymentRemoteDataSource: PaymentRemoteDataSourceLogic {
       throw error
     }
   }
-
+  
   public func requestUseVoucher(
     _ headers: [String : String],
     _ parameters: [String : Any]
@@ -93,5 +98,36 @@ public struct PaymentRemoteDataSource: PaymentRemoteDataSourceLogic {
       throw error
     }
   }
-
+  
+  public func requestRemoveVoucher(
+    headers: [String : String],
+    parameters: [String : Any]
+  ) async throws -> Bool {
+    
+    var succeeded: Bool = false
+    
+    do {
+      let data = try await service.request(
+        with: Endpoint.REMOVE_VOUCHER,
+        withMethod: .post,
+        withHeaders: headers,
+        withParameter: parameters,
+        withEncoding: .json
+      )
+      
+      let response = try JSONSerialization.jsonObject(with: data)
+      if let json = response as? [String: Any] {
+        if let success = json["succes"] as? Bool {
+          succeeded = success
+        }
+      }
+    } catch {
+      succeeded = false
+      throw error
+    }
+    
+    return succeeded
+    
+  }
+  
 }

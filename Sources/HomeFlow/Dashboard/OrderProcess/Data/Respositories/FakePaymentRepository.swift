@@ -20,14 +20,14 @@ public struct FakePaymentRepository: PaymentRepositoryLogic {
   public func requestOrderByNumber(
     _ headers: HeaderRequest,
     _ parameters: OrderNumberParamRequest
-  ) async throws -> OrderNumberEntity {
+  ) async throws -> OrderEntity {
 
     do {
       let response = try await remote.requestOrderByNumber(
         headers.toHeaders(),
         parameters.toParam()
       )
-      let entity = response.data.map(OrderNumberEntity.map(from:)) ?? .init()
+      let entity = response.data.map(OrderEntity.map(from:)) ?? .init()
       return entity
 
     } catch {
@@ -71,6 +71,13 @@ public struct FakePaymentRepository: PaymentRepositoryLogic {
       urlString: "",
       roomKey: ""
     )
+  }
+  
+  public func requestRemoveVoucher(
+    headers: HeaderRequest,
+    parameters: VoucherParamRequest
+  ) async throws -> Bool {
+    fatalError()
   }
 
 }

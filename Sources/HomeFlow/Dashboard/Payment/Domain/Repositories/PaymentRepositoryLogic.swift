@@ -13,7 +13,7 @@ public protocol PaymentRepositoryLogic {
   func requestOrderByNumber(
     _ headers: HeaderRequest,
     _ parameters: OrderNumberParamRequest
-  ) async throws -> OrderNumberEntity
+  ) async throws -> OrderEntity
 
   func requestUseVoucher(
     headers: HeaderRequest,
@@ -24,5 +24,10 @@ public protocol PaymentRepositoryLogic {
     headers: HeaderRequest,
     parameters: PaymentParamRequest
   ) async throws -> PaymentEntity
+  
+  func requestRemoveVoucher(
+    headers: HeaderRequest,
+    parameters: VoucherParamRequest
+  ) async throws -> Bool
 
 }

@@ -22,6 +22,10 @@ let package = Package(
       url: "https://github.com/airbnb/lottie-ios.git",
       .upToNextMajor(from: "4.5.0")
     ),
+    .package(
+        url: "https://github.com/AppsFlyerSDK/AppsFlyerFramework",
+        .upToNextMajor(from: "6.15.3")
+    )
   ],
   targets: [
     // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -32,6 +36,7 @@ let package = Package(
         "AprodhitKit",
         .product(name: "GnDKit", package: "gndkit"),
         .product(name: "Lottie", package: "lottie-ios"),
+        .product(name: "AppsFlyerLib", package: "AppsFlyerFramework")
       ],
       resources: [
         .process("Resources")

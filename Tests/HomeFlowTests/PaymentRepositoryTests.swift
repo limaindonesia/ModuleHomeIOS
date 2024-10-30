@@ -27,7 +27,7 @@ final class PaymentRepositoryTests: XCTestCase {
         OrderNumberParamRequest(orderNumber: "")
       )
 
-      let viewModel = OrderNumberEntity.mapTo(entity)
+      let viewModel = OrderEntity.mapTo(entity)
       let timeRemaining = viewModel.getRemainingMinutes()
       expiredAt = timeRemaining
       print("timeremainig", timeRemaining.timeString())

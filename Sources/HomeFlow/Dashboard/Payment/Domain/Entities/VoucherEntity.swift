@@ -61,6 +61,7 @@ public struct VoucherEntity: Transformable {
 
   static func mapTo(_ entity: VoucherEntity) -> VoucherViewModel {
     return VoucherViewModel(
+      success: entity.success,
       code: entity.code,
       amount: entity.amount,
       tnc: entity.tnc,

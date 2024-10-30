@@ -13,7 +13,7 @@ import Combine
 import Kingfisher
 
 public struct HomeView: View {
-
+  
   @ObservedObject var store: HomeStore
   @State var offSet: CGFloat = 0
   @State var isRefreshing: Bool = false
@@ -21,15 +21,16 @@ public struct HomeView: View {
     started: false,
     released: false
   )
-
+  
   public init(store: HomeStore) {
     self.store = store
   }
-
+  
   public var body: some View {
+    
     ZStack {
-
-      loadContent()
+      
+      loadContent(width: 0)
       
       BottomSheetView(isPresented: $store.isCategorySheetPresented) {
         categoryBottomSheetContent(
@@ -41,24 +42,25 @@ public struct HomeView: View {
       } onDismissed: {
         store.hideCategoryBottomSheet()
       }
-
+      
       promotionBanner($store.isPresentPromotionBanner)
-
+      
       if store.isLoading {
         BlurView(style: .dark)
-
+        
         LottieView {
           LottieAnimation.named("waiting-approval", bundle: .module)
         }
         .looping()
       }
-
+      
     }
-    .ignoresSafeArea(edges: .top)
+    .ignoresSafeArea(edges: [.top, .leading, .trailing])
+    
   }
-
+  
   @ViewBuilder
-  func loadContent() -> some View {
+  func loadContent(width: CGFloat) -> some View {
     if store.showShimmer {
       LazyVStack {
         ForEach(0..<5) { _ in
@@ -70,13 +72,95 @@ public struct HomeView: View {
       homeContentView()
     }
   }
-
+  
   @ViewBuilder
   func homeContentView() -> some View {
     VStack {
       navigationBarView()
         .zIndex(1)
-
+      
+      ScrollView(.vertical, showsIndicators: false) {
+        VStack(spacing: 32) {
+          
+          if store.ongoingConsultation {
+            
+            headerWithOngoingView(
+              store.arrayOfuserCases,
+              name: store.name
+            )
+            
+            ongoingView(store.userCases)
+              .padding(.top, 100)
+            
+          } else {
+            
+            headerView(
+              store.isLoggedIn,
+              name: store.name,
+              onTapLogIn: {
+                store.navigateToLogin()
+              }
+            )
+            
+            sktmNewView(
+              onTapDecisionTree: {
+                store.navigateToDecisionTree()
+              }, onTapConsultation: {
+                store.navigateToAdvocateList()
+              }, onTapSKTM: {
+                store.navigateToDetailSKTM()
+              }
+            ).padding(.top, 340)
+            
+            activeAdvocates(store.onlinedAdvocates)
+          }
+          
+          gridCategory(
+            store.showCategories,
+            onTap: { skill in
+              store.selectedSkill = skill
+              store.showCategoryBottomSheet()
+            }
+          )
+          
+          topAdvocatesNew(
+            store.getFourTopAdvocates(),
+            month: store.topAdvocateMonth,
+            onTap: { store.navigateToDetailTopAdvocate() }
+          )
+          .frame(height: 230)
+          
+          lawArticles(
+            categories: store.categories,
+            articles: store.articles,
+            selectedID: store.articleSelectedID
+          )
+          .padding(.bottom, 80)
+          
+        }
+        .frame(maxWidth: .infinity)
+      }
+      .background(Color.gray050)
+      .padding(.top, -10)
+      .padding(.bottom, 73)
+      .refreshable {
+        Task {
+          await store.onRefresh()
+          isRefreshing = false
+          refresh.started = false
+          refresh.released = false
+        }
+      }
+    }
+    
+  }
+  
+  @ViewBuilder
+  func homeContentWithCustomScrollView() -> some View {
+    VStack {
+      navigationBarView()
+        .zIndex(1)
+      
       CustomScrollView(
         isRefreshing: $isRefreshing,
         refreshState: $refresh
@@ -140,7 +224,8 @@ public struct HomeView: View {
           .padding(.bottom, 80)
 
         }
-
+        .frame(maxWidth: .infinity)
+        
       } onRefresh: {
         Task {
           await store.onRefresh()
@@ -163,11 +248,9 @@ public struct HomeView: View {
 
   @ViewBuilder
   func navigationBarView() -> some View {
-    VStack {
-      Text("")
-    }
-    .frame(maxWidth: .infinity, minHeight: 44)
-    .background(Color.buttonActiveColor)
+    Color.buttonActiveColor
+      .frame(maxWidth: .infinity, maxHeight: 53)
+      .background(Color.buttonActiveColor)
   }
 
   @ViewBuilder
@@ -176,13 +259,13 @@ public struct HomeView: View {
     name: String,
     onTapLogIn: @escaping () -> Void
   ) -> some View {
-
+    
     ZStack {
-
+      
       GeometryReader { geometry in
-
+        
         let frame = geometry.frame(in: .global)
-
+        
         VStack {
           HStack(alignment: .center) {
             Image("perqara_logo", bundle: .module)
@@ -190,14 +273,14 @@ public struct HomeView: View {
               Text("Selamat datang,")
                 .foregroundColor(.white)
                 .captionStyle(size: 10)
-
+              
               Text(isLoggedIn ? name : "Sobat Perqara!")
                 .foregroundColor(.white)
                 .titleStyle(size: 12)
             }
-
+            
             Spacer()
-
+            
             if !isLoggedIn {
               ButtonSecondary(
                 title: "Masuk Akun",
@@ -218,7 +301,7 @@ public struct HomeView: View {
         .padding(.top, 16)
         .padding(.bottom, 12)
         .background(Color.buttonActiveColor)
-
+        
         VStack {
           SearchView(onTap: {
             store.navigateToSearch(with: "")
@@ -239,7 +322,7 @@ public struct HomeView: View {
         )
         .position(x: frame.midX, y: 100)
         .zIndex(1)
-
+        
         Image("bg_home", bundle: .module)
           .resizable()
           .aspectRatio(contentMode: .fill)
@@ -249,23 +332,23 @@ public struct HomeView: View {
           .onTapGesture {
             store.navigateToAdvocateList()
           }
-
+        
       }
-
+      
     }
   }
-
+  
   @ViewBuilder
   func headerWithOngoingView(
     _ items: [UserCases],
     name: String
   ) -> some View {
     ZStack {
-
+      
       GeometryReader { geometry in
-
+        
         let frame = geometry.frame(in: .global)
-
+        
         VStack {
           HStack(alignment: .center) {
             Image("perqara_logo", bundle: .module)
@@ -273,12 +356,12 @@ public struct HomeView: View {
               Text("Selamat datang,")
                 .foregroundColor(.white)
                 .captionStyle(size: 10)
-
+              
               Text(name)
                 .foregroundColor(.white)
                 .titleStyle(size: 12)
             }
-
+            
             Spacer()
           }
           .padding(.top, 16)
@@ -289,7 +372,7 @@ public struct HomeView: View {
         .padding(.top, 16)
         .padding(.bottom, 12)
         .background(Color.buttonActiveColor)
-
+        
         VStack {
           SearchView(
             onTap: {
@@ -312,7 +395,7 @@ public struct HomeView: View {
         )
         .position(x: frame.midX, y: 100)
         .zIndex(1)
-
+        
         LinearGradient(
           colors: [Color.white, Color.gradientBlue],
           startPoint: .top,
@@ -321,12 +404,12 @@ public struct HomeView: View {
         .frame(height: 150)
         .position(x: frame.midX, y: 250)
         .zIndex(0)
-
+        
       }
-
+      
     }
   }
-
+  
   @ViewBuilder
   func ongoingView(_ item: UserCases) -> some View {
     
@@ -360,7 +443,7 @@ public struct HomeView: View {
       )
       
     } else if item.status == Constant.Home.Text.ON_PROCESS {
-
+      
       OngoingConsultationView(
         imageURL: item.lawyer?.getImageName(),
         statusText: item.getStatus() ?? "",
@@ -374,9 +457,9 @@ public struct HomeView: View {
           store.navigateToConsultationChat()
         }
       )
-
+      
     } else {
-
+      
       OngoingConsultationView(
         imageURL: item.lawyer?.getImageName(),
         statusText: item.getStatus() ?? "",
@@ -390,11 +473,11 @@ public struct HomeView: View {
           store.navigateToWaitingRoom()
         }
       )
-
+      
     }
-
+    
   }
-
+  
   @ViewBuilder
   func bannerUnauthorized() -> some View {
     GeometryReader { geometry in
@@ -423,7 +506,7 @@ public struct HomeView: View {
       .position(x: screen.midX, y: proxy.minY + 90)
     }
   }
-
+  
   @ViewBuilder
   func indicatorView() -> some View {
     if isRefreshing {
@@ -433,7 +516,7 @@ public struct HomeView: View {
       EmptyView()
     }
   }
-
+  
   @ViewBuilder
   func sktmNewView(
     onTapDecisionTree: @escaping () -> Void,
@@ -441,15 +524,15 @@ public struct HomeView: View {
     onTapSKTM: @escaping () -> Void
   ) -> some View {
     VStack(alignment: .center, spacing: 12) {
-
+      
       HStack(alignment: .center, spacing: 8) {
-
+        
         Image("ic_moto", bundle: .module)
           .resizable()
           .frame(width: 52.96, height: 25.83)
           .aspectRatio(contentMode: .fit)
           .padding(.trailing, 12)
-
+        
         VStack(alignment: .leading, spacing: 4) {
           Text("Konsultasi Hukum Online")
             .titleStyle(size: 16)
@@ -459,7 +542,7 @@ public struct HomeView: View {
         }
       }
       .padding(.horizontal, 10)
-
+      
       HStack {
         PositiveButton(
           title: "Panduan Pilih Advokat",
@@ -467,7 +550,7 @@ public struct HomeView: View {
             onTapDecisionTree()
           }
         )
-
+        
         NegativeButton(
           title: "Konsultasi Langsung",
           action: {
@@ -477,25 +560,24 @@ public struct HomeView: View {
       }
       .padding(.horizontal, 10)
       .padding(.top, 12)
-
+      
       Button {
         onTapSKTM()
       } label: {
         HStack {
           Image("ic_probono", bundle: .module)
-
+          
           Text("Dapatkan 3x konsultasi gratis dengan Pro bono")
             .titleStyle(size: 10)
-
+          
           Spacer()
-
+          
           Image(systemName: "arrow.forward")
             .resizable()
             .frame(width: 10.67, height: 10.67)
             .foregroundColor(.black)
         }
         .padding(.horizontal, 8)
-
       }
       .frame(maxWidth: .infinity, maxHeight: 24)
       .background(Color.danger100)
@@ -508,7 +590,7 @@ public struct HomeView: View {
           )
       )
       .padding(.horizontal, 10)
-
+      
     }
     .frame(maxWidth: .infinity, minHeight: 166)
     .background(Color.white)
@@ -516,13 +598,13 @@ public struct HomeView: View {
     .shadow(color: .gray200, radius: 10, x: 0, y: 15)
     .padding(.horizontal, 16)
   }
-
+  
   @ViewBuilder
   func activeAdvocates(_ items: [Advocate]) -> some View {
-
+    
     if store.showOnlineAdvocates {
       VStack(spacing: 8) {
-
+        
         HStack {
           Text(
             NSLocalizedString(
@@ -532,17 +614,17 @@ public struct HomeView: View {
           )
           .foregroundColor(Color.black)
           .bodyStyle(size: 20)
-
+          
           Spacer()
-
+          
           SeeAllView(text: Constant.Home.Text.SEE_ALL) {
             store.navigateToSeeAllAdvocate()
           }
         }
         .padding(.horizontal, 16)
-
+        
         Spacer()
-
+        
         ScrollView(.horizontal, showsIndicators: false) {
           HStack(spacing: 8) {
             ForEach(items, id: \.id) { advocate in
@@ -566,13 +648,13 @@ public struct HomeView: View {
           }
           .padding(.horizontal, 16)
         }
-
+        
       }
-
+      
     }
-
+    
   }
-
+  
   @ViewBuilder
   func seeAllAdvocate() -> some View {
     Button {
@@ -587,7 +669,7 @@ public struct HomeView: View {
         .padding(.top, 16)
     }.id("SEE_ALL_BUTTON")
   }
-
+  
   @ViewBuilder
   func gridCategory(
     _ show: Bool,
@@ -595,21 +677,21 @@ public struct HomeView: View {
   ) -> some View {
     if show {
       VStack {
-
+        
         HStack {
           Text("Pilih dari Kategori")
             .bodyStyle(size: 20)
-
+          
           Spacer()
-
+          
           SeeAllView(text: "Selengkapnya") {
             store.navigateToDetailCategory()
           }
-
+          
         }
         .frame(minHeight: 50)
         .padding(.horizontal, 16)
-
+        
         LazyVGrid(
           columns: [
             .init(.adaptive(minimum: 160), spacing: 0),
@@ -633,48 +715,48 @@ public struct HomeView: View {
         .padding(.horizontal, 10)
       }
     }
-
+    
   }
-
+  
   @ViewBuilder
   func topView() -> some View {
     VStack {
       topAdvocates(store.topAdvocates)
         .padding(.bottom, 16)
-
+      
       DashedLine()
         .padding(.horizontal, 16)
-
+      
       topAgencies(store.topAgencies)
         .padding(.top, 16)
     }
   }
-
+  
   @ViewBuilder
   func topAdvocatesNew(
     _ items: [TopAdvocateViewModel],
     month: String,
     onTap: @escaping () -> Void
   ) -> some View {
-
+    
     TopAdvocateContentView(
       items: items,
       month: month,
       onTapAction: onTap
     )
-
+    
   }
-
+  
   @ViewBuilder
   func topAdvocates(_ items: [TopAdvocateViewModel]) -> some View {
-
+    
     VStack(alignment: .leading) {
-
+      
       Text("Top Advokat Bulan Ini")
         .bodyStyle(size: 20)
         .padding(.leading, 16)
         .padding(.bottom, 8)
-
+      
       ForEach(items, id: \.id) { item in
         VStack(spacing: 0) {
           TopAdvocateRowView(
@@ -689,21 +771,21 @@ public struct HomeView: View {
           .padding(.horizontal, 16)
         }
       }
-
+      
     }
-
+    
   }
-
+  
   @ViewBuilder
   func topAgencies(_ items: [TopAgencyViewModel]) -> some View {
-
+    
     VStack(alignment: .leading) {
-
+      
       Text("Top Instansi Bulan Ini")
         .bodyStyle(size: 20)
         .padding(.leading, 16)
         .padding(.bottom, 8)
-
+      
       ForEach(items, id: \.position) { item in
         VStack(spacing: 0) {
           TopAgencyRowView(
@@ -717,23 +799,23 @@ public struct HomeView: View {
           .padding(.horizontal, 16)
         }
       }
-
+      
     }
   }
-
+  
   @ViewBuilder
   func lawArticles(
     categories: [CategoryArticleViewModel],
     articles: [ArticleViewModel],
     selectedID: Int
   ) -> some View {
-
+    
     VStack(spacing: 12) {
-
+      
       ScrollView(.horizontal, showsIndicators: false) {
-
+        
         LazyHStack {
-
+          
           ForEach(categories) { item in
             VStack {
               Text(item.name)
@@ -754,17 +836,17 @@ public struct HomeView: View {
               }
             }
           }
-
+          
         }
         .padding(.horizontal, 16)
       }
-
+      
       ScrollView(.horizontal, showsIndicators: false) {
-
+        
         LazyHStack {
-
+          
           ForEach(articles) { item in
-
+            
             VStack(spacing: 2) {
               VStack {
                 KFImage(item.getArticleImage())
@@ -778,7 +860,7 @@ public struct HomeView: View {
                 RoundedRectangle(cornerRadius: 8)
                   .stroke(Color.gray100, lineWidth: 1)
               )
-
+              
               Text(item.title)
                 .lineLimit(2)
                 .captionStyle(size: 12)
@@ -787,34 +869,34 @@ public struct HomeView: View {
             .onTapGesture {
               store.navigateToDetailArticle(id: item.id)
             }
-
+            
           }
         }
         .padding(.horizontal, 16)
       }
-
+      
     }
-
+    
   }
-
+  
   @ViewBuilder
   func categoryBottomSheetContent(
     models: [AdvocateSkillsTypes],
     selectedModel: AdvocateSkills,
     onTap: @escaping () -> Void
   ) -> some View {
-
+    
     VStack(alignment: .leading, spacing: 16) {
-
+      
       HStack {
         KFImage(selectedModel.getIconName())
           .resizable()
           .frame(width: 50, height: 50)
-
+        
         Text(selectedModel.skillName)
           .titleStyle(size: 14)
       }
-
+      
       ChipLayout(models: models) { model in
         ChipTextView(
           text: model.getName(),
@@ -822,14 +904,14 @@ public struct HomeView: View {
           backgroundColor: Color.primary050
         )
       }
-
+      
       Divider()
         .frame(maxWidth: .infinity, maxHeight: 1)
         .background(Color.gray100)
-
+      
       Text(selectedModel.getDescriptions())
         .captionStyle(size: 14)
-
+      
       ButtonPrimary(
         title: "Lihat Advokat",
         color: .buttonActiveColor,
@@ -838,17 +920,17 @@ public struct HomeView: View {
       ) {
         onTap()
       }
-
+      
     }
     .padding(.bottom, 85)
   }
-
+  
   @ViewBuilder
   func promotionBanner(_ isPresented: Binding<Bool>) -> some View {
     if isPresented.wrappedValue {
       ZStack {
         Color.black.opacity(0.5)
-
+        
         PromotionBannerView {
           store.navigateToDetailSKTM()
         } onTapConsult: {
@@ -856,12 +938,12 @@ public struct HomeView: View {
         } onTapClose: {
           store.dismissPromotionBanner()
         }
-
+        
       }
       .ignoresSafeArea()
     }
   }
-
+  
 }
 
 #Preview {
@@ -881,8 +963,8 @@ public struct HomeView: View {
       categoryNavigator: MockNavigator(),
       advocateListNavigator: MockNavigator(),
       sktmNavigator: MockNavigator(),
-      mainTabBarResponder: MockNavigator(), 
-      ongoingNavigator: MockNavigator(), 
+      mainTabBarResponder: MockNavigator(),
+      ongoingNavigator: MockNavigator(),
       loginResponder: MockNavigator()
     )
   )
