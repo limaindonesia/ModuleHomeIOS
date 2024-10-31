@@ -33,5 +33,7 @@ public protocol HomeRepositoryLogic {
     headers: [String : String],
     parameters: PaymentStatusRequest
   ) async throws -> PaymentStatusEntity
+  
+  func fetchPromotionBanner() async throws -> BannerPromotionEntity
 
 }

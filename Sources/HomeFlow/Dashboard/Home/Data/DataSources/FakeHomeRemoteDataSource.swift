@@ -128,4 +128,8 @@ public struct FakeHomeRemoteDataSource: HomeRemoteDataSourceLogic,
     return .init()
   }
   
+  public func fetchPromotionBanner() async throws -> BannerResponseModel {
+    return .init()
+  }
+  
 }

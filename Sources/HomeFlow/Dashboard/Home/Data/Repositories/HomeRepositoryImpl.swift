@@ -233,7 +233,6 @@ public struct HomeRepositoryImpl: HomeRepositoryLogic, SKTMRepositoryLogic {
   ) async throws -> PaymentStatusEntity {
 
     do {
-
       let response = try await remoteDataSource.fetchPaymentStatus(
         headers: headers,
         parameters: parameters.toParam()
@@ -262,4 +261,31 @@ public struct HomeRepositoryImpl: HomeRepositoryLogic, SKTMRepositoryLogic {
 
   }
 
+  public func fetchPromotionBanner() async throws -> BannerPromotionEntity {
+    do {
+      let response = try await remoteDataSource.fetchPromotionBanner()
+
+      guard let data = response.data else { fatalError() }
+      
+      return BannerPromotionEntity.map(from: data)
+
+    } catch {
+      guard let error = error as? NetworkErrorMessage
+      else {
+        throw ErrorMessage(
+          id: -5,
+          title: "Unkown Error",
+          message: error.localizedDescription
+        )
+      }
+
+      throw ErrorMessage(
+        id: error.code,
+        title: "Failed",
+        message: error.description
+      )
+    }
+
+  }
+  
 }

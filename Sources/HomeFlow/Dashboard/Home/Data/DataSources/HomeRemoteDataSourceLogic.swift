@@ -38,6 +38,8 @@ public protocol HomeRemoteDataSourceLogic {
     parameters: [String : Any]
   ) async throws -> PaymentStatusModel
 
+  func fetchPromotionBanner() async throws -> BannerResponseModel
+  
 }
 
 public struct HomeRemoteDataSourceImpl: HomeRemoteDataSourceLogic, SKTMRemoteDataSourceLogic {
@@ -234,6 +236,29 @@ public struct HomeRemoteDataSourceImpl: HomeRemoteDataSourceLogic, SKTMRemoteDat
       )
     }
 
+  }
+  
+  public func fetchPromotionBanner() async throws -> BannerResponseModel {
+    do {
+      let data = try await service.request(
+        with: Endpoint.BANNER,
+        withMethod: .get,
+        withHeaders: [:],
+        withParameter: [:],
+        withEncoding: .url
+      )
+      let json = try JSONDecoder().decode(BannerResponseModel.self, from: data)
+      return json
+    } catch {
+      guard let error = error as? NetworkErrorMessage else {
+        throw error
+      }
+
+      throw NetworkErrorMessage(
+        code: error.code,
+        description: error.description
+      )
+    }
   }
 
 }

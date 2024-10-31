@@ -9,7 +9,7 @@ import Foundation
 import AprodhitKit
 
 public struct MockHomeRepository: HomeRepositoryLogic, SKTMRepositoryLogic {
-
+  
   public func fetchSkills(params: CategoryParamRequest?) async throws -> [AdvocateSkills] {
     try await Task.sleep(nanoseconds: 1 * 1_000_000_000)
     var entities: [AdvocateSkills] = []
@@ -18,7 +18,7 @@ public struct MockHomeRepository: HomeRepositoryLogic, SKTMRepositoryLogic {
       entities.append(.init())
       i += 1
     }
-
+    
     return entities
   }
   
@@ -26,7 +26,7 @@ public struct MockHomeRepository: HomeRepositoryLogic, SKTMRepositoryLogic {
     headers: [String : String],
     parameters: UserCasesParamRequest
   ) async throws -> [UserCases] {
-
+    
     fatalError()
   }
   
@@ -34,16 +34,16 @@ public struct MockHomeRepository: HomeRepositoryLogic, SKTMRepositoryLogic {
     headers: [String : String],
     parameters: PaymentStatusRequest
   ) async throws -> PaymentStatusEntity {
-
+    
     fatalError()
   }
-
+  
   public init() {}
-
+  
   public func fetchOnlineAdvocates(params: AdvocateParamRequest) async throws -> [Advocate] {
     fatalError()
   }
-
+  
   public func fetchOnlineAdvocates(params: AdvocateParamRequest) async throws -> [AdvocateEntity] {
     try await Task.sleep(nanoseconds: 1 * 1_000_000_000)
     return [
@@ -52,7 +52,7 @@ public struct MockHomeRepository: HomeRepositoryLogic, SKTMRepositoryLogic {
       AdvocateEntity()
     ]
   }
-
+  
   public func fetchTopAdvocates() async throws -> (
     TopDataEntity,
     [TopAdvocateEntity],
@@ -60,7 +60,7 @@ public struct MockHomeRepository: HomeRepositoryLogic, SKTMRepositoryLogic {
   ) {
     var advocateEntities: [TopAdvocateEntity] = []
     var agencyEntities: [TopAgencyEntity] = []
-
+    
     for i in 0 ..< 10 {
       advocateEntities.append(
         TopAdvocateEntity(
@@ -72,26 +72,26 @@ public struct MockHomeRepository: HomeRepositoryLogic, SKTMRepositoryLogic {
           yearExp: 7
         )
       )
-
+      
       agencyEntities.append(
         TopAgencyEntity()
       )
     }
-
+    
     let dataEntity = TopDataEntity(month: 0, year: 0)
-
+    
     return (dataEntity, advocateEntities, agencyEntities)
   }
-
+  
   public func fetchCategoryArticle() async throws -> [CategoryArticleEntity] {
     var entities: [CategoryArticleEntity] = []
     for i in 0 ..< 20 {
       entities.append(CategoryArticleEntity(id: i+1))
     }
-
+    
     return entities
   }
-
+  
   public func fetchArticles(params: ArticleParamRequest) async throws -> [ArticleEntity] {
     var entities: [ArticleEntity] = []
     for _ in 0 ..< 20 {
@@ -99,16 +99,20 @@ public struct MockHomeRepository: HomeRepositoryLogic, SKTMRepositoryLogic {
         ArticleEntity()
       )
     }
-
+    
     return entities
   }
-
+  
   public func fetchNewestArticle() async throws -> [ArticleEntity] {
     fatalError()
   }
-
+  
   public func fetchSKTM(headers: [String : String]) async throws -> ClientGetSKTM {
     fatalError()
   }
-
+  
+  public func fetchPromotionBanner() async throws -> BannerPromotionEntity {
+    return .init()
+  }
+  
 }

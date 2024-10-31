@@ -74,6 +74,7 @@ public class HomeStore: ObservableObject {
   private var client: DataOPClient? = nil
   private var subscriptions = Set<AnyCancellable>()
   private var paymentStatus: PaymentStatusViewModel = .init()
+  private var promotionBannerViewModel: BannerPromotionViewModel = .init()
   
   public init(
     userSessionDataSource: UserSessionDataSourceLogic,
@@ -105,7 +106,10 @@ public class HomeStore: ObservableObject {
     self.ongoingNavigator = ongoingNavigator
     self.loginResponder = loginResponder
     
-    checkPromotionBaner()
+    Task {
+      await requestPromotionBanner()
+      checkPromotionBaner()
+    }
     
     Task {
       showShimmer = true
@@ -371,6 +375,17 @@ public class HomeStore: ObservableObject {
       }
     }
     
+  }
+  
+  public func requestPromotionBanner() async {
+    do {
+      let entity = try await repository.fetchPromotionBanner()
+      promotionBannerViewModel = BannerPromotionEntity.mapTo(entity)
+    } catch {
+      if let error = error as? ErrorMessage {
+        indicateError(error: error)
+      }
+    }
   }
   
   //MARK: - Other function
