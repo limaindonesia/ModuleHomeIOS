@@ -32,7 +32,11 @@ struct PaymentView: View {
             )
 
             if !store.isProbono() {
-              showVoucherView()
+              showVoucherView {
+                store.showVoucherBottomSheet()
+              } onTapTNC: {
+                store.showTNCBottomSheet()
+              }
 
               paymentOptions()
             }
@@ -76,9 +80,15 @@ struct PaymentView: View {
           }
         )
       }
-    
-      BottomSheetView(isPresented: $store.isPresentTncBottomSheet) {
+      
+      GeometryReader { proxy in
+        let frame = proxy.frame(in: .local)
         
+        BottomSheetView(isPresented: $store.isPresentTncBottomSheet) {
+          VStack {
+            VoucherTNCView(text: store.getTNCVoucher())
+          }.frame(height: frame.height/2)
+        }
       }
       
     }
@@ -190,18 +200,23 @@ struct PaymentView: View {
   }
 
   @ViewBuilder
-  func showVoucherView() -> some View {
+  func showVoucherView(
+    onTapVoucher: @escaping () -> Void,
+    onTapTNC: @escaping () -> Void
+  ) -> some View {
+    
     if store.voucherFilled {
       voucherCodeFilled {
-        store.showVoucherBottomSheet()
+        onTapVoucher()
       } onTapTnc: {
-        store.showTNCBottomSheet()
+        onTapTNC()
       }
     } else {
       voucherCode {
-        store.showVoucherBottomSheet()
+        onTapVoucher()
       }
     }
+    
   }
 
   @ViewBuilder
@@ -409,13 +424,5 @@ struct PaymentView: View {
 }
 
 #Preview {
-  PaymentView(
-    store: PaymentStore(
-      userSessionDataSource: MockUserSessionDataSource(),
-      lawyerInfoViewModel: .init(),
-      orderProcessRepository: MockOrderProcessRepository(),
-      paymentRepository: MockPaymentRepository(),
-      treatmentRepository: MockTreatmentRepository()
-    )
-  )
+  PaymentView(store: .init())
 }

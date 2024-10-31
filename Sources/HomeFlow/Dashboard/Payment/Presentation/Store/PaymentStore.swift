@@ -39,6 +39,14 @@ public class PaymentStore: ObservableObject {
   
   private var subscriptions = Set<AnyCancellable>()
   
+  public init() {
+    self.userSessionDataSource = MockUserSessionDataSource()
+    self.lawyerInfoViewModel = .init()
+    self.orderProcessRepository = MockOrderProcessRepository()
+    self.paymentRepository = MockPaymentRepository()
+    self.treatmentRepository = MockTreatmentRepository()
+  }
+  
   public init(
     userSessionDataSource: UserSessionDataSourceLogic,
     lawyerInfoViewModel: LawyerInfoViewModel,
@@ -280,6 +288,10 @@ public class PaymentStore: ObservableObject {
   
   public func getTotalAdjustment() -> String {
     return "Anda hemat \(orderViewModel.totalAdjustment) di transaksi ini!"
+  }
+  
+  public func getTNCVoucher() -> String {
+    return voucherViewModel.tnc
   }
   
   //MARK: - Navigator
