@@ -55,7 +55,7 @@ public struct HomeView: View {
       }
       
     }
-    .ignoresSafeArea(edges: [.top, .leading, .trailing])
+    .ignoresSafeArea(edges: .all)
     
   }
   
@@ -142,7 +142,6 @@ public struct HomeView: View {
       }
       .background(Color.gray050)
       .padding(.top, -10)
-      .padding(.bottom, 73)
       .refreshable {
         Task {
           await store.onRefresh()
@@ -838,8 +837,10 @@ public struct HomeView: View {
           }
           
         }
+        .frame(height: 30)
         .padding(.horizontal, 16)
       }
+     
       
       ScrollView(.horizontal, showsIndicators: false) {
         
@@ -852,7 +853,7 @@ public struct HomeView: View {
                 KFImage(item.getArticleImage())
                   .resizable()
                   .aspectRatio(contentMode: .fill)
-                  .frame(height: 80)
+                  .frame(width: 150, height: 80)
               }
               .background(Color.white)
               .cornerRadius(8)
@@ -864,7 +865,7 @@ public struct HomeView: View {
               Text(item.title)
                 .lineLimit(2)
                 .captionStyle(size: 12)
-                .frame(width: 150)
+                .frame(width: 150, height: 50)
             }
             .onTapGesture {
               store.navigateToDetailArticle(id: item.id)
@@ -872,10 +873,12 @@ public struct HomeView: View {
             
           }
         }
+        .frame(height: 180)
         .padding(.horizontal, 16)
       }
       
     }
+    .padding(.bottom, 80)
     
   }
   
