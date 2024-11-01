@@ -78,7 +78,6 @@ public class HomeViewController: NiblessViewController {
   fileprivate func observeStore() {
 
     store.$hideTabBar
-      .removeDuplicates()
       .receive(on: RunLoop.current)
       .subscribe(on: DispatchQueue.main)
       .sink { [weak self] state in

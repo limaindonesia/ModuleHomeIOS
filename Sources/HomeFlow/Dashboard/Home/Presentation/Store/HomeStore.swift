@@ -74,7 +74,7 @@ public class HomeStore: ObservableObject {
   private var client: DataOPClient? = nil
   private var subscriptions = Set<AnyCancellable>()
   private var paymentStatus: PaymentStatusViewModel = .init()
-  private var promotionBannerViewModel: BannerPromotionViewModel = .init()
+  public var promotionBannerViewModel: BannerPromotionViewModel = .init()
   
   public init(
     userSessionDataSource: UserSessionDataSourceLogic,
@@ -396,7 +396,7 @@ public class HomeStore: ObservableObject {
   
   public func onRefresh() async {
     indicateLoading()
-    hideTabBar = true
+//    hideTabBar = true
     
     let result = await fetchUserSessionData()
     
@@ -415,7 +415,7 @@ public class HomeStore: ObservableObject {
     await fetchSKTM()
     
     indicateSuccess(message: "")
-    hideTabBar = false
+//    hideTabBar = false
   }
   
   public func checkPromotionBaner() {
@@ -546,12 +546,10 @@ public class HomeStore: ObservableObject {
   
   public func showPromotionBanner() {
     isPresentPromotionBanner = true
-    hideTabBar = true
   }
   
   public func dismissPromotionBanner() {
     isPresentPromotionBanner = false
-    hideTabBar = false
   }
   
   //MARK: - Navigator

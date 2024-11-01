@@ -43,7 +43,10 @@ public struct HomeView: View {
         store.hideCategoryBottomSheet()
       }
       
-      promotionBanner($store.isPresentPromotionBanner)
+      promotionBanner(
+        $store.isPresentPromotionBanner,
+        imageURL: store.promotionBannerViewModel.popupImageURL
+      )
       
       if store.isLoading {
         BlurView(style: .dark)
@@ -322,10 +325,10 @@ public struct HomeView: View {
         .position(x: frame.midX, y: 100)
         .zIndex(1)
         
-        Image("bg_home", bundle: .module)
+        KFImage(store.promotionBannerViewModel.bannerImageURL)
           .resizable()
           .aspectRatio(contentMode: .fill)
-          .frame(height: 264)
+//          .frame(height: 264)
           .position(x: frame.midX, y: 250)
           .zIndex(0)
           .onTapGesture {
@@ -929,12 +932,16 @@ public struct HomeView: View {
   }
   
   @ViewBuilder
-  func promotionBanner(_ isPresented: Binding<Bool>) -> some View {
+  func promotionBanner(
+    _ isPresented: Binding<Bool>,
+    imageURL: URL?
+  ) -> some View {
+    
     if isPresented.wrappedValue {
       ZStack {
         Color.black.opacity(0.5)
         
-        PromotionBannerView {
+        PromotionBannerView(imageURL: imageURL){
           store.navigateToDetailSKTM()
         } onTapConsult: {
           store.navigateToAdvocateList()
@@ -945,6 +952,7 @@ public struct HomeView: View {
       }
       .ignoresSafeArea()
     }
+    
   }
   
 }

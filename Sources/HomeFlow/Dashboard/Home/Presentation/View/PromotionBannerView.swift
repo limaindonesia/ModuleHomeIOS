@@ -6,27 +6,52 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 public struct PromotionBannerView: View {
-
+  
+  private let imageURL: URL?
   private var onTapProbono: () -> Void
   private var onTapConsult: () -> Void
   private var onTapClose: () -> Void
-
+  
   public init(
+    imageURL: URL?,
     onTapProbono: @escaping () -> Void,
     onTapConsult: @escaping () -> Void,
     onTapClose: @escaping () -> Void
   ) {
+    self.imageURL = imageURL
     self.onTapProbono = onTapProbono
     self.onTapConsult = onTapConsult
     self.onTapClose = onTapClose
   }
-
+  
   public var body: some View {
-
     VStack {
-
+      KFImage(imageURL)
+        .resizable()
+        .aspectRatio(contentMode: .fit)
+        .frame(maxWidth: .infinity, idealHeight: 400)
+        .padding(.horizontal, 32)
+        .onTapGesture {
+          onTapConsult()
+        }
+      
+      Image("system_message_banner_app_close", bundle: .module)
+        .resizable()
+        .aspectRatio(contentMode: .fit)
+        .frame(width: 35, height: 35)
+        .onTapGesture {
+          onTapClose()
+        }
+    }
+  }
+  
+  public var oldbody: some View {
+    
+    VStack {
+      
       Image("system_message_banner_app_background", bundle: .module)
         .resizable()
         .aspectRatio(contentMode: .fit)
@@ -40,7 +65,7 @@ public struct PromotionBannerView: View {
               .onTapGesture {
                 onTapConsult()
               }
-
+            
             Image("system_message_banner_app_probono", bundle: .module)
               .resizable()
               .aspectRatio(contentMode: .fill)
@@ -53,7 +78,7 @@ public struct PromotionBannerView: View {
             .padding(.horizontal, 8)
         )
         .padding(.horizontal, 32)
-
+      
       Image("system_message_banner_app_close", bundle: .module)
         .resizable()
         .aspectRatio(contentMode: .fit)
@@ -63,16 +88,16 @@ public struct PromotionBannerView: View {
         }
     }
   }
-
+  
 }
 
 #Preview {
-  PromotionBannerView {
-
+  PromotionBannerView(imageURL: nil) {
+    
   } onTapConsult: {
-
+    
   } onTapClose: {
-
+    
   }
-
+  
 }
