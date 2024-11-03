@@ -388,15 +388,9 @@ public class HomeStore: ObservableObject {
     }
   }
   
-  //MARK: - Other function
-  
-  public func appsflyerConnect() {
-    
-  }
-  
   public func onRefresh() async {
     indicateLoading()
-//    hideTabBar = true
+    hideTabBar = true
     
     let result = await fetchUserSessionData()
     
@@ -415,7 +409,13 @@ public class HomeStore: ObservableObject {
     await fetchSKTM()
     
     indicateSuccess(message: "")
-//    hideTabBar = false
+    hideTabBar = false
+  }
+  
+  //MARK: - Other function
+  
+  public func appsflyerConnect() {
+    
   }
   
   public func checkPromotionBaner() {

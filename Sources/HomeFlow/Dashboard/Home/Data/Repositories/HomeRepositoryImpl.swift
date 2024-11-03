@@ -265,7 +265,13 @@ public struct HomeRepositoryImpl: HomeRepositoryLogic, SKTMRepositoryLogic {
     do {
       let response = try await remoteDataSource.fetchPromotionBanner()
 
-      guard let data = response.data else { fatalError() }
+      guard let data = response.data else {
+        throw ErrorMessage(
+          id: -5,
+          title: "Unkown Error",
+          message: "Unknown Error"
+        )
+      }
       
       return BannerPromotionEntity.map(from: data)
 
