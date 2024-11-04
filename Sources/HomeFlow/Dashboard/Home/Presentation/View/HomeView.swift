@@ -52,9 +52,10 @@ public struct HomeView: View {
         BlurView(style: .dark)
         
         LottieView {
-          LottieAnimation.named("waiting-approval", bundle: .module)
+          LottieAnimation.named("perqara-loading", bundle: .module)
         }
         .looping()
+        .frame(width: 72, height: 72)
       }
       
     }
