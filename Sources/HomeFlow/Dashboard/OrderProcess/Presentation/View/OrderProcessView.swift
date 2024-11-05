@@ -67,15 +67,20 @@ public struct OrderProcessView: View {
       }
       
       BottomSheetView(isPresented: $store.isPresentChangeCategoryIssue) {
-        ChangeCategoryIssueView(
-          issues: store.issues,
-          selectedID: store.getSelectedCategoryID()
-        ) { category in
-          store.setSelected(category)
-        } onTap: { _ in
-          store.dismissChangeCategory()
-        }
+        PriceCategoryView(
+          categoryPrices: store.getPriceCategories(),
+          onSelectPriceCategory: { price in
+            store.setPriceCategory(price)
+          },
+          onSelectCategory: { viewModel in
+            store.setSelected(viewModel)
+          },
+          onTap: {
+            store.dismissChangeCategory()
+          }
+        )
       }
+      .frame(width: screen.width)
       
     }
     .ignoresSafeArea(.keyboard)

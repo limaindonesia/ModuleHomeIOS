@@ -11,15 +11,15 @@ import AprodhitKit
 struct ChangeCategoryIssueView: View {
 
   private let issues: [CategoryViewModel]
-  private let selectedID: Int
+  private let selectedID: Int?
   private var onSelectedCategory: (CategoryViewModel) -> Void
   private var onTap: (CategoryViewModel) -> Void
 
-  @State var selectedIndex: Int = 0
+  @State var selectedIndex: Int?
 
   init(
     issues: [CategoryViewModel],
-    selectedID: Int,
+    selectedID: Int? = nil,
     onSelectedCategory: @escaping (CategoryViewModel) -> Void,
     onTap: @escaping (CategoryViewModel) -> Void
   ) {
@@ -30,27 +30,29 @@ struct ChangeCategoryIssueView: View {
   }
 
   var body: some View {
-    ScrollView {
-      VStack(alignment: .leading) {
-        ForEach(0..<issues.count, id: \.self) { index in
-          checkBoxRow(index) { selectedIndex in
-            if let i = selectedIndex {
-              onSelectedCategory(issues[i])
+    VStack {
+      ScrollView {
+        VStack(alignment: .leading) {
+          ForEach(0..<issues.count, id: \.self) { index in
+            checkBoxRow(index) { selectedIndex in
+              if let i = selectedIndex {
+                onSelectedCategory(issues[i])
+              }
             }
+            .padding(.vertical, 8)
           }
-          .padding(.vertical, 8)
         }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
       }
-      .padding(.horizontal, 16)
-      .padding(.vertical, 8)
-
+      .onAppear {
+        selectedIndex = issues.firstIndex{ $0.id == selectedID }
+      }
+      
       PositiveButton(title: "Pilih Kategori") {
-        onTap( issues[selectedIndex])
+        onTap( issues[selectedIndex ?? 0])
       }
       .frame(height: 40)
-    }
-    .onAppear {
-      selectedIndex = issues.firstIndex{ $0.id == selectedID }!
     }
   }
 

@@ -56,6 +56,7 @@ public struct HomeView: View {
         }
         .looping()
         .frame(width: 72, height: 72)
+        .padding(.bottom, 50)
       }
       
     }
