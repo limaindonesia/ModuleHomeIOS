@@ -17,8 +17,8 @@ struct LawyerInfoProbonoView: View {
   private let price: String
   private let originalPrice: String
   private let isDiscount: Bool
-  private let isProbono: Bool
   private let timeStr: String
+  @Binding private var isProbono: Bool
   @Binding private var toggleActive: Bool
 
   init(
@@ -28,7 +28,7 @@ struct LawyerInfoProbonoView: View {
     price: String,
     originalPrice: String,
     isDiscount: Bool,
-    isProbono: Bool,
+    isProbono: Binding<Bool>,
     timeStr: String,
     toggleActive: Binding<Bool>
   ) {
@@ -38,7 +38,7 @@ struct LawyerInfoProbonoView: View {
     self.price = price
     self.originalPrice = originalPrice
     self.isDiscount = isDiscount
-    self.isProbono = isProbono
+    self._isProbono = isProbono
     self.timeStr = timeStr
     self._toggleActive = toggleActive
   }
@@ -100,7 +100,9 @@ struct LawyerInfoProbonoView: View {
       HStack {
         ToggleView(
           isActive: $toggleActive,
-          tapAction: {}
+          tapAction: {
+            isProbono = toggleActive
+          }
         )
 
         Text("Gunakan Kuota Pro Bono")
@@ -158,7 +160,7 @@ struct LawyerInfoProbonoView: View {
     price: "Gratis",
     originalPrice: "",
     isDiscount: false,
-    isProbono: true,
+    isProbono: .constant(true),
     timeStr: "30 Menit",
     toggleActive: .constant(true)
   )

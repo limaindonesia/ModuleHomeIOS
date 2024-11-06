@@ -56,7 +56,7 @@ struct PaymentView: View {
           buttonText: "Bayar",
           isVoucherApplied: store.voucherFilled,
           onTap: {
-            
+            store.navigateToWaitingRoom()
           }
         )
         .padding(.horizontal, 16)

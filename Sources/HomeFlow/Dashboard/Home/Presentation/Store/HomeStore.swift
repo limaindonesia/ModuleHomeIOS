@@ -19,6 +19,7 @@ public class HomeStore: ObservableObject {
   //MARK: - Properties
   //Dependencies
   private let repository: HomeRepositoryLogic
+  private let ongoingRepository: OngoingRepositoryLogic
   private let sktmRepository: SKTMRepositoryLogic
   private let userSessionDataSource: UserSessionDataSourceLogic
   private let onlineAdvocateNavigator: OnlineAdvocateNavigator
@@ -79,6 +80,7 @@ public class HomeStore: ObservableObject {
   public init(
     userSessionDataSource: UserSessionDataSourceLogic,
     repository: HomeRepositoryLogic,
+    ongoingRepository: OngoingRepositoryLogic,
     sktmRepository: SKTMRepositoryLogic,
     onlineAdvocateNavigator: OnlineAdvocateNavigator,
     topAdvocateNavigator: TopAdvocateNavigator,
@@ -94,6 +96,7 @@ public class HomeStore: ObservableObject {
     
     self.userSessionDataSource = userSessionDataSource
     self.repository = repository
+    self.ongoingRepository = ongoingRepository
     self.sktmRepository = sktmRepository
     self.onlineAdvocateNavigator = onlineAdvocateNavigator
     self.topAdvocateNavigator = topAdvocateNavigator
@@ -310,7 +313,7 @@ public class HomeStore: ObservableObject {
     guard let data = userSessionData else { return }
     do {
       sktmModel = try await sktmRepository.fetchSKTM(
-        headers: ["Authorization" : "Bearer \(data.remoteSession.remoteToken)"]
+        headers: HeaderRequest(token: data.remoteSession.remoteToken).toHeaders()
       )
     } catch {
       if let error = error as? ErrorMessage {
@@ -326,8 +329,8 @@ public class HomeStore: ObservableObject {
     }
     
     do {
-      arrayOfuserCases = try await repository.fetchOngoingUserCases(
-        headers: ["Authorization" : "Bearer \(data.remoteSession.remoteToken)"],
+      arrayOfuserCases = try await ongoingRepository.fetchOngoingUserCases(
+        headers: HeaderRequest(token: data.remoteSession.remoteToken).toHeaders(),
         parameters: UserCasesParamRequest(type: "ongoing")
       )
       
@@ -353,7 +356,7 @@ public class HomeStore: ObservableObject {
     }
     do {
       let entity = try await repository.fetchPaymentStatus(
-        headers: ["Authorization" : "Bearer \(data.remoteSession.remoteToken)"],
+        headers: HeaderRequest(token: data.remoteSession.remoteToken).toHeaders(),
         parameters: .init(orderNumber: userCases.order_no ?? "")
       )
       
@@ -664,7 +667,19 @@ public class HomeStore: ObservableObject {
       return
     }
     
-    ongoingNavigator.navigateToPayment(userCases)
+    let lawyerInfoViewModel = LawyerInfoViewModel(
+      id: userCases.id ?? 0,
+      imageURL: URL(string: userCases.lawyer?.photo_url ?? ""),
+      name: userCases.lawyer?.getName() ?? "",
+      agency: userCases.lawyer?.agency_name ?? "",
+      price: userCases.getPrice(),
+      originalPrice: userCases.lawyer?.getOriginalPrice() ?? "",
+      isDiscount: userCases.lawyer?.isDiscount ?? false,
+      isProbono: sktmModel?.data?.quota ?? 0 > 0,
+      orderNumber: userCases.order_no ?? ""
+    )
+    
+    ongoingNavigator.navigateToPayment(lawyerInfoViewModel)
   }
   
   public func openURL() {

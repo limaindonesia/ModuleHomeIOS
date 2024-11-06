@@ -7,6 +7,7 @@
 
 import Foundation
 import AprodhitKit
+import GnDKit
 
 public protocol PaymentRemoteDataSourceLogic {
   
@@ -32,7 +33,8 @@ public protocol PaymentRemoteDataSourceLogic {
   
 }
 
-public struct PaymentRemoteDataSource: PaymentRemoteDataSourceLogic {
+public struct PaymentRemoteDataSource: PaymentRemoteDataSourceLogic,
+                                       OngoingUserCaseRemoteDataSourceLogic {
   
   private let service: NetworkServiceLogic
   
@@ -127,6 +129,34 @@ public struct PaymentRemoteDataSource: PaymentRemoteDataSourceLogic {
     }
     
     return succeeded
+    
+  }
+  
+  public func fetchOngoingUserCases(
+    headers: [String : String],
+    parameters: [String : Any]
+  ) async throws -> UserCasesGetResp {
+    
+    do {
+      let data = try await service.request(
+        with: Endpoint.USER_CASES,
+        withMethod: .get,
+        withHeaders: headers,
+        withParameter: parameters,
+        withEncoding: .url
+      )
+      let json = try JSONDecoder().decode(UserCasesGetResp.self, from: data)
+      return json
+    } catch {
+      guard let error = error as? NetworkErrorMessage else {
+        throw NetworkErrorMessage(
+          code: -1,
+          description: "Unknown Error"
+        )
+      }
+      
+      throw error
+    }
     
   }
   

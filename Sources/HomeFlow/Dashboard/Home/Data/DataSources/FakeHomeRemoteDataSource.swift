@@ -10,7 +10,8 @@ import AprodhitKit
 import GnDKit
 
 public struct FakeHomeRemoteDataSource: HomeRemoteDataSourceLogic,
-                                        SKTMRemoteDataSourceLogic {
+                                        SKTMRemoteDataSourceLogic,
+                                        OngoingUserCaseRemoteDataSourceLogic {
   
   public init() {}
   

@@ -8,7 +8,9 @@
 import Foundation
 import AprodhitKit
 
-public struct MockHomeRepository: HomeRepositoryLogic, SKTMRepositoryLogic {
+public struct MockHomeRepository: HomeRepositoryLogic,
+                                  SKTMRepositoryLogic,
+                                  OngoingRepositoryLogic {
   
   public func fetchSkills(params: CategoryParamRequest?) async throws -> [AdvocateSkills] {
     try await Task.sleep(nanoseconds: 1 * 1_000_000_000)

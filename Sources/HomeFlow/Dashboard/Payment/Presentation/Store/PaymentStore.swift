@@ -18,6 +18,7 @@ public class PaymentStore: ObservableObject {
   private let orderProcessRepository: OrderProcessRepositoryLogic
   private let paymentRepository: PaymentRepositoryLogic
   private let treatmentRepository: TreatmentRepositoryLogic
+  private let ongoingRepository: OngoingRepositoryLogic
   private let waitingRoomNavigator: WaitingRoomNavigator
   
   @Published public var isLoading: Bool = false
@@ -38,6 +39,7 @@ public class PaymentStore: ObservableObject {
   private var userSessionData: UserSessionData?
   private var paymentEntity: PaymentEntity = .init()
   public var expiredDateTime: String = ""
+  private var userCase: UserCases = .init()
   
   public let timer = Timer.publish(
     every: 1,
@@ -54,6 +56,7 @@ public class PaymentStore: ObservableObject {
     self.paymentRepository = MockPaymentRepository()
     self.treatmentRepository = MockTreatmentRepository()
     self.waitingRoomNavigator = MockNavigator()
+    self.ongoingRepository = MockHomeRepository()
   }
   
   public init(
@@ -62,6 +65,7 @@ public class PaymentStore: ObservableObject {
     orderProcessRepository: OrderProcessRepositoryLogic,
     paymentRepository: PaymentRepositoryLogic,
     treatmentRepository: TreatmentRepositoryLogic,
+    ongoingRepository: OngoingRepositoryLogic,
     waitingRoomNavigator: WaitingRoomNavigator
   ) {
     self.userSessionDataSource = userSessionDataSource
@@ -69,6 +73,7 @@ public class PaymentStore: ObservableObject {
     self.orderProcessRepository = orderProcessRepository
     self.paymentRepository = paymentRepository
     self.treatmentRepository = treatmentRepository
+    self.ongoingRepository = ongoingRepository
     self.waitingRoomNavigator = waitingRoomNavigator
     
     Task {
@@ -200,6 +205,25 @@ public class PaymentStore: ObservableObject {
     }
   }
   
+  public func requestOngoingUserCases() async {
+    do {
+      guard let token = userSessionData?.remoteSession.remoteToken else {
+        return
+      }
+      
+      let entities = try await ongoingRepository.fetchOngoingUserCases(
+        headers: HeaderRequest(token: token).toHeaders(),
+        parameters: UserCasesParamRequest(type: "ongoing")
+      )
+      
+      userCase = entities[0]
+      
+    } catch {
+      guard let error = error as? ErrorMessage else { return }
+      indicateError(error: error)
+    }
+  }
+  
   //MARK: - Other function
   
   public func getVoucherText() -> String {
@@ -318,13 +342,17 @@ public class PaymentStore: ObservableObject {
   
   //MARK: - Navigator
   
+  @MainActor
   public func navigateToWaitingRoom() {
     Task {
       await requestCreatePayment()
+      await requestOngoingUserCases()
+      
       waitingRoomNavigator.navigateToWaitingRoom(
-        roomKey: paymentEntity.roomKey,
-        consultationID: orderViewModel.consultationID
+        userCase: userCase,
+        roomKey: paymentEntity.roomKey
       )
+      
     }
    
   }

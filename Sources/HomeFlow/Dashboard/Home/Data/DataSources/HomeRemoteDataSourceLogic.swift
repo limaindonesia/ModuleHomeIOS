@@ -11,49 +11,46 @@ import GnDKit
 import Combine
 
 public protocol HomeRemoteDataSourceLogic {
-
+  
   func fetchOnlineAdvocates(
     params: [String: Any]
   ) async throws -> AdvocateGetResp
-
+  
   func fetchSkills(
     params: [String: Any]?
   ) async throws -> AdvocateSkillGetResp
-
+  
   func fetchTopAdvocates() async throws -> TopLawyerAgencyModel
-
+  
   func fetchArticles(params: [String: Any]) async throws -> ArticleResponseModel
-
+  
   func fetchCategoryArticle() async throws -> CategoryArticleResponseModel
-
+  
   func fetchNewestArticle() async throws -> [NewestArticleResponseModel]
-
-  func fetchOngoingUserCases(
-    headers: [String : String],
-    parameters: [String : Any]
-  ) async throws -> UserCasesGetResp
-
+  
   func fetchPaymentStatus(
     headers: [String : String],
     parameters: [String : Any]
   ) async throws -> PaymentStatusModel
-
+  
   func fetchPromotionBanner() async throws -> BannerResponseModel
   
 }
 
-public struct HomeRemoteDataSourceImpl: HomeRemoteDataSourceLogic, SKTMRemoteDataSourceLogic {
-
+public struct HomeRemoteDataSourceImpl: HomeRemoteDataSourceLogic,
+                                        SKTMRemoteDataSourceLogic,
+                                        OngoingUserCaseRemoteDataSourceLogic {
+  
   private let service: NetworkServiceLogic
-
+  
   public init(service: NetworkServiceLogic) {
     self.service = service
   }
-
+  
   public func fetchOnlineAdvocates(
     params: [String: Any]
   ) async throws -> AdvocateGetResp {
-
+    
     let data = try await service.request(
       with: Endpoint.LAWYER_LIST,
       withMethod: .post,
@@ -61,20 +58,20 @@ public struct HomeRemoteDataSourceImpl: HomeRemoteDataSourceLogic, SKTMRemoteDat
       withParameter: params,
       withEncoding: .json
     )
-
+    
     do {
       let json = try JSONDecoder().decode(AdvocateGetResp.self, from: data)
       return json
     } catch {
       throw error
     }
-
+    
   }
-
+  
   public func fetchSkills(
     params: [String: Any]?
   ) async throws -> AdvocateSkillGetResp {
-
+    
     let data = try await service.request(
       with: Endpoint.SKILLS,
       withMethod: .get,
@@ -82,7 +79,7 @@ public struct HomeRemoteDataSourceImpl: HomeRemoteDataSourceLogic, SKTMRemoteDat
       withParameter: params,
       withEncoding: .url
     )
-
+    
     do {
       let json = try JSONDecoder().decode(AdvocateSkillGetResp.self, from: data)
       return json
@@ -90,7 +87,7 @@ public struct HomeRemoteDataSourceImpl: HomeRemoteDataSourceLogic, SKTMRemoteDat
       throw error
     }
   }
-
+  
   public func fetchTopAdvocates() async throws -> TopLawyerAgencyModel {
     let data = try await service.request(
       with: Endpoint.TOP_ADVOCATE,
@@ -99,7 +96,7 @@ public struct HomeRemoteDataSourceImpl: HomeRemoteDataSourceLogic, SKTMRemoteDat
       withParameter: nil,
       withEncoding: .url
     )
-
+    
     do {
       let response = try JSONDecoder().decode(TopLawyerAgencyModel.self, from: data)
       return response
@@ -107,11 +104,11 @@ public struct HomeRemoteDataSourceImpl: HomeRemoteDataSourceLogic, SKTMRemoteDat
       throw error
     }
   }
-
+  
   public func fetchArticles(
     params: [String: Any]
   ) async throws -> ArticleResponseModel {
-
+    
     let data = try await service.request(
       with: Endpoint.ARTICLE,
       withMethod: .get,
@@ -119,7 +116,7 @@ public struct HomeRemoteDataSourceImpl: HomeRemoteDataSourceLogic, SKTMRemoteDat
       withParameter: params,
       withEncoding: .url
     )
-
+    
     do {
       let json = try JSONDecoder().decode(ArticleResponseModel.self, from: data)
       return json
@@ -127,7 +124,7 @@ public struct HomeRemoteDataSourceImpl: HomeRemoteDataSourceLogic, SKTMRemoteDat
       throw error
     }
   }
-
+  
   public func fetchCategoryArticle() async throws -> CategoryArticleResponseModel {
     let data = try await service.request(
       with: Endpoint.ARTICLE_CATEGORY,
@@ -136,7 +133,7 @@ public struct HomeRemoteDataSourceImpl: HomeRemoteDataSourceLogic, SKTMRemoteDat
       withParameter: nil,
       withEncoding: .url
     )
-
+    
     do {
       let json = try JSONDecoder().decode(CategoryArticleResponseModel.self, from: data)
       return json
@@ -144,7 +141,7 @@ public struct HomeRemoteDataSourceImpl: HomeRemoteDataSourceLogic, SKTMRemoteDat
       throw error as! NetworkErrorMessage
     }
   }
-
+  
   public func fetchNewestArticle() async throws -> [NewestArticleResponseModel] {
     do {
       let data = try await service.request(
@@ -160,7 +157,7 @@ public struct HomeRemoteDataSourceImpl: HomeRemoteDataSourceLogic, SKTMRemoteDat
       throw error
     }
   }
-
+  
   public func fetchSKTM(headers: [String : String]) async throws -> ClientGetSKTM {
     do {
       let data = try await service.request(
@@ -174,16 +171,17 @@ public struct HomeRemoteDataSourceImpl: HomeRemoteDataSourceLogic, SKTMRemoteDat
       return json
     } catch {
       guard let error = error as? NetworkErrorMessage else {
-        throw error
+        throw NetworkErrorMessage(
+          code: -1,
+          description: "Unknown Error"
+        )
+        
       }
-
-      throw NetworkErrorMessage(
-        code: error.code,
-        description: error.description
-      )
+      
+      throw error
     }
   }
-
+  
   public func fetchOngoingUserCases(
     headers: [String : String],
     parameters: [String : Any]
@@ -200,21 +198,22 @@ public struct HomeRemoteDataSourceImpl: HomeRemoteDataSourceLogic, SKTMRemoteDat
       return json
     } catch {
       guard let error = error as? NetworkErrorMessage else {
-        throw error
+        throw NetworkErrorMessage(
+          code: -1,
+          description: "Unknown Error"
+        )
+        
       }
-
-      throw NetworkErrorMessage(
-        code: error.code,
-        description: error.description
-      )
+      
+      throw error
     }
   }
-
+  
   public func fetchPaymentStatus(
     headers: [String : String],
     parameters: [String : Any]
   ) async throws -> PaymentStatusModel {
-
+    
     do {
       let data = try await service.request(
         with: Endpoint.CHECK_STATUS,
@@ -227,15 +226,16 @@ public struct HomeRemoteDataSourceImpl: HomeRemoteDataSourceLogic, SKTMRemoteDat
       return json
     } catch {
       guard let error = error as? NetworkErrorMessage else {
-        throw error
+        throw NetworkErrorMessage(
+          code: -1,
+          description: "Unknown Error"
+        )
+        
       }
-
-      throw NetworkErrorMessage(
-        code: error.code,
-        description: error.description
-      )
+      
+      throw error
     }
-
+    
   }
   
   public func fetchPromotionBanner() async throws -> BannerResponseModel {
@@ -251,14 +251,16 @@ public struct HomeRemoteDataSourceImpl: HomeRemoteDataSourceLogic, SKTMRemoteDat
       return json
     } catch {
       guard let error = error as? NetworkErrorMessage else {
-        throw error
+        throw NetworkErrorMessage(
+          code: -1,
+          description: "Unknown Error"
+        )
+        
       }
-
-      throw NetworkErrorMessage(
-        code: error.code,
-        description: error.description
-      )
+      
+      throw error
+      
     }
   }
-
+  
 }

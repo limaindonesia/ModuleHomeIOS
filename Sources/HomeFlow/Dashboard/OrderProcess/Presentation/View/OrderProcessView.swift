@@ -112,7 +112,7 @@ public struct OrderProcessView: View {
         price: store.getPriceProbonoOnly(),
         originalPrice: store.lawyerInfoViewModel.originalPrice,
         isDiscount: store.lawyerInfoViewModel.isDiscount,
-        isProbono: store.lawyerInfoViewModel.isProbono,
+        isProbono: $store.isProbonoActive,
         timeStr: store.timeConsultation,
         toggleActive: $store.isProbonoActive
       )

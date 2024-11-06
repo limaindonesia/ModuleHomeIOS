@@ -966,6 +966,9 @@ public struct HomeView: View {
       repository: HomeRepositoryImpl(
         remoteDataSource: FakeHomeRemoteDataSource()
       ),
+      ongoingRepository: HomeRepositoryImpl(
+        remoteDataSource: FakeHomeRemoteDataSource()
+      ),
       sktmRepository: HomeRepositoryImpl(
         remoteDataSource: FakeHomeRemoteDataSource()
       ),

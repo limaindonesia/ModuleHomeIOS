@@ -9,25 +9,26 @@ import Foundation
 import AprodhitKit
 import GnDKit
 
-public struct PaymentRepository: PaymentRepositoryLogic {
-
-  private let remote: PaymentRemoteDataSourceLogic
-
-  public init(remote: PaymentRemoteDataSourceLogic) {
+public struct PaymentRepository: PaymentRepositoryLogic,
+                                 OngoingRepositoryLogic {
+  
+  private let remote: PaymentRemoteDataSourceLogic & OngoingUserCaseRemoteDataSourceLogic
+  
+  public init(remote: PaymentRemoteDataSourceLogic & OngoingUserCaseRemoteDataSourceLogic) {
     self.remote = remote
   }
-
+  
   public func requestOrderByNumber(
     _ headers: HeaderRequest,
     _ parameters: OrderNumberParamRequest
   ) async throws -> OrderEntity {
-
+    
     do {
       let json = try await remote.requestOrderByNumber(
         headers.toHeaders(),
         parameters.toParam()
       )
-
+      
       let entity = json.data.map(OrderEntity.map(from:))!
       return entity
     } catch {
@@ -38,16 +39,16 @@ public struct PaymentRepository: PaymentRepositoryLogic {
           message: "Uknown Failed"
         )
       }
-
+      
       throw ErrorMessage(
         id: error.code,
         title: "Failed",
         message: error.description
       )
     }
-
+    
   }
-
+  
   public func requestUseVoucher(
     headers: HeaderRequest,
     parameters: VoucherParamRequest
@@ -57,9 +58,9 @@ public struct PaymentRepository: PaymentRepositoryLogic {
         headers.toHeaders(),
         parameters.toParam()
       )
-
+      
       return VoucherEntity.map(from: json)
-
+      
     } catch {
       guard let error = error as? NetworkErrorMessage else {
         throw ErrorMessage(
@@ -67,7 +68,7 @@ public struct PaymentRepository: PaymentRepositoryLogic {
           message: "Uknown Failed"
         )
       }
-
+      
       throw ErrorMessage(
         id: error.code,
         title: "Failed",
@@ -75,7 +76,7 @@ public struct PaymentRepository: PaymentRepositoryLogic {
       )
     }
   }
-
+  
   public func requestCreatePayment(
     headers: HeaderRequest,
     parameters: PaymentParamRequest
@@ -85,15 +86,15 @@ public struct PaymentRepository: PaymentRepositoryLogic {
         headers.toHeaders(),
         parameters.toParam()
       )
-
+      
       let data = json.data
       let entity = PaymentEntity(
         urlString: data?.paymentURL ?? "",
         roomKey: data?.roomKey ?? ""
       )
-
+      
       return entity
-
+      
     } catch {
       guard let error = error as? NetworkErrorMessage
       else {
@@ -102,7 +103,7 @@ public struct PaymentRepository: PaymentRepositoryLogic {
           message: "Uknown Failed"
         )
       }
-
+      
       throw ErrorMessage(
         id: error.code,
         title: "Failed",
@@ -116,13 +117,13 @@ public struct PaymentRepository: PaymentRepositoryLogic {
     parameters: VoucherParamRequest
   ) async throws -> Bool {
     do {
-      let json = try await remote.requestRemoveVoucher(
+      let _ = try await remote.requestRemoveVoucher(
         headers: headers.toHeaders(),
         parameters: parameters.toParam()
       )
       
       return true
-
+      
     } catch {
       guard let error = error as? NetworkErrorMessage
       else {
@@ -131,7 +132,7 @@ public struct PaymentRepository: PaymentRepositoryLogic {
           message: "Uknown Failed"
         )
       }
-
+      
       throw ErrorMessage(
         id: error.code,
         title: "Failed",
@@ -139,5 +140,38 @@ public struct PaymentRepository: PaymentRepositoryLogic {
       )
     }
   }
-
+  
+  public func fetchOngoingUserCases(
+    headers: [String : String],
+    parameters: UserCasesParamRequest
+  ) async throws -> [UserCases] {
+   
+    do {
+      let response = try await remote.fetchOngoingUserCases(
+        headers: headers,
+        parameters: parameters.toParam()
+      )
+      
+      return response.data
+      
+    } catch {
+      
+      guard let error = error as? NetworkErrorMessage
+      else {
+        throw ErrorMessage(
+          id: -5,
+          title: "Unkown Error",
+          message: error.localizedDescription
+        )
+      }
+      
+      throw ErrorMessage(
+        id: error.code,
+        title: "Failed",
+        message: error.description
+      )
+    }
+    
+  }
+  
 }

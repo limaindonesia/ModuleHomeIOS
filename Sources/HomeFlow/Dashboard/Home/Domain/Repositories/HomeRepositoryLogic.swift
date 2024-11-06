@@ -23,12 +23,7 @@ public protocol HomeRepositoryLogic {
   func fetchCategoryArticle() async throws -> [CategoryArticleEntity]
 
   func fetchNewestArticle() async throws -> [ArticleEntity]
-
-  func fetchOngoingUserCases(
-    headers: [String : String],
-    parameters: UserCasesParamRequest
-  ) async throws -> [UserCases]
-
+  
   func fetchPaymentStatus(
     headers: [String : String],
     parameters: PaymentStatusRequest
