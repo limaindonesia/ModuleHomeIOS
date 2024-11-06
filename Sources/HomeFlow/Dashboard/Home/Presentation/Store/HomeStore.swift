@@ -359,16 +359,6 @@ public class HomeStore: ObservableObject {
       
       paymentStatus = PaymentStatusEntity.mapTo(entity)
       
-      //      if let _ = paymentStatus.getPaymentURL() {
-      //        openURL()
-      //        return
-      //      }
-      //
-      //      if !paymentStatus.roomKey.isEmpty {
-      //        navigateToWaitingRoom()
-      //        return
-      //      }
-      
     } catch {
       if let error = error as? ErrorMessage {
         indicateError(error: error)

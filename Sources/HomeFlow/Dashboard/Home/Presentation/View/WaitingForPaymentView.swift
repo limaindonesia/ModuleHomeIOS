@@ -75,7 +75,7 @@ struct WaitingForPaymentView: View {
       HStack(spacing: 8) {
         OngoingAvatarImageView(
           imageURL,
-          width: 88,
+          width: 100,
           height: .infinity
         )
         

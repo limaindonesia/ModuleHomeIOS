@@ -12,6 +12,11 @@ public struct PaymentEntity {
   public let urlString: String
   public let roomKey: String
   
+  init() {
+    self.urlString = ""
+    self.roomKey = ""
+  }
+  
   init(urlString: String, roomKey: String) {
     self.urlString = urlString
     self.roomKey = roomKey

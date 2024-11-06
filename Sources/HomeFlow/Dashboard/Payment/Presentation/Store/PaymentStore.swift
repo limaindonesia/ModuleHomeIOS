@@ -18,6 +18,7 @@ public class PaymentStore: ObservableObject {
   private let orderProcessRepository: OrderProcessRepositoryLogic
   private let paymentRepository: PaymentRepositoryLogic
   private let treatmentRepository: TreatmentRepositoryLogic
+  private let waitingRoomNavigator: WaitingRoomNavigator
   
   @Published public var isLoading: Bool = false
   @Published public var isPresentVoucherBottomSheet: Bool = false
@@ -35,7 +36,9 @@ public class PaymentStore: ObservableObject {
   private var treatmentViewModels: [TreatmentViewModel] = []
   private var message: String = ""
   private var userSessionData: UserSessionData?
+  private var paymentEntity: PaymentEntity = .init()
   public var expiredDateTime: String = ""
+  
   public let timer = Timer.publish(
     every: 1,
     on: .main,
@@ -50,6 +53,7 @@ public class PaymentStore: ObservableObject {
     self.orderProcessRepository = MockOrderProcessRepository()
     self.paymentRepository = MockPaymentRepository()
     self.treatmentRepository = MockTreatmentRepository()
+    self.waitingRoomNavigator = MockNavigator()
   }
   
   public init(
@@ -57,13 +61,15 @@ public class PaymentStore: ObservableObject {
     lawyerInfoViewModel: LawyerInfoViewModel,
     orderProcessRepository: OrderProcessRepositoryLogic,
     paymentRepository: PaymentRepositoryLogic,
-    treatmentRepository: TreatmentRepositoryLogic
+    treatmentRepository: TreatmentRepositoryLogic,
+    waitingRoomNavigator: WaitingRoomNavigator
   ) {
     self.userSessionDataSource = userSessionDataSource
     self.lawyerInfoViewModel = lawyerInfoViewModel
     self.orderProcessRepository = orderProcessRepository
     self.paymentRepository = paymentRepository
     self.treatmentRepository = treatmentRepository
+    self.waitingRoomNavigator = waitingRoomNavigator
     
     Task {
       await fetchUserSession()
@@ -180,7 +186,7 @@ public class PaymentStore: ObservableObject {
   @MainActor
   public func requestCreatePayment() async {
     do {
-      let _ = try await paymentRepository.requestCreatePayment(
+      paymentEntity = try await paymentRepository.requestCreatePayment(
         headers: HeaderRequest(token: userSessionData?.remoteSession.remoteToken),
         parameters: PaymentParamRequest(
           orderNumber: lawyerInfoViewModel.orderNumber,
@@ -313,7 +319,14 @@ public class PaymentStore: ObservableObject {
   //MARK: - Navigator
   
   public func navigateToWaitingRoom() {
-    
+    Task {
+      await requestCreatePayment()
+      waitingRoomNavigator.navigateToWaitingRoom(
+        roomKey: paymentEntity.roomKey,
+        consultationID: orderViewModel.consultationID
+      )
+    }
+   
   }
   
   //MARK: - Indicate

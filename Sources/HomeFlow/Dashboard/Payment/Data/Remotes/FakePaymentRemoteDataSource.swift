@@ -99,7 +99,38 @@ public struct FakePaymentRemoteDataSource: PaymentRemoteDataSourceLogic {
     _ parameters: [String : Any]
   ) async throws -> PaymentResponseModel {
     
-    fatalError()
+    guard let data = try? loadJSONFromFile(
+      filename: "payment",
+      inBundle: .module
+    ) else {
+      throw NetworkErrorMessage(
+        code: -1,
+        description: "Failed Response"
+      )
+    }
+    
+    var model: PaymentResponseModel
+    
+    do {
+      model = try JSONDecoder().decode(PaymentResponseModel.self, from: data)
+    } catch {
+      GLogger(
+        .info,
+        layer: "Data",
+        message: "error \(error)"
+      )
+      
+      throw NetworkErrorWithPayload(
+        code: -1,
+        description: "Failed Response",
+        payload: [
+          "success" : false,
+          "message" : "Maaf, kode voucher tidak dapat digunakan karena kuota telah habis."
+        ]
+      )
+    }
+    
+    return model
     
   }
   

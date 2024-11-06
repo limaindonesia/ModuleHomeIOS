@@ -19,6 +19,7 @@ public struct MockPaymentRepository: PaymentRepositoryLogic {
   ) async throws -> OrderEntity {
 
     return OrderEntity(
+      consultationID: -8,
       lawyerFee: .init(),
       adminFee: .init(),
       discountFee: .init(),

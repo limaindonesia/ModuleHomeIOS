@@ -9,6 +9,7 @@ import Foundation
 
 public class OrderViewModel {
 
+  public let consultationID: Int
   public let expiredAt: Int
   public let lawyerFee: FeeViewModel
   public let adminFee: FeeViewModel
@@ -18,6 +19,7 @@ public class OrderViewModel {
   public let totalAdjustment: Int
 
   public init() {
+    self.consultationID = 0
     self.expiredAt = 0
     self.lawyerFee = .init()
     self.adminFee = .init()
@@ -28,6 +30,7 @@ public class OrderViewModel {
   }
 
   public init(
+    consultationID: Int,
     expiredAt: Int,
     lawyerFee: FeeViewModel,
     adminFee: FeeViewModel,
@@ -36,6 +39,7 @@ public class OrderViewModel {
     totalAmount: String,
     totalAdjustment: Int
   ) {
+    self.consultationID = consultationID
     self.expiredAt = expiredAt
     self.lawyerFee = lawyerFee
     self.adminFee = adminFee

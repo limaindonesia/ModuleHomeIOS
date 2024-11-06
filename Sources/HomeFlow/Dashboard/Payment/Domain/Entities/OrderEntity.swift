@@ -16,6 +16,7 @@ public struct OrderEntity: Transformable {
 
   typealias VM = OrderViewModel
 
+  public let consultationID: Int
   public let lawyerFee: FeeEntity
   public let adminFee: FeeEntity
   public let discountFee: FeeEntity
@@ -25,6 +26,7 @@ public struct OrderEntity: Transformable {
   public let expiredAt: Int
 
   init() {
+    self.consultationID = 0
     self.lawyerFee = .init()
     self.adminFee = .init()
     self.discountFee = .init()
@@ -35,6 +37,7 @@ public struct OrderEntity: Transformable {
   }
 
   public init(
+    consultationID: Int,
     lawyerFee: FeeEntity,
     adminFee: FeeEntity,
     discountFee: FeeEntity,
@@ -43,6 +46,7 @@ public struct OrderEntity: Transformable {
     totalAdjustment: Int,
     expiredAt: Int
   ) {
+    self.consultationID = consultationID
     self.lawyerFee = lawyerFee
     self.adminFee = adminFee
     self.discountFee = discountFee
@@ -66,6 +70,7 @@ public struct OrderEntity: Transformable {
     }
 
     return OrderEntity(
+      consultationID: data.consultations?[0].id ?? 0,
       lawyerFee: FeeEntity(
         name: lawyerFee?.name ?? "",
         amount: lawyerFee?.amount ?? ""
@@ -97,6 +102,7 @@ public struct OrderEntity: Transformable {
     }
 
     return OrderViewModel(
+      consultationID: entity.consultationID,
       expiredAt: entity.expiredAt,
       lawyerFee: FeeViewModel(
         id: 1,
