@@ -32,6 +32,8 @@ public class OrderProcessStore: ObservableObject {
   @Published public var issueTextError: String = ""
   @Published public var isTextValid: Bool = false
   @Published public var isProbonoActive: Bool = false
+  @Published public var error: ErrorMessage = .init()
+  @Published public var priceCategories: [PriceCategoryViewModel] = []
   
   private var userSessionData: UserSessionData?
   public var isLoading: Bool = false
@@ -71,6 +73,7 @@ public class OrderProcessStore: ObservableObject {
     
     issues = createIssueCategories()
     setLawyerInfo()
+    priceCategories = getPriceCategories()
     
     Task {
       await fetchUserSession()
@@ -108,7 +111,7 @@ public class OrderProcessStore: ObservableObject {
         return nil
       }
       
-      indicateError(error: error)
+      await indicateError(error: error)
     }
     
     return entity
@@ -126,7 +129,7 @@ public class OrderProcessStore: ObservableObject {
       
     } catch {
       guard let error = error as? ErrorMessage else { return }
-      indicateError(error: error)
+      await indicateError(error: error)
     }
   }
   
@@ -263,7 +266,15 @@ public class OrderProcessStore: ObservableObject {
     
     Task {
       let entity = await requestBookingOrder()
-      guard let orderNumber = entity?.orderNumber else { return }
+      guard let orderNumber = entity?.orderNumber else {
+        indicateError(
+          error: ErrorMessage(
+            title: "Gagal",
+            message: "Gagal membuat konsultasi."
+          )
+        )
+        return
+      }
       
       let lawyerInfo = LawyerInfoViewModel(
         id: lawyerInfoViewModel.id,
@@ -305,8 +316,10 @@ public class OrderProcessStore: ObservableObject {
     self.message = message
   }
   
+  @MainActor
   private func indicateError(error: ErrorMessage) {
     isLoading = false
+    self.error = error
   }
   
   private func indicateSuccess(message: String) {
@@ -322,6 +335,14 @@ public class OrderProcessStore: ObservableObject {
   }
   
   private func observer() {
+    $error
+      .dropFirst()
+      .receive(on: RunLoop.main)
+      .subscribe(on: RunLoop.main)
+      .sink { message in
+        
+      }.store(in: &subscriptions)
+    
     $issueText
       .dropFirst()
       .flatMap { self.isValidText($0) }

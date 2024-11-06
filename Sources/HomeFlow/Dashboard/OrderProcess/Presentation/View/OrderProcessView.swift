@@ -68,7 +68,7 @@ public struct OrderProcessView: View {
       
       BottomSheetView(isPresented: $store.isPresentChangeCategoryIssue) {
         PriceCategoryView(
-          categoryPrices: store.getPriceCategories(),
+          categoryPrices: store.priceCategories,
           onSelectPriceCategory: { price in
             store.setPriceCategory(price)
           },
@@ -79,8 +79,8 @@ public struct OrderProcessView: View {
             store.dismissChangeCategory()
           }
         )
+        .frame(height: 350)
       }
-      .frame(width: screen.width)
       
     }
     .ignoresSafeArea(.keyboard)

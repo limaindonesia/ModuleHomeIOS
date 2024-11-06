@@ -12,11 +12,26 @@ import GnDKit
 struct PriceCategoryView: View {
   
   @State var showCategory: Bool = false
-  @State var categoryPrices: [PriceCategoryViewModel] = []
+  @State var categoryPrices: [PriceCategoryViewModel]
   
+  var copyOfCategoryPrices: [PriceCategoryViewModel] = []
   var onSelectPriceCategory: (String) -> Void
   var onSelectCategory: (CategoryViewModel) -> Void
   var onTap: () -> Void
+  
+  init(
+    categoryPrices: [PriceCategoryViewModel],
+    onSelectPriceCategory: @escaping (String) -> Void,
+    onSelectCategory: @escaping (CategoryViewModel) -> Void,
+    onTap: @escaping () -> Void
+  ) {
+    self.categoryPrices = categoryPrices
+    self.onSelectPriceCategory = onSelectPriceCategory
+    self.onSelectCategory = onSelectCategory
+    self.onTap = onTap
+    
+    self.copyOfCategoryPrices = categoryPrices
+  }
   
   var body: some View {
     NavigationView {
@@ -25,9 +40,8 @@ struct PriceCategoryView: View {
           .titleLexend(size: 16)
         
         ScrollView {
-          ForEach(categoryPrices, id: \.id) { price in
-            
-            NavigationLink(isActive: $showCategory) {
+          ForEach(categoryPrices) { price in
+            NavigationLink {
               ChangeCategoryIssueView(
                 issues: price.categories,
                 onSelectedCategory: { viewModel in
@@ -43,6 +57,7 @@ struct PriceCategoryView: View {
                   HStack {
                     Button {
                       showCategory = false
+                      self.categoryPrices = []
                     } label: {
                       Image(systemName: "arrow.backward")
                         .renderingMode(.template)
@@ -53,20 +68,69 @@ struct PriceCategoryView: View {
                   }
                 }
               }
-              
             } label: {
               priceContentView(price: price)
                 .frame(width: screen.width - 16 - 16)
-            }.simultaneousGesture(TapGesture().onEnded{ _ in
+            }
+            .simultaneousGesture(TapGesture().onEnded{ _ in
               onSelectPriceCategory(price.price)
             })
-
-           
           }
         }
       }
+      .onAppear {
+        self.categoryPrices = copyOfCategoryPrices
+      }
     }
     .navigationTitle("Pilih Kategori")
+  }
+  
+  @ViewBuilder
+  func parentContentView(_ categoryPrices: [PriceCategoryViewModel]) -> some View {
+    VStack(alignment: .leading) {
+      Text("Pilih Konsultasi")
+        .titleLexend(size: 16)
+      
+      ScrollView {
+        ForEach(categoryPrices) { price in
+          NavigationLink(isActive: $showCategory) {
+            ChangeCategoryIssueView(
+              issues: price.categories,
+              onSelectedCategory: { viewModel in
+                onSelectCategory(viewModel)
+              },
+              onTap: { _ in
+                onTap()
+              }
+            )
+            .navigationBarBackButtonHidden()
+            .toolbar {
+              ToolbarItem(placement: .topBarLeading) {
+                HStack {
+                  Button {
+                    showCategory = false
+                  } label: {
+                    Image(systemName: "arrow.backward")
+                      .renderingMode(.template)
+                      .foregroundColor(.black)
+                  }
+                  Text("Pilih Kategori")
+                    .titleLexend(size: 14)
+                }
+              }
+            }
+          } label: {
+            VStack {
+              Text("\(price.categories)")
+              Text("\(price.price)")
+            }
+          }
+          .simultaneousGesture(TapGesture().onEnded{ _ in
+            onSelectPriceCategory(price.price)
+          })
+        }
+      }
+    }
   }
   
   @ViewBuilder
@@ -178,57 +242,57 @@ struct PriceCategoryView: View {
 
 #Preview {
   PriceCategoryView(
-    categoryPrices: [
-      PriceCategoryViewModel(
-        id: 1,
-        title: "Kategori Hukum",
-        price: "Rp60.000",
-        originalPrice: "Rp150.000",
-        isDiscount: true,
-        isProbono: false,
-        categories: [
-          CategoryViewModel(
-            id: 1,
-            name: "Pidana"),
-          CategoryViewModel(
-            id: 2,
-            name: "Perdata"),
-          CategoryViewModel(
-            id: 3,
-            name: "Ketenagakerjaan"),
-          CategoryViewModel(
-            id: 4,
-            name: "Perkawinan & Perceraian"),
-          CategoryViewModel(
-            id: 5,
-            name: "Pidana"
-          )
-        ]
-      ),
-      PriceCategoryViewModel(
-        id: 2,
-        title: "Kategori Hukum",
-        price: "Rp60.000",
-        originalPrice: "Rp150.000",
-        isDiscount: true,
-        isProbono: false,
-        categories: [
-          CategoryViewModel(
-            id: 1,
-            name: "Ketenagakerjaan"),
-          CategoryViewModel(
-            id: 2,
-            name: "Perkawinan & Perceraian"),
-          CategoryViewModel(
-            id: 3,
-            name: "Pidana"
-          )
-        ]
-      )
-    ],
+    categoryPrices:
+      [
+        PriceCategoryViewModel(
+          id: 1,
+          title: "Kategori Hukum",
+          price: "Rp60.000",
+          originalPrice: "Rp150.000",
+          isDiscount: true,
+          isProbono: false,
+          categories: [
+            CategoryViewModel(
+              id: 1,
+              name: "Pidana"),
+            CategoryViewModel(
+              id: 2,
+              name: "Perdata"),
+            CategoryViewModel(
+              id: 3,
+              name: "Ketenagakerjaan"),
+            CategoryViewModel(
+              id: 4,
+              name: "Perkawinan & Perceraian"),
+            CategoryViewModel(
+              id: 5,
+              name: "Pidana"
+            )
+          ]
+        ),
+        PriceCategoryViewModel(
+          id: 2,
+          title: "Kategori Hukum",
+          price: "Rp60.000",
+          originalPrice: "Rp150.000",
+          isDiscount: true,
+          isProbono: false,
+          categories: [
+            CategoryViewModel(
+              id: 1,
+              name: "Ketenagakerjaan"),
+            CategoryViewModel(
+              id: 2,
+              name: "Perkawinan & Perceraian"),
+            CategoryViewModel(
+              id: 3,
+              name: "Pidana"
+            )
+          ]
+        )
+      ],
     onSelectPriceCategory: { _ in},
     onSelectCategory: { _ in },
     onTap: {}
-  )
-  .padding(.all, 8)
+  ).padding(.all, 8)
 }

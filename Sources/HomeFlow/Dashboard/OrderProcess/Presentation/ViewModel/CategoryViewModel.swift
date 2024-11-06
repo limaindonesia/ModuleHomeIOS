@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class CategoryViewModel: Hashable {
+public struct CategoryViewModel: Identifiable, Hashable {
   
   public var id: Int
   public var name: String
@@ -22,13 +22,13 @@ public class CategoryViewModel: Hashable {
     self.name = name
   }
   
-  public func setID(_ id: Int) {
-    self.id = id
-  }
-  
-  public func setName(_ name: String) {
-    self.name = name
-  }
+//  public func setID(_ id: Int) {
+//    self.id = id
+//  }
+//  
+//  public func setName(_ name: String) {
+//    self.name = name
+//  }
   
   public static func == (lhs: CategoryViewModel, rhs: CategoryViewModel) -> Bool {
     return lhs.id == rhs.id

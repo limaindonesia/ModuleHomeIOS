@@ -10,7 +10,7 @@ import AprodhitKit
 
 struct ChangeCategoryIssueView: View {
 
-  private let issues: [CategoryViewModel]
+  @State private var issues: [CategoryViewModel]
   private let selectedID: Int?
   private var onSelectedCategory: (CategoryViewModel) -> Void
   private var onTap: (CategoryViewModel) -> Void
@@ -50,7 +50,7 @@ struct ChangeCategoryIssueView: View {
       }
       
       PositiveButton(title: "Pilih Kategori") {
-        onTap( issues[selectedIndex ?? 0])
+        onTap(issues[selectedIndex ?? 0])
       }
       .frame(height: 40)
     }

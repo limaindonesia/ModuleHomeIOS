@@ -16,7 +16,7 @@ public struct PriceCategoryViewModel: Identifiable {
   public let isProbono: Bool
   public let categories: [CategoryViewModel]
   
-  public init() {
+  private init() {
     self.id = 0
     self.title = ""
     self.price = ""
