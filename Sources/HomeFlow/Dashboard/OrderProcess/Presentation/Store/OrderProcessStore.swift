@@ -18,6 +18,7 @@ public class OrderProcessStore: ObservableObject {
   private let repository: OrderProcessRepositoryLogic
   private let treatmentRepository: TreatmentRepositoryLogic
   private let paymentNavigator: PaymentNavigator
+  private let sktmNavigator: SKTMNavigator
   private var category: CategoryViewModel
   public var issues: [CategoryViewModel] = []
   private let userSessionDataSource: UserSessionDataSourceLogic
@@ -50,6 +51,7 @@ public class OrderProcessStore: ObservableObject {
     self.repository = MockOrderProcessRepository()
     self.paymentNavigator = MockNavigator()
     self.selectedPriceCategory = ""
+    self.sktmNavigator = MockNavigator()
   }
   
   public init(
@@ -60,7 +62,8 @@ public class OrderProcessStore: ObservableObject {
     userSessionDataSource: UserSessionDataSourceLogic,
     repository: OrderProcessRepositoryLogic,
     treatmentRepository: TreatmentRepositoryLogic,
-    paymentNavigator: PaymentNavigator
+    paymentNavigator: PaymentNavigator,
+    sktmNavigator: SKTMNavigator
   ) {
     self.advocate = advocate
     self.selectedPriceCategory = selectedPriceCategory
@@ -70,6 +73,8 @@ public class OrderProcessStore: ObservableObject {
     self.treatmentRepository = treatmentRepository
     self.repository = repository
     self.paymentNavigator = paymentNavigator
+    self.sktmNavigator = sktmNavigator
+    
     
     issues = createIssueCategories()
     setLawyerInfo()
@@ -86,7 +91,9 @@ public class OrderProcessStore: ObservableObject {
   
   //MARK: - API
   
+  @MainActor
   private func requestBookingOrder() async -> BookingOrderEntity? {
+    indicateLoading()
     
     var entity: BookingOrderEntity?
     
@@ -111,7 +118,7 @@ public class OrderProcessStore: ObservableObject {
         return nil
       }
       
-      await indicateError(error: error)
+      indicateError(error: error)
     }
     
     return entity
@@ -294,7 +301,33 @@ public class OrderProcessStore: ObservableObject {
   }
   
   public func navigateToRequestProbono() {
+    guard let _ = userSessionData else {
+      sktmNavigator.navigateToUploadSKTM()
+      return
+    }
     
+    guard let status = sktmModel?.data?.status else {
+      sktmNavigator.navigateToUploadSKTM()
+      return
+    }
+    
+    if status == "ON_PROCESS" || status == "ACTIVE"
+        || status == "EMPTY_QUOTA" || status == "EXPIRED"
+        || status == "FAILED" {
+      
+      sktmNavigator.navigateToDetailSKTM(sktmModel)
+    } else {
+      sktmNavigator.navigateToUploadSKTM()
+    }
+    
+  }
+  
+  public func navigateToDecisionTree() {
+    sktmNavigator.navigateDecisionTree(sktmModel)
+  }
+  
+  public func navigateToUploadSKTM() {
+    sktmNavigator.navigateToUploadSKTM()
   }
   
   //MARK: - Indicate

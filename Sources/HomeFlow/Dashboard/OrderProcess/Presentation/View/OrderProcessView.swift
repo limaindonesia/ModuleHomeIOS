@@ -8,6 +8,7 @@
 import SwiftUI
 import AprodhitKit
 import GnDKit
+import Lottie
 
 public struct OrderProcessView: View {
   
@@ -34,8 +35,12 @@ public struct OrderProcessView: View {
             }
             .padding(.horizontal, 16)
             
-            requestProbonoView()
+            if !store.lawyerInfoViewModel.isProbono {
+              requestProbonoView {
+                store.navigateToRequestProbono()
+              }
               .padding(.horizontal, 16)
+            }
           }
           .padding(.top, 16)
         }
@@ -80,6 +85,17 @@ public struct OrderProcessView: View {
           }
         )
         .frame(height: 350)
+      }
+      
+      if store.isLoading {
+        BlurView(style: .dark)
+        
+        LottieView {
+          LottieAnimation.named("perqara-loading", bundle: .module)
+        }
+        .looping()
+        .frame(width: 72, height: 72)
+        .padding(.bottom, 50)
       }
       
     }
@@ -285,14 +301,14 @@ public struct OrderProcessView: View {
   }
   
   @ViewBuilder
-  func requestProbonoView() -> some View {
+  func requestProbonoView(onTap: @escaping () -> Void) -> some View {
     VStack(spacing: 0) {
       HStack {
         Text("Ajukan layanan Pro bono?")
           .captionLexend(size: 12)
         
         Button {
-          
+          onTap()
         } label: {
           Text("Lihat detail")
             .foregroundColor(Color.buttonActiveColor)

@@ -31,7 +31,7 @@ struct ChangeCategoryIssueView: View {
 
   var body: some View {
     VStack {
-      ScrollView {
+      ScrollView(showsIndicators: false) {
         VStack(alignment: .leading) {
           ForEach(0..<issues.count, id: \.self) { index in
             checkBoxRow(index) { selectedIndex in

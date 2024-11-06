@@ -39,7 +39,7 @@ struct PriceCategoryView: View {
         Text("Pilih Konsultasi")
           .titleLexend(size: 16)
         
-        ScrollView {
+        ScrollView(showsIndicators: false) {
           ForEach(categoryPrices) { price in
             NavigationLink {
               ChangeCategoryIssueView(
@@ -83,54 +83,6 @@ struct PriceCategoryView: View {
       }
     }
     .navigationTitle("Pilih Kategori")
-  }
-  
-  @ViewBuilder
-  func parentContentView(_ categoryPrices: [PriceCategoryViewModel]) -> some View {
-    VStack(alignment: .leading) {
-      Text("Pilih Konsultasi")
-        .titleLexend(size: 16)
-      
-      ScrollView {
-        ForEach(categoryPrices) { price in
-          NavigationLink(isActive: $showCategory) {
-            ChangeCategoryIssueView(
-              issues: price.categories,
-              onSelectedCategory: { viewModel in
-                onSelectCategory(viewModel)
-              },
-              onTap: { _ in
-                onTap()
-              }
-            )
-            .navigationBarBackButtonHidden()
-            .toolbar {
-              ToolbarItem(placement: .topBarLeading) {
-                HStack {
-                  Button {
-                    showCategory = false
-                  } label: {
-                    Image(systemName: "arrow.backward")
-                      .renderingMode(.template)
-                      .foregroundColor(.black)
-                  }
-                  Text("Pilih Kategori")
-                    .titleLexend(size: 14)
-                }
-              }
-            }
-          } label: {
-            VStack {
-              Text("\(price.categories)")
-              Text("\(price.price)")
-            }
-          }
-          .simultaneousGesture(TapGesture().onEnded{ _ in
-            onSelectPriceCategory(price.price)
-          })
-        }
-      }
-    }
   }
   
   @ViewBuilder

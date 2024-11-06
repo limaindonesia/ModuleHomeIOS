@@ -59,6 +59,15 @@ public class OrderProcessViewController: NiblessViewController {
   }
 
   private func observeStore() {
+    store.$error
+      .dropFirst()
+      .removeDuplicates()
+      .receive(on: RunLoop.main)
+      .subscribe(on: RunLoop.main)
+      .sink { message in
+        self.present(errorMessage: message)
+      }.store(in: &subscriptions)
+    
     store.$isPresentChangeCategoryIssue
       .filter { $0 == true }
       .receive(on: RunLoop.main)
