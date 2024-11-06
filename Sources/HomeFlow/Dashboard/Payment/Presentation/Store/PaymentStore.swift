@@ -22,7 +22,7 @@ public class PaymentStore: ObservableObject {
   @Published public var isLoading: Bool = false
   @Published public var isPresentVoucherBottomSheet: Bool = false
   @Published public var timeConsultation: String = ""
-  @Published public var paymentTimeRemaining: TimeInterval = 0
+  @Published public var paymentTimeRemaining: TimeInterval = 300
   @Published public var orderViewModel: OrderViewModel = .init()
   @Published public var activateButton: Bool = false
   @Published public var voucherCode: String = ""
@@ -36,6 +36,11 @@ public class PaymentStore: ObservableObject {
   private var message: String = ""
   private var userSessionData: UserSessionData?
   public var expiredDateTime: String = ""
+  public let timer = Timer.publish(
+    every: 1,
+    on: .main,
+    in: .common
+  ).autoconnect()
   
   private var subscriptions = Set<AnyCancellable>()
   
@@ -100,6 +105,8 @@ public class PaymentStore: ObservableObject {
     do {
       let entity = try await paymentRepository.requestOrderByNumber(headers, parameters)
       orderViewModel = OrderEntity.mapTo(entity)
+      paymentTimeRemaining = orderViewModel.getRemainingMinutes()
+      
       indicateSuccess()
       hideVoucherBottomSheet()
     } catch {
@@ -294,6 +301,15 @@ public class PaymentStore: ObservableObject {
     return voucherViewModel.tnc
   }
   
+  public func receiveTimer() {
+    if paymentTimeRemaining > 0 {
+      paymentTimeRemaining -= 1
+    } else {
+      paymentTimeRemaining = 0
+      timer.upstream.connect().cancel()
+    }
+  }
+  
   //MARK: - Navigator
   
   public func navigateToWaitingRoom() {
@@ -336,9 +352,13 @@ public class PaymentStore: ObservableObject {
   }
   
   private func voucherError(_ error: ErrorMessage) {
-    voucherErrorText = error.payload["message"] as! String
+    guard let message = error.payload["message"] as? String else {
+      voucherErrorText = error.message
+      return
+    }
+    
+    voucherErrorText = message
   }
-  
   
   //MARK: - Observer
   

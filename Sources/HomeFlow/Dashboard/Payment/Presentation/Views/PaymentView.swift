@@ -24,7 +24,7 @@ struct PaymentView: View {
           VStack(spacing: 12) {
             lawyerInfoView(
               orderID: store.getOrderNumber(),
-              timeRemaining: store.getTimeRemaining(),
+              timeRemaining: store.paymentTimeRemaining.timeString(),
               imageURL: store.getAvatarImage(),
               name: store.getLawyersName(),
               agency: store.getAgency(),
@@ -126,6 +126,9 @@ struct PaymentView: View {
           Text(timeRemaining)
             .foregroundColor(Color.white)
             .titleLexend(size: 12)
+            .onReceive(store.timer) { _ in
+              store.receiveTimer()
+            }
         }
         .padding(.all, 4)
         .background(Color.warning500)
