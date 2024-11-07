@@ -27,7 +27,6 @@ public class OrderProcessStore: ObservableObject {
   @Published public var issueText: String = ""
   @Published public var lawyerInfoViewModel: LawyerInfoViewModel = .init()
   @Published public var isPresentBottomSheet: Bool = false
-  @Published public var treatmentViewModels: [TreatmentViewModel] = []
   @Published public var isPresentChangeCategoryIssue: Bool = false
   @Published public var timeConsultation: String = ""
   @Published public var issueTextError: String = ""
@@ -36,6 +35,7 @@ public class OrderProcessStore: ObservableObject {
   @Published public var error: ErrorMessage = .init()
   @Published public var priceCategories: [PriceCategoryViewModel] = []
 
+  private var treatmentEntities: [TreatmentEntity] = []
   private var userSessionData: UserSessionData?
   public var isLoading: Bool = false
   public var message: String = ""
@@ -127,18 +127,15 @@ public class OrderProcessStore: ObservableObject {
     
   }
   
+  @MainActor
   private func fetchTreatment() async {
     do {
-      let entities = try await treatmentRepository.fetchTreatments()
-      
-      Task { @MainActor in
-        treatmentViewModels = entities.map(TreatmentEntity.mapTo(_:))
-        getTimeConsultation(from: entities)
-      }
+      treatmentEntities = try await treatmentRepository.fetchTreatments()
+      getTimeConsultation(from: treatmentEntities)
       
     } catch {
       guard let error = error as? ErrorMessage else { return }
-      await indicateError(error: error)
+      indicateError(error: error)
     }
   }
   
@@ -183,7 +180,7 @@ public class OrderProcessStore: ObservableObject {
   }
   
   private func getTimeConsultation(from entities: [TreatmentEntity]) {
-    let type = lawyerInfoViewModel.isProbono ? "PROBONO" : "REGULAR"
+    let type = isProbonoActive ? "PROBONO" : "REGULAR"
     let entity = entities.filter{ $0.type == type }.first!
     timeConsultation = "\(entity.duration) Menit"
   }
@@ -391,8 +388,10 @@ public class OrderProcessStore: ObservableObject {
       .dropFirst()
       .receive(on: RunLoop.main)
       .subscribe(on: RunLoop.main)
-      .sink { state in
-        self.lawyerInfoViewModel.setIsProbonoActive(state)
+      .sink { [weak self] state in
+        guard let self = self else { return }
+        lawyerInfoViewModel.setIsProbonoActive(state)
+        getTimeConsultation(from: treatmentEntities)
       }.store(in: &subscriptions)
     
   }
