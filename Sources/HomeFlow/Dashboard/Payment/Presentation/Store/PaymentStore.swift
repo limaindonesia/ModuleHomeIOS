@@ -99,10 +99,13 @@ public class PaymentStore: ObservableObject {
   @MainActor
   public func applyVoucher() async {
     voucherViewModel = await requestVoucher()
+    
     if voucherViewModel.success {
       voucherFilled = true
+      setDuration(voucherViewModel.duration)
       await requestOrderByNumber()
     }
+    
   }
   
   @MainActor
@@ -239,6 +242,10 @@ public class PaymentStore: ObservableObject {
   
   //MARK: - Other function
   
+  private func setDuration(_ duration: Int) {
+    self.timeConsultation = "\(duration) Menit"
+  }
+  
   public func getVoucherText() -> String {
     return "Hemat \(voucherViewModel.amount)"
   }
@@ -302,32 +309,37 @@ public class PaymentStore: ObservableObject {
     if let voucher = orderViewModel.voucher {
       items.append(voucher)
     }
+    
+    if let discount = orderViewModel.discount {
+      items.append(discount)
+    }
+    
     items.append(orderViewModel.lawyerFee)
     items.append(orderViewModel.adminFee)
-    items.append(orderViewModel.discount)
+    
     return items.sorted(by: {$0.id < $1.id})
   }
   
-  private func getLawyerFee() -> (String, String) {
-    return (
-      orderViewModel.lawyerFee.name,
-      orderViewModel.lawyerFee.amount
-    )
-  }
-  
-  private func getAdminFee() -> (String, String) {
-    return (
-      orderViewModel.adminFee.name,
-      orderViewModel.adminFee.amount
-    )
-  }
-  
-  private func getDiscount() -> (String, String) {
-    return (
-      orderViewModel.discount.name,
-      orderViewModel.discount.amount
-    )
-  }
+//  private func getLawyerFee() -> (String, String) {
+//    return (
+//      orderViewModel.lawyerFee.name,
+//      orderViewModel.lawyerFee.amount
+//    )
+//  }
+//  
+//  private func getAdminFee() -> (String, String) {
+//    return (
+//      orderViewModel.adminFee.name,
+//      orderViewModel.adminFee.amount
+//    )
+//  }
+//  
+//  private func getDiscount() -> (String, String) {
+//    return (
+//      orderViewModel.discount.name,
+//      orderViewModel.discount.amount
+//    )
+//  }
   
   public func getTotalAmount() -> String {
     if isProbono() {
