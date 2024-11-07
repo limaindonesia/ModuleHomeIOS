@@ -31,11 +31,11 @@ public class OrderProcessStore: ObservableObject {
   @Published public var isPresentChangeCategoryIssue: Bool = false
   @Published public var timeConsultation: String = ""
   @Published public var issueTextError: String = ""
-  @Published public var isTextValid: Bool = false
+  @Published public var isTextValid: Bool = true
   @Published public var isProbonoActive: Bool = false
   @Published public var error: ErrorMessage = .init()
   @Published public var priceCategories: [PriceCategoryViewModel] = []
-  
+
   private var userSessionData: UserSessionData?
   public var isLoading: Bool = false
   public var message: String = ""
@@ -150,8 +150,6 @@ public class OrderProcessStore: ObservableObject {
     if let quota = sktmModel?.data?.quota, quota > 0  {
       sktmQuota = quota
     }
-    
-    isProbonoActive = sktmQuota > 0
   
     lawyerInfoViewModel = LawyerInfoViewModel(
       id: advocate.id ?? 0,
@@ -267,6 +265,13 @@ public class OrderProcessStore: ObservableObject {
     lawyerInfoViewModel.setPrice(price)
   }
   
+  public func isValidText(_ text: String) -> AnyPublisher<Bool, Never> {
+    return Future<Bool, Never> { promise in
+      promise(.success(text.count > 10))
+    }.eraseToAnyPublisher()
+  }
+  
+  
   //MARK: - Navigator
   
   @MainActor
@@ -363,12 +368,6 @@ public class OrderProcessStore: ObservableObject {
   
   //MARK: - Observer
   
-  public func isValidText(_ text: String) -> AnyPublisher<Bool, Never> {
-    return Future<Bool, Never> { promise in
-      promise(.success(text.count > 10))
-    }.eraseToAnyPublisher()
-  }
-  
   private func observer() {
     $error
       .dropFirst()
@@ -389,6 +388,7 @@ public class OrderProcessStore: ObservableObject {
       }.store(in: &subscriptions)
     
     $isProbonoActive
+      .dropFirst()
       .receive(on: RunLoop.main)
       .subscribe(on: RunLoop.main)
       .sink { state in

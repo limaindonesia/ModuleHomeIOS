@@ -35,10 +35,8 @@ public struct OrderProcessView: View {
             }
             .padding(.horizontal, 16)
             
-            if !store.lawyerInfoViewModel.isProbono {
-              requestProbonoView {
-                store.navigateToRequestProbono()
-              }
+            if !store.isProbono() {
+              requestProbonoView { store.navigateToRequestProbono() }
               .padding(.horizontal, 16)
             }
           }
