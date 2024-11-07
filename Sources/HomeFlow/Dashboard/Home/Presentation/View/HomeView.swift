@@ -61,6 +61,11 @@ public struct HomeView: View {
       
     }
     .ignoresSafeArea(edges: .all)
+    .onAppear {
+      Task {
+        await store.fetchOngoingUserCases()
+      }
+    }
     
   }
   
