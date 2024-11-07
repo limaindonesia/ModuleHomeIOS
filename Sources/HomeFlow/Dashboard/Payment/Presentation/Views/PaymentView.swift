@@ -402,7 +402,7 @@ struct PaymentView: View {
 
       ForEach(store.getPaymentDetails()) { fee in
         FeeRowView(
-          name: fee.name,
+          name: fee.getName(),
           amount: fee.amount,
           showInfo: fee.showInfo,
           onTap: {

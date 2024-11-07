@@ -65,7 +65,7 @@ public class OrderViewModel {
 
 public struct FeeViewModel: Identifiable {
   public var id: Int
-  public let name: String
+  private let name: String
   public let amount: String
   public let showInfo: Bool
 
@@ -86,5 +86,20 @@ public struct FeeViewModel: Identifiable {
     self.name = name
     self.amount = amount
     self.showInfo = showInfo
+  }
+  
+  public func getName() -> AttributedString {
+    var attributedString = AttributedString(name)
+    attributedString.font = .lexendFont(style: .body(size: 14))
+    attributedString.foregroundColor = .darkTextColor
+    
+    if let index = name.firstIndex(of: "*") {
+      let boldedText = name.suffix(from: index)
+      if let range = attributedString.range(of: boldedText)  {
+        attributedString[range].font = .lexendFont(style: .title(size: 14))
+      }
+    }
+    
+    return attributedString
   }
 }
