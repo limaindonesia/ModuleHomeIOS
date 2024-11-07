@@ -174,6 +174,9 @@ public class HomeStore: ObservableObject {
       }
     }
     
+    Prefs.removeClient()
+    Prefs.removeSession()
+    
   }
   
   //MARK: - Fetch Data from API
