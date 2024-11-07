@@ -37,7 +37,7 @@ public class PaymentStore: ObservableObject {
   @Published public var isPresentTncBottomSheet: Bool = false
   @Published public var isPresentMakeSureBottomSheet: Bool = false
   
-  private var treatmentViewModels: [TreatmentViewModel] = []
+  private var treatmentEntities: [TreatmentEntity] = []
   private var message: String = ""
   private var userSessionData: UserSessionData?
   private var paymentEntity: PaymentEntity = .init()
@@ -113,7 +113,9 @@ public class PaymentStore: ObservableObject {
     let success = await requestRemoveVoucher()
     if success {
       voucherFilled = false
+      getTimeConsultation(from: treatmentEntities)
       await requestOrderByNumber()
+      
     }
   }
   
@@ -141,8 +143,8 @@ public class PaymentStore: ObservableObject {
   @MainActor
   private func fetchTreatment() async {
     do {
-      let entities = try await treatmentRepository.fetchTreatments()
-      getTimeConsultation(from: entities)
+      treatmentEntities = try await treatmentRepository.fetchTreatments()
+      getTimeConsultation(from: treatmentEntities)
     } catch {
       guard let error = error as? ErrorMessage else { return }
       indicateError(error: error)
@@ -319,27 +321,6 @@ public class PaymentStore: ObservableObject {
     
     return items.sorted(by: {$0.id < $1.id})
   }
-  
-//  private func getLawyerFee() -> (String, String) {
-//    return (
-//      orderViewModel.lawyerFee.name,
-//      orderViewModel.lawyerFee.amount
-//    )
-//  }
-//  
-//  private func getAdminFee() -> (String, String) {
-//    return (
-//      orderViewModel.adminFee.name,
-//      orderViewModel.adminFee.amount
-//    )
-//  }
-//  
-//  private func getDiscount() -> (String, String) {
-//    return (
-//      orderViewModel.discount.name,
-//      orderViewModel.discount.amount
-//    )
-//  }
   
   public func getTotalAmount() -> String {
     if isProbono() {
