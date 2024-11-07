@@ -19,7 +19,7 @@ public struct OrderEntity: Transformable {
   public let consultationID: Int
   public let lawyerFee: FeeEntity
   public let adminFee: FeeEntity
-  public let discountFee: FeeEntity
+  public let discountFee: FeeEntity?
   public let voucher: FeeEntity?
   public let total: String
   public let totalAdjustment: Int
@@ -29,7 +29,7 @@ public struct OrderEntity: Transformable {
     self.consultationID = 0
     self.lawyerFee = .init()
     self.adminFee = .init()
-    self.discountFee = .init()
+    self.discountFee = nil
     self.voucher = nil
     self.total = ""
     self.totalAdjustment = 0
@@ -40,7 +40,7 @@ public struct OrderEntity: Transformable {
     consultationID: Int,
     lawyerFee: FeeEntity,
     adminFee: FeeEntity,
-    discountFee: FeeEntity,
+    discountFee: FeeEntity?,
     voucher: FeeEntity?,
     total: String,
     totalAdjustment: Int,
@@ -58,9 +58,10 @@ public struct OrderEntity: Transformable {
 
   static func map(from data: OrderResponseModel.DataClass) -> OrderEntity {
     var voucherEntity: FeeEntity? = nil
+    var discountEntity: FeeEntity? = nil
+    
     let lawyerFee = data.orderItems?.lawyerFee
     let adminFee = data.orderItems?.adminFee
-    let discountFee = data.orderItems?.discount
 
     if let voucher = data.orderItems?.voucher {
       voucherEntity = FeeEntity(
@@ -68,7 +69,17 @@ public struct OrderEntity: Transformable {
         amount: voucher.amount ?? ""
       )
     }
-
+    
+    if let discount = data.orderItems?.discount,
+       discount.name != nil {
+      
+      discountEntity = FeeEntity(
+        name: discount.name ?? "",
+        amount: discount.amount ?? ""
+      )
+      
+    }
+    
     return OrderEntity(
       consultationID: data.consultations?[0].id ?? 0,
       lawyerFee: FeeEntity(
@@ -79,10 +90,7 @@ public struct OrderEntity: Transformable {
         name: adminFee?.name ?? "",
         amount: adminFee?.amount ?? ""
       ),
-      discountFee: FeeEntity(
-        name: discountFee?.name ?? "",
-        amount: discountFee?.amount ?? ""
-      ),
+      discountFee: discountEntity,
       voucher: voucherEntity,
       total: data.totalAmount ?? "",
       totalAdjustment: data.totalAdjustment ?? 0,
@@ -92,12 +100,21 @@ public struct OrderEntity: Transformable {
 
   static func mapTo(_ entity: OrderEntity) -> OrderViewModel {
     var voucherViewModel: FeeViewModel? = nil
+    var discountViewModel: FeeViewModel? = nil
 
     if let voucher = entity.voucher {
       voucherViewModel = FeeViewModel(
         id: 4,
         name: voucher.name,
         amount: voucher.amount
+      )
+    }
+    
+    if let discount = entity.discountFee {
+      discountViewModel = FeeViewModel(
+        id: 3,
+        name: discount.name,
+        amount: discount.amount
       )
     }
 
@@ -115,11 +132,7 @@ public struct OrderEntity: Transformable {
         amount: entity.adminFee.amount,
         showInfo: true
       ),
-      discount: FeeViewModel(
-        id: 3,
-        name: entity.discountFee.name,
-        amount: entity.discountFee.amount
-      ),
+      discount: discountViewModel,
       voucher: voucherViewModel,
       totalAmount: entity.total,
       totalAdjustment: entity.totalAdjustment
