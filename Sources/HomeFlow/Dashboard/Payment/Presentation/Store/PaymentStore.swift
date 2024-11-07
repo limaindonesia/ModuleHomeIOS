@@ -19,7 +19,8 @@ public class PaymentStore: ObservableObject {
   private let paymentRepository: PaymentRepositoryLogic
   private let treatmentRepository: TreatmentRepositoryLogic
   private let ongoingRepository: OngoingRepositoryLogic
-  private let waitingRoomNavigator: WaitingRoomNavigator
+  private let ongoingNavigator: OngoingNavigator
+  private let paymentNavigator: PaymentNavigator
   
   @Published public var isLoading: Bool = false
   @Published public var isPresentVoucherBottomSheet: Bool = false
@@ -55,8 +56,9 @@ public class PaymentStore: ObservableObject {
     self.orderProcessRepository = MockOrderProcessRepository()
     self.paymentRepository = MockPaymentRepository()
     self.treatmentRepository = MockTreatmentRepository()
-    self.waitingRoomNavigator = MockNavigator()
     self.ongoingRepository = MockHomeRepository()
+    self.ongoingNavigator = MockNavigator()
+    self.paymentNavigator = MockNavigator()
   }
   
   public init(
@@ -66,7 +68,8 @@ public class PaymentStore: ObservableObject {
     paymentRepository: PaymentRepositoryLogic,
     treatmentRepository: TreatmentRepositoryLogic,
     ongoingRepository: OngoingRepositoryLogic,
-    waitingRoomNavigator: WaitingRoomNavigator
+    ongoingNavigator: OngoingNavigator,
+    paymentNavigator: PaymentNavigator
   ) {
     self.userSessionDataSource = userSessionDataSource
     self.lawyerInfoViewModel = lawyerInfoViewModel
@@ -74,7 +77,8 @@ public class PaymentStore: ObservableObject {
     self.paymentRepository = paymentRepository
     self.treatmentRepository = treatmentRepository
     self.ongoingRepository = ongoingRepository
-    self.waitingRoomNavigator = waitingRoomNavigator
+    self.ongoingNavigator = ongoingNavigator
+    self.paymentNavigator = paymentNavigator
     
     Task {
       await fetchUserSession()
@@ -190,6 +194,8 @@ public class PaymentStore: ObservableObject {
   
   @MainActor
   public func requestCreatePayment() async {
+    indicateLoading()
+    
     do {
       paymentEntity = try await paymentRepository.requestCreatePayment(
         headers: HeaderRequest(token: userSessionData?.remoteSession.remoteToken),
@@ -199,6 +205,8 @@ public class PaymentStore: ObservableObject {
           voucherCode: voucherCode
         )
       )
+      
+      indicateSuccess()
     } catch {
       guard let error = error as? ErrorMessage else { return }
       indicateError(error: error)
@@ -343,18 +351,38 @@ public class PaymentStore: ObservableObject {
   //MARK: - Navigator
   
   @MainActor
-  public func navigateToWaitingRoom() {
+  public func navigateToNextDestination() {
     Task {
       await requestCreatePayment()
       await requestOngoingUserCases()
       
-      waitingRoomNavigator.navigateToWaitingRoom(
-        userCase: userCase,
-        roomKey: paymentEntity.roomKey
+      if !paymentEntity.urlString.isEmpty,
+         let paymentURL = paymentEntity.getPaymentURL() {
+        
+        ongoingNavigator.navigateToPaymentURL(paymentURL)
+        navigateToPaymentCheck()
+        
+        return
+      }
+      
+      ongoingNavigator.navigateToWaitingRoom(
+        userCase,
+        roomkey: paymentEntity.roomKey,
+        consultId: userCase.booking?.consultation_id ?? 0,
+        status: false
       )
       
     }
-   
+  }
+  
+  private func navigateToPaymentCheck() {
+    paymentNavigator.navigateToPaymentCheck(
+      price: getTotalAmount(),
+      roomkey: paymentEntity.roomKey,
+      consultId: userCase.booking?.consultation_id ?? 0,
+      urlPayment: paymentEntity.urlString,
+      orderID: lawyerInfoViewModel.orderNumber
+    )
   }
   
   //MARK: - Indicate
