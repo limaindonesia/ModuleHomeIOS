@@ -81,6 +81,18 @@ struct PaymentView: View {
         )
       }
       
+      BottomSheetView(
+        isPresented: $store.isPresentMakeSureBottomSheet,
+        dismissable: true
+      ) {
+        WarningBottomSheetView {
+          store.dismissWaningBottomSheet()
+        } onTapQuit: {
+          store.dismissWaningBottomSheet()
+          store.backToHome()
+        }
+      }
+
       GeometryReader { proxy in
         let frame = proxy.frame(in: .local)
         

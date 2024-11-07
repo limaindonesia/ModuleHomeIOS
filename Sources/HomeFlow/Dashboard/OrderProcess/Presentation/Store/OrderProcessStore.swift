@@ -111,6 +111,8 @@ public class OrderProcessStore: ObservableObject {
         bookingOrderParamRequest
       )
       
+      indicateSuccess()
+      
       return entity
       
     } catch {
@@ -355,7 +357,7 @@ public class OrderProcessStore: ObservableObject {
     self.error = error
   }
   
-  private func indicateSuccess(message: String) {
+  private func indicateSuccess() {
     isLoading = false
   }
   

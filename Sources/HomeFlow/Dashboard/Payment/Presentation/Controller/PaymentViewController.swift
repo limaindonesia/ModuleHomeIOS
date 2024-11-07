@@ -80,6 +80,10 @@ public class PaymentViewController: NiblessViewController {
     animationView?.stop()
     animationView = nil
   }
+  
+  public override func didBack() {
+    store.showWarningBottomSheet()
+  }
 
   private func observeStore() {
     store.$isLoading

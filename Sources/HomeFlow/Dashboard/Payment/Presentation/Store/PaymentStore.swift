@@ -21,6 +21,7 @@ public class PaymentStore: ObservableObject {
   private let ongoingRepository: OngoingRepositoryLogic
   private let ongoingNavigator: OngoingNavigator
   private let paymentNavigator: PaymentNavigator
+  private let dashboardResponder: DashboardResponder
   
   @Published public var isLoading: Bool = false
   @Published public var isPresentVoucherBottomSheet: Bool = false
@@ -34,6 +35,7 @@ public class PaymentStore: ObservableObject {
   @Published public var voucherViewModel: VoucherViewModel = .init()
   @Published public var voucherFilled: Bool = false
   @Published public var isPresentTncBottomSheet: Bool = false
+  @Published public var isPresentMakeSureBottomSheet: Bool = false
   
   private var treatmentViewModels: [TreatmentViewModel] = []
   private var message: String = ""
@@ -59,6 +61,7 @@ public class PaymentStore: ObservableObject {
     self.ongoingRepository = MockHomeRepository()
     self.ongoingNavigator = MockNavigator()
     self.paymentNavigator = MockNavigator()
+    self.dashboardResponder = MockNavigator()
   }
   
   public init(
@@ -69,7 +72,8 @@ public class PaymentStore: ObservableObject {
     treatmentRepository: TreatmentRepositoryLogic,
     ongoingRepository: OngoingRepositoryLogic,
     ongoingNavigator: OngoingNavigator,
-    paymentNavigator: PaymentNavigator
+    paymentNavigator: PaymentNavigator,
+    dashboardResponder: DashboardResponder
   ) {
     self.userSessionDataSource = userSessionDataSource
     self.lawyerInfoViewModel = lawyerInfoViewModel
@@ -79,6 +83,7 @@ public class PaymentStore: ObservableObject {
     self.ongoingRepository = ongoingRepository
     self.ongoingNavigator = ongoingNavigator
     self.paymentNavigator = paymentNavigator
+    self.dashboardResponder = dashboardResponder
     
     Task {
       await fetchUserSession()
@@ -385,7 +390,19 @@ public class PaymentStore: ObservableObject {
     )
   }
   
+  public func backToHome() {
+    dashboardResponder.gotoDashboard()
+  }
+  
   //MARK: - Indicate
+  
+  public func showWarningBottomSheet() {
+    isPresentMakeSureBottomSheet = true
+  }
+  
+  public func dismissWaningBottomSheet() {
+    isPresentMakeSureBottomSheet = false
+  }
   
   public func showVoucherBottomSheet() {
     isPresentVoucherBottomSheet = true
