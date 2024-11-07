@@ -24,13 +24,16 @@ final class PaymentRepositoryTests: XCTestCase {
     do {
       let entity = try await sut.requestOrderByNumber(
         HeaderRequest(token: ""),
-        OrderNumberParamRequest(orderNumber: "")
+        OrderNumberParamRequest(
+          orderNumber: "",
+          voucherCode: ""
+        )
       )
 
       let viewModel = OrderEntity.mapTo(entity)
       let timeRemaining = viewModel.getRemainingMinutes()
       expiredAt = timeRemaining
-      print("timeremainig", timeRemaining.timeString())
+      
     } catch {
       expiredAt = nil
     }
@@ -49,7 +52,10 @@ final class PaymentRepositoryTests: XCTestCase {
     do {
       let entity = try await sut.requestOrderByNumber(
         HeaderRequest(token: ""),
-        OrderNumberParamRequest(orderNumber: "")
+        OrderNumberParamRequest(
+          orderNumber: "",
+          voucherCode: ""
+        )
       )
 
       let date = Double(entity.expiredAt).epochToDate()
@@ -61,6 +67,32 @@ final class PaymentRepositoryTests: XCTestCase {
 
     //then
     XCTAssertEqual(expiredAt, "26 October 2024 14:13")
+  }
+  
+  public func test_fetchOrderByNumber_andDiscountShouldNil() async {
+    //given
+    let remote = FakePaymentRemoteDataSource()
+    sut = PaymentRepository(remote: remote)
+    var discountFee: FeeEntity? = nil
+
+    //when
+    do {
+      let entity = try await sut.requestOrderByNumber(
+        HeaderRequest(token: ""),
+        OrderNumberParamRequest(
+          orderNumber: "",
+          voucherCode: ""
+        )
+      )
+      
+      discountFee = entity.discountFee
+      
+    } catch {
+      discountFee = nil
+    }
+
+    //then
+    XCTAssertNil(discountFee)
   }
   
 }
