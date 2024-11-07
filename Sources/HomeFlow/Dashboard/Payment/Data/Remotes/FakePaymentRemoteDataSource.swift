@@ -9,7 +9,8 @@ import Foundation
 import AprodhitKit
 import GnDKit
 
-public struct FakePaymentRemoteDataSource: PaymentRemoteDataSourceLogic {
+public struct FakePaymentRemoteDataSource: PaymentRemoteDataSourceLogic,
+                                           OngoingUserCaseRemoteDataSourceLogic {
   
   public init() {}
   
@@ -141,6 +142,13 @@ public struct FakePaymentRemoteDataSource: PaymentRemoteDataSourceLogic {
     
     return true
     
+  }
+  
+  public func fetchOngoingUserCases(
+    headers: [String : String],
+    parameters: [String : Any]
+  ) async throws -> UserCasesGetResp {
+    return .init()
   }
   
 }
