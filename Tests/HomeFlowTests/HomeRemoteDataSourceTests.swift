@@ -10,6 +10,7 @@ import XCTest
 import AprodhitKit
 import Alamofire
 import Combine
+import GnDKit
 
 final class HomeRemoteDataSourceTests: XCTestCase {
 
@@ -207,7 +208,9 @@ final class HomeRemoteDataSourceTests: XCTestCase {
 
 }
 
-struct MockHomeRemoteDataSource: HomeRemoteDataSourceLogic, SKTMRemoteDataSourceLogic {
+struct MockHomeRemoteDataSource: HomeRemoteDataSourceLogic,
+                                 SKTMRemoteDataSourceLogic,
+                                 OngoingUserCaseRemoteDataSourceLogic {
 
   var mockModel: AdvocateGetResp?
   var mockError: NetworkErrorMessage?
@@ -221,6 +224,10 @@ struct MockHomeRemoteDataSource: HomeRemoteDataSourceLogic, SKTMRemoteDataSource
 
   init(service: NetworkServiceLogic) {
     self.service = service
+  }
+  
+  func fetchPromotionBanner() async throws -> BannerResponseModel {
+    return .init()
   }
 
   func fetchOnlineAdvocates(params: [String: Any]) async throws -> AdvocateGetResp {

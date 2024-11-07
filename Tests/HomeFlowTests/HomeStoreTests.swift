@@ -22,13 +22,11 @@ final class HomeStoreTests: XCTestCase {
   }
 
   @MainActor
-  func test_fetchOnlineAdvocates_andArrayofAdvocatesShouldBeFilled() async {
-    //given
-    let mockRepository = MockHomeRepository()
-    let mockNavigator = MockNavigator()
-    sut = HomeStore(
+  func makeHomeStore() -> HomeStore {
+    return HomeStore(
       userSessionDataSource: MockUserSessionDataSource(),
       repository: MockHomeRepository(),
+      ongoingRepository: MockHomeRepository(),
       sktmRepository: MockHomeRepository(),
       onlineAdvocateNavigator: MockNavigator(),
       topAdvocateNavigator: MockNavigator(),
@@ -41,6 +39,14 @@ final class HomeStoreTests: XCTestCase {
       ongoingNavigator: MockNavigator(),
       loginResponder: MockNavigator()
     )
+  }
+  
+  @MainActor
+  func test_fetchOnlineAdvocates_andArrayofAdvocatesShouldBeFilled() async {
+    //given
+    let mockRepository = MockHomeRepository()
+    let mockNavigator = MockNavigator()
+    sut = makeHomeStore()
 
     //when
     sut.onlinedAdvocates = await sut.fetchOnlineAdvocates()
@@ -52,23 +58,8 @@ final class HomeStoreTests: XCTestCase {
   @MainActor
   func test_navigateTo_listOfOnlinedAdvocates() async {
     //given
-    let mockRepository = MockHomeRepository()
     let mockNavigator = MockNavigator()
-    sut = HomeStore(
-      userSessionDataSource: MockUserSessionDataSource(),
-      repository: MockHomeRepository(),
-      sktmRepository: MockHomeRepository(),
-      onlineAdvocateNavigator: MockNavigator(),
-      topAdvocateNavigator: MockNavigator(),
-      articleNavigator: MockNavigator(),
-      searchNavigator: MockNavigator(),
-      categoryNavigator: MockNavigator(),
-      advocateListNavigator: MockNavigator(),
-      sktmNavigator: MockNavigator(),
-      mainTabBarResponder: MockNavigator(),
-      ongoingNavigator: MockNavigator(),
-      loginResponder: MockNavigator()
-    )
+    sut = makeHomeStore()
 
     //when
     sut.navigateToSeeAllAdvocate()
@@ -86,21 +77,7 @@ final class HomeStoreTests: XCTestCase {
     let remoteDataSource = HomeRemoteDataSourceImpl(service: mockService)
     let repository = HomeRepositoryImpl(remoteDataSource: remoteDataSource)
     let mockNavigator = MockNavigator()
-    sut = HomeStore(
-      userSessionDataSource: MockUserSessionDataSource(),
-      repository: MockHomeRepository(),
-      sktmRepository: MockHomeRepository(),
-      onlineAdvocateNavigator: MockNavigator(),
-      topAdvocateNavigator: MockNavigator(),
-      articleNavigator: MockNavigator(),
-      searchNavigator: MockNavigator(),
-      categoryNavigator: MockNavigator(),
-      advocateListNavigator: MockNavigator(),
-      sktmNavigator: MockNavigator(),
-      mainTabBarResponder: MockNavigator(),
-      ongoingNavigator: MockNavigator(),
-      loginResponder: MockNavigator()
-    )
+    sut = makeHomeStore()
 
     //when
     _ = await sut.fetchOnlineAdvocates()
@@ -121,21 +98,7 @@ final class HomeStoreTests: XCTestCase {
     let repository = HomeRepositoryImpl(remoteDataSource: remoteDataSource)
     let mockNavigator = MockNavigator()
 
-    sut = HomeStore(
-      userSessionDataSource: MockUserSessionDataSource(),
-      repository: MockHomeRepository(),
-      sktmRepository: MockHomeRepository(),
-      onlineAdvocateNavigator: MockNavigator(),
-      topAdvocateNavigator: MockNavigator(),
-      articleNavigator: MockNavigator(),
-      searchNavigator: MockNavigator(),
-      categoryNavigator: MockNavigator(),
-      advocateListNavigator: MockNavigator(),
-      sktmNavigator: MockNavigator(),
-      mainTabBarResponder: MockNavigator(),
-      ongoingNavigator: MockNavigator(),
-      loginResponder: MockNavigator()
-    )
+    sut = makeHomeStore()
 
     //when
     _ = await sut.fetchOnlineAdvocates()
@@ -155,21 +118,7 @@ final class HomeStoreTests: XCTestCase {
     let repository = HomeRepositoryImpl(remoteDataSource: remote)
     let mockNavigator = MockNavigator()
 
-    sut = HomeStore(
-      userSessionDataSource: MockUserSessionDataSource(),
-      repository: MockHomeRepository(),
-      sktmRepository: MockHomeRepository(),
-      onlineAdvocateNavigator: MockNavigator(),
-      topAdvocateNavigator: MockNavigator(),
-      articleNavigator: MockNavigator(),
-      searchNavigator: MockNavigator(),
-      categoryNavigator: MockNavigator(),
-      advocateListNavigator: MockNavigator(),
-      sktmNavigator: MockNavigator(),
-      mainTabBarResponder: MockNavigator(),
-      ongoingNavigator: MockNavigator(),
-      loginResponder: MockNavigator()
-    )
+    sut = makeHomeStore()
 
     //when
     sut.categories = await sut.fetchArticleCategory()
@@ -188,21 +137,7 @@ final class HomeStoreTests: XCTestCase {
     let repository = HomeRepositoryImpl(remoteDataSource: remote)
     let mockNavigator = MockNavigator()
 
-    sut = HomeStore(
-      userSessionDataSource: MockUserSessionDataSource(),
-      repository: MockHomeRepository(),
-      sktmRepository: MockHomeRepository(),
-      onlineAdvocateNavigator: MockNavigator(),
-      topAdvocateNavigator: MockNavigator(),
-      articleNavigator: MockNavigator(),
-      searchNavigator: MockNavigator(),
-      categoryNavigator: MockNavigator(),
-      advocateListNavigator: MockNavigator(),
-      sktmNavigator: MockNavigator(),
-      mainTabBarResponder: MockNavigator(),
-      ongoingNavigator: MockNavigator(),
-      loginResponder: MockNavigator()
-    )
+    sut = makeHomeStore()
 
     //when
     _ = await sut.fetchArticleCategory()
@@ -217,21 +152,7 @@ final class HomeStoreTests: XCTestCase {
     let remote = FakeHomeRemoteDataSource()
     let repository = HomeRepositoryImpl(remoteDataSource: remote)
     let mockNavigator = MockNavigator()
-    sut = HomeStore(
-      userSessionDataSource: MockUserSessionDataSource(),
-      repository: MockHomeRepository(),
-      sktmRepository: MockHomeRepository(),
-      onlineAdvocateNavigator: MockNavigator(),
-      topAdvocateNavigator: MockNavigator(),
-      articleNavigator: MockNavigator(),
-      searchNavigator: MockNavigator(),
-      categoryNavigator: MockNavigator(),
-      advocateListNavigator: MockNavigator(),
-      sktmNavigator: MockNavigator(),
-      mainTabBarResponder: MockNavigator(),
-      ongoingNavigator: MockNavigator(),
-      loginResponder: MockNavigator()
-    )
+    sut = makeHomeStore()
 
     //when
     let fetchTask = Task { await sut.fetchAllAPI() }
@@ -262,21 +183,7 @@ final class HomeStoreTests: XCTestCase {
     let remote = HomeRemoteDataSourceImpl(service: service)
     let repository = HomeRepositoryImpl(remoteDataSource: remote)
     let mockNavigator = MockNavigator()
-    sut = HomeStore(
-      userSessionDataSource: MockUserSessionDataSource(),
-      repository: MockHomeRepository(),
-      sktmRepository: MockHomeRepository(),
-      onlineAdvocateNavigator: MockNavigator(),
-      topAdvocateNavigator: MockNavigator(),
-      articleNavigator: MockNavigator(),
-      searchNavigator: MockNavigator(),
-      categoryNavigator: MockNavigator(),
-      advocateListNavigator: MockNavigator(),
-      sktmNavigator: MockNavigator(),
-      mainTabBarResponder: MockNavigator(),
-      ongoingNavigator: MockNavigator(),
-      loginResponder: MockNavigator()
-    )
+    sut = makeHomeStore()
 
     //when
     await sut.fetchAllAPI()
@@ -296,22 +203,7 @@ final class HomeStoreTests: XCTestCase {
     let remote = HomeRemoteDataSourceImpl(service: service)
     let repository = HomeRepositoryImpl(remoteDataSource: remote)
     let navigator = MockNavigator()
-
-    sut = HomeStore(
-      userSessionDataSource: MockUserSessionDataSource(),
-      repository: MockHomeRepository(),
-      sktmRepository: MockHomeRepository(),
-      onlineAdvocateNavigator: MockNavigator(),
-      topAdvocateNavigator: MockNavigator(),
-      articleNavigator: MockNavigator(),
-      searchNavigator: MockNavigator(),
-      categoryNavigator: MockNavigator(),
-      advocateListNavigator: MockNavigator(),
-      sktmNavigator: MockNavigator(),
-      mainTabBarResponder: MockNavigator(),
-      ongoingNavigator: MockNavigator(),
-      loginResponder: MockNavigator()
-    )
+    sut = makeHomeStore()
 
     //when
     let (topAdvocate, _) = await sut.fetchTopAdvocates()
@@ -329,21 +221,7 @@ final class HomeStoreTests: XCTestCase {
     let remote = HomeRemoteDataSourceImpl(service: service)
     let repository = HomeRepositoryImpl(remoteDataSource: remote)
     let navigator = MockNavigator()
-    sut = HomeStore(
-      userSessionDataSource: MockUserSessionDataSource(),
-      repository: MockHomeRepository(),
-      sktmRepository: MockHomeRepository(),
-      onlineAdvocateNavigator: MockNavigator(),
-      topAdvocateNavigator: MockNavigator(),
-      articleNavigator: MockNavigator(),
-      searchNavigator: MockNavigator(),
-      categoryNavigator: MockNavigator(),
-      advocateListNavigator: MockNavigator(),
-      sktmNavigator: MockNavigator(),
-      mainTabBarResponder: MockNavigator(),
-      ongoingNavigator: MockNavigator(),
-      loginResponder: MockNavigator()
-    )
+    sut = makeHomeStore()
 
     //when
     _ = await sut.fetchTopAdvocates()
@@ -363,21 +241,7 @@ final class HomeStoreTests: XCTestCase {
     let repository = HomeRepositoryImpl(remoteDataSource: remote)
     let navigator = MockNavigator()
 
-    sut = HomeStore(
-      userSessionDataSource: MockUserSessionDataSource(),
-      repository: MockHomeRepository(),
-      sktmRepository: MockHomeRepository(),
-      onlineAdvocateNavigator: MockNavigator(),
-      topAdvocateNavigator: MockNavigator(),
-      articleNavigator: MockNavigator(),
-      searchNavigator: MockNavigator(),
-      categoryNavigator: MockNavigator(),
-      advocateListNavigator: MockNavigator(),
-      sktmNavigator: MockNavigator(),
-      mainTabBarResponder: MockNavigator(),
-      ongoingNavigator: MockNavigator(),
-      loginResponder: MockNavigator()
-    )
+    sut = makeHomeStore()
 
     //when
     let (_, topAgencies) = await sut.fetchTopAdvocates()
@@ -395,21 +259,7 @@ final class HomeStoreTests: XCTestCase {
     let remote = HomeRemoteDataSourceImpl(service: service)
     let repository = HomeRepositoryImpl(remoteDataSource: remote)
     let navigator = MockNavigator()
-    sut = HomeStore(
-      userSessionDataSource: MockUserSessionDataSource(),
-      repository: MockHomeRepository(),
-      sktmRepository: MockHomeRepository(),
-      onlineAdvocateNavigator: MockNavigator(),
-      topAdvocateNavigator: MockNavigator(),
-      articleNavigator: MockNavigator(),
-      searchNavigator: MockNavigator(),
-      categoryNavigator: MockNavigator(),
-      advocateListNavigator: MockNavigator(),
-      sktmNavigator: MockNavigator(),
-      mainTabBarResponder: MockNavigator(),
-      ongoingNavigator: MockNavigator(),
-      loginResponder: MockNavigator()
-    )
+    sut = makeHomeStore()
 
     //when
     _ = await sut.fetchTopAdvocates()
@@ -425,21 +275,7 @@ final class HomeStoreTests: XCTestCase {
     let repository = HomeRepositoryImpl(remoteDataSource: remote)
     let mockNavigator = MockNavigator()
 
-    sut = HomeStore(
-      userSessionDataSource: MockUserSessionDataSource(),
-      repository: MockHomeRepository(),
-      sktmRepository: MockHomeRepository(),
-      onlineAdvocateNavigator: MockNavigator(),
-      topAdvocateNavigator: MockNavigator(),
-      articleNavigator: MockNavigator(),
-      searchNavigator: MockNavigator(),
-      categoryNavigator: MockNavigator(),
-      advocateListNavigator: MockNavigator(),
-      sktmNavigator: MockNavigator(),
-      mainTabBarResponder: MockNavigator(),
-      ongoingNavigator: MockNavigator(),
-      loginResponder: MockNavigator()
-    )
+    sut = makeHomeStore()
 
     //when
     sut.articles = await sut.fetchArticle(with: "")
@@ -454,21 +290,7 @@ final class HomeStoreTests: XCTestCase {
     let repository = MockHomeRepository()
     let mockNavigator = MockNavigator()
 
-    sut = HomeStore(
-      userSessionDataSource: MockUserSessionDataSource(),
-      repository: MockHomeRepository(),
-      sktmRepository: MockHomeRepository(),
-      onlineAdvocateNavigator: MockNavigator(),
-      topAdvocateNavigator: MockNavigator(),
-      articleNavigator: MockNavigator(),
-      searchNavigator: MockNavigator(),
-      categoryNavigator: MockNavigator(),
-      advocateListNavigator: MockNavigator(),
-      sktmNavigator: MockNavigator(),
-      mainTabBarResponder: MockNavigator(),
-      ongoingNavigator: MockNavigator(),
-      loginResponder: MockNavigator()
-    )
+    sut = makeHomeStore()
 
     //when
     sut.articles = await sut.fetchArticle(with: "")
