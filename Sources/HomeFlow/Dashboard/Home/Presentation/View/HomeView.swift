@@ -643,10 +643,9 @@ public struct HomeView: View {
                 experience: advocate.getExperience(),
                 rating: advocate.getRating(),
                 totalConsultation: advocate.getTotalConsultation(),
-                price: advocate.getPrice(),
+                price: advocate.createPrice(),
                 originalPrice: advocate.getOriginalPrice(),
                 isDiscount: advocate.isDiscount,
-                
                 isProbono: advocate.isProbono,
                 onTap: {
                   store.navigateToDetailAdvocate(advocate)
