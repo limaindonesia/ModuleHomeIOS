@@ -102,7 +102,7 @@ public class OrderProcessStore: ObservableObject {
       lawyerId: lawyerInfoViewModel.id,
       skillId: category.id,
       description: issueText,
-      useProbono: lawyerInfoViewModel.isProbono
+      useProbono: isProbonoActive
     )
     
     do {
@@ -157,7 +157,8 @@ public class OrderProcessStore: ObservableObject {
       originalPrice: advocate.getOriginalPrice(),
       isDiscount: advocate.isDiscount,
       isProbono: sktmQuota > 0,
-      orderNumber: ""
+      orderNumber: "",
+      detailIssues: issueText
     )
   }
   
@@ -296,7 +297,8 @@ public class OrderProcessStore: ObservableObject {
         originalPrice: lawyerInfoViewModel.originalPrice,
         isDiscount: lawyerInfoViewModel.isDiscount,
         isProbono: isProbonoActive,
-        orderNumber: orderNumber
+        orderNumber: orderNumber,
+        detailIssues: issueText
       )
       
       paymentNavigator.navigateToPayment(lawyerInfo)

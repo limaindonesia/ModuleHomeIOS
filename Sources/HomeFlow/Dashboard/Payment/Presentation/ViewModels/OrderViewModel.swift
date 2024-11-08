@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import AprodhitKit
 
 public class OrderViewModel {
 
@@ -60,6 +61,15 @@ public class OrderViewModel {
     let date = Double(expiredAt).epochToDate()
     return date.formatted(with: "dd MMMM yyyy HH:mm")
   }
+  
+  public func getTotalAdjustment() -> String {
+    let total = CurrencyFormatter.toCurrency(NSNumber(value: totalAdjustmentPositive()))
+    return total
+  }
+  
+  public func totalAdjustmentPositive() -> Int {
+    return totalAdjustment * -1
+  }
 
 }
 
@@ -89,17 +99,20 @@ public struct FeeViewModel: Identifiable {
   }
   
   public func getName() -> AttributedString {
-    var attributedString = AttributedString(name)
-    attributedString.font = .lexendFont(style: .body(size: 14))
-    attributedString.foregroundColor = .darkTextColor
+    let cleanedText = name.replacingOccurrences(of: "**", with: "")
+    var attributedString = AttributedString(cleanedText)
     
     if let index = name.firstIndex(of: "*") {
-      let boldedText = name.suffix(from: index)
-      if let range = attributedString.range(of: boldedText)  {
+      let result = name.suffix(from: index)
+      let duration = result.replacingOccurrences(of: "**", with: "")
+      if let found = cleanedText.range(of: duration) {
+        let range = attributedString.range(of: cleanedText[found.lowerBound..<found.upperBound])!
         attributedString[range].font = .lexendFont(style: .title(size: 14))
       }
+      
     }
     
     return attributedString
   }
+  
 }
