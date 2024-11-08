@@ -678,7 +678,7 @@ public class HomeStore: ObservableObject {
       price: userCases.getPrice(),
       originalPrice: userCases.lawyer?.getOriginalPrice() ?? "",
       isDiscount: userCases.lawyer?.isDiscount ?? false,
-      isProbono: sktmModel?.data?.quota ?? 0 > 0,
+      isProbono: userCases.service_type ?? "" == Constant.Home.Text.PROBONO,
       orderNumber: userCases.order_no ?? ""
     )
     
