@@ -50,7 +50,9 @@ public struct OrderProcessView: View {
           price: store.isProbonoActive
           ? store.getPriceProbonoOnly()
           : store.getPrice(),
-          buttonText: "Ke Pembayaran", isVoucherApplied: false,
+          totalAdjustment: "",
+          buttonText: "Ke Pembayaran",
+          isVoucherApplied: false,
           isButtonActive: store.isTextValid,
           onTap: {
             store.processNavigation()

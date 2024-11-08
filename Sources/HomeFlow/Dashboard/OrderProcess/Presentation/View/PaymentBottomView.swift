@@ -15,11 +15,13 @@ struct PaymentBottomView: View {
   private let buttonText: String
   private let isButtonActive: Bool
   private let isVoucherApplied: Bool
+  private let totalAdjustment: String
   private var onTap: () -> Void
   
   init(
     title: String,
     price: String,
+    totalAdjustment: String,
     buttonText: String,
     isVoucherApplied: Bool,
     isButtonActive: Bool = true,
@@ -27,6 +29,7 @@ struct PaymentBottomView: View {
   ) {
     self.title = title
     self.price = price
+    self.totalAdjustment = totalAdjustment
     self.buttonText = buttonText
     self.isVoucherApplied = isVoucherApplied
     self.isButtonActive = isButtonActive
@@ -38,7 +41,7 @@ struct PaymentBottomView: View {
       
       if isVoucherApplied {
         VStack {
-          Text("Anda hemat Rp150.000 dalam transaksi ini")
+          Text(totalAdjustment)
             .foregroundColor(Color.gray700)
             .bodyLexend(size: 14)
         }
@@ -77,6 +80,7 @@ struct PaymentBottomView: View {
   PaymentBottomView(
     title: "Biaya",
     price: "Rp1.000.000",
+    totalAdjustment: "Rp20.000",
     buttonText: "Ke Pembayaran",
     isVoucherApplied: false,
     isButtonActive: true,

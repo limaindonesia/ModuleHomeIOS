@@ -28,7 +28,9 @@ struct PaymentView: View {
               imageURL: store.getAvatarImage(),
               name: store.getLawyersName(),
               agency: store.getAgency(),
-              consultationTime: store.timeConsultation
+              consultationTime: store.timeConsultation,
+              showDetailIssues: store.showDetailIssues,
+              detailIssues: store.getDetailIssue()
             )
 
             if !store.isProbono() {
@@ -53,6 +55,7 @@ struct PaymentView: View {
         PaymentBottomView(
           title: "Total Pembayaran",
           price: store.getTotalAmount(),
+          totalAdjustment: store.getTotalAdjustment(),
           buttonText: "Bayar",
           isVoucherApplied: store.voucherFilled,
           onTap: {
@@ -113,7 +116,9 @@ struct PaymentView: View {
     imageURL: URL?,
     name: String,
     agency: String,
-    consultationTime: String
+    consultationTime: String,
+    showDetailIssues: Bool,
+    detailIssues: String
   ) -> some View {
     VStack(alignment: .leading) {
       HStack {
@@ -172,14 +177,30 @@ struct PaymentView: View {
       }
       .padding(.all, 12)
 
-      HStack {
-        Text("Detail")
-          .foregroundColor(.darkTextColor)
-          .titleLexend(size: 12)
-
-        Spacer()
-
-        Image("ic_down_arrow", bundle: .module)
+      VStack(alignment: .leading) {
+        HStack {
+          Text("Detail")
+            .foregroundColor(.darkTextColor)
+            .titleLexend(size: 12)
+          
+          Spacer()
+          
+          Button {
+            store.showDetailIssues.toggle()
+          } label: {
+            Image("ic_down_arrow", bundle: .module)
+          }
+          
+        }
+        .padding(.horizontal, 7)
+        
+        if showDetailIssues {
+          Text(detailIssues)
+            .foregroundColor(Color.darkTextColor)
+            .bodyLexend(size: 14)
+            .padding(.horizontal, 7)
+        }
+        
       }
       .padding(.horizontal, 7)
       .padding(.vertical, 13)

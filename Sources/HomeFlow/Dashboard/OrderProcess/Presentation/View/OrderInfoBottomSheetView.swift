@@ -105,6 +105,7 @@ struct OrderInfoBottomSheetView: View {
       PaymentBottomView(
         title: "Biaya",
         price: price,
+        totalAdjustment: "",
         buttonText: "Ke Pembayaran",
         isVoucherApplied: false,
         onTap: {
