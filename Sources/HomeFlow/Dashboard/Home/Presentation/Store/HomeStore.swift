@@ -679,7 +679,8 @@ public class HomeStore: ObservableObject {
       originalPrice: userCases.lawyer?.getOriginalPrice() ?? "",
       isDiscount: userCases.lawyer?.isDiscount ?? false,
       isProbono: userCases.service_type ?? "" == Constant.Home.Text.PROBONO,
-      orderNumber: userCases.order_no ?? ""
+      orderNumber: userCases.order_no ?? "",
+      detailIssues: userCases.description ?? ""
     )
     
     ongoingNavigator.navigateToPayment(lawyerInfoViewModel)
