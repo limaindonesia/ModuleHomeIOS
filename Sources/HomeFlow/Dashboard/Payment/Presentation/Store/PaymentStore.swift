@@ -36,6 +36,7 @@ public class PaymentStore: ObservableObject {
   @Published public var voucherFilled: Bool = false
   @Published public var isPresentTncBottomSheet: Bool = false
   @Published public var isPresentMakeSureBottomSheet: Bool = false
+  @Published public var showDetailIssues: Bool = false
   
   private var treatmentEntities: [TreatmentEntity] = []
   private var message: String = ""
@@ -330,11 +331,15 @@ public class PaymentStore: ObservableObject {
   }
   
   public func getTotalAdjustment() -> String {
-    return "Anda hemat \(orderViewModel.totalAdjustment) di transaksi ini!"
+    return "Anda hemat \(orderViewModel.getTotalAdjustment()) di transaksi ini!"
   }
   
   public func getTNCVoucher() -> String {
     return voucherViewModel.tnc
+  }
+  
+  public func getDetailIssue() -> String {
+    return lawyerInfoViewModel.detailIssues
   }
   
   public func receiveTimer() {
