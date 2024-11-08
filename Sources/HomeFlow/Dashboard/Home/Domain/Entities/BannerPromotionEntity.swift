@@ -30,10 +30,15 @@ public struct BannerPromotionEntity: Transformable {
   }
   
   static func map(from data: BannerResponseModel.DataClass) -> BannerPromotionEntity {
-    return BannerPromotionEntity(
-      bannerImageURL: data.banner?[0].mobileImgURL ?? "",
-      popupImageURL: data.popup?.mobileImgURL ?? ""
-    )
+    
+    if let banner = data.banner, !banner.isEmpty {
+      return BannerPromotionEntity(
+        bannerImageURL: data.banner?[0].mobileImgURL ?? "",
+        popupImageURL: data.popup?.mobileImgURL ?? ""
+      )
+    }
+    
+    return BannerPromotionEntity()
   }
   
   static func mapTo(_ entity: BannerPromotionEntity) -> BannerPromotionViewModel {
