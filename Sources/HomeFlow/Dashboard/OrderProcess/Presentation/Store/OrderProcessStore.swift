@@ -32,6 +32,7 @@ public class OrderProcessStore: ObservableObject {
   @Published public var issueTextError: String = ""
   @Published public var isTextValid: Bool = true
   @Published public var isProbonoActive: Bool = false
+  @Published public var buttonActive: Bool = false
   @Published public var error: ErrorMessage = .init()
   @Published public var priceCategories: [PriceCategoryViewModel] = []
 
@@ -383,6 +384,7 @@ public class OrderProcessStore: ObservableObject {
       .subscribe(on: RunLoop.main)
       .sink { state in
         self.isTextValid = state
+        self.buttonActive = state
         self.issueTextError = state ? "Minimal 10 Karakter" : ""
       }.store(in: &subscriptions)
     

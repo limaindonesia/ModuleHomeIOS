@@ -53,9 +53,11 @@ public struct OrderProcessView: View {
           totalAdjustment: "",
           buttonText: "Ke Pembayaran",
           isVoucherApplied: false,
-          isButtonActive: store.isTextValid,
+          isButtonActive: store.buttonActive,
           onTap: {
-            store.processNavigation()
+            if store.buttonActive {
+              store.processNavigation()
+            }
           }
         )
         .padding(.horizontal, 16)
