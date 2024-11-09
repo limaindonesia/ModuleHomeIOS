@@ -168,10 +168,13 @@ public class PaymentStore: ObservableObject {
       viewModel = VoucherEntity.mapTo(entity)
       
       indicateSuccess()
+      hideVoucherBottomSheet()
+      activateButton = false
       
     } catch {
       guard let error = error as? ErrorMessage else { return .init() }
       voucherError(error)
+      activateButton = false
     }
     
     return viewModel

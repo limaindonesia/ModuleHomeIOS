@@ -268,7 +268,8 @@ public  struct OrderResponseModel: Codable {
     public let photoURL, gender: String?
     public let city: Skill?
     public let affidavitDate: String?
-    public let yearExp, avgRating: Int?
+    public let yearExp: Int?
+    public let avgRating: Double?
     public let avgRatings: String?
     public let totalConsultations: Int?
     public let slug: String?

@@ -76,7 +76,9 @@ struct VoucherBottomSheetView: View {
         }.frame(maxHeight: 40)
         
         Button {
-          onTap(voucher)
+          if activateButton {
+            onTap(voucher)
+          }
         } label: {
           Text("Terapakan")
             .foregroundColor(
