@@ -18,6 +18,7 @@ struct WaitingForPaymentView: View {
   private let issueType: String
   private let price: String
   private var onTap: () -> Void
+  private var onTimerTimesUp: () -> Void
 
   @State var timeRemaining: TimeInterval
 
@@ -35,7 +36,8 @@ struct WaitingForPaymentView: View {
     lawyersName: String,
     issueType: String,
     price: String,
-    onTap: @escaping () -> Void
+    onTap: @escaping () -> Void,
+    onTimerTimesUp: @escaping () -> Void
   ) {
     self.imageURL = imageURL
     self.statusText = statusText
@@ -45,6 +47,7 @@ struct WaitingForPaymentView: View {
     self.issueType = issueType
     self.price = price
     self.onTap = onTap
+    self.onTimerTimesUp = onTimerTimesUp
   }
 
   var body: some View {
@@ -141,6 +144,7 @@ struct WaitingForPaymentView: View {
       timeRemaining -= 1
     }else {
       timer.upstream.connect().cancel()
+      onTimerTimesUp()
     }
   }
 
@@ -155,6 +159,7 @@ struct WaitingForPaymentView: View {
     lawyersName: "Andra Reinhard Pasaribu, S.H., M.H.",
     issueType: "Pidana",
     price: "Rp 17.000",
-    onTap: {}
+    onTap: {},
+    onTimerTimesUp: {}
   )
 }

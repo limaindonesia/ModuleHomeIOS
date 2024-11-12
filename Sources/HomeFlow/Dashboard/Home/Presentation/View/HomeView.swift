@@ -422,8 +422,25 @@ public struct HomeView: View {
   @ViewBuilder
   func ongoingView(_ item: UserCases) -> some View {
     
-    if item.status == Constant.Home.Text.WAITING_FOR_PAYMENT
-        || item.status == Constant.Home.Text.ORDER_PENDING {
+    if item.status == Constant.Home.Text.ORDER_PENDING {
+      
+      WaitingForPaymentView(
+        imageURL: item.lawyer?.getImageName(),
+        statusText: item.getStatus() ?? "",
+        timeRemaining: item.getTimeRemaining(),
+        date: item.getDateString(),
+        lawyersName: item.lawyer?.getName() ?? "",
+        issueType: item.skill?.name ?? "",
+        price: item.getPrice(),
+        onTap: {
+          store.navigateToPayment()
+        },
+        onTimerTimesUp: {
+          Task { await store.fetchOngoingUserCases() }
+        }
+      )
+      
+    } else if item.status == Constant.Home.Text.WAITING_FOR_PAYMENT {
       
       WaitingForPaymentView(
         imageURL: item.lawyer?.getImageName(),
@@ -435,6 +452,9 @@ public struct HomeView: View {
         price: item.getPrice(),
         onTap: {
           store.navigateToPayment()
+        },
+        onTimerTimesUp: {
+          Task { await store.fetchOngoingUserCases() }
         }
       )
       
