@@ -8,6 +8,7 @@
 import SwiftUI
 import AprodhitKit
 import GnDKit
+import Lottie
 
 struct PaymentView: View {
 
@@ -106,7 +107,19 @@ struct PaymentView: View {
         }
       }
       
+      if store.isLoading {
+        BlurView(style: .dark)
+        
+        LottieView {
+          LottieAnimation.named("perqara-loading", bundle: .module)
+        }
+        .looping()
+        .frame(width: 72, height: 72)
+        .padding(.bottom, 50)
+      }
+      
     }
+    
   }
 
   @ViewBuilder
