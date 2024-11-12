@@ -428,7 +428,7 @@ public struct HomeView: View {
       WaitingForPaymentView(
         imageURL: item.lawyer?.getImageName(),
         statusText: item.getStatus() ?? "",
-        timeRemaining: item.getTimeRemaining(),
+        timeRemaining: item.getPaymentTimeRemainig(),
         date: item.getDateString(),
         lawyersName: item.lawyer?.getName() ?? "",
         issueType: item.skill?.name ?? "",
