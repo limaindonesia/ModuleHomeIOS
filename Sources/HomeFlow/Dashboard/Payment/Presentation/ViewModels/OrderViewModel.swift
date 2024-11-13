@@ -115,4 +115,14 @@ public struct FeeViewModel: Identifiable {
     return attributedString
   }
   
+  public func getPlainName() -> AttributedString {
+    var text = name
+    if let index = text.firstIndex(of: "*") {
+      let suffix = text.suffix(from: index)
+      let range = suffix.startIndex ..< suffix.endIndex
+      text.removeSubrange(range)
+    }
+    return AttributedString()
+  }
+  
 }
