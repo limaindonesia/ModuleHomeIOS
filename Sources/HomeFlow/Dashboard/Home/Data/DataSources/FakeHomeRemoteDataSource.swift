@@ -102,7 +102,19 @@ public struct FakeHomeRemoteDataSource: HomeRemoteDataSourceLogic,
   }
   
   public func fetchNewestArticle() async throws -> [NewestArticleResponseModel] {
-    return []
+    guard let data = try? loadJSONFromFile(filename: "newest_articles", inBundle: .module)
+    else {
+      throw URLError(.badURL)
+    }
+    
+    var model: [NewestArticleResponseModel]
+    do {
+      model = try JSONDecoder().decode([NewestArticleResponseModel].self, from: data)
+    } catch {
+      throw URLError(.badURL)
+    }
+    
+    return model
   }
   
   public func fetchSKTM(headers: [String : String]) async throws -> ClientGetSKTM {

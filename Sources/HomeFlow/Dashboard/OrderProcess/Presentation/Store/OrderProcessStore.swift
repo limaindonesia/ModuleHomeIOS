@@ -129,7 +129,7 @@ public class OrderProcessStore: ObservableObject {
   }
   
   @MainActor
-  private func fetchTreatment() async {
+  public func fetchTreatment() async {
     do {
       treatmentEntities = try await treatmentRepository.fetchTreatments()
       getTimeConsultation(from: treatmentEntities)

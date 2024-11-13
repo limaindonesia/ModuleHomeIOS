@@ -12,7 +12,16 @@ public struct MockTreatmentRepository: TreatmentRepositoryLogic {
   public init() {}
 
   public func fetchTreatments() async throws -> [TreatmentEntity] {
-    return []
+    return [
+      .init(
+        duration: 30,
+        type: "PROBONO"
+      ),
+      .init(
+        duration: 45,
+        type: "REGULAR"
+      )
+    ]
   }
 
 }

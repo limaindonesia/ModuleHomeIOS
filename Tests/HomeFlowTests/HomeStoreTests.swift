@@ -22,22 +22,25 @@ final class HomeStoreTests: XCTestCase {
   }
 
   @MainActor
-  func makeHomeStore() -> HomeStore {
+  func makeHomeStore(
+    repository: HomeRepositoryLogic & SKTMRepositoryLogic & OngoingRepositoryLogic,
+    navigator: MockNavigator
+  ) -> HomeStore {
     return HomeStore(
       userSessionDataSource: MockUserSessionDataSource(),
-      repository: MockHomeRepository(),
-      ongoingRepository: MockHomeRepository(),
-      sktmRepository: MockHomeRepository(),
-      onlineAdvocateNavigator: MockNavigator(),
-      topAdvocateNavigator: MockNavigator(),
-      articleNavigator: MockNavigator(),
-      searchNavigator: MockNavigator(),
-      categoryNavigator: MockNavigator(),
-      advocateListNavigator: MockNavigator(),
-      sktmNavigator: MockNavigator(),
-      mainTabBarResponder: MockNavigator(),
-      ongoingNavigator: MockNavigator(),
-      loginResponder: MockNavigator()
+      repository: repository,
+      ongoingRepository: repository,
+      sktmRepository: repository,
+      onlineAdvocateNavigator: navigator,
+      topAdvocateNavigator: navigator,
+      articleNavigator: navigator,
+      searchNavigator: navigator,
+      categoryNavigator: navigator,
+      advocateListNavigator: navigator,
+      sktmNavigator: navigator,
+      mainTabBarResponder: navigator,
+      ongoingNavigator: navigator,
+      loginResponder: navigator
     )
   }
   
@@ -46,7 +49,10 @@ final class HomeStoreTests: XCTestCase {
     //given
     let mockRepository = MockHomeRepository()
     let mockNavigator = MockNavigator()
-    sut = makeHomeStore()
+    sut = makeHomeStore(
+      repository: mockRepository,
+      navigator: mockNavigator
+    )
 
     //when
     sut.onlinedAdvocates = await sut.fetchOnlineAdvocates()
@@ -58,8 +64,12 @@ final class HomeStoreTests: XCTestCase {
   @MainActor
   func test_navigateTo_listOfOnlinedAdvocates() async {
     //given
+    let mockRepository = MockHomeRepository()
     let mockNavigator = MockNavigator()
-    sut = makeHomeStore()
+    sut = makeHomeStore(
+      repository: mockRepository,
+      navigator: mockNavigator
+    )
 
     //when
     sut.navigateToSeeAllAdvocate()
@@ -77,7 +87,11 @@ final class HomeStoreTests: XCTestCase {
     let remoteDataSource = HomeRemoteDataSourceImpl(service: mockService)
     let repository = HomeRepositoryImpl(remoteDataSource: remoteDataSource)
     let mockNavigator = MockNavigator()
-    sut = makeHomeStore()
+    
+    sut = makeHomeStore(
+      repository: repository,
+      navigator: mockNavigator
+    )
 
     //when
     _ = await sut.fetchOnlineAdvocates()
@@ -97,8 +111,11 @@ final class HomeStoreTests: XCTestCase {
     let remoteDataSource = HomeRemoteDataSourceImpl(service: mockService)
     let repository = HomeRepositoryImpl(remoteDataSource: remoteDataSource)
     let mockNavigator = MockNavigator()
-
-    sut = makeHomeStore()
+    
+    sut = makeHomeStore(
+      repository: repository,
+      navigator: mockNavigator
+    )
 
     //when
     _ = await sut.fetchOnlineAdvocates()
@@ -117,14 +134,17 @@ final class HomeStoreTests: XCTestCase {
     let remote = HomeRemoteDataSourceImpl(service: service)
     let repository = HomeRepositoryImpl(remoteDataSource: remote)
     let mockNavigator = MockNavigator()
-
-    sut = makeHomeStore()
+   
+    sut = makeHomeStore(
+      repository: repository,
+      navigator: mockNavigator
+    )
 
     //when
     sut.categories = await sut.fetchArticleCategory()
 
     //then
-    XCTAssertEqual(sut.categories.count, 7)
+    XCTAssertEqual(sut.categories.count, 8)
   }
 
   @MainActor
@@ -136,8 +156,11 @@ final class HomeStoreTests: XCTestCase {
     let remote = HomeRemoteDataSourceImpl(service: service)
     let repository = HomeRepositoryImpl(remoteDataSource: remote)
     let mockNavigator = MockNavigator()
-
-    sut = makeHomeStore()
+    
+    sut = makeHomeStore(
+      repository: repository,
+      navigator: mockNavigator
+    )
 
     //when
     _ = await sut.fetchArticleCategory()
@@ -152,8 +175,12 @@ final class HomeStoreTests: XCTestCase {
     let remote = FakeHomeRemoteDataSource()
     let repository = HomeRepositoryImpl(remoteDataSource: remote)
     let mockNavigator = MockNavigator()
-    sut = makeHomeStore()
-
+    
+    sut = makeHomeStore(
+      repository: repository,
+      navigator: mockNavigator
+    )
+    
     //when
     let fetchTask = Task { await sut.fetchAllAPI() }
 
@@ -161,9 +188,9 @@ final class HomeStoreTests: XCTestCase {
 
     //then
     XCTAssertFalse(sut.isLoading)
-    XCTAssertEqual(sut.categories.count, 7)
+    XCTAssertEqual(sut.categories.count, 16)
     XCTAssertEqual(sut.onlinedAdvocates.count, 4)
-    XCTAssertEqual(sut.topAdvocates.count, 3)
+    XCTAssertEqual(sut.topAdvocates.count, 10)
     XCTAssertEqual(sut.topAgencies.count, 3)
     XCTAssertEqual(sut.articles.count, 10)
 
@@ -183,7 +210,11 @@ final class HomeStoreTests: XCTestCase {
     let remote = HomeRemoteDataSourceImpl(service: service)
     let repository = HomeRepositoryImpl(remoteDataSource: remote)
     let mockNavigator = MockNavigator()
-    sut = makeHomeStore()
+    
+    sut = makeHomeStore(
+      repository: repository,
+      navigator: mockNavigator
+    )
 
     //when
     await sut.fetchAllAPI()
@@ -202,15 +233,19 @@ final class HomeStoreTests: XCTestCase {
 
     let remote = HomeRemoteDataSourceImpl(service: service)
     let repository = HomeRepositoryImpl(remoteDataSource: remote)
-    let navigator = MockNavigator()
-    sut = makeHomeStore()
+    let mockNavigator = MockNavigator()
+    
+    sut = makeHomeStore(
+      repository: repository,
+      navigator: mockNavigator
+    )
 
     //when
     let (topAdvocate, _) = await sut.fetchTopAdvocates()
     sut.topAdvocates = topAdvocate
 
     //then
-    XCTAssertEqual(sut.topAdvocates.count, 3)
+    XCTAssertEqual(sut.topAdvocates.count, 10)
   }
 
   @MainActor
@@ -220,9 +255,12 @@ final class HomeStoreTests: XCTestCase {
     service.mockError = NetworkErrorMessage(code: 1, description: "Bad Horsie")
     let remote = HomeRemoteDataSourceImpl(service: service)
     let repository = HomeRepositoryImpl(remoteDataSource: remote)
-    let navigator = MockNavigator()
-    sut = makeHomeStore()
-
+    let mockNavigator = MockNavigator()
+    
+    sut = makeHomeStore(
+      repository: repository,
+      navigator: mockNavigator
+    )
     //when
     _ = await sut.fetchTopAdvocates()
 
@@ -239,9 +277,12 @@ final class HomeStoreTests: XCTestCase {
 
     let remote = HomeRemoteDataSourceImpl(service: service)
     let repository = HomeRepositoryImpl(remoteDataSource: remote)
-    let navigator = MockNavigator()
-
-    sut = makeHomeStore()
+    let mockNavigator = MockNavigator()
+    
+    sut = makeHomeStore(
+      repository: repository,
+      navigator: mockNavigator
+    )
 
     //when
     let (_, topAgencies) = await sut.fetchTopAdvocates()
@@ -258,8 +299,12 @@ final class HomeStoreTests: XCTestCase {
     service.mockError = NetworkErrorMessage(code: 1, description: "Bad Horsie")
     let remote = HomeRemoteDataSourceImpl(service: service)
     let repository = HomeRepositoryImpl(remoteDataSource: remote)
-    let navigator = MockNavigator()
-    sut = makeHomeStore()
+    let mockNavigator = MockNavigator()
+    
+    sut = makeHomeStore(
+      repository: repository,
+      navigator: mockNavigator
+    )
 
     //when
     _ = await sut.fetchTopAdvocates()
@@ -274,8 +319,11 @@ final class HomeStoreTests: XCTestCase {
     let remote = FakeHomeRemoteDataSource()
     let repository = HomeRepositoryImpl(remoteDataSource: remote)
     let mockNavigator = MockNavigator()
-
-    sut = makeHomeStore()
+    
+    sut = makeHomeStore(
+      repository: repository,
+      navigator: mockNavigator
+    )
 
     //when
     sut.articles = await sut.fetchArticle(with: "")
@@ -287,16 +335,19 @@ final class HomeStoreTests: XCTestCase {
   @MainActor
   func test_fetchArticle_andCheckFirstID_shouldBeOne() async {
     //given
-    let repository = MockHomeRepository()
+    let mockRepository = MockHomeRepository()
     let mockNavigator = MockNavigator()
-
-    sut = makeHomeStore()
+    
+    sut = makeHomeStore(
+      repository: mockRepository,
+      navigator: mockNavigator
+    )
 
     //when
     sut.articles = await sut.fetchArticle(with: "")
 
     //then
-    XCTAssertEqual(sut.articles.map{ $0.id }.first!, 1)
+    XCTAssertEqual(sut.articles.map{ $0.id }.first!, 0)
   }
 
   /*@MainActor

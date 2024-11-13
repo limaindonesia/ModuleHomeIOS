@@ -43,7 +43,11 @@ public struct MockHomeRepository: HomeRepositoryLogic,
   public init() {}
   
   public func fetchOnlineAdvocates(params: AdvocateParamRequest) async throws -> [Advocate] {
-    fatalError()
+    return [
+      Advocate(),
+      Advocate(),
+      Advocate()
+    ]
   }
   
   public func fetchOnlineAdvocates(params: AdvocateParamRequest) async throws -> [AdvocateEntity] {
