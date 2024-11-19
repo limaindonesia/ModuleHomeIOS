@@ -40,14 +40,7 @@ struct PaymentBottomView: View {
     VStack(spacing: 8) {
       
       if isVoucherApplied {
-        VStack {
-          Text(totalAdjustment)
-            .foregroundColor(Color.gray700)
-            .bodyLexend(size: 14)
-        }
-        .frame(maxWidth: .infinity, maxHeight: 40)
-        .background(Color.success050)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        DiscountDescriptionView(totalAdjustment: totalAdjustment)
       }
       
       HStack {
