@@ -37,6 +37,8 @@ public class PaymentStore: ObservableObject {
   @Published public var isPresentTncBottomSheet: Bool = false
   @Published public var isPresentMakeSureBottomSheet: Bool = false
   @Published public var showDetailIssues: Bool = false
+  @Published public var isPresentReasonBottomSheet: Bool = false
+  @Published public var isPresentWarningPaymentBottomSheet: Bool = false
   
   private var treatmentEntities: [TreatmentEntity] = []
   private var message: String = ""
@@ -445,6 +447,22 @@ public class PaymentStore: ObservableObject {
     }
     
     voucherErrorText = message
+  }
+  
+  public func showReasonBottomSheet() {
+    isPresentReasonBottomSheet = true
+  }
+  
+  public func hideReasonBottomSheet() {
+    isPresentReasonBottomSheet = false
+  }
+  
+  public func showWarningPaymentBottomSheet() {
+    isPresentWarningPaymentBottomSheet = true
+  }
+  
+  public func hideWarningPaymentBottomSheet() {
+    isPresentWarningPaymentBottomSheet = false
   }
   
   //MARK: - Observer

@@ -11,13 +11,13 @@ import GnDKit
 import Lottie
 
 struct PaymentView: View {
-
+  
   @ObservedObject var store: PaymentStore
-
+  
   init(store: PaymentStore) {
     self.store = store
   }
-
+  
   var body: some View {
     ZStack {
       VStack {
@@ -33,26 +33,26 @@ struct PaymentView: View {
               showDetailIssues: store.showDetailIssues,
               detailIssues: store.getDetailIssue()
             )
-
+            
             if !store.isProbono() {
               showVoucherView {
                 store.showVoucherBottomSheet()
               } onTapTNC: {
                 store.showTNCBottomSheet()
               }
-
+              
               paymentOptions()
             }
-
+            
             paymentDetail()
-
+            
           }
           .background(Color.gray050)
           .padding(.top, 8)
           .padding(.horizontal, 16)
           .padding(.bottom, 16)
         }
-
+        
         PaymentBottomView(
           title: "Total Pembayaran",
           price: store.getTotalAmount(),
@@ -65,7 +65,7 @@ struct PaymentView: View {
         )
         .padding(.horizontal, 16)
       }
-
+      
       BottomSheetView(isPresented: $store.isPresentVoucherBottomSheet) {
         VoucherBottomSheetView(
           activateButton: $store.activateButton,
@@ -73,7 +73,7 @@ struct PaymentView: View {
           showXMark: $store.showXMark,
           voucherErrorText: $store.voucherErrorText,
           onTap: { voucher in
-            Task { 
+            Task {
               await store.applyVoucher()
             }
           },
@@ -96,7 +96,7 @@ struct PaymentView: View {
           store.backToHome()
         }
       }
-
+      
       GeometryReader { proxy in
         let frame = proxy.frame(in: .local)
         
@@ -118,10 +118,22 @@ struct PaymentView: View {
         .padding(.bottom, 50)
       }
       
+      BottomSheetView(isPresented: $store.isPresentWarningPaymentBottomSheet) {
+        WarningPaymentContentView(
+          totalAdjustment: store.getTotalAdjustment(),
+          onCancelled: {
+            store.showReasonBottomSheet()
+          },
+          onPayment: {
+            store.hideWarningPaymentBottomSheet()
+          }
+        )
+      }
+      
     }
     
   }
-
+  
   @ViewBuilder
   func lawyerInfoView(
     orderID: String,
@@ -139,19 +151,19 @@ struct PaymentView: View {
           Text("Order ID: \(orderID)")
             .foregroundColor(Color.warning900)
             .titleLexend(size: 12)
-
+          
           Text("Mohon segera lakukan pembayaran")
             .foregroundColor(Color.warning900)
             .captionLexend(size: 12)
         }
-
+        
         Spacer()
-
+        
         HStack(spacing: 2) {
           Image("ic_timer", bundle: .module)
             .renderingMode(.template)
             .foregroundColor(Color.white)
-
+          
           Text(timeRemaining)
             .foregroundColor(Color.white)
             .titleLexend(size: 12)
@@ -170,26 +182,26 @@ struct PaymentView: View {
       .cornerRadius(8)
       .padding(.horizontal, 12)
       .padding(.top, 12)
-
+      
       HStack(spacing: 12) {
         CircleAvatarImageView(
           imageURL,
           width: 48,
           height: 48
         )
-
+        
         VStack(alignment: .leading, spacing: 4) {
           Text(name)
             .titleLexend(size: 14)
-
+          
           Text(agency)
             .foregroundColor(.darkGray400)
             .bodyLexend(size: 14)
         }
-
+        
       }
       .padding(.all, 12)
-
+      
       VStack(alignment: .leading) {
         HStack {
           Text("Detail")
@@ -221,22 +233,22 @@ struct PaymentView: View {
       .background(Color.gray050)
       .cornerRadius(8)
       .padding(.horizontal, 12)
-
+      
       HStack(spacing: 8) {
         Text("Durasi konsultasi:")
           .bodyLexend(size: 12)
-
+        
         HStack(spacing: 2) {
-
+          
           Image("ic_timer", bundle: .module)
             .renderingMode(.template)
             .foregroundColor(Color.primaryInfo600)
-
+          
           Text(consultationTime)
             .foregroundColor(Color.primaryInfo600)
             .titleLexend(size: 12)
         }
-
+        
         Spacer()
       }
       .padding(.all, 12)
@@ -246,7 +258,7 @@ struct PaymentView: View {
     .cornerRadius(12)
     .shadow(color: .gray200, radius: 8)
   }
-
+  
   @ViewBuilder
   func showVoucherView(
     onTapVoucher: @escaping () -> Void,
@@ -266,7 +278,7 @@ struct PaymentView: View {
     }
     
   }
-
+  
   @ViewBuilder
   func voucherCodeFilled(
     onTap: @escaping () -> Void,
@@ -275,20 +287,20 @@ struct PaymentView: View {
     VStack(alignment: .leading, spacing: 8) {
       Text("Kode Promo dan Voucher")
         .titleLexend(size: 16)
-
+      
       HStack(spacing: 10) {
         Image("ticket_discount", bundle: .module)
-
+        
         Text(store.voucherViewModel.code)
           .foregroundColor(Color.darkTextColor)
           .titleLexend(size: 14)
-
+        
         Spacer()
-
+        
         Text(store.getVoucherText())
           .foregroundColor(Color.gray700)
           .bodyLexend(size: 10)
-
+        
         Image("ic_chevron", bundle: .module)
       }
       .padding(.horizontal, 12)
@@ -296,11 +308,11 @@ struct PaymentView: View {
       .frame(maxWidth: .infinity, alignment: .leading)
       .background(Color.primaryInfo050)
       .cornerRadius(8)
-
+      
       Text(store.getVoucherDuration())
         .foregroundColor(Color.gray500)
         .bodyLexend(size: 10)
-
+      
       Button {
         onTapTnc()
       } label: {
@@ -319,22 +331,22 @@ struct PaymentView: View {
       onTap()
     }
   }
-
+  
   @ViewBuilder
   func voucherCode(onTap: @escaping () -> Void) -> some View {
     VStack(alignment: .leading) {
       Text("Kode Promo dan Voucher")
         .titleLexend(size: 16)
-
+      
       HStack(spacing: 10) {
         Image("ticket_discount", bundle: .module)
-
+        
         Text("Pilih atau tulis kode")
           .foregroundColor(Color.gray500)
           .titleLexend(size: 14)
-
+        
         Spacer()
-
+        
         Image("ic_chevron", bundle: .module)
       }
       .padding(.horizontal, 12)
@@ -353,25 +365,25 @@ struct PaymentView: View {
       onTap()
     }
   }
-
+  
   @ViewBuilder
   func paymentOptions() -> some View {
     VStack(alignment: .leading, spacing: 8) {
       Text("Metode Pembayaran")
         .foregroundColor(Color.darkTextColor)
         .titleLexend(size: 14)
-
+      
       Text("Anda akan memilih metode pembayaran dihalaman selanjutnya")
         .foregroundColor(Color.gray600)
         .bodyLexend(size: 12)
-
+      
       HStack {
         HStack {
           Image("ic_payment_shopee", bundle: .module)
-
+          
           Divider()
             .frame(width: 2, height: 24)
-
+          
           Image("ic_qrcode", bundle: .module)
         }
         .padding(.horizontal, 8)
@@ -380,7 +392,7 @@ struct PaymentView: View {
           RoundedRectangle(cornerRadius: 4)
             .stroke(Color.gray100)
         }
-
+        
         Image("ic_payment_ovo", bundle: .module)
           .padding(.horizontal, 8)
           .padding(.vertical, 4)
@@ -388,7 +400,7 @@ struct PaymentView: View {
             RoundedRectangle(cornerRadius: 4)
               .stroke(Color.gray100)
           }
-
+        
         Image("ic_payment_dana", bundle: .module)
           .padding(.horizontal, 8)
           .padding(.vertical, 4)
@@ -398,19 +410,19 @@ struct PaymentView: View {
           }
       }
       .frame(height: 40)
-
+      
       HStack {
         Text("Anda akan diarahkan ke")
           .foregroundColor(Color.darkGray400)
           .captionLexend(size: 12)
-
+        
         Image("ic_xendit", bundle: .module)
       }
-
+      
       VStack(spacing: 8) {
         Text("Mohon perhatikan batas waktu pembayaran!")
           .captionLexend(size: 10)
-
+        
         Text(store.getExpiredDate())
           .titleLexend(size: 14)
       }
@@ -419,7 +431,7 @@ struct PaymentView: View {
       .frame(maxWidth: .infinity, maxHeight: 344)
       .background(Color.gray050)
       .cornerRadius(8)
-
+      
     }
     .padding(.all, 12)
     .frame(maxWidth: .infinity)
@@ -427,13 +439,13 @@ struct PaymentView: View {
     .cornerRadius(12)
     .shadow(color: .gray200, radius: 8)
   }
-
+  
   @ViewBuilder
   func paymentDetail() -> some View {
     VStack(alignment: .leading, spacing: 12) {
       Text("Rincian pembayaran")
         .titleLexend(size: 14)
-
+      
       ForEach(store.getPaymentDetails()) { fee in
         FeeRowView(
           name: fee.getName(),
@@ -448,16 +460,16 @@ struct PaymentView: View {
           }
         )
       }
-
+      
       Divider()
         .frame(height: 1)
-
+      
       HStack {
         Text("Total Pembayaran")
           .titleLexend(size: 16)
-
+        
         Spacer()
-
+        
         Text(store.getTotalAmount())
           .titleLexend(size: 16)
       }
@@ -468,7 +480,7 @@ struct PaymentView: View {
     .cornerRadius(12)
     .shadow(color: .gray200, radius: 8)
   }
-
+  
 }
 
 #Preview {
