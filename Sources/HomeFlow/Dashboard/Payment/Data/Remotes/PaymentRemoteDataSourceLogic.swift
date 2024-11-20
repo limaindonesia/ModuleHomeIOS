@@ -31,6 +31,11 @@ public protocol PaymentRemoteDataSourceLogic {
     parameters: [String : Any]
   ) async throws -> Bool
   
+  func requestRejectionPayment(
+    headers: [String : String],
+    parameters: [String : Any]
+  ) async throws -> Bool
+  
 }
 
 public struct PaymentRemoteDataSource: PaymentRemoteDataSourceLogic,
@@ -147,6 +152,35 @@ public struct PaymentRemoteDataSource: PaymentRemoteDataSourceLogic,
       )
       let json = try JSONDecoder().decode(UserCasesGetResp.self, from: data)
       return json
+    } catch {
+      guard let error = error as? NetworkErrorMessage else {
+        throw NetworkErrorMessage(
+          code: -1,
+          description: "Unknown Error"
+        )
+      }
+      
+      throw error
+    }
+    
+  }
+  
+  public func requestRejectionPayment(
+    headers: [String : String],
+    parameters: [String : Any]
+  ) async throws -> Bool {
+    
+    do {
+      let data = try await service.request(
+        with: "",
+        withMethod: .get,
+        withHeaders: headers,
+        withParameter: parameters,
+        withEncoding: .url
+      )
+      let succeeded = try JSONDecoder().decode(Bool.self, from: data)
+      return succeeded
+      
     } catch {
       guard let error = error as? NetworkErrorMessage else {
         throw NetworkErrorMessage(

@@ -151,4 +151,11 @@ public struct FakePaymentRemoteDataSource: PaymentRemoteDataSourceLogic,
     return .init()
   }
   
+  public func requestRejectionPayment(
+    headers: [String : String],
+    parameters: [String : Any]
+  ) async throws -> Bool {
+    return true
+  }
+  
 }
