@@ -248,6 +248,31 @@ public class PaymentStore: ObservableObject {
     }
   }
   
+  @MainActor
+  public func requestRejectionPayment(id: Int) async -> Bool {
+    var success: Bool = false
+    
+    indicateLoading()
+    
+    guard let token = userSessionData?.remoteSession.remoteToken else {
+      return false
+    }
+    
+    do {
+        success = try await paymentRepository.requestRejectionPayment(
+        headers: HeaderRequest(token: token),
+        parameters: PaymentRejectionRequest(id: id)
+      )
+      
+      indicateSuccess()
+    } catch {
+      guard let error = error as? ErrorMessage else { return false }
+      indicateError(error: error)
+    }
+  
+    return success
+  }
+  
   //MARK: - Other function
   
   private func setDuration(_ duration: Int) {

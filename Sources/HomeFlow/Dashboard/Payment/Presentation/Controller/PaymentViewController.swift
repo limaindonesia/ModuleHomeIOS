@@ -102,17 +102,33 @@ public class PaymentViewController: NiblessViewController, SuccessViewDelegate {
     
     let contentView = RejectionBottomSheetRooView(store: bottomStore)
     contentView.onTapReject = { [weak self] value in
-      self?.dismissRejectionSheet()
+      guard let self = self,
+            let id = value.selectedReason?.id
+      else { return }
+      
+      Task {
+        let success = await self.store.requestRejectionPayment(id: id)
+        if success {
+          self.dismissRejectionSheet()
+          self.store.hideReasonBottomSheet()
+          try await Task.sleep(nanoseconds: 1 * 1_000_000_000)
+          self.navigationController?.popViewController(animated: true)
+        }
+      }
+     
     }
+    
     contentView.onTapCancel = { [weak self] in
       self?.dismissRejectionSheet()
+      self?.store.hideReasonBottomSheet()
     }
+    
     contentView.delegate = self
     
     let rejectionController = RejectionReasonBottomViewController()
       .setStore(bottomStore)
       .setContentView(contentView)
-      .setUsedFixedHeight(with: 600)
+      .setUsedFixedHeight(with: 560)
       .setDismissable(true)
     
     rejectionBottomSheetManager = DismissableActionBottomSheetManager(
@@ -128,6 +144,7 @@ public class PaymentViewController: NiblessViewController, SuccessViewDelegate {
       guard let self = self else { return }
       self.rejectionBottomSheetManager = nil
       self.hideTabbar(false)
+      self.store.hideReasonBottomSheet()
     }
     
     hideTabbar(true)
@@ -135,12 +152,7 @@ public class PaymentViewController: NiblessViewController, SuccessViewDelegate {
   
   private func dismissRejectionSheet() {
     guard let _ = rejectionBottomSheetManager else { return }
-    
     rejectionBottomSheetManager.hide()
-    
-    DispatchQueue.main.asyncAfter(deadline: .now() + 1){
-      self.navigationController?.popViewController(animated: true)
-    }
   }
   
   private func hideTabbar(_ state: Bool) {

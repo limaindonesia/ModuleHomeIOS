@@ -174,4 +174,12 @@ public struct PaymentRepository: PaymentRepositoryLogic,
     
   }
   
+  public func requestRejectionPayment(
+    headers: HeaderRequest,
+    parameters: PaymentRejectionRequest
+  ) async throws -> Bool {
+    
+    return true
+  }
+  
 }

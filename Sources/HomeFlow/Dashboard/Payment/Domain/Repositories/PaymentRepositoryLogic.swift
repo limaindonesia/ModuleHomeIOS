@@ -30,4 +30,9 @@ public protocol PaymentRepositoryLogic {
     parameters: VoucherParamRequest
   ) async throws -> Bool
 
+  func requestRejectionPayment(
+    headers: HeaderRequest,
+    parameters: PaymentRejectionRequest
+  ) async throws -> Bool
+  
 }

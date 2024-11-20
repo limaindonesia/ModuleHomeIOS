@@ -123,6 +123,7 @@ struct PaymentView: View {
           totalAdjustment: store.getTotalAdjustment(),
           onCancelled: {
             store.showReasonBottomSheet()
+            store.hideWarningPaymentBottomSheet()
           },
           onPayment: {
             store.hideWarningPaymentBottomSheet()

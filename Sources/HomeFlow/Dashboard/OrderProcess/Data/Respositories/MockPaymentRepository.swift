@@ -61,5 +61,12 @@ public struct MockPaymentRepository: PaymentRepositoryLogic {
   ) async throws -> Bool {
     fatalError()
   }
+  
+  public func requestRejectionPayment(
+    headers: HeaderRequest,
+    parameters: PaymentRejectionRequest
+  ) async throws -> Bool {
+    fatalError()
+  }
 
 }
