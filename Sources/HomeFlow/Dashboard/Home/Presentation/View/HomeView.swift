@@ -71,16 +71,19 @@ public struct HomeView: View {
   
   @ViewBuilder
   func loadContent(width: CGFloat) -> some View {
-    if store.showShimmer {
-      LazyVStack {
-        ForEach(0..<5) { _ in
-          CardShimmer()
-        }
-      }
-      .padding(.top, 100)
-    } else {
-      homeContentView()
-    }
+    
+    homeContentView()
+    
+//    if store.showShimmer {
+//      LazyVStack {
+//        ForEach(0..<5) { _ in
+//          CardShimmer()
+//        }
+//      }
+//      .padding(.top, 100)
+//    } else {
+//      homeContentView()
+//    }
   }
   
   @ViewBuilder
@@ -120,7 +123,7 @@ public struct HomeView: View {
               }, onTapSKTM: {
                 store.navigateToDetailSKTM()
               }
-            ).padding(.top, 340)
+            ).padding(.top, 330)
             
             activeAdvocates(store.onlinedAdvocates)
           }
@@ -320,27 +323,37 @@ public struct HomeView: View {
         .padding(.bottom, 20)
         .background(
           LinearGradient(
-            colors: [
-              Color.buttonActiveColor,
-              Color.primary200,
-              Color.white
-            ],
-            startPoint: .top,
-            endPoint: .bottom
-          )
+                stops: [
+                  Gradient.Stop(color: Color(red: 0.04, green: 0.31, blue: 0.64), location: 0.00),
+                  Gradient.Stop(color: Color(red: 0.32, green: 0.51, blue: 0.74).opacity(0.71), location: 0.45),
+                  Gradient.Stop(color: .white.opacity(0), location: 1.00),
+                ],
+                startPoint: UnitPoint(x: 0.48, y: 0.55),
+                endPoint: UnitPoint(x: 0.48, y: 1)
+              )
         )
         .position(x: frame.midX, y: 100)
         .zIndex(1)
         
-        KFImage(store.promotionBannerViewModel.bannerImageURL)
+        Image("bg_home", bundle: .module)
           .resizable()
           .aspectRatio(contentMode: .fill)
 //          .frame(height: 264)
-          .position(x: frame.midX, y: 250)
+          .position(x: frame.midX, y: 240)
           .zIndex(0)
           .onTapGesture {
             store.navigateToAdvocateList()
           }
+        
+//        KFImage(store.promotionBannerViewModel.bannerImageURL)
+//          .resizable()
+//          .aspectRatio(contentMode: .fill)
+////          .frame(height: 264)
+//          .position(x: frame.midX, y: 255)
+//          .zIndex(1)
+//          .onTapGesture {
+//            store.navigateToAdvocateList()
+//          }
         
       }
       
@@ -564,9 +577,9 @@ public struct HomeView: View {
         
         VStack(alignment: .leading, spacing: 4) {
           Text("Konsultasi Hukum Online")
-            .titleStyle(size: 16)
+            .titleLexend(size: 16)
           Text("Rasakan BEBASnya konsultasi hukum via chat, voice call atau video call.")
-            .captionStyle(size: 12)
+            .captionLexend(size: 12)
             .padding(.trailing, 12)
         }
       }

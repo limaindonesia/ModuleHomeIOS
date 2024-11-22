@@ -27,7 +27,7 @@ public struct PromotionBannerView: View {
     self.onTapClose = onTapClose
   }
   
-  public var body: some View {
+  public var oldbody: some View {
     VStack {
       KFImage(imageURL)
         .resizable()
@@ -48,7 +48,7 @@ public struct PromotionBannerView: View {
     }
   }
   
-  public var oldbody: some View {
+  public var body: some View {
     
     VStack {
       
