@@ -639,6 +639,7 @@ public class PaymentStore: ObservableObject {
   private func observer() {
     paymentTimeRemaining
       .dropFirst()
+      .removeDuplicates()
       .receive(on: RunLoop.main)
       .subscribe(on: RunLoop.main)
       .sink { value in
