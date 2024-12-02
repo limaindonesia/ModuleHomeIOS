@@ -145,4 +145,8 @@ public struct FakeHomeRemoteDataSource: HomeRemoteDataSourceLogic,
     return .init()
   }
   
+  public func requestMe(headers: [String : String]) async throws -> MeResponseModel {
+    fatalError()
+  }
+  
 }

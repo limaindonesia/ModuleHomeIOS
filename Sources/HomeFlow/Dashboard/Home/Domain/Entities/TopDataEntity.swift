@@ -34,7 +34,7 @@ public struct TopDataEntity {
       12 : "Desember"
     ]
 
-    return monthString[month]!
+    return monthString[month] ?? ""
   }
 
 }

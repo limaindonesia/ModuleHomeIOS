@@ -39,7 +39,8 @@ public protocol PaymentRemoteDataSourceLogic {
 }
 
 public struct PaymentRemoteDataSource: PaymentRemoteDataSourceLogic,
-                                       OngoingUserCaseRemoteDataSourceLogic {
+                                       OngoingUserCaseRemoteDataSourceLogic,
+                                       PaymentCancelationRemoteDataSourceLogic {
   
   private let service: NetworkServiceLogic
   
@@ -192,6 +193,86 @@ public struct PaymentRemoteDataSource: PaymentRemoteDataSourceLogic,
       throw error
     }
     
+  }
+  
+  public func requestCancelationReason(headers: [String : String]) async throws -> ReasonResponseModel {
+    do {
+      let data = try await service.request(
+        with: Endpoint.CANCELLATION_REASON,
+        withMethod: .get,
+        withHeaders: [:],
+        withParameter: [:],
+        withEncoding: .url
+      )
+      let model = try JSONDecoder().decode(ReasonResponseModel.self, from: data)
+      return model
+      
+    } catch {
+      guard let error = error as? NetworkErrorMessage else {
+        throw NetworkErrorMessage(
+          code: -1,
+          description: "Unknown Error"
+        )
+      }
+      
+      throw error
+    }
+  }
+  
+  public func requestCancelReason(
+    headers: [String : String],
+    parameters: [String : Any]
+  ) async throws -> Bool {
+    
+    do {
+      let data = try await service.request(
+        with: Endpoint.CANCELLATION_REASON,
+        withMethod: .post,
+        withHeaders: headers,
+        withParameter: parameters,
+        withEncoding: .json
+      )
+      let succeeded = try JSONDecoder().decode(Bool.self, from: data)
+      return succeeded
+      
+    } catch {
+      guard let error = error as? NetworkErrorMessage else {
+        throw NetworkErrorMessage(
+          code: -1,
+          description: "Unknown Error"
+        )
+      }
+      
+      throw error
+    }
+  }
+  
+  public func requestPaymentCancel(
+    headers: [String : String],
+    parameters: [String : Any]
+  ) async throws -> Bool {
+    
+    do {
+      let data = try await service.request(
+        with: Endpoint.PAYMENT_CANCEL,
+        withMethod: .post,
+        withHeaders: headers,
+        withParameter: parameters,
+        withEncoding: .json
+      )
+      let succeeded = try JSONDecoder().decode(Bool.self, from: data)
+      return succeeded
+      
+    } catch {
+      guard let error = error as? NetworkErrorMessage else {
+        throw NetworkErrorMessage(
+          code: -1,
+          description: "Unknown Error"
+        )
+      }
+      
+      throw error
+    }
   }
   
 }

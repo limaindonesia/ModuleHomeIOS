@@ -9,17 +9,17 @@ import Foundation
 import AprodhitKit
 
 public protocol PaymentRepositoryLogic {
-
+  
   func requestOrderByNumber(
     _ headers: HeaderRequest,
     _ parameters: OrderNumberParamRequest
   ) async throws -> OrderEntity
-
+  
   func requestUseVoucher(
     headers: HeaderRequest,
     parameters: VoucherParamRequest
   ) async throws -> VoucherEntity
-
+  
   func requestCreatePayment(
     headers: HeaderRequest,
     parameters: PaymentParamRequest
@@ -29,7 +29,7 @@ public protocol PaymentRepositoryLogic {
     headers: HeaderRequest,
     parameters: VoucherParamRequest
   ) async throws -> Bool
-
+  
   func requestRejectionPayment(
     headers: HeaderRequest,
     parameters: PaymentRejectionRequest

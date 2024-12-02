@@ -145,7 +145,7 @@ public struct PaymentRepository: PaymentRepositoryLogic,
     headers: [String : String],
     parameters: UserCasesParamRequest
   ) async throws -> [UserCases] {
-   
+    
     do {
       let response = try await remote.fetchOngoingUserCases(
         headers: headers,

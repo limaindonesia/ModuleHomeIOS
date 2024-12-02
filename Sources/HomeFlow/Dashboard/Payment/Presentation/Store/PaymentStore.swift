@@ -19,6 +19,7 @@ public class PaymentStore: ObservableObject {
   private let paymentRepository: PaymentRepositoryLogic
   private let treatmentRepository: TreatmentRepositoryLogic
   private let ongoingRepository: OngoingRepositoryLogic
+  private let cancelationRepository: PaymentCancelationRepositoryLogic
   private let ongoingNavigator: OngoingNavigator
   private let paymentNavigator: PaymentNavigator
   private let dashboardResponder: DashboardResponder
@@ -26,7 +27,6 @@ public class PaymentStore: ObservableObject {
   @Published public var isLoading: Bool = false
   @Published public var isPresentVoucherBottomSheet: Bool = false
   @Published public var timeConsultation: String = ""
-  @Published public var paymentTimeRemaining: TimeInterval = 300
   @Published public var orderViewModel: OrderViewModel = .init()
   @Published public var activateButton: Bool = false
   @Published public var voucherCode: String = ""
@@ -39,19 +39,18 @@ public class PaymentStore: ObservableObject {
   @Published public var showDetailIssues: Bool = false
   @Published public var isPresentReasonBottomSheet: Bool = false
   @Published public var isPresentWarningPaymentBottomSheet: Bool = false
+  @Published public var reasons: [ReasonEntity] = []
+  @Published public var showTimeRemainig: Bool = false
   
+  public var paymentTimeRemaining: CurrentValueSubject<TimeInterval, Never> = .init(0)
   private var treatmentEntities: [TreatmentEntity] = []
   private var message: String = ""
   private var userSessionData: UserSessionData?
   private var paymentEntity: PaymentEntity = .init()
   public var expiredDateTime: String = ""
   private var userCase: UserCases = .init()
-  
-  public let timer = Timer.publish(
-    every: 1,
-    on: .main,
-    in: .common
-  ).autoconnect()
+  public var selectedReason: ReasonEntity? = nil
+  public var reason: String? = nil
   
   private var subscriptions = Set<AnyCancellable>()
   
@@ -65,6 +64,7 @@ public class PaymentStore: ObservableObject {
     self.ongoingNavigator = MockNavigator()
     self.paymentNavigator = MockNavigator()
     self.dashboardResponder = MockNavigator()
+    self.cancelationRepository = MockPaymentRepository()
   }
   
   public init(
@@ -74,6 +74,7 @@ public class PaymentStore: ObservableObject {
     paymentRepository: PaymentRepositoryLogic,
     treatmentRepository: TreatmentRepositoryLogic,
     ongoingRepository: OngoingRepositoryLogic,
+    cancelationRepository: PaymentCancelationRepositoryLogic,
     ongoingNavigator: OngoingNavigator,
     paymentNavigator: PaymentNavigator,
     dashboardResponder: DashboardResponder
@@ -87,17 +88,117 @@ public class PaymentStore: ObservableObject {
     self.ongoingNavigator = ongoingNavigator
     self.paymentNavigator = paymentNavigator
     self.dashboardResponder = dashboardResponder
+    self.cancelationRepository = cancelationRepository
     
     Task {
       await fetchUserSession()
+      await fetchCancelationReasons()
       await fetchTreatment()
       await requestOrderByNumber()
+      await calculateTimeRemainig()
     }
     
     observer()
   }
   
   //MARK: - Fetch API
+  
+  @MainActor
+  public func requestCancelation() async {
+    var success: Bool = false
+    
+    if paymentTimeRemaining.value <= 0 {
+      success = await sendCancelationReason()
+    } else {
+      success = await requestCancelationPayment()
+    }
+    
+    if success {
+      isPresentReasonBottomSheet = false
+      try? await Task.sleep(nanoseconds: 1 * 1_000_000_000)
+      backToHome()
+    }
+  }
+  
+  @MainActor
+  public func sendCancelationReason() async -> Bool {
+    indicateLoading()
+    var success: Bool = false
+    
+    do {
+      guard let token = userSessionData?.remoteSession.remoteToken else {
+        return false
+      }
+      success = try await cancelationRepository.requestCancelReason(
+        headers: HeaderRequest(token: token),
+        parameters: CancelPaymentRequest(
+          orderNumber: getOrderNumber(),
+          reasonID: selectedReason?.id ?? 0,
+          reason: ((selectedReason?.title.contains("Lainnya")) != nil) ? reason : selectedReason?.title
+        )
+      )
+      
+      indicateSuccess()
+      
+    } catch {
+      guard let error = error as? ErrorMessage else {
+        return false
+      }
+      indicateError(error: error)
+    }
+    
+    return success
+  }
+  
+  @MainActor
+  public func requestCancelationPayment() async -> Bool {
+    indicateLoading()
+    var success: Bool = false
+    
+    do {
+      guard let token = userSessionData?.remoteSession.remoteToken else {
+        return false
+      }
+      
+      success = try await cancelationRepository.requestPaymentCancel(
+        headers: HeaderRequest(token: token),
+        parameters: CancelPaymentRequest(
+          orderNumber: getOrderNumber(),
+          reasonID: selectedReason?.id ?? 0,
+          reason: ((selectedReason?.title.contains("Lainnya")) != nil) ? reason : selectedReason?.title
+        )
+      )
+      indicateSuccess()
+    } catch {
+      guard let error = error as? ErrorMessage else { return false }
+      indicateError(error: error)
+    }
+    
+    return success
+  }
+  
+  @MainActor
+  public func fetchCancelationReasons() async {
+    guard let token = userSessionData?.remoteSession.remoteToken
+    else { return }
+    
+    do {
+      reasons = try await cancelationRepository.requestReasons(
+        headers: HeaderRequest(token: token)
+      )
+      
+      GLogger(
+        .info,
+        layer: "Presentation",
+        message: "reasons \(reasons)"
+      )
+      
+      indicateSuccess()
+    } catch {
+      guard let error = error as? ErrorMessage else { return }
+      indicateError(error: error)
+    }
+  }
   
   @MainActor
   public func applyVoucher() async {
@@ -133,8 +234,6 @@ public class PaymentStore: ObservableObject {
     do {
       let entity = try await paymentRepository.requestOrderByNumber(headers, parameters)
       orderViewModel = OrderEntity.mapTo(entity)
-      paymentTimeRemaining = orderViewModel.getRemainingMinutes()
-      
       indicateSuccess()
       hideVoucherBottomSheet()
     } catch {
@@ -259,7 +358,7 @@ public class PaymentStore: ObservableObject {
     }
     
     do {
-        success = try await paymentRepository.requestRejectionPayment(
+      success = try await paymentRepository.requestRejectionPayment(
         headers: HeaderRequest(token: token),
         parameters: PaymentRejectionRequest(id: id)
       )
@@ -269,11 +368,53 @@ public class PaymentStore: ObservableObject {
       guard let error = error as? ErrorMessage else { return false }
       indicateError(error: error)
     }
+    
+    return success
+  }
   
+  @MainActor
+  public func dismissReason() async -> Bool {
+    indicateLoading()
+    var success: Bool = false
+    
+    do {
+      guard let token = userSessionData?.remoteSession.remoteToken else {
+        indicateError(message: "")
+        return false
+      }
+      
+      success = try await cancelationRepository.requestCancelReason(
+        headers: HeaderRequest(token: token),
+        parameters: .init(dismiss: true)
+      )
+      
+      indicateSuccess()
+      
+    } catch {
+      guard let error = error as? ErrorMessage else {
+        return false
+      }
+      indicateError(error: error)
+    }
+    
     return success
   }
   
   //MARK: - Other function
+  
+  @MainActor
+  public func onDismissedReasonBottomSheet() async {
+    if paymentTimeRemaining.value <= 0 {
+      let success = await dismissReason()
+      if success {
+        isPresentReasonBottomSheet = false
+        try? await Task.sleep(nanoseconds: 1 * 1_000_000_000)
+        backToHome()
+      }
+    }
+    
+    hideReasonBottomSheet()
+  }
   
   private func setDuration(_ duration: Int) {
     self.timeConsultation = "\(duration) Menit"
@@ -372,13 +513,10 @@ public class PaymentStore: ObservableObject {
     return lawyerInfoViewModel.detailIssues
   }
   
-  public func receiveTimer() {
-    if paymentTimeRemaining > 0 {
-      paymentTimeRemaining -= 1
-    } else {
-      paymentTimeRemaining = 0
-      timer.upstream.connect().cancel()
-    }
+  @MainActor
+  public func calculateTimeRemainig() async {
+    paymentTimeRemaining.value = orderViewModel.getRemainingMinutes()
+    showTimeRemainig = true
   }
   
   //MARK: - Navigator
@@ -410,6 +548,7 @@ public class PaymentStore: ObservableObject {
   
   private func navigateToPaymentCheck() {
     paymentNavigator.navigateToPaymentCheck(
+      lawyerInfo: lawyerInfoViewModel,
       price: getTotalAmount(),
       roomkey: paymentEntity.roomKey,
       consultId: userCase.booking?.consultation_id ?? 0,
@@ -480,6 +619,11 @@ public class PaymentStore: ObservableObject {
   
   public func hideReasonBottomSheet() {
     isPresentReasonBottomSheet = false
+    Task {
+      if paymentTimeRemaining.value <= 0 {
+        _ = await sendCancelationReason()
+      }
+    }
   }
   
   public func showWarningPaymentBottomSheet() {
@@ -493,6 +637,17 @@ public class PaymentStore: ObservableObject {
   //MARK: - Observer
   
   private func observer() {
+    paymentTimeRemaining
+      .dropFirst()
+      .receive(on: RunLoop.main)
+      .subscribe(on: RunLoop.main)
+      .sink { value in
+        if value <= 0 {
+          self.showReasonBottomSheet()
+        }
+      }
+      .store(in: &subscriptions)
+    
     $voucherCode
       .receive(on: RunLoop.main)
       .subscribe(on: RunLoop.main)

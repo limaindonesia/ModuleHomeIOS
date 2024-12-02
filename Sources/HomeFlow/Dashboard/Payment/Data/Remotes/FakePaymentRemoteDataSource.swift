@@ -10,7 +10,8 @@ import AprodhitKit
 import GnDKit
 
 public struct FakePaymentRemoteDataSource: PaymentRemoteDataSourceLogic,
-                                           OngoingUserCaseRemoteDataSourceLogic {
+                                           OngoingUserCaseRemoteDataSourceLogic,
+                                           PaymentCancelationRemoteDataSourceLogic {
   
   public init() {}
   
@@ -152,6 +153,24 @@ public struct FakePaymentRemoteDataSource: PaymentRemoteDataSourceLogic,
   }
   
   public func requestRejectionPayment(
+    headers: [String : String],
+    parameters: [String : Any]
+  ) async throws -> Bool {
+    return true
+  }
+  
+  public func requestCancelationReason(headers: [String : String]) async throws -> ReasonResponseModel {
+    fatalError()
+  }
+  
+  public func requestCancelReason(
+    headers: [String : String],
+    parameters: [String : Any]
+  ) async throws -> Bool {
+    return true
+  }
+  
+  public func requestPaymentCancel(
     headers: [String : String],
     parameters: [String : Any]
   ) async throws -> Bool {

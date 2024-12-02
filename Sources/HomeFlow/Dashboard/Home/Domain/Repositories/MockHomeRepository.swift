@@ -29,7 +29,7 @@ public struct MockHomeRepository: HomeRepositoryLogic,
     parameters: UserCasesParamRequest
   ) async throws -> [UserCases] {
     
-    fatalError()
+    return []
   }
   
   public func fetchPaymentStatus(
@@ -37,7 +37,7 @@ public struct MockHomeRepository: HomeRepositoryLogic,
     parameters: PaymentStatusRequest
   ) async throws -> PaymentStatusEntity {
     
-    fatalError()
+    return .init()
   }
   
   public init() {}
@@ -110,15 +110,19 @@ public struct MockHomeRepository: HomeRepositoryLogic,
   }
   
   public func fetchNewestArticle() async throws -> [ArticleEntity] {
-    fatalError()
+    return []
   }
   
   public func fetchSKTM(headers: [String : String]) async throws -> ClientGetSKTM {
-    fatalError()
+    return .init()
   }
   
   public func fetchPromotionBanner() async throws -> BannerPromotionEntity {
     return .init()
+  }
+  
+  public func requestMe(headers: HeaderRequest) async throws -> BioEntity {
+    return .init(orderNumber: "PC-10001949485")
   }
   
 }

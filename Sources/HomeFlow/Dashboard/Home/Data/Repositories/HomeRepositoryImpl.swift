@@ -300,4 +300,36 @@ public struct HomeRepositoryImpl: HomeRepositoryLogic,
     
   }
   
+  public func requestMe(headers: HeaderRequest) async throws -> BioEntity {
+    do {
+      let response = try await remoteDataSource.requestMe(headers: headers.toHeaders())
+      
+      guard let data = response.data else {
+        throw ErrorMessage(
+          id: -5,
+          title: "Unkown Error",
+          message: "Unknown Error"
+        )
+      }
+      
+      return BioEntity(orderNumber: data.relation?.orderNoExpired ?? "")
+      
+    } catch {
+      guard let error = error as? NetworkErrorMessage
+      else {
+        throw ErrorMessage(
+          id: -5,
+          title: "Unkown Error",
+          message: error.localizedDescription
+        )
+      }
+      
+      throw ErrorMessage(
+        id: error.code,
+        title: "Failed",
+        message: error.description
+      )
+    }
+  }
+  
 }

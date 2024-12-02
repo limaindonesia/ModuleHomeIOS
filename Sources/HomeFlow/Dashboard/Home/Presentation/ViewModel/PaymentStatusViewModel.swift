@@ -11,18 +11,22 @@ public class PaymentStatusViewModel {
 
   private let paymentURL: String
   public let roomKey: String
+  public let status: String
 
   public init() {
     self.paymentURL = ""
     self.roomKey = ""
+    self.status = ""
   }
 
   public init(
     paymentURL: String,
-    roomKey: String
+    roomKey: String,
+    status: String
   ) {
     self.paymentURL = paymentURL
     self.roomKey = roomKey
+    self.status = status
   }
 
   public func getPaymentURL() -> URL? {

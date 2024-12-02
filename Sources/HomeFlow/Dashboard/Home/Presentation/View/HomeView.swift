@@ -43,6 +43,37 @@ public struct HomeView: View {
         store.hideCategoryBottomSheet()
       }
       
+      BottomSheetView(
+        isPresented: $store.isPresentReasonBottomSheet,
+        dismissable: true
+      ) {
+        CancelationReasonContentView(
+          store: CancelationReasonStore(
+            arrayReasons: store.reasons
+          ),
+          imageURL: store.getImageURL(),
+          lawyerName: store.getLawyersName(),
+          onSendReason: { (entity, reason) in
+            store.selectedReason = entity
+            store.reason = reason
+            Task {
+              await store.requestCancelReason()
+            }
+            
+            GLogger(
+              .info,
+              layer: "Presentation",
+              message: "send reason \(entity.id) : \( entity.title) : \(reason)"
+            )
+          }
+        )
+        .padding(.bottom, 80)
+        
+      } onDismissed: {
+        Task { await store.dismissReason() }
+        store.hideReasonBottomSheet()
+      }
+      
       promotionBanner(
         $store.isPresentPromotionBanner,
         imageURL: store.promotionBannerViewModel.popupImageURL
@@ -64,6 +95,11 @@ public struct HomeView: View {
     .onAppear {
       Task {
         await store.fetchOngoingUserCases()
+        await store.fetchMe()
+        if !store.bioEntity.orderNumber.isEmpty {
+          await store.requestReasons()
+          store.showReasonBottomSheet()
+        }
       }
     }
     
@@ -71,19 +107,16 @@ public struct HomeView: View {
   
   @ViewBuilder
   func loadContent(width: CGFloat) -> some View {
-    
-    homeContentView()
-    
-//    if store.showShimmer {
-//      LazyVStack {
-//        ForEach(0..<5) { _ in
-//          CardShimmer()
-//        }
-//      }
-//      .padding(.top, 100)
-//    } else {
-//      homeContentView()
-//    }
+    if store.showShimmer {
+      LazyVStack {
+        ForEach(0..<5) { _ in
+          CardShimmer()
+        }
+      }
+      .padding(.top, 100)
+    } else {
+      homeContentView()
+    }
   }
   
   @ViewBuilder
@@ -1000,7 +1033,7 @@ public struct HomeView: View {
   HomeView(
     store: HomeStore(
       userSessionDataSource: MockUserSessionDataSource(),
-      repository: HomeRepositoryImpl(
+      homeRepository: HomeRepositoryImpl(
         remoteDataSource: FakeHomeRemoteDataSource()
       ),
       ongoingRepository: HomeRepositoryImpl(
@@ -1009,6 +1042,7 @@ public struct HomeView: View {
       sktmRepository: HomeRepositoryImpl(
         remoteDataSource: FakeHomeRemoteDataSource()
       ),
+      cancelationRepository: MockPaymentRepository(),
       onlineAdvocateNavigator: MockNavigator(),
       topAdvocateNavigator: MockNavigator(),
       articleNavigator: MockNavigator(),

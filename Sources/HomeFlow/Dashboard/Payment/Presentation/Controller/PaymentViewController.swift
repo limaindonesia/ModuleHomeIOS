@@ -176,16 +176,6 @@ public class PaymentViewController: NiblessViewController, SuccessViewDelegate {
           self.stopAnimation()
         }
       }.store(in: &subscriptions)
-    
-    store.$isPresentReasonBottomSheet
-      .dropFirst()
-      .removeDuplicates()
-      .filter{ $0 == true }
-      .receive(on: RunLoop.main)
-      .subscribe(on: RunLoop.main)
-      .sink { _ in
-        self.presentReasonSheet()
-      }.store(in: &subscriptions)
   }
   
   deinit {

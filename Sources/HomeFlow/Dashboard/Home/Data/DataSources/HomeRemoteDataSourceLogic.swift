@@ -35,6 +35,8 @@ public protocol HomeRemoteDataSourceLogic {
   
   func fetchPromotionBanner() async throws -> BannerResponseModel
   
+  func requestMe(headers: [String : String]) async throws -> MeResponseModel
+  
 }
 
 public struct HomeRemoteDataSourceImpl: HomeRemoteDataSourceLogic,
@@ -260,6 +262,29 @@ public struct HomeRemoteDataSourceImpl: HomeRemoteDataSourceLogic,
       
       throw error
       
+    }
+  }
+  
+  public func requestMe(headers: [String : String]) async throws -> MeResponseModel {
+    do {
+      let data = try await service.request(
+        with: Endpoint.ME,
+        withMethod: .get,
+        withHeaders: headers,
+        withParameter: [:],
+        withEncoding: .url
+      )
+      let json = try JSONDecoder().decode(MeResponseModel.self, from: data)
+      return json
+    } catch {
+      guard let error = error as? NetworkErrorMessage else {
+        throw NetworkErrorMessage(
+          code: -1,
+          description: "Unknown Error"
+        )
+      }
+      
+      throw error
     }
   }
   

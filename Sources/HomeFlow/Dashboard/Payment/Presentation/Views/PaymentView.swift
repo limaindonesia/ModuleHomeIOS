@@ -25,7 +25,6 @@ struct PaymentView: View {
           VStack(spacing: 12) {
             lawyerInfoView(
               orderID: store.getOrderNumber(),
-              timeRemaining: store.paymentTimeRemaining.timeString(),
               imageURL: store.getAvatarImage(),
               name: store.getLawyersName(),
               agency: store.getAgency(),
@@ -131,6 +130,37 @@ struct PaymentView: View {
         )
       }
       
+      BottomSheetView(
+        isPresented: $store.isPresentReasonBottomSheet,
+        dismissable: true
+      ) {
+        CancelationReasonContentView(
+          store: CancelationReasonStore(
+            arrayReasons: store.reasons
+          ),
+          imageURL: store.getAvatarImage(),
+          lawyerName: store.getLawyersName(),
+          onSendReason: { (entity, reason) in
+            store.selectedReason = entity
+            store.reason = reason
+            Task {
+              await store.requestCancelation()
+            }
+            
+            GLogger(
+              .info,
+              layer: "Presentation",
+              message: "send reason \(entity.id) : \( entity.title) : \(reason)"
+            )
+          }
+        )
+        
+      } onDismissed: {
+        Task {
+          await store.onDismissedReasonBottomSheet()
+        }
+      }
+      
     }
     
   }
@@ -138,7 +168,6 @@ struct PaymentView: View {
   @ViewBuilder
   func lawyerInfoView(
     orderID: String,
-    timeRemaining: String,
     imageURL: URL?,
     name: String,
     agency: String,
@@ -165,12 +194,12 @@ struct PaymentView: View {
             .renderingMode(.template)
             .foregroundColor(Color.white)
           
-          Text(timeRemaining)
-            .foregroundColor(Color.white)
-            .titleLexend(size: 12)
-            .onReceive(store.timer) { _ in
-              store.receiveTimer()
+          if store.showTimeRemainig {
+            TimerTextView(paymentTimeRemaining: store.paymentTimeRemaining.value) { newValue in
+              store.paymentTimeRemaining.value = newValue
             }
+          }
+          
         }
         .padding(.all, 4)
         .background(Color.warning500)

@@ -16,6 +16,10 @@ public struct UserCasesParamRequest: Paramable {
   }
 
   func toParam() -> [String : Any] {
+    guard !type.isEmpty else {
+      return [:]
+    }
+    
     return ["type" : type]
   }
 

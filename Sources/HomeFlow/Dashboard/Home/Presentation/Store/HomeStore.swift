@@ -18,10 +18,11 @@ public class HomeStore: ObservableObject {
   
   //MARK: - Properties
   //Dependencies
-  private let repository: HomeRepositoryLogic
+  private let homeRepository: HomeRepositoryLogic
   private let ongoingRepository: OngoingRepositoryLogic
   private let sktmRepository: SKTMRepositoryLogic
   private let userSessionDataSource: UserSessionDataSourceLogic
+  private let cancelationRepository: PaymentCancelationRepositoryLogic
   private let onlineAdvocateNavigator: OnlineAdvocateNavigator
   private let topAdvocateNavigator: TopAdvocateNavigator
   private let articleNavigator: ArticleNavigator
@@ -68,20 +69,27 @@ public class HomeStore: ObservableObject {
   @Published public var isPresentPromotionBanner: Bool = false
   @Published public var showShimmer: Bool = false
   @Published public var sktmModel: ClientGetSKTM? = nil
+  @Published public var isPresentReasonBottomSheet: Bool = false
+  @Published public var reasons: [ReasonEntity] = []
+  @Published public var bioEntity: BioEntity = .init()
   
   //Variables
+  
   private var socket: AprodhitKit.SocketServiceProtocol!
   private var userSessionData: UserSessionData? = nil
   private var client: DataOPClient? = nil
   private var subscriptions = Set<AnyCancellable>()
   private var paymentStatus: PaymentStatusViewModel = .init()
   public var promotionBannerViewModel: BannerPromotionViewModel = .init()
+  public var selectedReason: ReasonEntity? = nil
+  public var reason: String? = nil
   
   public init(
     userSessionDataSource: UserSessionDataSourceLogic,
-    repository: HomeRepositoryLogic,
+    homeRepository: HomeRepositoryLogic,
     ongoingRepository: OngoingRepositoryLogic,
     sktmRepository: SKTMRepositoryLogic,
+    cancelationRepository: PaymentCancelationRepositoryLogic,
     onlineAdvocateNavigator: OnlineAdvocateNavigator,
     topAdvocateNavigator: TopAdvocateNavigator,
     articleNavigator: ArticleNavigator,
@@ -95,9 +103,10 @@ public class HomeStore: ObservableObject {
   ) {
     
     self.userSessionDataSource = userSessionDataSource
-    self.repository = repository
+    self.homeRepository = homeRepository
     self.ongoingRepository = ongoingRepository
     self.sktmRepository = sktmRepository
+    self.cancelationRepository = cancelationRepository
     self.onlineAdvocateNavigator = onlineAdvocateNavigator
     self.topAdvocateNavigator = topAdvocateNavigator
     self.articleNavigator = articleNavigator
@@ -131,7 +140,6 @@ public class HomeStore: ObservableObject {
       await fetchOngoingUserCases()
       await fetchAllAPI()
       await fetchSKTM()
-      
       showShimmer = false
     }
     
@@ -181,6 +189,27 @@ public class HomeStore: ObservableObject {
   
   //MARK: - Fetch Data from API
   
+  @MainActor
+  public func fetchMe() async {
+    do {
+      guard let token = userSessionData?.remoteSession.remoteToken
+      else {
+        GLogger(.info, layer: "Presentation", message: "token nil")
+        return
+      }
+      
+      bioEntity = try await homeRepository.requestMe(headers: HeaderRequest(token: token))
+      
+    } catch {
+      guard let error = error as? ErrorMessage
+      else {
+        return
+      }
+      
+      indicateError(error: error)
+    }
+  }
+  
   public func fetchAllAPI() async {
     async let advocateViewModels = fetchOnlineAdvocates()
     async let skillViewModels = fetchSkills()
@@ -201,7 +230,7 @@ public class HomeStore: ObservableObject {
     
     do {
       let params = AdvocateParamRequest(isOnline: true)
-      let items = try await repository.fetchOnlineAdvocates(params: params)
+      let items = try await homeRepository.fetchOnlineAdvocates(params: params)
       showOnlineAdvocates = true
       
       if items.count > 5 {
@@ -227,7 +256,7 @@ public class HomeStore: ObservableObject {
     var skillViewModels: [AdvocateSkills] = []
     
     do {
-      let model = try await repository.fetchSkills(params: nil)
+      let model = try await homeRepository.fetchSkills(params: nil)
       skillViewModels = model
       showCategories = true
       
@@ -245,7 +274,7 @@ public class HomeStore: ObservableObject {
     var advocates: [TopAdvocateViewModel] = []
     var agencies: [TopAgencyViewModel] = []
     do {
-      let (dataEntity, advocateEntities, agencyEntities) = try await repository.fetchTopAdvocates()
+      let (dataEntity, advocateEntities, agencyEntities) = try await homeRepository.fetchTopAdvocates()
       topAdvocateMonth = dataEntity.getPeriode()
       advocates = advocateEntities.map(TopAdvocateEntity.mapTo(_:))
       agencies = agencyEntities.map(TopAgencyEntity.mapTo(_:))
@@ -262,7 +291,7 @@ public class HomeStore: ObservableObject {
     var viewModels: [CategoryArticleViewModel] = []
     
     do {
-      let entities = try await repository.fetchCategoryArticle()
+      let entities = try await homeRepository.fetchCategoryArticle()
       viewModels = entities.map(CategoryArticleEntity.mapTo(_:))
       viewModels.insert(
         CategoryArticleViewModel(
@@ -287,7 +316,7 @@ public class HomeStore: ObservableObject {
   public func fetchArticle(with name: String) async -> [ArticleViewModel] {
     var viewModels: [ArticleViewModel] = []
     do {
-      let entities = try await repository.fetchArticles(params: ArticleParamRequest(name: name))
+      let entities = try await homeRepository.fetchArticles(params: ArticleParamRequest(name: name))
       viewModels = entities.map(ArticleEntity.mapTo(_:))
     } catch {
       guard let error = error as? ErrorMessage
@@ -301,7 +330,7 @@ public class HomeStore: ObservableObject {
   private func fetchNewestArticle() async -> [ArticleViewModel] {
     var viewModels: [ArticleViewModel] = []
     do {
-      let entities = try await repository.fetchNewestArticle()
+      let entities = try await homeRepository.fetchNewestArticle()
       viewModels = entities.map(ArticleEntity.mapTo(_:))
     } catch {
       guard let error = error as? ErrorMessage
@@ -358,7 +387,7 @@ public class HomeStore: ObservableObject {
       return
     }
     do {
-      let entity = try await repository.fetchPaymentStatus(
+      let entity = try await homeRepository.fetchPaymentStatus(
         headers: HeaderRequest(token: data.remoteSession.remoteToken).toHeaders(),
         parameters: .init(orderNumber: userCases.order_no ?? "")
       )
@@ -375,7 +404,7 @@ public class HomeStore: ObservableObject {
   
   public func requestPromotionBanner() async {
     do {
-      let entity = try await repository.fetchPromotionBanner()
+      let entity = try await homeRepository.fetchPromotionBanner()
       promotionBannerViewModel = BannerPromotionEntity.mapTo(entity)
     } catch {
       if let error = error as? ErrorMessage {
@@ -383,7 +412,7 @@ public class HomeStore: ObservableObject {
       }
     }
   }
-  
+    
   public func onRefresh() async {
     indicateLoading()
     hideTabBar = true
@@ -403,12 +432,99 @@ public class HomeStore: ObservableObject {
     await fetchAllAPI()
     await fetchOngoingUserCases()
     await fetchSKTM()
+    await fetchMe()
+    
+    if !bioEntity.orderNumber.isEmpty {
+      await requestReasons()
+      showReasonBottomSheet()
+    }
     
     indicateSuccess(message: "")
     hideTabBar = false
   }
   
+  @MainActor
+  public func requestReasons() async {
+    do {
+      guard let token = userSessionData?.remoteSession.remoteToken else {
+        return
+      }
+      reasons = try await cancelationRepository.requestReasons(headers: HeaderRequest(token: token))
+      indicateSuccess()
+    } catch {
+      guard let error = error as? ErrorMessage else { return }
+      indicateError(error: error)
+    }
+  }
+  
+  @MainActor
+  private func sendCancelationReason() async -> Bool {
+    indicateLoading()
+    var success: Bool = false
+    
+    do {
+      guard let token = userSessionData?.remoteSession.remoteToken else {
+        indicateError(message: "")
+        return false
+      }
+      
+      success = try await cancelationRepository.requestCancelReason(
+        headers: HeaderRequest(token: token),
+        parameters: CancelPaymentRequest(
+          orderNumber: bioEntity.orderNumber,
+          reasonID: selectedReason?.id ?? 0,
+          reason: selectedReason?.title == "Lainnya" ? reason : selectedReason?.title
+        )
+      )
+      
+      indicateSuccess()
+      
+    } catch {
+      guard let error = error as? ErrorMessage else {
+        return false
+      }
+      indicateError(error: error)
+    }
+    
+    return success
+  }
+  
+  @MainActor
+  public func dismissReason() async -> Bool {
+    indicateLoading()
+    var success: Bool = false
+    
+    do {
+      guard let token = userSessionData?.remoteSession.remoteToken else {
+        indicateError(message: "")
+        return false
+      }
+      
+      success = try await cancelationRepository.requestCancelReason(
+        headers: HeaderRequest(token: token),
+        parameters: .init(dismiss: true)
+      )
+      
+      indicateSuccess()
+      
+    } catch {
+      guard let error = error as? ErrorMessage else {
+        return false
+      }
+      indicateError(error: error)
+    }
+    
+    return success
+  }
+  
   //MARK: - Other function
+  
+  @MainActor
+  public func requestCancelReason() async {
+    if await sendCancelationReason() {
+      hideReasonBottomSheet()
+    }
+  }
   
   public func appsflyerConnect() {
     
@@ -500,6 +616,14 @@ public class HomeStore: ObservableObject {
     }
   }
   
+  public func getImageURL() -> URL? {
+    return userCases.lawyer?.getImageName()
+  }
+  
+  public func getLawyersName() -> String {
+    return userCases.lawyer?.getName() ?? ""
+  }
+  
   //MARK: - Indicator
   
   private func indicateLoading() {
@@ -530,6 +654,11 @@ public class HomeStore: ObservableObject {
     isRefreshing = false
   }
   
+  private func indicateSuccess() {
+    isLoading = false
+    isRefreshing = false
+  }
+  
   public func dismissAlert() {
     if unauthorized {
       NLog(
@@ -546,6 +675,16 @@ public class HomeStore: ObservableObject {
   
   public func dismissPromotionBanner() {
     isPresentPromotionBanner = false
+  }
+  
+  public func showReasonBottomSheet() {
+    isPresentReasonBottomSheet = true
+    hideTabBar = true
+  }
+  
+  public func hideReasonBottomSheet() {
+    isPresentReasonBottomSheet = false
+    hideTabBar = false
   }
   
   //MARK: - Navigator
