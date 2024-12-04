@@ -41,6 +41,8 @@ public class PaymentStore: ObservableObject {
   @Published public var isPresentWarningPaymentBottomSheet: Bool = false
   @Published public var reasons: [ReasonEntity] = []
   @Published public var showTimeRemainig: Bool = false
+  @Published var isVirtualAccountChecked: Bool = false
+  @Published var isEWalletChecked: Bool = false
   
   public var paymentTimeRemaining: CurrentValueSubject<TimeInterval, Never> = .init(0)
   private var treatmentEntities: [TreatmentEntity] = []
@@ -403,6 +405,24 @@ public class PaymentStore: ObservableObject {
   //MARK: - Other function
   
   @MainActor
+  public func checkVirtualAccount() {
+    if !isVirtualAccountChecked {
+      isVirtualAccountChecked = true
+      isEWalletChecked = false
+      return
+    }
+  }
+  
+  @MainActor
+  public func checkEWallet() {
+    if !isEWalletChecked {
+      isEWalletChecked = true
+      isVirtualAccountChecked = false
+      return
+    }
+  }
+  
+  @MainActor
   public func onDismissedReasonBottomSheet() async {
     if paymentTimeRemaining.value <= 0 {
       let success = await dismissReason()
@@ -637,6 +657,23 @@ public class PaymentStore: ObservableObject {
   //MARK: - Observer
   
   private func observer() {
+    
+    $isVirtualAccountChecked
+      .dropFirst()
+      .receive(on: RunLoop.main)
+      .subscribe(on: RunLoop.main)
+      .sink { value in
+        
+      }.store(in: &subscriptions)
+    
+    $isEWalletChecked
+      .dropFirst()
+      .receive(on: RunLoop.main)
+      .subscribe(on: RunLoop.main)
+      .sink { value in
+        
+      }.store(in: &subscriptions)
+    
     paymentTimeRemaining
       .dropFirst()
       .removeDuplicates()

@@ -398,56 +398,22 @@ struct PaymentView: View {
   
   @ViewBuilder
   func paymentOptions() -> some View {
-    VStack(alignment: .leading, spacing: 8) {
-      Text("Metode Pembayaran")
+    VStack(alignment: .leading, spacing: 12) {
+      Text("Pilih Metode Pembayaran")
         .foregroundColor(Color.darkTextColor)
         .titleLexend(size: 14)
       
-      Text("Anda akan memilih metode pembayaran dihalaman selanjutnya")
-        .foregroundColor(Color.gray600)
-        .bodyLexend(size: 12)
-      
       HStack {
-        HStack {
-          Image("ic_payment_shopee", bundle: .module)
-          
-          Divider()
-            .frame(width: 2, height: 24)
-          
-          Image("ic_qrcode", bundle: .module)
-        }
-        .padding(.horizontal, 8)
-        .padding(.vertical, 4)
-        .overlay{
-          RoundedRectangle(cornerRadius: 4)
-            .stroke(Color.gray100)
-        }
-        
-        Image("ic_payment_ovo", bundle: .module)
-          .padding(.horizontal, 8)
-          .padding(.vertical, 4)
-          .overlay{
-            RoundedRectangle(cornerRadius: 4)
-              .stroke(Color.gray100)
-          }
-        
-        Image("ic_payment_dana", bundle: .module)
-          .padding(.horizontal, 8)
-          .padding(.vertical, 4)
-          .overlay{
-            RoundedRectangle(cornerRadius: 4)
-              .stroke(Color.gray100)
-          }
-      }
-      .frame(height: 40)
-      
-      HStack {
-        Text("Anda akan diarahkan ke")
+        Text("Pembayaran akan dilakukan dengan")
           .foregroundColor(Color.darkGray400)
           .captionLexend(size: 12)
         
         Image("ic_xendit", bundle: .module)
       }
+      
+      virtualAccountOptions()
+      
+      eWalletOptions()
       
       VStack(spacing: 8) {
         Text("Mohon perhatikan batas waktu pembayaran!")
@@ -509,6 +475,116 @@ struct PaymentView: View {
     .background(Color.white)
     .cornerRadius(12)
     .shadow(color: .gray200, radius: 8)
+  }
+  
+  @ViewBuilder
+  func virtualAccountOptions() -> some View {
+    VStack(alignment: .leading) {
+      
+      HStack {
+        Text("Virtual Account")
+          .titleLexend(size: 14)
+        
+        Spacer()
+        
+        CheckboxCheckListView(
+          isSelected: store.isVirtualAccountChecked,
+          action: {
+            withAnimation(.smooth) {
+              store.checkVirtualAccount()
+            }
+          }
+        )
+      }
+      
+      Divider()
+        .frame(maxWidth: .infinity, maxHeight: 1)
+        .background(Color.gray200)
+      
+      HStack {
+        Image("ic_mandiri", bundle: .module)
+        
+        Image("ic_bri", bundle: .module)
+        
+        Image("ic_bni", bundle: .module)
+        
+        Image("ic_bca", bundle: .module)
+      }
+    }
+    .padding(.all, 12)
+    .frame(maxWidth: .infinity)
+    .background(
+      store.isVirtualAccountChecked
+      ? Color.primaryInfo050
+      : Color.white
+    )
+    .clipShape(RoundedRectangle(cornerRadius: 8))
+    .overlay {
+      RoundedRectangle(cornerRadius: 8).stroke(
+        Color.primaryInfo200,
+        lineWidth: store.isVirtualAccountChecked ? 1.5 : 0
+      )
+    }
+    .shadow(color: Color.gray100, radius: 5)
+  }
+  
+  @ViewBuilder
+  func eWalletOptions() -> some View {
+    VStack(alignment: .leading) {
+      
+      HStack {
+        Text("E-Wallet")
+          .titleLexend(size: 14)
+        
+        Spacer()
+        
+        CheckboxCheckListView(
+          isSelected: store.isEWalletChecked,
+          action: {
+            withAnimation(.smooth) {
+              store.checkEWallet()
+            }
+          }
+        )
+      }
+      
+      Divider()
+        .frame(maxWidth: .infinity, maxHeight: 1)
+        .background(Color.gray200)
+      
+      HStack(spacing: 16) {
+        
+        Image("ic_payment_ovo", bundle: .module)
+        
+        Image("ic_payment_dana", bundle: .module)
+        
+        HStack {
+          Image("ic_payment_shopee", bundle: .module)
+          
+          Divider()
+            .frame(width: 2, height: 24)
+          
+          Image("ic_qrcode", bundle: .module)
+        }
+        
+      }
+      .frame(height: 40)
+    }
+    .padding(.all, 12)
+    .frame(maxWidth: .infinity)
+    .background(
+      store.isEWalletChecked
+      ? Color.primaryInfo050
+      : Color.white
+    )
+    .clipShape(RoundedRectangle(cornerRadius: 8))
+    .overlay {
+      RoundedRectangle(cornerRadius: 8).stroke(
+        Color.primaryInfo200,
+        lineWidth: store.isEWalletChecked ? 1.5 : 0
+      )
+    }
+    .shadow(color: Color.gray100, radius: 5)
   }
   
 }
