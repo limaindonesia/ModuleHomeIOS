@@ -53,6 +53,7 @@ public class PaymentStore: ObservableObject {
   private var userCase: UserCases = .init()
   public var selectedReason: ReasonEntity? = nil
   public var reason: String? = nil
+  public var payments: [PaymentMethodViewModel] = []
   
   private var subscriptions = Set<AnyCancellable>()
   
@@ -94,6 +95,7 @@ public class PaymentStore: ObservableObject {
     
     Task {
       await fetchUserSession()
+      await requestPaymentMethods()
       await fetchCancelationReasons()
       await fetchTreatment()
       await requestOrderByNumber()
@@ -104,6 +106,27 @@ public class PaymentStore: ObservableObject {
   }
   
   //MARK: - Fetch API
+  
+  @MainActor
+  public func requestPaymentMethods() async {
+    do {
+      guard let token = userSessionData?.remoteSession.remoteToken else {
+        return
+      }
+      
+      let entities = try await paymentRepository.requestPaymentMethod(headers: HeaderRequest(token: token))
+      payments = entities.map(PaymentMethodEntity.mapTo(_:))
+      
+      indicateSuccess()
+      
+    } catch {
+      guard let error = error as? ErrorMessage else {
+        return
+      }
+      
+      indicateError(error: error)
+    }
+  }
   
   @MainActor
   public func requestCancelation() async {
@@ -403,6 +426,14 @@ public class PaymentStore: ObservableObject {
   }
   
   //MARK: - Other function
+  
+  public func getVAs() -> [PaymentMethodViewModel] {
+    return payments.filter { $0.category == .VA }
+  }
+  
+  public func getEWallets() -> [PaymentMethodViewModel] {
+    return payments.filter { $0.category == .EWALLET }
+  }
   
   @MainActor
   public func checkVirtualAccount() {

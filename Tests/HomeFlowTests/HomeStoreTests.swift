@@ -28,9 +28,10 @@ final class HomeStoreTests: XCTestCase {
   ) -> HomeStore {
     return HomeStore(
       userSessionDataSource: MockUserSessionDataSource(),
-      repository: repository,
+      homeRepository: repository,
       ongoingRepository: repository,
       sktmRepository: repository,
+      cancelationRepository: MockPaymentCancelationRepository(),
       onlineAdvocateNavigator: navigator,
       topAdvocateNavigator: navigator,
       articleNavigator: navigator,

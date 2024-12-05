@@ -36,6 +36,9 @@ public protocol PaymentRemoteDataSourceLogic {
     parameters: [String : Any]
   ) async throws -> Bool
   
+  
+  func requestPaymentMethods(headers: [String : String]) async throws -> PaymentMethodResponseModel
+  
 }
 
 public struct PaymentRemoteDataSource: PaymentRemoteDataSourceLogic,
@@ -251,7 +254,6 @@ public struct PaymentRemoteDataSource: PaymentRemoteDataSourceLogic,
     headers: [String : String],
     parameters: [String : Any]
   ) async throws -> Bool {
-    
     do {
       let data = try await service.request(
         with: Endpoint.PAYMENT_CANCEL,
@@ -262,6 +264,30 @@ public struct PaymentRemoteDataSource: PaymentRemoteDataSourceLogic,
       )
       let succeeded = try JSONDecoder().decode(Bool.self, from: data)
       return succeeded
+      
+    } catch {
+      guard let error = error as? NetworkErrorMessage else {
+        throw NetworkErrorMessage(
+          code: -1,
+          description: "Unknown Error"
+        )
+      }
+      
+      throw error
+    }
+  }
+  
+  public func requestPaymentMethods(headers: [String : String]) async throws -> PaymentMethodResponseModel {
+    do {
+      let data = try await service.request(
+        with: Endpoint.PAYMENT_CANCEL,
+        withMethod: .post,
+        withHeaders: headers,
+        withParameter: [:],
+        withEncoding: .json
+      )
+      let response = try JSONDecoder().decode(PaymentMethodResponseModel.self, from: data)
+      return response
       
     } catch {
       guard let error = error as? NetworkErrorMessage else {

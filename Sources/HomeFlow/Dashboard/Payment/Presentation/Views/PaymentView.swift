@@ -9,6 +9,7 @@ import SwiftUI
 import AprodhitKit
 import GnDKit
 import Lottie
+import Kingfisher
 
 struct PaymentView: View {
   
@@ -502,14 +503,11 @@ struct PaymentView: View {
         .background(Color.gray200)
       
       HStack {
-        Image("ic_mandiri", bundle: .module)
-        
-        Image("ic_bri", bundle: .module)
-        
-        Image("ic_bni", bundle: .module)
-        
-        Image("ic_bca", bundle: .module)
+        ForEach(store.getVAs(), id: \.id) { item in
+          KFImage(item.icon)
+        }
       }
+      
     }
     .padding(.all, 12)
     .frame(maxWidth: .infinity)
@@ -552,23 +550,12 @@ struct PaymentView: View {
         .frame(maxWidth: .infinity, maxHeight: 1)
         .background(Color.gray200)
       
-      HStack(spacing: 16) {
-        
-        Image("ic_payment_ovo", bundle: .module)
-        
-        Image("ic_payment_dana", bundle: .module)
-        
-        HStack {
-          Image("ic_payment_shopee", bundle: .module)
-          
-          Divider()
-            .frame(width: 2, height: 24)
-          
-          Image("ic_qrcode", bundle: .module)
+      HStack {
+        ForEach(store.getEWallets(), id: \.id) { item in
+          KFImage(item.icon)
         }
-        
       }
-      .frame(height: 40)
+
     }
     .padding(.all, 12)
     .frame(maxWidth: .infinity)
