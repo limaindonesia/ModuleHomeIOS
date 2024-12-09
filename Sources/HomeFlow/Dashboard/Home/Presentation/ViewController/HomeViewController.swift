@@ -12,9 +12,12 @@ import AprodhitKit
 import Combine
 
 public class HomeViewController: NiblessViewController {
-
+  
   private let storeFactory: HomeStoreFactory
   private var store: HomeStore!
+  
+  public var refundBottomSheetManager: DismissableActionBottomSheetManager!
+  
   private var subscriptions = Set<AnyCancellable>()
 
   public init(storeFactory: HomeStoreFactory) {
@@ -54,7 +57,7 @@ public class HomeViewController: NiblessViewController {
       message: "currentVC \(String(describing: HomeViewController.self))"
     )
 
-    view.backgroundColor = .clear
+    view.backgroundColor = .white
     
     observeStore()
   }
@@ -74,8 +77,50 @@ public class HomeViewController: NiblessViewController {
   func hideTabbar(_ state: Bool) {
     self.tabBarController?.tabBar.isHidden = state
   }
+  
+  private func presentRefundBottomSheet() {
+    
+    let bottomStore = RefundConsultationStore()
+    
+    let contentView = RefundBottomSheetView(store: bottomStore)
+    
+    let controller = RefundBottomSheetViewController()
+      .setStore(bottomStore)
+      .setContentView(contentView)
+      .setUsedFixedHeight(with: screen.height / 2 - 16)
+      .setDismissable(true)
+    
+    refundBottomSheetManager = DismissableActionBottomSheetManager(
+      navigationController: navigationController,
+      parentController: self
+    )
+    
+    refundBottomSheetManager
+      .setController(controller: controller)
+      .show()
+    
+    refundBottomSheetManager.onDismissed = { [weak self] in
+      guard let self = self else { return }
+      refundBottomSheetManager = nil
+      hideTabbar(false)
+    }
+    
+    hideTabbar(true)
+  }
 
   fileprivate func observeStore() {
+    
+    store.$isPresentRefundBottomSheet
+      .receive(on: RunLoop.current)
+      .subscribe(on: DispatchQueue.main)
+      .removeDuplicates()
+      .sink { [weak self] state in
+        if state {
+          DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            self?.presentRefundBottomSheet()
+          }
+        }
+      }.store(in: &subscriptions)
 
     store.$hideTabBar
       .receive(on: RunLoop.current)

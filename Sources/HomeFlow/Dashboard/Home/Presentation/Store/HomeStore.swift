@@ -72,6 +72,7 @@ public class HomeStore: ObservableObject {
   @Published public var isPresentReasonBottomSheet: Bool = false
   @Published public var reasons: [ReasonEntity] = []
   @Published public var bioEntity: BioEntity = .init()
+  @Published public var isPresentRefundBottomSheet: Bool = false
   
   //Variables
   
@@ -142,6 +143,8 @@ public class HomeStore: ObservableObject {
       await fetchSKTM()
       showShimmer = false
     }
+    
+    showRefundBottomSheet()
     
     observer()
     
@@ -843,6 +846,17 @@ public class HomeStore: ObservableObject {
   func hideCategoryBottomSheet() {
     isCategorySheetPresented = false
     hideTabBar = false
+  }
+  
+  func showRefundBottomSheet() {
+    Task {
+      try await Task.sleep(nanoseconds: 2 * 1_000_000)
+      isPresentRefundBottomSheet = true
+    }
+  }
+  
+  func hideRefundBottomSheet() {
+    isPresentRefundBottomSheet = true
   }
   
   //MARK: - Observer
