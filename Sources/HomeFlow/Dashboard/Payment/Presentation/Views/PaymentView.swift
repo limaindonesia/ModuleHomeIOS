@@ -493,6 +493,7 @@ struct PaymentView: View {
           action: {
             withAnimation(.smooth) {
               store.checkVirtualAccount()
+              store.selectedPaymentCategory = .VA
             }
           }
         )
@@ -541,6 +542,7 @@ struct PaymentView: View {
           action: {
             withAnimation(.smooth) {
               store.checkEWallet()
+              store.selectedPaymentCategory = .EWALLET
             }
           }
         )

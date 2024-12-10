@@ -9,9 +9,16 @@ import Foundation
 import UIKit
 import GnDKit
 
-public class CancelledConsultationViewController: UIViewController {
+public class RefundPaymentViewController: NiblessViewController {
   
-  var rootView: CancelledConsultationView!
+  private let store: RefundPaymentStore
+  var rootView: RefundPaymentView!
+  
+  public init(store: RefundPaymentStore) {
+    self.store = store
+    
+    super.init()
+  }
 
   public override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
@@ -23,17 +30,16 @@ public class CancelledConsultationViewController: UIViewController {
 
   public override func loadView() {
     super.loadView()
+    
+    rootView = RefundPaymentView(store: store)
+    self.view = rootView.contentView
+    rootView.frame = self.view.frame
   }
   
   public override func viewDidLoad() {
+    super.viewDidLoad()
     
-    rootView = UINib(
-      nibName: "CancelledConsultationView",
-      bundle: nil
-    ).instantiate(withOwner: self).first as? CancelledConsultationView
-    
-    self.view = rootView
-    rootView.frame = self.view.frame
+    view.backgroundColor = .white
   }
   
 }

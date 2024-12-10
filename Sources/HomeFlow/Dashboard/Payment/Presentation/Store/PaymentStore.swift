@@ -54,6 +54,7 @@ public class PaymentStore: ObservableObject {
   public var selectedReason: ReasonEntity? = nil
   public var reason: String? = nil
   public var payments: [PaymentMethodViewModel] = []
+  public var selectedPaymentCategory: PaymentCategory = .VA
   
   private var subscriptions = Set<AnyCancellable>()
   
@@ -342,7 +343,8 @@ public class PaymentStore: ObservableObject {
         parameters: PaymentParamRequest(
           orderNumber: lawyerInfoViewModel.orderNumber,
           consultationGuideAnswerId: 2,
-          voucherCode: voucherCode
+          voucherCode: voucherCode,
+          paymentChannelCategory: selectedPaymentCategory.rawValue
         )
       )
       

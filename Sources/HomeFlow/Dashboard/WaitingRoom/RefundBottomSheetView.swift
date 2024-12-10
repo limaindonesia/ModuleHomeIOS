@@ -138,7 +138,7 @@ public class RefundBottomSheetView: BottomSheetContentView {
     infoContainerView.addSubview(subReasonInfoLabel)
     infoContainerView.addSubview(divider)
     
-    guard let store = store as? RefundConsultationStore
+    guard let store = store as? RefundPaymentSheetStore
     else { return }
     
     if store.category == .EWALLET {

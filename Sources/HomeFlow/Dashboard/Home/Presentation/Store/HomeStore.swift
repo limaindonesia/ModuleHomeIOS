@@ -144,8 +144,6 @@ public class HomeStore: ObservableObject {
       showShimmer = false
     }
     
-    showRefundBottomSheet()
-    
     observer()
     
   }

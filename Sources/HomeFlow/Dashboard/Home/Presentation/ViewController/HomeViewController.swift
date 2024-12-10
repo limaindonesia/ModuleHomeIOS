@@ -80,7 +80,7 @@ public class HomeViewController: NiblessViewController {
   
   private func presentRefundBottomSheet() {
     
-    let bottomStore = RefundConsultationStore()
+    let bottomStore = RefundPaymentSheetStore()
     
     let contentView = RefundBottomSheetView(store: bottomStore)
     

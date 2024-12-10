@@ -12,12 +12,12 @@ import AprodhitKit
 
 public class RefundBottomSheetViewController: BottomSheetContentController {
   
-  var store: RefundConsultationStore!
+  var store: RefundPaymentSheetStore!
 
   public override func observeStore() {
     super.observeStore()
     
-    store = getStore() as? RefundConsultationStore
+    store = getStore() as? RefundPaymentSheetStore
     
   }
   

@@ -280,7 +280,7 @@ public struct PaymentRemoteDataSource: PaymentRemoteDataSourceLogic,
   public func requestPaymentMethods(headers: [String : String]) async throws -> PaymentMethodResponseModel {
     do {
       let data = try await service.request(
-        with: Endpoint.PAYMENT_CANCEL,
+        with: Endpoint.PAYMENT_METHOD,
         withMethod: .post,
         withHeaders: headers,
         withParameter: [:],

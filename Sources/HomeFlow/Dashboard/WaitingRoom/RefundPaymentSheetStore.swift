@@ -9,7 +9,7 @@ import Foundation
 import GnDKit
 import AprodhitKit
 
-public class RefundConsultationStore: SheetStore {
+public class RefundPaymentSheetStore: SheetStore {
   
   let category: PaymentCategory
   let title: String
@@ -34,7 +34,7 @@ public class RefundConsultationStore: SheetStore {
     self.buttonAction = buttonAction
   }
   
-  required init() {
+  public required init() {
     self.category = .EWALLET
     self.title = ""
     self.price = ""
