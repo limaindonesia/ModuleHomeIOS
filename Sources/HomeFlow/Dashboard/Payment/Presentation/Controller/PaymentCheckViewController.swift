@@ -61,11 +61,11 @@ public class PaymentCheckViewController: NiblessViewController {
   private func presentRefundBottomSheet() {
     
     let bottomStore = RefundPaymentSheetStore(
-      paymentCategory: .EWALLET,
-      title: "Konsultasi Kedaluarsa",
-      price: "Rp75.000",
-      buttonTitle: "",
-      isFormRequired: false
+      paymentCategory: store.meViewModel.paymentCategory,
+      title: store.meViewModel.getTitle(),
+      price: store.meViewModel.price,
+      buttonTitle: store.meViewModel.getButtonTitle(),
+      isFormRequired: store.meViewModel.isFormRequired
     )
     
     let contentView = RefundBottomSheetView(store: bottomStore)
@@ -114,6 +114,12 @@ public class PaymentCheckViewController: NiblessViewController {
     
   }
   
+  private func releaseRefundBottomSheet() {
+    guard let _ = refundBottomSheetManager else { return }
+    refundBottomSheetManager.releaseBottomSheet()
+    refundBottomSheetManager = nil
+  }
+  
   private func observeStore() {
     store.$showErrorMessage
       .dropFirst()
@@ -136,10 +142,6 @@ public class PaymentCheckViewController: NiblessViewController {
       }.store(in: &subscriptions)
   }
   
-  private func releaseRefundBottomSheet() {
-    guard let _ = refundBottomSheetManager else { return }
-    refundBottomSheetManager.releaseBottomSheet()
-    refundBottomSheetManager = nil
-  }
+  
   
 }
