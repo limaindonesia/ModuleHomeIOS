@@ -9,6 +9,7 @@ import Foundation
 import UIKit
 import GnDKit
 import AprodhitKit
+import Kingfisher
 
 public class RefundPaymentView: FileOwnerNibView {
   
@@ -92,15 +93,33 @@ public class RefundPaymentView: FileOwnerNibView {
     refundDescriptionLabel.font = UIFont.lexendFont(style: .caption(size: 12))
     statusLabel.font = UIFont.lexendFont(style: .caption(size: 12))
     
-    let attributedTitle = NSAttributedString(
-      string: "Isi form",
-      attributes: [
-        .font: UIFont.lexendFont(style: .title(size: 14)),
-        .foregroundColor: UIColor.white
-      ]
-    )
-    fillFormButton.setAttributedTitle(attributedTitle, for: .normal)
     fillFormButton.tintColor = .buttonActiveColor
+    fillFormButton.addTarget(self, action: #selector(didTapButton), for: .touchUpInside)
+    
+    setupData()
+  }
+  
+  private func setupData() {
+    avatarImageView.kf.setImage(
+      with: store.userCase.lawyer?.getImageName(),
+      placeholder: UIImage(
+        named: "img_placeholder_lawyer",
+        in: .module,
+        compatibleWith: .none
+      )
+    )
+    titleLabel.text = store.title
+    refundDescriptionLabel.text = store.getDescriptions()
+    amountValueLabel.text = store.userCase.getPrice()
+    nameLabel.text = store.userCase.lawyer?.getName()
+    dateLabel.text = store.userCase.getDateString()
+    categoryLabel.text = store.userCase.skill?.name
+    fillFormButton.setAttributedTitle(store.buttonAttributedTitle(), for: .normal)
+  }
+
+  @objc
+  func didTapButton() {
+    store.navigateTo()
   }
   
 }

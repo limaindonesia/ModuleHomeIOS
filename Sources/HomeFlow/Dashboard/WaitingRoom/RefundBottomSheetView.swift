@@ -118,7 +118,19 @@ public class RefundBottomSheetView: BottomSheetContentView {
   public override func setup() {
     super.setup()
     
+    guard let store = store as? RefundPaymentSheetStore else { return }
     
+    titleLabel.text = store.title
+    subTitleLabel.text = store.getSubTitle()
+    priceLabel.text = store.price
+    subReasonInfoLabel.text = store.getDescriptions()
+    actionButton.setAttributedTitle(store.buttonAttributedTitle(), for: .normal)
+    
+    actionButton.addTarget(
+      self,
+      action: #selector(didTapButton),
+      for: .touchUpInside
+    )
   }
   
   public override func setupView() {
@@ -141,7 +153,7 @@ public class RefundBottomSheetView: BottomSheetContentView {
     guard let store = store as? RefundPaymentSheetStore
     else { return }
     
-    if store.category == .EWALLET {
+    if store.paymentCategory == .EWALLET {
       setupForEWallet()
       return
     }
@@ -302,6 +314,12 @@ public class RefundBottomSheetView: BottomSheetContentView {
     }
   }
   
+  @objc
+  private func didTapButton() {
+    guard let store = store as? RefundPaymentSheetStore
+    else { return }
+    
+    store.navigateTo()
+  }
+  
 }
-
-
