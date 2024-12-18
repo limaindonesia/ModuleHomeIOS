@@ -32,6 +32,21 @@ public struct HomeView: View {
       
       loadContent(width: 0)
       
+      BottomSheetView(isPresented: $store.isConsultationNowSheetPresented) {
+        consultationNowBottomSheetContent {
+          store.hideConsultationNowBottomSheet()  
+          store.navigateToDetailSKTM()
+        } onTapConsultation: {
+          store.hideConsultationNowBottomSheet()
+          store.navigateToAdvocateList()
+        } onTapDecisionTree: {
+          store.hideConsultationNowBottomSheet()
+          store.navigateToDecisionTree()
+        }
+      } onDismissed: {
+        store.hideConsultationNowBottomSheet()
+      }
+      
       BottomSheetView(isPresented: $store.isCategorySheetPresented) {
         categoryBottomSheetContent(
           models: store.selectedSkill?.types ?? [],
@@ -602,11 +617,12 @@ public struct HomeView: View {
       
       HStack(alignment: .center, spacing: 8) {
         
-        Image("ic_moto", bundle: .module)
+        Image("ic_moto_2", bundle: .module)
           .resizable()
-          .frame(width: 52.96, height: 25.83)
-          .aspectRatio(contentMode: .fit)
+          .frame(width: 38, height: 38)
+          .aspectRatio(contentMode: .fill)
           .padding(.trailing, 12)
+          .padding(.top, 5)
         
         VStack(alignment: .leading, spacing: 4) {
           Text("Konsultasi Hukum Online")
@@ -618,23 +634,51 @@ public struct HomeView: View {
       }
       .padding(.horizontal, 10)
       
-      HStack {
-        PositiveButton(
-          title: "Panduan Pilih Advokat",
-          action: {
-            onTapDecisionTree()
-          }
-        )
-        
-        NegativeButton(
-          title: "Konsultasi Langsung",
-          action: {
-            onTapConsultation()
-          }
-        )
+      Button {
+        store.showConsultationNowBottomSheet()
+      } label: {
+        HStack {
+          Text("Konsultasi Sekarang")
+            .foregroundColor(Color.white)
+            .titleLexend(size: 12)
+          
+          Image(systemName: "arrow.forward")
+            .resizable()
+            .frame(width: 10.67, height: 10.67)
+            .foregroundColor(.white)
+        }
+        .padding(.horizontal, 8)
       }
+      .frame(maxWidth: .infinity, maxHeight: 40)
+      .background(Color.buttonActiveColor)
+      .clipShape(RoundedRectangle(cornerRadius: 8))
+      .overlay(
+        RoundedRectangle(cornerRadius: 8)
+          .stroke(
+            Color.white,
+            lineWidth: 1
+          )
+      )
       .padding(.horizontal, 10)
-      .padding(.top, 12)
+      .padding(.top, 0)
+      
+//      HStack {
+//        PositiveButton(
+//          title: "Panduan Pilih Advokat",
+//          action: {
+//            onTapDecisionTree()
+//          }
+//        )
+//        
+//        NegativeButton(
+//          title: "Konsultasi Langsung",
+//          action: {
+//            onTapConsultation()
+//          }
+//        )
+//      }
+//      .padding(.horizontal, 10)
+//      .padding(.top, 12)
       
       Button {
         onTapSKTM()
@@ -643,14 +687,13 @@ public struct HomeView: View {
           Image("ic_probono", bundle: .module)
           
           Text("Dapatkan 3x konsultasi gratis dengan Pro bono")
-            .titleStyle(size: 10)
+            .titleLexend(size: 10)
           
           Spacer()
           
-          Image(systemName: "arrow.forward")
-            .resizable()
-            .frame(width: 10.67, height: 10.67)
-            .foregroundColor(.black)
+          Text("Pelajari")
+            .foregroundColor(Color.buttonActiveColor)
+            .titleLexend(size: 10)
         }
         .padding(.horizontal, 8)
       }
@@ -955,6 +998,159 @@ public struct HomeView: View {
     }
     .padding(.bottom, 80)
     
+  }
+  
+  @ViewBuilder
+  func consultationNowBottomSheetContent(
+    onTap: @escaping () -> Void,
+    onTapConsultation: @escaping () -> Void,
+    onTapDecisionTree: @escaping () -> Void
+  ) -> some View {
+    
+    VStack(alignment: .leading, spacing: 16) {
+      
+      HStack {
+        Text("Konsultasi Hukum Online")
+          .titleLexend(size: 16)
+        
+        Spacer()
+        
+        
+        Image("ic_disc_60", bundle: .module)
+          .resizable()
+          .frame(width: 73, height: 23)
+          .aspectRatio(contentMode: .fit)
+          .zIndex(0)
+        
+      }
+      .frame(minHeight: 30)
+      
+      
+      VStack {
+        
+        HStack(alignment: .center, spacing: 8) {
+          
+          Image("ic_people", bundle: .module)
+            .resizable()
+            .frame(width: 40, height: 40)
+            .aspectRatio(contentMode: .fill)
+            .padding(.horizontal, 8)
+          
+          VStack(alignment: .leading, spacing: 4) {
+            Text("Lihat semua Advokat")
+              .titleLexend(size: 14)
+              .frame(width: 150, height: 20)
+              .padding(.top, 8)
+            
+            Text("Anda memiliki kebebasan untuk memilih Advokat yang telah terdaftar di platform Perqara.")
+              .foregroundColor(Color.init(hex: 0x4D5B6A))
+              .captionLexend(size: 12)
+              .padding(.bottom, 8)
+          }
+          
+          Image("ic_right_arrow", bundle: .module)
+            .resizable()
+            .frame(width: 16, height: 16)
+            .aspectRatio(contentMode: .fill)
+            .padding(.horizontal, 8)
+        }
+        .frame(maxWidth: .infinity, maxHeight: 125)
+        .background(Color.init(hex: 0xF3FBFF))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(
+          RoundedRectangle(cornerRadius: 8)
+            .stroke(
+              Color.init(hex: 0xEEF2F7),
+              lineWidth: 1
+            )
+        )
+        .onTapGesture {
+          onTapConsultation()
+        }
+        
+        Spacer()
+        
+        Spacer()
+        
+        HStack(alignment: .center, spacing: 8) {
+          
+          Image("ic_book", bundle: .module)
+            .resizable()
+            .frame(width: 40, height: 40)
+            .aspectRatio(contentMode: .fill)
+            .padding(.horizontal, 8)
+          
+          VStack(alignment: .leading, spacing: 4) {
+            Text("Panduan memilih Advokat")
+              .titleLexend(size: 14)
+              .frame(width: 200, height: 20)
+              .padding(.top, 8)
+            
+            Text("Perqara akan menanyakan pertanyaan seputar kasus Anda dan memberikan rekomendasi Advokat.")
+              .foregroundColor(Color.init(hex: 0x4D5B6A))
+              .captionLexend(size: 12)
+              .padding(.bottom, 8)
+          }
+          
+          Image("ic_right_arrow", bundle: .module)
+            .resizable()
+            .frame(width: 16, height: 16)
+            .aspectRatio(contentMode: .fill)
+            .padding(.horizontal, 8)
+        }
+        .frame(maxWidth: .infinity, maxHeight: 125)
+        .background(Color.init(hex: 0xF3FBFF))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(
+          RoundedRectangle(cornerRadius: 8)
+            .stroke(
+              Color.init(hex: 0xEEF2F7),
+              lineWidth: 1
+            )
+        )
+        .onTapGesture {
+          onTapDecisionTree()
+        }
+        
+      }
+      .frame(minHeight: 50)
+      
+      Divider()
+        .frame(maxWidth: .infinity, maxHeight: 1)
+        .background(Color.gray100)
+      
+      Button {
+        onTap()
+      } label: {
+        HStack {
+          Image("ic_probono", bundle: .module)
+          
+          Text("Dapatkan 3x konsultasi gratis dengan Pro bono")
+            .titleLexend(size: 10)
+            .padding(.horizontal, 8)
+          
+          Spacer()
+          
+          Text("Pelajari")
+            .foregroundColor(Color.buttonActiveColor)
+            .titleLexend(size: 10)
+            .padding(.horizontal, 8)
+        }
+        .padding(.horizontal, 8)
+      }
+      .frame(maxWidth: .infinity, idealHeight: 36 ,maxHeight: 40)
+      .background(Color.danger100)
+      .clipShape(RoundedRectangle(cornerRadius: 6))
+      .overlay(
+        RoundedRectangle(cornerRadius: 6)
+          .stroke(
+            Color.danger200,
+            lineWidth: 1
+          )
+      )
+      
+    }
+    .padding(.bottom, 120)
   }
   
   @ViewBuilder
