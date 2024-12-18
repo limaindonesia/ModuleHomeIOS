@@ -37,6 +37,10 @@ public protocol HomeRemoteDataSourceLogic {
   
   func requestMe(headers: [String : String]) async throws -> MeResponseModel
   
+  func requestConsultationsByID(
+    headers: [String : String],
+    consultationID: String
+  ) async throws -> UserCases
 }
 
 public struct HomeRemoteDataSourceImpl: HomeRemoteDataSourceLogic,
@@ -286,6 +290,34 @@ public struct HomeRemoteDataSourceImpl: HomeRemoteDataSourceLogic,
       
       throw error
     }
+  }
+  
+  public func requestConsultationsByID(
+    headers: [String : String],
+    consultationID: String
+  ) async throws -> UserCases {
+    
+    do {
+      let data = try await service.request(
+        with: Endpoint.CONSULTATION_BY_ID,
+        withMethod: .get,
+        withHeaders: headers,
+        withParameter: [:],
+        withEncoding: .url
+      )
+      let json = try JSONDecoder().decode(UserCases.self, from: data)
+      return json
+    } catch {
+      guard let error = error as? NetworkErrorMessage else {
+        throw NetworkErrorMessage(
+          code: -1,
+          description: "Unknown Error"
+        )
+      }
+      
+      throw error
+    }
+    
   }
   
 }

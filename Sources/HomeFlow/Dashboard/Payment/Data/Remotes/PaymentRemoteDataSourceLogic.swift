@@ -281,10 +281,10 @@ public struct PaymentRemoteDataSource: PaymentRemoteDataSourceLogic,
     do {
       let data = try await service.request(
         with: Endpoint.PAYMENT_METHOD,
-        withMethod: .post,
+        withMethod: .get,
         withHeaders: headers,
         withParameter: [:],
-        withEncoding: .json
+        withEncoding: .url
       )
       let response = try JSONDecoder().decode(PaymentMethodResponseModel.self, from: data)
       return response

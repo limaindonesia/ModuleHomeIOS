@@ -43,6 +43,7 @@ public class PaymentStore: ObservableObject {
   @Published public var showTimeRemainig: Bool = false
   @Published var isVirtualAccountChecked: Bool = false
   @Published var isEWalletChecked: Bool = false
+  @Published var isPayButtonActive: Bool = false
   
   public var paymentTimeRemaining: CurrentValueSubject<TimeInterval, Never> = .init(0)
   private var treatmentEntities: [TreatmentEntity] = []
@@ -429,6 +430,12 @@ public class PaymentStore: ObservableObject {
   
   //MARK: - Other function
   
+  public var activatePayButton: AnyPublisher<Bool, Never> {
+    Publishers.CombineLatest($isEWalletChecked, $isVirtualAccountChecked).map { (ewallet, va) in
+      return ewallet || va
+    }.eraseToAnyPublisher()
+  }
+  
   public func getVAs() -> [PaymentMethodViewModel] {
     return payments.filter { $0.category == .VA }
   }
@@ -593,7 +600,8 @@ public class PaymentStore: ObservableObject {
         userCase,
         roomkey: paymentEntity.roomKey,
         consultId: userCase.booking?.consultation_id ?? 0,
-        status: false
+        status: false,
+        paymentCategory: selectedPaymentCategory
       )
       
     }
@@ -606,7 +614,8 @@ public class PaymentStore: ObservableObject {
       roomkey: paymentEntity.roomKey,
       consultId: userCase.booking?.consultation_id ?? 0,
       urlPayment: paymentEntity.urlString,
-      orderID: lawyerInfoViewModel.orderNumber
+      orderID: lawyerInfoViewModel.orderNumber,
+      paymentCategory: selectedPaymentCategory
     )
   }
   
@@ -691,11 +700,18 @@ public class PaymentStore: ObservableObject {
   
   private func observer() {
     
+    activatePayButton
+      .receive(on: RunLoop.main)
+      .subscribe(on: RunLoop.main)
+      .sink { state in
+        self.isPayButtonActive = state
+      }.store(in: &subscriptions)
+    
     $isVirtualAccountChecked
       .dropFirst()
       .receive(on: RunLoop.main)
       .subscribe(on: RunLoop.main)
-      .sink { value in
+      .sink { state in
         
       }.store(in: &subscriptions)
     
@@ -703,7 +719,7 @@ public class PaymentStore: ObservableObject {
       .dropFirst()
       .receive(on: RunLoop.main)
       .subscribe(on: RunLoop.main)
-      .sink { value in
+      .sink { state in
         
       }.store(in: &subscriptions)
     

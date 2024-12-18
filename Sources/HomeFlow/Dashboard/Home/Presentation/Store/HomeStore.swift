@@ -23,6 +23,7 @@ public class HomeStore: ObservableObject {
   private let sktmRepository: SKTMRepositoryLogic
   private let userSessionDataSource: UserSessionDataSourceLogic
   private let cancelationRepository: PaymentCancelationRepositoryLogic
+  private let meRepository: MeRepositoryLogic
   private let onlineAdvocateNavigator: OnlineAdvocateNavigator
   private let topAdvocateNavigator: TopAdvocateNavigator
   private let articleNavigator: ArticleNavigator
@@ -33,6 +34,7 @@ public class HomeStore: ObservableObject {
   private let mainTabBarResponder: MainTabBarResponder
   private let ongoingNavigator: OngoingNavigator
   private let loginResponder: LoginResponder
+  private let refundNavigator: RefundNavigator
   
   public let monitor = NWPathMonitor()
   let dispatchQueue = DispatchQueue(label: "Monitor")
@@ -71,8 +73,9 @@ public class HomeStore: ObservableObject {
   @Published public var sktmModel: ClientGetSKTM? = nil
   @Published public var isPresentReasonBottomSheet: Bool = false
   @Published public var reasons: [ReasonEntity] = []
-  @Published public var bioEntity: BioEntity = .init()
   @Published public var isPresentRefundBottomSheet: Bool = false
+  @Published public var price: String = ""
+  @Published public var meViewModel: MeViewModel = .init()
   
   //Variables
   
@@ -91,6 +94,7 @@ public class HomeStore: ObservableObject {
     ongoingRepository: OngoingRepositoryLogic,
     sktmRepository: SKTMRepositoryLogic,
     cancelationRepository: PaymentCancelationRepositoryLogic,
+    meRepository: MeRepositoryLogic,
     onlineAdvocateNavigator: OnlineAdvocateNavigator,
     topAdvocateNavigator: TopAdvocateNavigator,
     articleNavigator: ArticleNavigator,
@@ -100,7 +104,8 @@ public class HomeStore: ObservableObject {
     sktmNavigator: SKTMNavigator,
     mainTabBarResponder: MainTabBarResponder,
     ongoingNavigator: OngoingNavigator,
-    loginResponder: LoginResponder
+    loginResponder: LoginResponder,
+    refundNavigator: RefundNavigator
   ) {
     
     self.userSessionDataSource = userSessionDataSource
@@ -108,6 +113,7 @@ public class HomeStore: ObservableObject {
     self.ongoingRepository = ongoingRepository
     self.sktmRepository = sktmRepository
     self.cancelationRepository = cancelationRepository
+    self.meRepository = meRepository
     self.onlineAdvocateNavigator = onlineAdvocateNavigator
     self.topAdvocateNavigator = topAdvocateNavigator
     self.articleNavigator = articleNavigator
@@ -118,6 +124,7 @@ public class HomeStore: ObservableObject {
     self.mainTabBarResponder = mainTabBarResponder
     self.ongoingNavigator = ongoingNavigator
     self.loginResponder = loginResponder
+    self.refundNavigator = refundNavigator
     
     Task {
       await requestPromotionBanner()
@@ -191,7 +198,7 @@ public class HomeStore: ObservableObject {
   //MARK: - Fetch Data from API
   
   @MainActor
-  public func fetchMe() async {
+  public func requestMe() async {
     do {
       guard let token = userSessionData?.remoteSession.remoteToken
       else {
@@ -199,8 +206,8 @@ public class HomeStore: ObservableObject {
         return
       }
       
-      bioEntity = try await homeRepository.requestMe(headers: HeaderRequest(token: token))
-      
+      let entity = try await meRepository.requestMe(headers: HeaderRequest(token: token))
+      meViewModel = BioEntity.mapTo(entity)
     } catch {
       guard let error = error as? ErrorMessage
       else {
@@ -433,12 +440,8 @@ public class HomeStore: ObservableObject {
     await fetchAllAPI()
     await fetchOngoingUserCases()
     await fetchSKTM()
-    await fetchMe()
-    
-    if !bioEntity.orderNumber.isEmpty {
-      await requestReasons()
-      showReasonBottomSheet()
-    }
+    await requestMe()
+    await checkBottomSheet()
     
     indicateSuccess(message: "")
     hideTabBar = false
@@ -472,7 +475,7 @@ public class HomeStore: ObservableObject {
       success = try await cancelationRepository.requestCancelReason(
         headers: HeaderRequest(token: token),
         parameters: CancelPaymentRequest(
-          orderNumber: bioEntity.orderNumber,
+          orderNumber: meViewModel.orderNumber,
           reasonID: selectedReason?.id ?? 0,
           reason: selectedReason?.title == "Lainnya" ? reason : selectedReason?.title
         )
@@ -623,6 +626,18 @@ public class HomeStore: ObservableObject {
   
   public func getLawyersName() -> String {
     return userCases.lawyer?.getName() ?? ""
+  }
+  
+  public func checkBottomSheet() async {
+    if !meViewModel.orderNumber.isEmpty {
+      await requestReasons()
+      showReasonBottomSheet()
+    }
+    
+    if meViewModel.consultationID != 0 {
+      showRefundBottomSheet()
+    }
+  
   }
   
   //MARK: - Indicator
@@ -792,7 +807,8 @@ public class HomeStore: ObservableObject {
       userCases,
       roomkey: userCases.room_key ?? "",
       consultId: userCases.booking?.consultation_id ?? 0,
-      status: findOnProcessUserCassesFailed(userCase: userCases)
+      status: findOnProcessUserCassesFailed(userCase: userCases),
+      paymentCategory: .VA
     )
   }
   
@@ -832,6 +848,17 @@ public class HomeStore: ObservableObject {
   
   public func navigateToLogin() {
     loginResponder.gotoToLogin()
+  }
+  
+  public func navigateToRefundForm() {
+    refundNavigator.navigateToForm(
+      meViewModel.consultationID,
+      userCases: userCases
+    )
+  }
+  
+  public func gotoHistoryConsultation() {
+    mainTabBarResponder.gotoHistory()
   }
   
   //MARK: - BottomSheet

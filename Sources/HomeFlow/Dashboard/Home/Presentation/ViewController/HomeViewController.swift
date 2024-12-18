@@ -29,14 +29,16 @@ public class HomeViewController: NiblessViewController {
   public override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
 
-    navigationController?.isNavigationBarHidden = true
+    navigationController?.setNavigationBarHidden(true, animated: false)
     
     store.startSocket()
   }
 
   public override func viewWillDisappear(_ animated: Bool) {
     super.viewWillDisappear(animated)
-
+    
+    navigationController?.setNavigationBarHidden(false, animated: false)
+    
     store.stopSocket()
 
   }
@@ -80,7 +82,13 @@ public class HomeViewController: NiblessViewController {
   
   private func presentRefundBottomSheet() {
     
-    let bottomStore = RefundPaymentSheetStore()
+    let bottomStore = RefundPaymentSheetStore(
+      paymentCategory: store.meViewModel.paymentCategory,
+      title: store.meViewModel.getTitle(),
+      price: store.meViewModel.price,
+      buttonTitle: store.meViewModel.getButtonTitle(),
+      isFormRequired: store.meViewModel.isFormRequired
+    )
     
     let contentView = RefundBottomSheetView(store: bottomStore)
     
@@ -106,6 +114,30 @@ public class HomeViewController: NiblessViewController {
     }
     
     hideTabbar(true)
+    
+    bottomStore
+      .navigateToForm
+      .removeDuplicates()
+      .receive(on: RunLoop.main)
+      .subscribe(on: RunLoop.main)
+      .sink { [weak self] state in
+        if state {
+          self?.store.navigateToRefundForm()
+          self?.releaseBottomSheet()
+          self?.hideTabbar(false)
+        }
+      }.store(in: &subscriptions)
+    
+    bottomStore
+      .gotoConsultationHistory
+      .removeDuplicates()
+      .receive(on: RunLoop.main)
+      .subscribe(on: RunLoop.main)
+      .sink { [weak self] state in
+        self?.store.gotoHistoryConsultation()
+        self?.releaseBottomSheet()
+        self?.hideTabbar(false)
+      }.store(in: &subscriptions)
   }
 
   fileprivate func observeStore() {
@@ -129,6 +161,12 @@ public class HomeViewController: NiblessViewController {
         self?.hideTabbar(state)
       }.store(in: &subscriptions)
 
+  }
+  
+  private func releaseBottomSheet() {
+    guard let _ = refundBottomSheetManager else { return }
+    refundBottomSheetManager.releaseBottomSheet()
+    refundBottomSheetManager = nil
   }
 
 }

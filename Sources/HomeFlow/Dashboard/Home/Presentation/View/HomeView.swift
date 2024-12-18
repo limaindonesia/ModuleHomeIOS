@@ -95,11 +95,8 @@ public struct HomeView: View {
     .onAppear {
       Task {
         await store.fetchOngoingUserCases()
-        await store.fetchMe()
-        if !store.bioEntity.orderNumber.isEmpty {
-          await store.requestReasons()
-          store.showReasonBottomSheet()
-        }
+        await store.requestMe()
+        await store.checkBottomSheet()
       }
     }
     
@@ -482,7 +479,9 @@ public struct HomeView: View {
           store.navigateToPayment()
         },
         onTimerTimesUp: {
-          Task { await store.fetchOngoingUserCases() }
+          Task {
+            //await store.fetchOngoingUserCases()
+          }
         }
       )
       
@@ -500,7 +499,9 @@ public struct HomeView: View {
           store.navigateToPayment()
         },
         onTimerTimesUp: {
-          Task { await store.fetchOngoingUserCases() }
+          Task {
+            await store.fetchOngoingUserCases()
+          }
         }
       )
       
@@ -1043,6 +1044,7 @@ public struct HomeView: View {
         remoteDataSource: FakeHomeRemoteDataSource()
       ),
       cancelationRepository: MockPaymentRepository(),
+      meRepository: MockHomeRepository(),
       onlineAdvocateNavigator: MockNavigator(),
       topAdvocateNavigator: MockNavigator(),
       articleNavigator: MockNavigator(),
@@ -1052,7 +1054,8 @@ public struct HomeView: View {
       sktmNavigator: MockNavigator(),
       mainTabBarResponder: MockNavigator(),
       ongoingNavigator: MockNavigator(),
-      loginResponder: MockNavigator()
+      loginResponder: MockNavigator(),
+      refundNavigator: MockNavigator()
     )
   )
 }

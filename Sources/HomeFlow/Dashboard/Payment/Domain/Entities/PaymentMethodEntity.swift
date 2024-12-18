@@ -7,15 +7,7 @@
 
 import Foundation
 import GnDKit
-
-public enum PaymentCategory: String {
-  case VA = "VA"
-  case EWALLET = "EWALLET"
-  
-  public static func convert(_ method: String) -> PaymentCategory {
-    return method == "VA" ? .VA : .EWALLET
-  }
-}
+import AprodhitKit
 
 public struct PaymentMethodEntity: Transformable{
   

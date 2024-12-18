@@ -10,7 +10,8 @@ import AprodhitKit
 
 public struct MockHomeRepository: HomeRepositoryLogic,
                                   SKTMRepositoryLogic,
-                                  OngoingRepositoryLogic {
+                                  OngoingRepositoryLogic,
+                                  MeRepositoryLogic {
   
   public func fetchSkills(params: CategoryParamRequest?) async throws -> [AdvocateSkills] {
     try await Task.sleep(nanoseconds: 1 * 1_000_000_000)
@@ -122,7 +123,15 @@ public struct MockHomeRepository: HomeRepositoryLogic,
   }
   
   public func requestMe(headers: HeaderRequest) async throws -> BioEntity {
-    return .init(orderNumber: "PC-10001949485")
+    return .init()
+  }
+  
+  public func requestConsultationsByID(
+    headers: HeaderRequest,
+    consultationID: String
+  ) async throws -> UserCases {
+    
+    return .init()
   }
   
 }

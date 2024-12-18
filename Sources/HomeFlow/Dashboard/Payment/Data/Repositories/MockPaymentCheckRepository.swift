@@ -8,7 +8,8 @@ import Foundation
 import AprodhitKit
 import GnDKit
 
-public struct MockPaymentCheckRepository: PaymentCheckRepositoryLogic {
+public struct MockPaymentCheckRepository: PaymentCheckRepositoryLogic,
+                                          ConsultationsRepositoryLogic {
   
   public init() {}
   
@@ -29,5 +30,11 @@ public struct MockPaymentCheckRepository: PaymentCheckRepositoryLogic {
       status: "PENDING"
     )
   }
-
+  
+  public func requestConsultationById(
+    headers: HeaderRequest,
+    _ consultationID: Int
+  ) async throws -> UserCaseEntity {
+    return .init()
+  }
 }

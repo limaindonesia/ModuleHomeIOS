@@ -303,16 +303,38 @@ public struct HomeRepositoryImpl: HomeRepositoryLogic,
   public func requestMe(headers: HeaderRequest) async throws -> BioEntity {
     do {
       let response = try await remoteDataSource.requestMe(headers: headers.toHeaders())
+      return BioEntity.map(from: response)
       
-      guard let data = response.data else {
+    } catch {
+      guard let error = error as? NetworkErrorMessage
+      else {
         throw ErrorMessage(
           id: -5,
           title: "Unkown Error",
-          message: "Unknown Error"
+          message: error.localizedDescription
         )
       }
       
-      return BioEntity(orderNumber: data.relation?.orderNoExpired ?? "")
+      throw ErrorMessage(
+        id: error.code,
+        title: "Failed",
+        message: error.description
+      )
+    }
+  }
+  
+  public func requestConsultationsByID(
+    headers: HeaderRequest,
+    consultationID: String
+  ) async throws -> UserCases {
+    
+    do {
+      let response = try await remoteDataSource.requestConsultationsByID(
+        headers: headers.toHeaders(),
+        consultationID: consultationID
+      )
+      
+      return response
       
     } catch {
       guard let error = error as? NetworkErrorMessage

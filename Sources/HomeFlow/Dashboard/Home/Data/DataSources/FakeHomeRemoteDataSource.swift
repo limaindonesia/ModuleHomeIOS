@@ -149,4 +149,12 @@ public struct FakeHomeRemoteDataSource: HomeRemoteDataSourceLogic,
     fatalError()
   }
   
+  public func requestConsultationsByID(
+    headers: [String : String],
+    consultationID: String
+  ) async throws -> UserCases {
+    
+    return .init()
+  }
+  
 }

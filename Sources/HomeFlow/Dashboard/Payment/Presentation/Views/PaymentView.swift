@@ -59,6 +59,7 @@ struct PaymentView: View {
           totalAdjustment: store.getTotalAdjustment(),
           buttonText: "Bayar",
           isVoucherApplied: store.voucherFilled,
+          isButtonActive: store.isPayButtonActive,
           onTap: {
             store.navigateToNextDestination()
           }
@@ -198,6 +199,8 @@ struct PaymentView: View {
           if store.showTimeRemainig {
             TimerTextView(paymentTimeRemaining: store.paymentTimeRemaining.value) { newValue in
               store.paymentTimeRemaining.value = newValue
+            } onTimerTimeUp: {
+              
             }
           }
           
