@@ -20,6 +20,7 @@ var AppleAppsFlyerConfigID: String {
     return "6443946589"
   case .local:
     return "6443946589"
+  default: return ""
   }
 }
 

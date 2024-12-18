@@ -13,6 +13,12 @@ public struct ReasonResponseModel: Codable {
   public let data: [Datum]?
   public let message: String?
   
+  public init() {
+    self.success = false
+    self.data = []
+    self.message = ""
+  }
+  
   public init(from decoder: any Decoder) throws {
     let container = try decoder.container(keyedBy: CodingKeys.self)
     self.success = try container.decodeIfPresent(Bool.self, forKey: .success)

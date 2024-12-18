@@ -21,6 +21,11 @@ public protocol PaymentCheckRemoteDataSourceLogic {
     parameters: [String : Any]
   ) async throws -> UserCasesGetResp
   
+  func requestConsultationByID(
+    headers: [String : String],
+    _ consultationID: Int
+  ) async throws -> UserCases
+  
 }
 
 public class PaymentCheckRemoteDataSource: PaymentCheckRemoteDataSourceLogic {
@@ -86,6 +91,32 @@ public class PaymentCheckRemoteDataSource: PaymentCheckRemoteDataSourceLogic {
       throw error
     }
     
+  }
+  
+  public func requestConsultationByID(
+    headers: [String : String],
+    _ consultationID: Int
+  ) async throws -> UserCases {
+    do {
+      let data = try await service.request(
+        with: Endpoint.CONSULTATION_BY_ID,
+        withMethod: .get,
+        withHeaders: headers,
+        withParameter: [:],
+        withEncoding: .url
+      )
+      let json = try JSONDecoder().decode(UserCases.self, from: data)
+      return json
+    } catch {
+      guard let error = error as? NetworkErrorMessage else {
+        throw NetworkErrorMessage(
+          code: -1,
+          description: "Unknown Error"
+        )
+      }
+      
+      throw error
+    }
   }
   
 }

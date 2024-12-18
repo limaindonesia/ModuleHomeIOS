@@ -15,6 +15,8 @@ public class PaymentCheckViewController: NiblessViewController {
   
   private let store: PaymentCheckStore
   
+  public var refundBottomSheetManager: DismissableActionBottomSheetManager!
+  
   private var subscriptions = Set<AnyCancellable>()
   
   public init(store: PaymentCheckStore) {
@@ -56,6 +58,62 @@ public class PaymentCheckViewController: NiblessViewController {
     store.backToHome()
   }
   
+  private func presentRefundBottomSheet() {
+    
+    let bottomStore = RefundPaymentSheetStore(
+      paymentCategory: .EWALLET,
+      title: "Konsultasi Kedaluarsa",
+      price: "Rp75.000",
+      buttonTitle: "",
+      isFormRequired: false
+    )
+    
+    let contentView = RefundBottomSheetView(store: bottomStore)
+    
+    let controller = RefundBottomSheetViewController()
+      .setStore(bottomStore)
+      .setContentView(contentView)
+      .setUsedFixedHeight(with: screen.height / 2 - 16)
+      .setDismissable(true)
+    
+    refundBottomSheetManager = DismissableActionBottomSheetManager(
+      navigationController: navigationController,
+      parentController: self
+    )
+    
+    refundBottomSheetManager
+      .setController(controller: controller)
+      .show()
+    
+    refundBottomSheetManager.onDismissed = { [weak self] in
+      guard let self = self else { return }
+      refundBottomSheetManager = nil
+    }
+    
+    bottomStore
+      .navigateToForm
+      .removeDuplicates()
+      .receive(on: RunLoop.main)
+      .subscribe(on: RunLoop.main)
+      .sink { [weak self] state in
+        if state {
+          self?.store.navigateToRefundForm()
+          self?.releaseRefundBottomSheet()
+        }
+      }.store(in: &subscriptions)
+    
+    bottomStore
+      .gotoConsultationHistory
+      .removeDuplicates()
+      .receive(on: RunLoop.main)
+      .subscribe(on: RunLoop.main)
+      .sink { [weak self] state in
+        self?.store.gotoHistoryConsultation()
+        self?.releaseRefundBottomSheet()
+      }.store(in: &subscriptions)
+    
+  }
+  
   private func observeStore() {
     store.$showErrorMessage
       .dropFirst()
@@ -66,6 +124,22 @@ public class PaymentCheckViewController: NiblessViewController {
           self.present(errorMessage: self.store.errorMessage)
         }
       }.store(in: &subscriptions)
+    
+    store.$isPresentRefundBottomSheet
+      .dropFirst()
+      .receive(on: RunLoop.main)
+      .subscribe(on: RunLoop.main)
+      .sink { state in
+        if state {
+          self.presentRefundBottomSheet()
+        }
+      }.store(in: &subscriptions)
+  }
+  
+  private func releaseRefundBottomSheet() {
+    guard let _ = refundBottomSheetManager else { return }
+    refundBottomSheetManager.releaseBottomSheet()
+    refundBottomSheetManager = nil
   }
   
 }

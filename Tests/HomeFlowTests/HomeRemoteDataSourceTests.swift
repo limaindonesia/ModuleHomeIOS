@@ -211,7 +211,7 @@ final class HomeRemoteDataSourceTests: XCTestCase {
 struct MockHomeRemoteDataSource: HomeRemoteDataSourceLogic,
                                  SKTMRemoteDataSourceLogic,
                                  OngoingUserCaseRemoteDataSourceLogic {
-
+ 
   var mockModel: AdvocateGetResp?
   var mockError: NetworkErrorMessage?
   var params: AdvocateParamRequest?
@@ -224,6 +224,10 @@ struct MockHomeRemoteDataSource: HomeRemoteDataSourceLogic,
 
   init(service: NetworkServiceLogic) {
     self.service = service
+  }
+  
+  func requestMe(headers: [String : String]) async throws -> HomeFlow.MeResponseModel {
+    fatalError()
   }
   
   func fetchPromotionBanner() async throws -> BannerResponseModel {

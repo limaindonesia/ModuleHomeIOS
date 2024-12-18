@@ -179,7 +179,59 @@ public struct PaymentRepository: PaymentRepositoryLogic,
     parameters: PaymentRejectionRequest
   ) async throws -> Bool {
     
-    return true
+    do {
+      let response = try await remote.requestRejectionPayment(
+        headers: headers.toHeaders(),
+        parameters: parameters.toParam()
+      )
+      
+      return response
+      
+    } catch {
+      
+      guard let error = error as? NetworkErrorMessage
+      else {
+        throw ErrorMessage(
+          id: -5,
+          title: "Unkown Error",
+          message: error.localizedDescription
+        )
+      }
+      
+      throw ErrorMessage(
+        id: error.code,
+        title: "Failed",
+        message: error.description
+      )
+    }
+    
+  }
+  
+  public func requestPaymentMethod(headers: HeaderRequest) async throws -> [PaymentMethodEntity] {
+    do {
+      let response = try await remote.requestPaymentMethods(headers: headers.toHeaders())
+      guard let methods = response.data?.paymentMethod else {
+        return []
+      }
+      
+      return methods.map(PaymentMethodEntity.map(from:))
+      
+    } catch {
+      guard let error = error as? NetworkErrorMessage
+      else {
+        throw ErrorMessage(
+          id: -5,
+          title: "Unkown Error",
+          message: error.localizedDescription
+        )
+      }
+      
+      throw ErrorMessage(
+        id: error.code,
+        title: "Failed",
+        message: error.description
+      )
+    }
   }
   
 }

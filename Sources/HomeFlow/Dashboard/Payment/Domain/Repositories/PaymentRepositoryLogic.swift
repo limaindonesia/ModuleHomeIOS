@@ -35,4 +35,6 @@ public protocol PaymentRepositoryLogic {
     parameters: PaymentRejectionRequest
   ) async throws -> Bool
   
+  func requestPaymentMethod(headers: HeaderRequest) async throws -> [PaymentMethodEntity]
+  
 }

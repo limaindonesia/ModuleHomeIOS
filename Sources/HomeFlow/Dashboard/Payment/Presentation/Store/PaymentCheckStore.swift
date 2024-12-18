@@ -19,20 +19,27 @@ public class PaymentCheckStore: ObservableObject {
   private let roomKey: String
   private let consultationID: Int
   private let orderID: String
+  private let paymentCategory: PaymentCategory
   private let userSessionDataSource: UserSessionDataSourceLogic
   private let cancelationRepository: PaymentCancelationRepositoryLogic
   private let paymentCheckRepository: PaymentCheckRepositoryLogic
+  private let consultationRepository: ConsultationsRepositoryLogic
+  private let meRepository: MeRepositoryLogic
   private let dashboardResponder: DashboardResponder
   private let paymentNavigator: PaymentNavigator
   private let waitingRoomNavigator: WaitingRoomNavigator
+  private let refundNavigator: RefundNavigator
+  private let mainTabBarResponder: MainTabBarResponder
   
   public var paymentTimeRemaining: CurrentValueSubject<TimeInterval, Never> = .init(0)
   @Published public var showTimeRemainig: Bool = false
   @Published public var isLoading: Bool = false
   @Published public var isPresentReasonBottomSheet: Bool = false
+  @Published public var isPresentRefundBottomSheet: Bool = false
   @Published public var reasons: [ReasonEntity] = []
   @Published public var showErrorMessage: Bool = false
   @Published public var errorMessage: ErrorMessage = .init()
+  @Published public var meViewModel: MeViewModel = .init()
   
   public var userCase: UserCases? = nil
   public var selectedReason: ReasonEntity? = nil
@@ -49,17 +56,17 @@ public class PaymentCheckStore: ObservableObject {
     self.dashboardResponder = MockNavigator()
     self.paymentNavigator = MockNavigator()
     self.waitingRoomNavigator = MockNavigator()
-    
+    self.consultationRepository = MockPaymentCheckRepository()
+    self.meRepository = MockMeRepository()
+    self.refundNavigator = MockNavigator()
     self.price = ""
     self.paymentURL = nil
     self.roomKey = ""
     self.consultationID = 0
     self.orderID = ""
     self.lawyerInfo = .init()
-    
-    Task {
-      await requestReasons()
-    }
+    self.paymentCategory = .EWALLET
+    self.mainTabBarResponder = MockNavigator()
   }
   
   public init(
@@ -69,12 +76,17 @@ public class PaymentCheckStore: ObservableObject {
     roomKey: String,
     consultationID: Int,
     orderID: String,
+    paymentCategory: PaymentCategory,
     userSessionDataSource: UserSessionDataSourceLogic,
     cancelationRepository: PaymentCancelationRepositoryLogic,
     paymentCheckRepository: PaymentCheckRepositoryLogic,
+    consultationRepository: ConsultationsRepositoryLogic,
+    meRepository: MeRepositoryLogic,
     dashboardResponder: DashboardResponder,
     paymentNavigator: PaymentNavigator,
-    waitingRoomNavigator: WaitingRoomNavigator
+    waitingRoomNavigator: WaitingRoomNavigator,
+    refundNavigator: RefundNavigator,
+    mainTabBarResponder: MainTabBarResponder
   ) {
     self.lawyerInfo = lawyerInfo
     self.price = price
@@ -82,12 +94,17 @@ public class PaymentCheckStore: ObservableObject {
     self.roomKey = roomKey
     self.consultationID = consultationID
     self.orderID = orderID
+    self.paymentCategory = paymentCategory
     self.userSessionDataSource = userSessionDataSource
     self.cancelationRepository = cancelationRepository
+    self.consultationRepository = consultationRepository
+    self.meRepository = meRepository
     self.dashboardResponder = dashboardResponder
     self.paymentNavigator = paymentNavigator
     self.paymentCheckRepository = paymentCheckRepository
     self.waitingRoomNavigator = waitingRoomNavigator
+    self.refundNavigator = refundNavigator
+    self.mainTabBarResponder = mainTabBarResponder
     
     Task {
       await fetchUserSession()
@@ -115,6 +132,46 @@ public class PaymentCheckStore: ObservableObject {
   }
   
   //MARK: Request API
+  
+  @MainActor
+  public func requestMe() async {
+    do {
+      guard let token = userSessionData?.remoteSession.remoteToken
+      else {
+        GLogger(.info, layer: "Presentation", message: "token nil")
+        return
+      }
+      
+      let entity = try await meRepository.requestMe(headers: HeaderRequest(token: token))
+      meViewModel = BioEntity.mapTo(entity)
+    } catch {
+      guard let error = error as? ErrorMessage
+      else {
+        return
+      }
+      
+      indicateError(error: error)
+    }
+  }
+  
+  @MainActor
+  public func requestConsultationById() async {
+    indicateLoading()
+    
+    guard let token = userSessionData?.remoteSession.remoteToken
+    else { return }
+    
+    do {
+      let _ = try await consultationRepository.requestConsultationById(
+        headers: HeaderRequest(token: token),
+        consultationID
+      )
+      indicateSuccess()
+    } catch {
+      guard let error = error as? ErrorMessage else { return }
+      indicateError(error: error)
+    }
+  }
   
   @MainActor
   public func requestCancelation() async {
@@ -282,6 +339,18 @@ public class PaymentCheckStore: ObservableObject {
   
   //MARK: - Other Function
   
+  public func checkBottomSheet() async {
+    if !meViewModel.orderNumber.isEmpty {
+      await requestReasons()
+      showReasonBottomSheet()
+    }
+    
+    if meViewModel.consultationID != 0 {
+      showRefundBottomSheet()
+    }
+  
+  }
+  
   @MainActor
   public func onDismissedReasonBottomSheet() async {
     if paymentTimeRemaining.value <= 0 {
@@ -329,7 +398,8 @@ public class PaymentCheckStore: ObservableObject {
       guard let userCase = userCase else { return }
       waitingRoomNavigator.navigateToWaitingRoom(
         userCase: userCase,
-        roomKey: roomKey
+        roomKey: roomKey,
+        paymentCategory: paymentCategory
       )
       
       return
@@ -356,6 +426,11 @@ public class PaymentCheckStore: ObservableObject {
       .sink { value in
         if value <= 0 {
           self.showReasonBottomSheet()
+          Task {
+            await self.requestMe()
+            await self.checkBottomSheet()
+          }
+          
         }
       }
       .store(in: &subscriptions)
@@ -391,6 +466,14 @@ public class PaymentCheckStore: ObservableObject {
     isPresentReasonBottomSheet = false
   }
   
+  public func showRefundBottomSheet() {
+    isPresentRefundBottomSheet = true
+  }
+  
+  public func hideRefundBottomSheet() {
+    isPresentRefundBottomSheet = false
+  }
+  
   //MARK: - Navigator
   
   public func navigateToPaymentGateway() {
@@ -399,6 +482,17 @@ public class PaymentCheckStore: ObservableObject {
   
   public func backToHome() {
     dashboardResponder.gotoDashboard()
+  }
+  
+  public func navigateToRefundForm() {
+    refundNavigator.navigateToForm(
+      meViewModel.consultationID,
+      userCases: userCase
+    )
+  }
+  
+  public func gotoHistoryConsultation() {
+    mainTabBarResponder.gotoHistory()
   }
   
 }

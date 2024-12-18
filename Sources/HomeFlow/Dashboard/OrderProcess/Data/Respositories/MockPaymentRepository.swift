@@ -108,4 +108,8 @@ public struct MockPaymentRepository: PaymentRepositoryLogic,
     return true
   }
   
+  public func requestPaymentMethod(headers: HeaderRequest) async throws -> [PaymentMethodEntity] {
+    return []
+  }
+  
 }

@@ -11,6 +11,7 @@ struct TimerTextView: View {
   
   @State var paymentTimeRemaining: TimeInterval = 0
   var onUpdateTimer: (TimeInterval) -> Void
+  var onTimerTimeUp: () -> Void
   
   public let timer = Timer.publish(
     every: 1,
@@ -34,6 +35,7 @@ struct TimerTextView: View {
     } else {
       paymentTimeRemaining = 0
       timer.upstream.connect().cancel()
+      onTimerTimeUp()
     }
   }
   
@@ -42,6 +44,7 @@ struct TimerTextView: View {
 #Preview {
   TimerTextView(
     paymentTimeRemaining: 300,
-    onUpdateTimer: { _ in }
+    onUpdateTimer: { _ in },
+    onTimerTimeUp: { }
   )
 }

@@ -41,6 +41,9 @@ public class PaymentStore: ObservableObject {
   @Published public var isPresentWarningPaymentBottomSheet: Bool = false
   @Published public var reasons: [ReasonEntity] = []
   @Published public var showTimeRemainig: Bool = false
+  @Published var isVirtualAccountChecked: Bool = false
+  @Published var isEWalletChecked: Bool = false
+  @Published var isPayButtonActive: Bool = false
   
   public var paymentTimeRemaining: CurrentValueSubject<TimeInterval, Never> = .init(0)
   private var treatmentEntities: [TreatmentEntity] = []
@@ -51,6 +54,8 @@ public class PaymentStore: ObservableObject {
   private var userCase: UserCases = .init()
   public var selectedReason: ReasonEntity? = nil
   public var reason: String? = nil
+  public var payments: [PaymentMethodViewModel] = []
+  public var selectedPaymentCategory: PaymentCategory = .VA
   
   private var subscriptions = Set<AnyCancellable>()
   
@@ -92,6 +97,7 @@ public class PaymentStore: ObservableObject {
     
     Task {
       await fetchUserSession()
+      await requestPaymentMethods()
       await fetchCancelationReasons()
       await fetchTreatment()
       await requestOrderByNumber()
@@ -102,6 +108,27 @@ public class PaymentStore: ObservableObject {
   }
   
   //MARK: - Fetch API
+  
+  @MainActor
+  public func requestPaymentMethods() async {
+    do {
+      guard let token = userSessionData?.remoteSession.remoteToken else {
+        return
+      }
+      
+      let entities = try await paymentRepository.requestPaymentMethod(headers: HeaderRequest(token: token))
+      payments = entities.map(PaymentMethodEntity.mapTo(_:))
+      
+      indicateSuccess()
+      
+    } catch {
+      guard let error = error as? ErrorMessage else {
+        return
+      }
+      
+      indicateError(error: error)
+    }
+  }
   
   @MainActor
   public func requestCancelation() async {
@@ -317,7 +344,8 @@ public class PaymentStore: ObservableObject {
         parameters: PaymentParamRequest(
           orderNumber: lawyerInfoViewModel.orderNumber,
           consultationGuideAnswerId: 2,
-          voucherCode: voucherCode
+          voucherCode: voucherCode,
+          paymentChannelCategory: selectedPaymentCategory.rawValue
         )
       )
       
@@ -401,6 +429,38 @@ public class PaymentStore: ObservableObject {
   }
   
   //MARK: - Other function
+  
+  public var activatePayButton: AnyPublisher<Bool, Never> {
+    Publishers.CombineLatest($isEWalletChecked, $isVirtualAccountChecked).map { (ewallet, va) in
+      return ewallet || va
+    }.eraseToAnyPublisher()
+  }
+  
+  public func getVAs() -> [PaymentMethodViewModel] {
+    return payments.filter { $0.category == .VA }
+  }
+  
+  public func getEWallets() -> [PaymentMethodViewModel] {
+    return payments.filter { $0.category == .EWALLET }
+  }
+  
+  @MainActor
+  public func checkVirtualAccount() {
+    if !isVirtualAccountChecked {
+      isVirtualAccountChecked = true
+      isEWalletChecked = false
+      return
+    }
+  }
+  
+  @MainActor
+  public func checkEWallet() {
+    if !isEWalletChecked {
+      isEWalletChecked = true
+      isVirtualAccountChecked = false
+      return
+    }
+  }
   
   @MainActor
   public func onDismissedReasonBottomSheet() async {
@@ -540,7 +600,8 @@ public class PaymentStore: ObservableObject {
         userCase,
         roomkey: paymentEntity.roomKey,
         consultId: userCase.booking?.consultation_id ?? 0,
-        status: false
+        status: false,
+        paymentCategory: selectedPaymentCategory
       )
       
     }
@@ -553,7 +614,8 @@ public class PaymentStore: ObservableObject {
       roomkey: paymentEntity.roomKey,
       consultId: userCase.booking?.consultation_id ?? 0,
       urlPayment: paymentEntity.urlString,
-      orderID: lawyerInfoViewModel.orderNumber
+      orderID: lawyerInfoViewModel.orderNumber,
+      paymentCategory: selectedPaymentCategory
     )
   }
   
@@ -637,6 +699,30 @@ public class PaymentStore: ObservableObject {
   //MARK: - Observer
   
   private func observer() {
+    
+    activatePayButton
+      .receive(on: RunLoop.main)
+      .subscribe(on: RunLoop.main)
+      .sink { state in
+        self.isPayButtonActive = state
+      }.store(in: &subscriptions)
+    
+    $isVirtualAccountChecked
+      .dropFirst()
+      .receive(on: RunLoop.main)
+      .subscribe(on: RunLoop.main)
+      .sink { state in
+        
+      }.store(in: &subscriptions)
+    
+    $isEWalletChecked
+      .dropFirst()
+      .receive(on: RunLoop.main)
+      .subscribe(on: RunLoop.main)
+      .sink { state in
+        
+      }.store(in: &subscriptions)
+    
     paymentTimeRemaining
       .dropFirst()
       .removeDuplicates()

@@ -160,7 +160,7 @@ public struct FakePaymentRemoteDataSource: PaymentRemoteDataSourceLogic,
   }
   
   public func requestCancelationReason(headers: [String : String]) async throws -> ReasonResponseModel {
-    fatalError()
+    return .init()
   }
   
   public func requestCancelReason(
@@ -175,6 +175,22 @@ public struct FakePaymentRemoteDataSource: PaymentRemoteDataSourceLogic,
     parameters: [String : Any]
   ) async throws -> Bool {
     return true
+  }
+  
+  public func requestPaymentMethods(headers: [String : String]) async throws -> PaymentMethodResponseModel {
+    guard let data = try? loadJSONFromFile(filename: "payment_method", inBundle: .module)
+    else {
+      throw URLError(.badURL)
+    }
+    
+    do {
+      let model = try JSONDecoder().decode(PaymentMethodResponseModel.self, from: data)
+      return model
+      
+    } catch {
+      throw URLError(.badURL)
+    }
+    
   }
   
 }

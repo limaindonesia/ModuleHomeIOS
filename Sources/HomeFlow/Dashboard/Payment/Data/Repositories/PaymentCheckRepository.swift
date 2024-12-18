@@ -9,7 +9,8 @@ import Foundation
 import AprodhitKit
 import GnDKit
 
-public class PaymentCheckRepository: PaymentCheckRepositoryLogic {
+public class PaymentCheckRepository: PaymentCheckRepositoryLogic,
+                                     ConsultationsRepositoryLogic {
   
   private let remote: PaymentCheckRemoteDataSourceLogic
   
@@ -83,4 +84,32 @@ public class PaymentCheckRepository: PaymentCheckRepositoryLogic {
     }
   }
   
+  public func requestConsultationById(
+    headers: HeaderRequest,
+    _ consultationID: Int
+  ) async throws -> UserCaseEntity {
+    do {
+      let response = try await remote.requestConsultationByID(
+        headers: headers.toHeaders(),
+        consultationID
+      )
+      return .init()
+      
+    } catch {
+      guard let error = error as? NetworkErrorMessage
+      else {
+        throw ErrorMessage(
+          id: -5,
+          title: "Unkown Error",
+          message: error.localizedDescription
+        )
+      }
+      
+      throw ErrorMessage(
+        id: error.code,
+        title: "Failed",
+        message: error.description
+      )
+    }
+  }
 }

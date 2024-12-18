@@ -95,4 +95,53 @@ final class PaymentRepositoryTests: XCTestCase {
     XCTAssertNil(discountFee)
   }
   
+  public func test_requestPaymentMethod_andReturnSuccess() async {
+   
+    //given
+    let headers = HeaderRequest(token: "")
+    let remote = FakePaymentRemoteDataSource()
+    sut = PaymentRepository(remote: remote)
+    
+    //when
+    let methods = try? await sut.requestPaymentMethod(headers: headers)
+    
+    //then
+    XCTAssertNotNil(methods)
+    
+  }
+  
+  public func test_requestPaymentMethod_andShouldHaveVA() async {
+   
+    //given
+    let headers = HeaderRequest(token: "")
+    let remote = FakePaymentRemoteDataSource()
+    sut = PaymentRepository(remote: remote)
+    
+    //when
+    let result = try? await sut.requestPaymentMethod(headers: headers)
+    guard let methods = result else { return }
+    let categories = methods.map { $0.category }
+    
+    //then
+    XCTAssertTrue(categories.contains(where: { $0 == .VA }))
+    
+  }
+  
+  public func test_requestPaymentMethod_andShouldHaveEWallet() async {
+   
+    //given
+    let headers = HeaderRequest(token: "")
+    let remote = FakePaymentRemoteDataSource()
+    sut = PaymentRepository(remote: remote)
+    
+    //when
+    let result = try? await sut.requestPaymentMethod(headers: headers)
+    guard let methods = result else { return }
+    let categories = methods.map { $0.category }
+    
+    //then
+    XCTAssertTrue(categories.contains(where: { $0 == .EWALLET }))
+    
+  }
+  
 }
