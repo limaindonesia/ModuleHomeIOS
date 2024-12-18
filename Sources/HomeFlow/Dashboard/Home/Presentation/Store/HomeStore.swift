@@ -64,6 +64,7 @@ public class HomeStore: ObservableObject {
   @Published public var name: String = ""
   @Published public var topAdvocateMonth: String = ""
   @Published public var isCategorySheetPresented: Bool = false
+  @Published public var isConsultationNowSheetPresented: Bool = false
   @Published public var selectedSkill: AdvocateSkills?
   @Published public var hideTabBar: Bool = false
   @Published public var arrayOfuserCases: [UserCases] = []
@@ -866,6 +867,16 @@ public class HomeStore: ObservableObject {
   func showCategoryBottomSheet() {
     isCategorySheetPresented = true
     hideTabBar = true
+  }
+  
+  func showConsultationNowBottomSheet() {
+    isConsultationNowSheetPresented = true
+    hideTabBar = true
+  }
+  
+  func hideConsultationNowBottomSheet() {
+    isConsultationNowSheetPresented = false
+    hideTabBar = false
   }
   
   func hideCategoryBottomSheet() {
