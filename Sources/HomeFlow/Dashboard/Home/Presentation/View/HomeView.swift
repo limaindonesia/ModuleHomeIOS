@@ -635,33 +635,46 @@ public struct HomeView: View {
       }
       .padding(.horizontal, 10)
       
-      Button {
-        store.showConsultationNowBottomSheet()
-      } label: {
-        HStack {
-          Text("Konsultasi Sekarang")
-            .foregroundColor(Color.white)
-            .titleLexend(size: 12)
-          
-          Image(systemName: "arrow.forward")
-            .resizable()
-            .frame(width: 10.67, height: 10.67)
-            .foregroundColor(.white)
+      ZStack {
+        Image("ic_disc_60_home", bundle: .module)
+          .resizable()
+          .frame(width: 55, height: 17)
+          .aspectRatio(contentMode: .fit)
+          .padding(.top, -28)
+          .padding(.leading, 200)
+          .zIndex(1)
+        
+        Button {
+          store.showConsultationNowBottomSheet()
+        } label: {
+          HStack {
+            Text("Konsultasi Sekarang")
+              .foregroundColor(Color.white)
+              .titleLexend(size: 12)
+            
+            Image(systemName: "arrow.forward")
+              .resizable()
+              .frame(width: 10.67, height: 10.67)
+              .foregroundColor(.white)
+          }
+          .padding(.horizontal, 8)
         }
-        .padding(.horizontal, 8)
+        .frame(maxWidth: .infinity, maxHeight: 40)
+        .background(Color.buttonActiveColor)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(
+          RoundedRectangle(cornerRadius: 8)
+            .stroke(
+              Color.white,
+              lineWidth: 1
+            )
+        )
+        .padding(.horizontal, 10)
+        .padding(.top, 0)
+        .zIndex(0)
+        
       }
-      .frame(maxWidth: .infinity, maxHeight: 40)
-      .background(Color.buttonActiveColor)
-      .clipShape(RoundedRectangle(cornerRadius: 8))
-      .overlay(
-        RoundedRectangle(cornerRadius: 8)
-          .stroke(
-            Color.white,
-            lineWidth: 1
-          )
-      )
-      .padding(.horizontal, 10)
-      .padding(.top, 0)
+      
       
 //      HStack {
 //        PositiveButton(
@@ -681,34 +694,48 @@ public struct HomeView: View {
 //      .padding(.horizontal, 10)
 //      .padding(.top, 12)
       
-      Button {
-        onTapSKTM()
-      } label: {
-        HStack {
-          Image("ic_probono", bundle: .module)
-          
-          Text("Dapatkan 3x konsultasi gratis dengan Pro bono")
-            .titleLexend(size: 10)
-          
-          Spacer()
-          
-          Text("Pelajari")
-            .foregroundColor(Color.buttonActiveColor)
-            .titleLexend(size: 10)
+      Image("ic_gradient_home", bundle: .module)
+        .resizable()
+        .aspectRatio(contentMode: .fill)
+        .frame(
+          maxWidth: .infinity,
+          maxHeight: 40
+        )
+        .clipped()
+        .contentShape(Rectangle())
+        .padding(.horizontal, 10)
+        .onTapGesture {
+          onTapSKTM()
         }
-        .padding(.horizontal, 8)
-      }
-      .frame(maxWidth: .infinity, maxHeight: 24)
-      .background(Color.danger100)
-      .clipShape(RoundedRectangle(cornerRadius: 6))
-      .overlay(
-        RoundedRectangle(cornerRadius: 6)
-          .stroke(
-            Color.danger200,
-            lineWidth: 1
-          )
-      )
-      .padding(.horizontal, 10)
+      
+//      Button {
+//        onTapSKTM()
+//      } label: {
+//        HStack {
+//          Image("ic_probono", bundle: .module)
+//          
+//          Text("Dapatkan 3x konsultasi gratis dengan Pro bono")
+//            .titleLexend(size: 10)
+//          
+//          Spacer()
+//          
+//          Text("Pelajari")
+//            .foregroundColor(Color.buttonActiveColor)
+//            .titleLexend(size: 10)
+//        }
+//        .padding(.horizontal, 8)
+//      }
+//      .frame(maxWidth: .infinity, maxHeight: 24)
+//      .background(Color.danger100)
+//      .clipShape(RoundedRectangle(cornerRadius: 6))
+//      .overlay(
+//        RoundedRectangle(cornerRadius: 6)
+//          .stroke(
+//            Color.danger200,
+//            lineWidth: 1
+//          )
+//      )
+//      .padding(.horizontal, 10)
       
     }
     .frame(maxWidth: .infinity, minHeight: 166)
@@ -1120,35 +1147,49 @@ public struct HomeView: View {
         .frame(maxWidth: .infinity, maxHeight: 1)
         .background(Color.gray100)
       
-      Button {
-        onTap()
-      } label: {
-        HStack {
-          Image("ic_probono", bundle: .module)
-          
-          Text("Dapatkan 3x konsultasi gratis dengan Pro bono")
-            .titleLexend(size: 10)
-            .padding(.horizontal, 8)
-          
-          Spacer()
-          
-          Text("Pelajari")
-            .foregroundColor(Color.buttonActiveColor)
-            .titleLexend(size: 10)
-            .padding(.horizontal, 8)
+      Image("ic_gradient_detail", bundle: .module)
+        .resizable()
+        .aspectRatio(contentMode: .fill)
+        .frame(
+          maxWidth: .infinity,
+          maxHeight: 40
+        )
+        .clipped()
+        .contentShape(Rectangle())
+        .padding(.horizontal, 10)
+        .onTapGesture {
+          onTap()
         }
-        .padding(.horizontal, 8)
-      }
-      .frame(maxWidth: .infinity, idealHeight: 36 ,maxHeight: 40)
-      .background(Color.danger100)
-      .clipShape(RoundedRectangle(cornerRadius: 6))
-      .overlay(
-        RoundedRectangle(cornerRadius: 6)
-          .stroke(
-            Color.danger200,
-            lineWidth: 1
-          )
-      )
+//      
+//      Button {
+//        onTap()
+//      } label: {
+//        HStack {
+//          Image("ic_probono", bundle: .module)
+//          
+//          Text("Dapatkan 3x konsultasi gratis dengan Pro bono")
+//            .titleLexend(size: 10)
+//            .padding(.horizontal, 8)
+//          
+//          Spacer()
+//          
+//          Text("Pelajari")
+//            .foregroundColor(Color.buttonActiveColor)
+//            .titleLexend(size: 10)
+//            .padding(.horizontal, 8)
+//        }
+//        .padding(.horizontal, 8)
+//      }
+//      .frame(maxWidth: .infinity, idealHeight: 36 ,maxHeight: 40)
+//      .background(Color.danger100)
+//      .clipShape(RoundedRectangle(cornerRadius: 6))
+//      .overlay(
+//        RoundedRectangle(cornerRadius: 6)
+//          .stroke(
+//            Color.danger200,
+//            lineWidth: 1
+//          )
+//      )
       
     }
     .padding(.bottom, 120)
