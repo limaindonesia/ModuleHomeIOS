@@ -694,7 +694,37 @@ public struct HomeView: View {
 //      .padding(.horizontal, 10)
 //      .padding(.top, 12)
       
-      Image("ic_gradient_home", bundle: .module)
+      /*VStack {
+        
+      }
+      .frame(maxWidth: .infinity, maxHeight: 40)
+      .background(
+        LinearGradient(
+          stops: [
+            Gradient.Stop(color: Color.danger200, location: 0.1),
+            Gradient.Stop(color: Color.danger100, location: 0.2),
+            Gradient.Stop(color: Color.danger100, location: 0.3),
+            Gradient.Stop(color: Color.danger100, location: 0.4),
+            Gradient.Stop(color: Color.danger100, location: 0.5),
+          ],
+          startPoint: .leading,
+          endPoint: .trailing
+        )
+      )
+      .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(
+          RoundedRectangle(cornerRadius: 8)
+            .stroke(
+              Color.danger200,
+              lineWidth: 1
+            )
+        )
+        .padding(.horizontal, 10)
+        .onTapGesture {
+          onTapSKTM()
+        }*/
+      
+      /*Image("ic_gradient_home", bundle: .module)
         .resizable()
         .aspectRatio(contentMode: .fill)
         .frame(
@@ -706,36 +736,47 @@ public struct HomeView: View {
         .padding(.horizontal, 10)
         .onTapGesture {
           onTapSKTM()
-        }
+        }*/
       
-//      Button {
-//        onTapSKTM()
-//      } label: {
-//        HStack {
-//          Image("ic_probono", bundle: .module)
-//          
-//          Text("Dapatkan 3x konsultasi gratis dengan Pro bono")
-//            .titleLexend(size: 10)
-//          
-//          Spacer()
-//          
-//          Text("Pelajari")
-//            .foregroundColor(Color.buttonActiveColor)
-//            .titleLexend(size: 10)
-//        }
-//        .padding(.horizontal, 8)
-//      }
-//      .frame(maxWidth: .infinity, maxHeight: 24)
-//      .background(Color.danger100)
-//      .clipShape(RoundedRectangle(cornerRadius: 6))
-//      .overlay(
-//        RoundedRectangle(cornerRadius: 6)
-//          .stroke(
-//            Color.danger200,
-//            lineWidth: 1
-//          )
-//      )
-//      .padding(.horizontal, 10)
+      HStack {
+        Image("ic_probono", bundle: .module)
+          .resizable()
+          .frame(width: 24, height: 24)
+        
+        Text(store.probonoTitle())
+          .padding(.bottom, 5)
+        
+        Spacer()
+        
+        Text(store.actionTitle())
+      }
+      .padding(.horizontal, 12)
+      .frame(maxWidth: .infinity, maxHeight: 40, alignment: .center)
+      .background(
+        LinearGradient(
+          stops: [
+            Gradient.Stop(color: Color.danger200, location: 0.05),
+            Gradient.Stop(color: Color.danger100, location: 0.2),
+            Gradient.Stop(color: Color.danger100, location: 0.3),
+            Gradient.Stop(color: Color.danger100, location: 0.4),
+            Gradient.Stop(color: Color.danger100, location: 0.5),
+          ],
+          startPoint: .leading,
+          endPoint: .trailing
+        )
+      )
+      .clipShape(RoundedRectangle(cornerRadius: 6))
+      .overlay(
+        RoundedRectangle(cornerRadius: 6)
+          .stroke(
+            Color.danger200,
+            lineWidth: 1
+          )
+      )
+      .padding(.horizontal, 10)
+      .onTapGesture {
+        onTapSKTM()
+      }
       
     }
     .frame(maxWidth: .infinity, minHeight: 166)
