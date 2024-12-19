@@ -641,6 +641,27 @@ public class HomeStore: ObservableObject {
   
   }
   
+  public func probonoTitle() -> AttributedString {
+    let text = "3x Konsultasi Gratis dengan Pro bono"
+    var attributedString = AttributedString(text)
+    let firstRange = attributedString.range(of: "3x Konsultasi Gratis")!
+    let range = attributedString.range(of: "dengan Pro bono")!
+    attributedString.foregroundColor = .darkTextColor
+    attributedString[firstRange].font = .lexendFont(style: .title(size: 10))
+    attributedString[range].font = .lexendFont(style: .body(size: 10))
+    
+    return attributedString
+  }
+  
+  public func actionTitle() -> AttributedString {
+    let text = "Pelajari"
+    var attributedString = AttributedString(text)
+    attributedString.foregroundColor = .buttonActiveColor
+    attributedString.font = .lexendFont(style: .title(size: 12))
+    
+    return attributedString
+  }
+  
   //MARK: - Indicator
   
   private func indicateLoading() {
