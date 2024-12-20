@@ -555,10 +555,19 @@ struct PaymentView: View {
         .frame(maxWidth: .infinity, maxHeight: 1)
         .background(Color.gray200)
       
-      HStack {
-        ForEach(store.getEWallets(), id: \.id) { item in
-          KFImage(item.icon)
-        }
+      ScrollViewReader { proxy in
+          ScrollView(.horizontal, showsIndicators: true) {
+              HStack {
+                ForEach(store.getEWallets(), id: \.id) { item in
+                  KFImage(item.icon)
+                }
+              }
+              .onAppear {
+                  DispatchQueue.main.async {
+                      proxy.scrollTo(0, anchor: .center)
+                  }
+              }
+          }
       }
 
     }
