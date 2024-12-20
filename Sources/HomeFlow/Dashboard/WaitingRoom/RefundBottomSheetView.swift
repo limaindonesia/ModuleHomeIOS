@@ -68,7 +68,7 @@ public class RefundBottomSheetView: BottomSheetContentView {
   let iconView: UIImageView = {
     let img = UIImageView(
       image: UIImage(
-        named: "ic_checklist",
+        named: "check-with-circle",
         in: .module,
         compatibleWith: .none
       )
@@ -79,7 +79,7 @@ public class RefundBottomSheetView: BottomSheetContentView {
   let subReasonInfoLabel: UILabel = {
     let lbl = UILabel()
     lbl.text = "Sistem akan secara otomatis memproses Pengembalian Dana dan mengembalikannya ke saldo E-Wallet Anda dalam waktu 3 x 24 jam (3 hari kerja)."
-    lbl.font = .lexendFont(style: .body(size: 14))
+    lbl.font = .lexendFont(style: .body(size: 12))
     lbl.numberOfLines = 0
     return lbl
   }()
@@ -87,7 +87,7 @@ public class RefundBottomSheetView: BottomSheetContentView {
   let statusLabel: UILabel = {
     let lbl = UILabel()
     lbl.text = "Status Pengembalian Dana bisa dilihat di riwayat konsultasi. "
-    lbl.font = .lexendFont(style: .body(size: 14))
+    lbl.font = .lexendFont(style: .body(size: 12))
     lbl.textAlignment = .center
     lbl.numberOfLines = 2
     lbl.textColor = UIColor.lightTextColor
@@ -113,6 +113,15 @@ public class RefundBottomSheetView: BottomSheetContentView {
     let view = UIView()
     view.backgroundColor = UIColor.gray100
     return view
+  }()
+  
+  lazy var hStackView: UIStackView = {
+    let sv = UIStackView(arrangedSubviews: [iconView, subReasonInfoLabel])
+    sv.axis = .horizontal
+    sv.distribution = .fillProportionally
+    sv.alignment = .fill
+    sv.backgroundColor = .red
+    return sv
   }()
   
   public override func setup() {
@@ -215,13 +224,14 @@ public class RefundBottomSheetView: BottomSheetContentView {
     iconView.snp.makeConstraints { make in
       make.top.equalTo(reasonInfoLabel.snp.bottom).offset(12)
       make.leading.equalTo(infoContainerView.snp.leading).offset(12)
+      make.width.equalTo(20)
+      make.height.equalTo(20)
     }
     
     subReasonInfoLabel.snp.makeConstraints { make in
       make.top.equalTo(reasonInfoLabel.snp.bottom).offset(12)
-      make.leading.equalTo(iconView.snp.leading).offset(12)
+      make.leading.equalTo(iconView.snp.trailing).offset(8)
       make.trailing.equalTo(infoContainerView.snp.trailing).offset(-12)
-      make.bottom.equalTo(infoContainerView.snp.bottom).offset(-12)
     }
     
     statusLabel.snp.makeConstraints { make in
@@ -292,11 +302,13 @@ public class RefundBottomSheetView: BottomSheetContentView {
     iconView.snp.makeConstraints { make in
       make.top.equalTo(reasonInfoLabel.snp.bottom).offset(12)
       make.leading.equalTo(infoContainerView.snp.leading).offset(12)
+      make.width.equalTo(20)
+      make.height.equalTo(20)
     }
     
     subReasonInfoLabel.snp.makeConstraints { make in
       make.top.equalTo(reasonInfoLabel.snp.bottom).offset(12)
-      make.leading.equalTo(iconView.snp.leading).offset(12)
+      make.leading.equalTo(iconView.snp.trailing).offset(8)
       make.trailing.equalTo(infoContainerView.snp.trailing).offset(-12)
     }
     
