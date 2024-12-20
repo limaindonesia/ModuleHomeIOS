@@ -13,17 +13,20 @@ public struct PromotionBannerView: View {
   private let imageURL: URL?
   private var onTapProbono: () -> Void
   private var onTapConsult: () -> Void
+  private var onTapBlog: () -> Void
   private var onTapClose: () -> Void
   
   public init(
     imageURL: URL?,
     onTapProbono: @escaping () -> Void,
     onTapConsult: @escaping () -> Void,
+    onTapBlog: @escaping () -> Void,
     onTapClose: @escaping () -> Void
   ) {
     self.imageURL = imageURL
     self.onTapProbono = onTapProbono
     self.onTapConsult = onTapConsult
+    self.onTapBlog = onTapBlog
     self.onTapClose = onTapClose
   }
   
@@ -79,7 +82,7 @@ public struct PromotionBannerView: View {
 //        )
         .padding(.horizontal, 32)
         .onTapGesture {
-          onTapConsult()
+          onTapBlog()
         }
       
       Image("system_message_banner_app_close", bundle: .module)
@@ -98,6 +101,8 @@ public struct PromotionBannerView: View {
   PromotionBannerView(imageURL: nil) {
     
   } onTapConsult: {
+    
+  } onTapBlog: {
     
   } onTapClose: {
     

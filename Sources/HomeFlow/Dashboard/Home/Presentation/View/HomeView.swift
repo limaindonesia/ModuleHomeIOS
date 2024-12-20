@@ -1296,6 +1296,8 @@ public struct HomeView: View {
           store.navigateToDetailSKTM()
         } onTapConsult: {
           store.navigateToAdvocateList()
+        } onTapBlog: {
+          store.navigateToBlog()
         } onTapClose: {
           store.dismissPromotionBanner()
         }

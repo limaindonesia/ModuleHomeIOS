@@ -790,6 +790,10 @@ public class HomeStore: ObservableObject {
     )
   }
   
+  public func navigateToBlog() {
+    advocateListNavigator.navigateToBlog()
+  }
+  
   public func navigateToDetailSKTM() {
     guard let _ = userSessionData else {
       sktmNavigator.navigateToUploadSKTM()
