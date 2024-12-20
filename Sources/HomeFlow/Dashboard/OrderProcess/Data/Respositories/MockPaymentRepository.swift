@@ -12,7 +12,6 @@ import GnDKit
 public struct MockPaymentRepository: PaymentRepositoryLogic,
                                      OngoingRepositoryLogic,
                                      PaymentCancelationRepositoryLogic {
-  
   public init() {}
   
   public func requestOrderByNumber(
@@ -104,6 +103,13 @@ public struct MockPaymentRepository: PaymentRepositoryLogic,
   public func requestPaymentCancel(
     headers: HeaderRequest,
     parameters: CancelPaymentRequest
+  ) async throws -> Bool {
+    return true
+  }
+  
+  public func requestDismissRefund(
+    headers: AprodhitKit.HeaderRequest,
+    parameters: DismissRefundRequest
   ) async throws -> Bool {
     return true
   }

@@ -12,7 +12,6 @@ import GnDKit
 public struct FakePaymentRemoteDataSource: PaymentRemoteDataSourceLogic,
                                            OngoingUserCaseRemoteDataSourceLogic,
                                            PaymentCancelationRemoteDataSourceLogic {
-  
   public init() {}
   
   public func requestOrderByNumber(
@@ -171,6 +170,13 @@ public struct FakePaymentRemoteDataSource: PaymentRemoteDataSourceLogic,
   }
   
   public func requestPaymentCancel(
+    headers: [String : String],
+    parameters: [String : Any]
+  ) async throws -> Bool {
+    return true
+  }
+  
+  public func requestDismissRefund(
     headers: [String : String],
     parameters: [String : Any]
   ) async throws -> Bool {

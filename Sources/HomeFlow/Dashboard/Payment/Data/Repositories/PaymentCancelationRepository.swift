@@ -98,4 +98,33 @@ public class PaymentCancelationRepository: PaymentCancelationRepositoryLogic {
     }
   }
   
+  public func requestDismissRefund(
+    headers: AprodhitKit.HeaderRequest,
+    parameters: DismissRefundRequest
+  ) async throws -> Bool {
+    do {
+      let _ = try await remote.requestDismissRefund(
+        headers: headers.toHeaders(),
+        parameters: parameters.toParam()
+      )
+      
+      return true
+      
+    } catch {
+      guard let error = error as? NetworkErrorMessage
+      else {
+        throw ErrorMessage(
+          title: "Failed",
+          message: "Uknown Failed"
+        )
+      }
+      
+      throw ErrorMessage(
+        id: error.code,
+        title: "Failed",
+        message: error.description
+      )
+    }
+  }
+  
 }

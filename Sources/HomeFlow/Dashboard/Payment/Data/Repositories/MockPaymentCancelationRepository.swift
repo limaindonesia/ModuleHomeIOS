@@ -39,5 +39,11 @@ public class MockPaymentCancelationRepository: PaymentCancelationRepositoryLogic
     return true
   }
   
+  public func requestDismissRefund(
+    headers: AprodhitKit.HeaderRequest,
+    parameters: DismissRefundRequest
+  ) async throws -> Bool {
+    return true
+  }
  
 }

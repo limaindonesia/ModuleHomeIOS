@@ -463,6 +463,33 @@ public class HomeStore: ObservableObject {
   }
   
   @MainActor
+  private func dismissRefundPopup() async -> Bool {
+    var success: Bool = false
+    
+    do {
+      guard let token = userSessionData?.remoteSession.remoteToken else {
+        indicateError(message: "")
+        return false
+      }
+      
+      success = try await cancelationRepository.requestDismissRefund(
+        headers: HeaderRequest(token: token),
+        parameters: DismissRefundRequest(id: meViewModel.consultationID)
+      )
+      
+      indicateSuccess()
+      
+    } catch {
+      guard let error = error as? ErrorMessage else {
+        return false
+      }
+      indicateError(error: error)
+    }
+    
+    return success
+  }
+  
+  @MainActor
   private func sendCancelationReason() async -> Bool {
     indicateLoading()
     var success: Bool = false
@@ -540,6 +567,13 @@ public class HomeStore: ObservableObject {
       showPromotionBanner()
     }
   }
+  
+  @MainActor
+  public func requestDismissRefundPopup() async {
+    await dismissRefundPopup()
+  }
+  
+  
   
   public func getFourTopAdvocates() -> [TopAdvocateViewModel] {
     if !topAdvocates.isEmpty {
@@ -636,6 +670,7 @@ public class HomeStore: ObservableObject {
     }
     
     if meViewModel.consultationID != 0 {
+      await requestDismissRefundPopup()
       showRefundBottomSheet()
     }
   

@@ -23,6 +23,11 @@ public protocol PaymentCancelationRemoteDataSourceLogic {
     parameters: [String : Any]
   ) async throws -> Bool
   
+  func requestDismissRefund(
+    headers: [String : String],
+    parameters: [String : Any]
+  ) async throws -> Bool
+  
 }
 
 public class PaymentCancelationRemoteDataSource: PaymentCancelationRemoteDataSourceLogic {
@@ -100,6 +105,41 @@ public class PaymentCancelationRemoteDataSource: PaymentCancelationRemoteDataSou
     do {
       let data = try await service.request(
         with: Endpoint.PAYMENT_CANCEL,
+        withMethod: .post,
+        withHeaders: headers,
+        withParameter: parameters,
+        withEncoding: .json
+      )
+      
+      let response = try JSONSerialization.jsonObject(with: data)
+      if let json = response as? [String : Any] {
+        if let success = json["success"] as? Bool {
+          return success
+        }
+      }
+     
+      return false
+      
+    } catch {
+      guard let error = error as? NetworkErrorMessage else {
+        throw NetworkErrorMessage(
+          code: -1,
+          description: "Unknown Error"
+        )
+      }
+      
+      throw error
+    }
+  }
+  
+  public func requestDismissRefund(
+    headers: [String : String],
+    parameters: [String : Any]
+  ) async throws -> Bool {
+    
+    do {
+      let data = try await service.request(
+        with: Endpoint.DISMISS_REFUND,
         withMethod: .post,
         withHeaders: headers,
         withParameter: parameters,

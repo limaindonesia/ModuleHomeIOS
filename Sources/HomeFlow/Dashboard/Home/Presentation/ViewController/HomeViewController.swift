@@ -96,7 +96,7 @@ public class HomeViewController: NiblessViewController {
       .setStore(bottomStore)
       .setContentView(contentView)
       .setUsedFixedHeight(with: screen.height / 2 - 16)
-      .setDismissable(true)
+      .setDismissable(false)
     
     refundBottomSheetManager = DismissableActionBottomSheetManager(
       navigationController: navigationController,

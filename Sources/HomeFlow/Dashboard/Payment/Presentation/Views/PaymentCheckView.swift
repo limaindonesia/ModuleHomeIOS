@@ -103,7 +103,7 @@ struct PaymentCheckView: View {
             .foregroundStyle(Color.gray500)
             .bodyLexend(size: 14)
           
-          Text("Rp160.000")
+          Text(store.userCase?.getPrice() ?? "")
             .titleLexend(size: 16)
         }
         Spacer()

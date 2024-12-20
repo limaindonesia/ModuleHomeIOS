@@ -22,4 +22,9 @@ public protocol PaymentCancelationRepositoryLogic {
     parameters: CancelPaymentRequest
   ) async throws -> Bool
   
+  func requestDismissRefund(
+    headers: HeaderRequest,
+    parameters: DismissRefundRequest
+  ) async throws -> Bool
+  
 }

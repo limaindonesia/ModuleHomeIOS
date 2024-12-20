@@ -277,6 +277,33 @@ public struct PaymentRemoteDataSource: PaymentRemoteDataSourceLogic,
     }
   }
   
+  public func requestDismissRefund(
+    headers: [String : String],
+    parameters: [String : Any]
+  ) async throws -> Bool {
+    do {
+      let data = try await service.request(
+        with: Endpoint.DISMISS_REFUND,
+        withMethod: .post,
+        withHeaders: headers,
+        withParameter: parameters,
+        withEncoding: .json
+      )
+      let succeeded = try JSONDecoder().decode(Bool.self, from: data)
+      return succeeded
+      
+    } catch {
+      guard let error = error as? NetworkErrorMessage else {
+        throw NetworkErrorMessage(
+          code: -1,
+          description: "Unknown Error"
+        )
+      }
+      
+      throw error
+    }
+  }
+  
   public func requestPaymentMethods(headers: [String : String]) async throws -> PaymentMethodResponseModel {
     do {
       let data = try await service.request(
