@@ -84,7 +84,7 @@ public class HomeViewController: NiblessViewController {
     
     let bottomStore = RefundPaymentSheetStore(
       paymentCategory: store.meViewModel.paymentCategory,
-      title: store.meViewModel.getTitle(),
+      title: store.meViewModel.getTitlePopup(),
       price: store.meViewModel.price,
       buttonTitle: store.meViewModel.getButtonTitle(),
       isFormRequired: store.meViewModel.isFormRequired

@@ -14,7 +14,7 @@ public class RefundBottomSheetView: BottomSheetContentView {
   
   let titleLabel: UILabel = {
     let lbl = UILabel()
-    lbl.text = "Pengembalian Dana Gagal"
+    lbl.text = "Konsultasi Dibatalkan"
     lbl.font = .lexendFont(style: .title(size: 20))
     return lbl
   }()
