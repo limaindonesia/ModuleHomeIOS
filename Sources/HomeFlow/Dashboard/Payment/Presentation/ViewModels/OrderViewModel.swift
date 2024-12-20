@@ -75,7 +75,7 @@ public class OrderViewModel {
 
 public struct FeeViewModel: Identifiable {
   public var id: Int
-  private let name: String
+  public let name: String
   public let amount: String
   public let showInfo: Bool
 
