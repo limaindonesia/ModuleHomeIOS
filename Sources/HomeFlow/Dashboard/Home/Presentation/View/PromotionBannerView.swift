@@ -59,27 +59,27 @@ public struct PromotionBannerView: View {
         .resizable()
         .aspectRatio(contentMode: .fit)
         .frame(maxWidth: .infinity, idealHeight: 400)
-//        .overlay(
-//          VStack(spacing: 0) {
-//            Image("system_message_banner_app_value", bundle: .module)
-//              .resizable()
-//              .aspectRatio(contentMode: .fit)
-//              .frame(height: 350)
-//              .onTapGesture {
-//                onTapConsult()
-//              }
-//            
-//            Image("system_message_banner_app_probono", bundle: .module)
-//              .resizable()
-//              .aspectRatio(contentMode: .fill)
-//              .padding(.top, -32)
-//              .onTapGesture {
-//                onTapProbono()
-//              }
-//          }
-//            .padding(.top, 12)
-//            .padding(.horizontal, 8)
-//        )
+        .overlay(
+          VStack(spacing: 0) {
+            Image("system_message_banner_app_value", bundle: .module)
+              .resizable()
+              .aspectRatio(contentMode: .fit)
+              .frame(height: 350)
+              .onTapGesture {
+                onTapConsult()
+              }
+            
+            Image("system_message_banner_app_probono", bundle: .module)
+              .resizable()
+              .aspectRatio(contentMode: .fill)
+              .padding(.top, -32)
+              .onTapGesture {
+                onTapProbono()
+              }
+          }
+            .padding(.top, 12)
+            .padding(.horizontal, 8)
+        )
         .padding(.horizontal, 32)
         .onTapGesture {
           onTapBlog()
