@@ -824,7 +824,8 @@ public struct HomeView: View {
                 price: advocate.createPrice(),
                 originalPrice: advocate.getOriginalPrice(),
                 isDiscount: advocate.isDiscount,
-                isProbono: advocate.isProbono,
+                //MARK: need to fix
+                isProbono: false,
                 onTap: {
                   store.navigateToDetailAdvocate(advocate)
                 },

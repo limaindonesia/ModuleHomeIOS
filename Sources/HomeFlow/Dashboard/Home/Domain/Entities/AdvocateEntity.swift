@@ -84,9 +84,9 @@ public struct AdvocateEntity: Transformable, Equatable {
       experience: data.year_exp ?? 0,
       rating: data.avg_ratings ?? "",
       totalConsultation: data.total_consultations ?? 0,
-      price: data.price ?? 0,
-      originalPrice: data.prices?.original_price ?? "",
-      isDiscount: data.prices?.is_discount ?? false
+      price: Int(data.price ?? "0") ?? 0,
+      originalPrice: data.original_price ?? "",
+      isDiscount: data.is_discount ?? false
     )
   }
 

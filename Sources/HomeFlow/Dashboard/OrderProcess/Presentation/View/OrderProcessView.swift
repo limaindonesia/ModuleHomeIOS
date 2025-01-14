@@ -40,6 +40,9 @@ public struct OrderProcessView: View {
               .padding(.horizontal, 16)
             }
           }
+          
+          //paymentDetail()
+          
           .padding(.top, 16)
         }
         
@@ -132,6 +135,47 @@ public struct OrderProcessView: View {
     }
   }
   
+//  @ViewBuilder
+//  func paymentDetail() -> some View {
+//    VStack(alignment: .leading, spacing: 12) {
+//      Text("Rincian pembayaran")
+//        .titleLexend(size: 14)
+//      
+//      ForEach(store.getPaymentDetails()) { fee in
+//        FeeRowView(
+//          name: "name",
+//          amount: "10000",
+//          showInfo: true,
+//          onTap: {
+//            GLogger(
+//              .info,
+//              layer: "Presentation",
+//              message: "did tap info"
+//            )
+//          }
+//        )
+//      }
+//      
+//      Divider()
+//        .frame(height: 1)
+//      
+//      HStack {
+//        Text("Total Pembayaran")
+//          .titleLexend(size: 16)
+//        
+//        Spacer()
+//        
+//        Text(store.getTotalAmount())
+//          .titleLexend(size: 16)
+//      }
+//    }
+//    .padding(.all, 12)
+//    .frame(maxWidth: .infinity)
+//    .background(Color.white)
+//    .cornerRadius(12)
+//    .shadow(color: .gray200, radius: 8)
+//  }
+//  
   @ViewBuilder
   func lawyerInfoView(
     imageURL: URL?,

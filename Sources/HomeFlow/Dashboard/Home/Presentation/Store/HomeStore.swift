@@ -648,7 +648,8 @@ public class HomeStore: ObservableObject {
     
     if status == Constant.Home.Text.ACTIVE {
       for i in 0 ..< arrayOfAdvocates.count {
-        arrayOfAdvocates[i].is_probono = true
+        //MARK: need to fix
+        //arrayOfAdvocates[i].is_probono = true
       }
       
       onlinedAdvocates = arrayOfAdvocates

@@ -17,6 +17,7 @@ public class OrderProcessStore: ObservableObject {
   private let sktmModel: ClientGetSKTM?
   private let repository: OrderProcessRepositoryLogic
   private let treatmentRepository: TreatmentRepositoryLogic
+  private let orderServiceRepository: OrderServiceRepositoryLogic
   private let paymentNavigator: PaymentNavigator
   private let sktmNavigator: SKTMNavigator
   private var category: CategoryViewModel
@@ -37,9 +38,11 @@ public class OrderProcessStore: ObservableObject {
   @Published public var priceCategories: [PriceCategoryViewModel] = []
 
   private var treatmentEntities: [TreatmentEntity] = []
+  private var orderServiceEntities: [OrderServiceEntity] = []
   private var userSessionData: UserSessionData?
   public var isLoading: Bool = false
   public var message: String = ""
+  private var detailPriceAdvocate: DetailPriceAdvocate?
   
   private var subscriptions = Set<AnyCancellable>()
   
@@ -49,6 +52,7 @@ public class OrderProcessStore: ObservableObject {
     self.sktmModel = .init()
     self.userSessionDataSource = MockUserSessionDataSource()
     self.treatmentRepository = MockTreatmentRepository()
+    self.orderServiceRepository = MockOrderServiceRepository()
     self.repository = MockOrderProcessRepository()
     self.paymentNavigator = MockNavigator()
     self.selectedPriceCategory = ""
@@ -63,6 +67,7 @@ public class OrderProcessStore: ObservableObject {
     userSessionDataSource: UserSessionDataSourceLogic,
     repository: OrderProcessRepositoryLogic,
     treatmentRepository: TreatmentRepositoryLogic,
+    orderServiceRepository: OrderServiceRepositoryLogic,
     paymentNavigator: PaymentNavigator,
     sktmNavigator: SKTMNavigator
   ) {
@@ -72,6 +77,7 @@ public class OrderProcessStore: ObservableObject {
     self.sktmModel = sktmModel
     self.userSessionDataSource = userSessionDataSource
     self.treatmentRepository = treatmentRepository
+    self.orderServiceRepository = orderServiceRepository
     self.repository = repository
     self.paymentNavigator = paymentNavigator
     self.sktmNavigator = sktmNavigator
@@ -80,6 +86,7 @@ public class OrderProcessStore: ObservableObject {
     issues = createIssueCategories()
     setLawyerInfo()
     priceCategories = getPriceCategories()
+    setSelectedDetailPriceAdvocate()
     
     Task {
       await fetchUserSession()
@@ -91,6 +98,22 @@ public class OrderProcessStore: ObservableObject {
   }
   
   //MARK: - API
+  
+//  public func getPaymentDetails() -> [FeeViewModel] {
+//    var items: [FeeViewModel] = []
+//    if let voucher = orderViewModel.voucher {
+//      items.append(voucher)
+//    }
+//    
+//    if let discount = orderViewModel.discount {
+//      items.append(discount)
+//    }
+//    
+//    items.append(orderViewModel.lawyerFee)
+//    items.append(orderViewModel.adminFee)
+//    
+//    return items.sorted(by: {$0.id < $1.id})
+//  }
   
   @MainActor
   private func requestBookingOrder() async -> BookingOrderEntity? {
@@ -140,7 +163,38 @@ public class OrderProcessStore: ObservableObject {
     }
   }
   
+  @MainActor
+  public func fetchOrderService() async {
+    let orderServiceParamRequest = OrderServiceParamRequest(
+      lawyerSkillPriceId: "\(detailPriceAdvocate?.lawyer_skill_price_id ?? 0)")
+    
+    do {
+      orderServiceEntities = try await orderServiceRepository.fetchOrderService(
+        HeaderRequest(
+          token: userSessionData?.remoteSession.remoteToken),
+        orderServiceParamRequest)
+      print("result orderServiceEntities == \(orderServiceEntities)")
+      
+    } catch {
+      guard let error = error as? ErrorMessage else { return }
+      indicateError(error: error)
+    }
+  }
+  
   //MARK: - Other function
+    
+  public func setSelectedDetailPriceAdvocate() {
+    for item in advocate.detail {
+      if item?.skill_id == getSelectedCategoryID() {
+        detailPriceAdvocate = item
+        print("detailPriceAdvocate data == \(String(describing: detailPriceAdvocate))")
+      }
+    }
+    Task {
+      await fetchOrderService()
+    }
+    
+  }
   
   public func setLawyerInfo() {
     var sktmQuota: Int = 0
@@ -208,10 +262,10 @@ public class OrderProcessStore: ObservableObject {
   }
   
   private func createIssueCategories() -> [CategoryViewModel] {
-    return advocate.skills.map {
+    return advocate.detail.map {
       CategoryViewModel(
-        id: $0.id ?? 0,
-        name: $0.name ?? ""
+        id: $0?.skill_id ?? 0,
+        name: $0?.name ?? ""
       )
     }
   }
@@ -240,14 +294,12 @@ public class OrderProcessStore: ObservableObject {
   }
   
   public func getPriceCategories() -> [PriceCategoryViewModel] {
-    advocate.prices?.detail.enumerated().map{ (index, price) in
-      let categories = price?.skills.map{ skill in
-        return CategoryViewModel(
-          id: skill?.id ?? 0,
-          name: skill?.name ?? ""
-        )
-      } ?? []
-      
+    var categories: [CategoryViewModel] = []
+    for item in advocate.detail {
+      categories.append(CategoryViewModel.init(id: item?.skill_id ?? 0, name: item?.name ?? ""))
+    }
+    
+    return advocate.detail.enumerated().map{ (index, price) in
       return PriceCategoryViewModel(
         id: index + 1,
         title: "Kategori Hukum",
