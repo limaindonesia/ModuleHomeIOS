@@ -676,7 +676,7 @@ public class HomeStore: ObservableObject {
   }
   
   public func probonoTitle() -> AttributedString {
-    let text = "Konsultasi Gratis dengan Pro bono"
+    let text = "3x Konsultasi Gratis dengan Pro bono"
     var attributedString = AttributedString(text)
     let firstRange = attributedString.range(of: "3x Konsultasi Gratis")!
     let range = attributedString.range(of: "dengan Pro bono")!
