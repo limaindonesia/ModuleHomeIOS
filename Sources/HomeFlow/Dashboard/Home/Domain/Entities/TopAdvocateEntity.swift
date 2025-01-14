@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import AprodhitKit
 
 public struct TopAdvocateEntity: Transformable, Equatable {
 
