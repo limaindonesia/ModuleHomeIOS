@@ -35,6 +35,7 @@ public class HomeStore: ObservableObject {
   private let ongoingNavigator: OngoingNavigator
   private let loginResponder: LoginResponder
   private let refundNavigator: RefundNavigator
+  private let probonoNavigator: ProbonoNavigator
   
   public let monitor = NWPathMonitor()
   let dispatchQueue = DispatchQueue(label: "Monitor")
@@ -106,9 +107,9 @@ public class HomeStore: ObservableObject {
     mainTabBarResponder: MainTabBarResponder,
     ongoingNavigator: OngoingNavigator,
     loginResponder: LoginResponder,
-    refundNavigator: RefundNavigator
+    refundNavigator: RefundNavigator,
+    probonoNavigator: ProbonoNavigator
   ) {
-    
     self.userSessionDataSource = userSessionDataSource
     self.homeRepository = homeRepository
     self.ongoingRepository = ongoingRepository
@@ -126,6 +127,7 @@ public class HomeStore: ObservableObject {
     self.ongoingNavigator = ongoingNavigator
     self.loginResponder = loginResponder
     self.refundNavigator = refundNavigator
+    self.probonoNavigator = probonoNavigator
     
     Task {
       await requestPromotionBanner()
@@ -153,7 +155,6 @@ public class HomeStore: ObservableObject {
     }
     
     observer()
-    
   }
   
   //MARK: - Socket
@@ -421,7 +422,7 @@ public class HomeStore: ObservableObject {
       }
     }
   }
-    
+  
   public func onRefresh() async {
     indicateLoading()
     hideTabBar = true
@@ -573,8 +574,6 @@ public class HomeStore: ObservableObject {
     await dismissRefundPopup()
   }
   
-  
-  
   public func getFourTopAdvocates() -> [TopAdvocateViewModel] {
     if !topAdvocates.isEmpty {
       var topAdvocates = topAdvocates[0 ..< topAdvocates.index(after: 3)]
@@ -673,11 +672,11 @@ public class HomeStore: ObservableObject {
       await requestDismissRefundPopup()
       showRefundBottomSheet()
     }
-  
+    
   }
   
   public func probonoTitle() -> AttributedString {
-    let text = "3x Konsultasi Gratis dengan Pro bono"
+    let text = "Konsultasi Gratis dengan Pro bono"
     var attributedString = AttributedString(text)
     let firstRange = attributedString.range(of: "3x Konsultasi Gratis")!
     let range = attributedString.range(of: "dengan Pro bono")!
@@ -857,6 +856,10 @@ public class HomeStore: ObservableObject {
   
   public func navigateToUploadSKTM() {
     sktmNavigator.navigateToUploadSKTM()
+  }
+  
+  public func navigateToProbonoService() {
+    probonoNavigator.navigateToProbonoService()
   }
   
   public func switchToProfile() {
