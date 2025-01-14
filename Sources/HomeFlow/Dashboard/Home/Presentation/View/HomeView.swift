@@ -42,9 +42,6 @@ public struct HomeView: View {
         } onTapDecisionTree: {
           store.hideConsultationNowBottomSheet()
           store.navigateToDecisionTree()
-        } onTapProbono: {
-          store.hideConsultationNowBottomSheet()
-          store.navigateToUploadSKTM()
         }
       } onDismissed: {
         store.hideConsultationNowBottomSheet()
@@ -1145,207 +1142,157 @@ public struct HomeView: View {
   }
   
   @ViewBuilder
-  func consultationNowBottomSheetContent(
-    onTap: @escaping () -> Void,
-    onTapConsultation: @escaping () -> Void,
-    onTapDecisionTree: @escaping () -> Void,
-    onTapProbono: @escaping() -> Void
-  ) -> some View {
-    
-    VStack(alignment: .leading, spacing: 16) {
-      
-      HStack {
-        Text(
-          NSLocalizedString(
-            Constant.Home.Text.CONSULTATION_TITLE,
-            comment: ""
-          )
-        )
-        .titleLexend(size: 20)
-        
-        Spacer()
-        
-        Image("ic_disc_60", bundle: .module)
-          .resizable()
-          .frame(width: 73, height: 23)
-          .aspectRatio(contentMode: .fit)
-          .zIndex(0)
-      }
-      .frame(minHeight: 30)
-      
+    func consultationNowBottomSheetContent(
+      onTap: @escaping () -> Void,
+      onTapConsultation: @escaping () -> Void,
+      onTapDecisionTree: @escaping () -> Void
+    ) -> some View {
       
       VStack(alignment: .leading, spacing: 16) {
         
-        HStack(alignment: .center, spacing: 8) {
+        HStack {
+          Text("Konsultasi Hukum Online")
+            .titleLexend(size: 16)
           
-          Image("ic_people", bundle: .module)
+          Spacer()
+          
+          
+          Image("ic_disc_60", bundle: .module)
             .resizable()
-            .frame(width: 40, height: 40)
-            .aspectRatio(contentMode: .fill)
-            .padding(.horizontal, 8)
+            .frame(width: 73, height: 23)
+            .aspectRatio(contentMode: .fit)
+            .zIndex(0)
           
-          VStack(alignment: .leading, spacing: 4) {
-            Text(
-              NSLocalizedString(
-                Constant.Home.Text.SHOW_ALL_ADVOCATE,
-                comment: ""
-              )
-            )
-            .titleLexend(size: 14)
-            .frame(width: 150, height: 20, alignment: .leading)
-            .padding(.top, 8)
+        }
+        .frame(minHeight: 30)
+        
+        
+        VStack {
+          
+          HStack(alignment: .center, spacing: 8) {
             
-            Text(
-              NSLocalizedString(
-                Constant.Home.Text.SUB_SHOW_ALL_ADVOCATE,
-                comment: ""
+            Image("ic_people", bundle: .module)
+              .resizable()
+              .frame(width: 40, height: 40)
+              .aspectRatio(contentMode: .fill)
+              .padding(.horizontal, 8)
+            
+            VStack(alignment: .leading, spacing: 4) {
+              Text("Lihat semua Advokat")
+                .titleLexend(size: 14)
+                .frame(width: 150, height: 20)
+                .padding(.top, 8)
+              
+              Text("Anda memiliki kebebasan untuk memilih Advokat yang telah terdaftar di platform Perqara.")
+                .foregroundColor(Color.init(hex: 0x4D5B6A))
+                .captionLexend(size: 12)
+                .padding(.bottom, 8)
+            }
+            
+            Image("ic_right_arrow", bundle: .module)
+              .resizable()
+              .frame(width: 16, height: 16)
+              .aspectRatio(contentMode: .fill)
+              .padding(.horizontal, 8)
+          }
+          .frame(maxWidth: .infinity, maxHeight: 125)
+          .background(Color.init(hex: 0xF3FBFF))
+          .clipShape(RoundedRectangle(cornerRadius: 8))
+          .overlay(
+            RoundedRectangle(cornerRadius: 8)
+              .stroke(
+                Color.init(hex: 0xEEF2F7),
+                lineWidth: 1
               )
-            )
-            .foregroundColor(Color.init(hex: 0x4D5B6A))
-            .captionLexend(size: 12)
-            .padding(.bottom, 8)
+          )
+          .onTapGesture {
+            onTapConsultation()
           }
           
           Spacer()
           
-          Image("ic_right_arrow", bundle: .module)
-            .resizable()
-            .frame(width: 24, height: 24)
-            .aspectRatio(contentMode: .fill)
-            .padding(.horizontal, 8)
-        }
-        .frame(
-          maxWidth: .infinity,
-          maxHeight: 125,
-          alignment: .leading
-        )
-        .padding(.horizontal, 12)
-        .background(Color.init(hex: 0xF3FBFF))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
-        .overlay(
-          RoundedRectangle(cornerRadius: 8)
-            .stroke(
-              Color.init(hex: 0xEEF2F7),
-              lineWidth: 1
-            )
-        )
-        .onTapGesture {
-          onTapConsultation()
-        }
-        
-        HStack(alignment: .center, spacing: 8) {
-          
-          Image("ic_book", bundle: .module)
-            .resizable()
-            .frame(width: 40, height: 40)
-            .aspectRatio(contentMode: .fill)
-            .padding(.horizontal, 8)
-          
-          VStack(alignment: .leading, spacing: 4) {
-            Text(
-              NSLocalizedString(
-                Constant.Home.Text.GUIDE_ADVOCATE,
-                comment: ""
-              )
-            )
-            .titleLexend(size: 14)
-            .frame(
-              width: 200,
-              height: 20,
-              alignment: .leading
-            )
-            .padding(.top, 8)
-            
-            Text(NSLocalizedString(Constant.Home.Text.SUB_GUIDE_ADVOCATE, comment: ""))
-              .foregroundColor(Color.init(hex: 0x4D5B6A))
-              .captionLexend(size: 12)
-              .padding(.bottom, 8)
-          }
-          
           Spacer()
           
-          Image("ic_right_arrow", bundle: .module)
-            .resizable()
-            .frame(width: 24, height: 24)
-            .aspectRatio(contentMode: .fill)
-            .padding(.horizontal, 8)
+          HStack(alignment: .center, spacing: 8) {
+            
+            Image("ic_book", bundle: .module)
+              .resizable()
+              .frame(width: 40, height: 40)
+              .aspectRatio(contentMode: .fill)
+              .padding(.horizontal, 8)
+            
+            VStack(alignment: .leading, spacing: 4) {
+              Text("Panduan memilih Advokat")
+                .titleLexend(size: 14)
+                .frame(width: 200, height: 20)
+                .padding(.top, 8)
+              
+              Text("Perqara akan menanyakan pertanyaan seputar kasus Anda dan memberikan rekomendasi Advokat.")
+                .foregroundColor(Color.init(hex: 0x4D5B6A))
+                .captionLexend(size: 12)
+                .padding(.bottom, 8)
+            }
+            
+            Image("ic_right_arrow", bundle: .module)
+              .resizable()
+              .frame(width: 16, height: 16)
+              .aspectRatio(contentMode: .fill)
+              .padding(.horizontal, 8)
+          }
+          .frame(maxWidth: .infinity, maxHeight: 125)
+          .background(Color.init(hex: 0xF3FBFF))
+          .clipShape(RoundedRectangle(cornerRadius: 8))
+          .overlay(
+            RoundedRectangle(cornerRadius: 8)
+              .stroke(
+                Color.init(hex: 0xEEF2F7),
+                lineWidth: 1
+              )
+          )
+          .onTapGesture {
+            onTapDecisionTree()
+          }
+          
         }
-        .frame(
-          maxWidth: .infinity,
-          maxHeight: 125,
-          alignment: .leading
-        )
-        .padding(.horizontal, 12)
-        .background(Color.init(hex: 0xF3FBFF))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .frame(minHeight: 50)
+        
+        Divider()
+          .frame(maxWidth: .infinity, maxHeight: 1)
+          .background(Color.gray100)
+        
+        Button {
+          onTap()
+        } label: {
+          HStack {
+            Image("ic_probono", bundle: .module)
+            
+            Text("Dapatkan 3x konsultasi gratis dengan Pro bono")
+              .titleLexend(size: 10)
+              .padding(.horizontal, 8)
+            
+            Spacer()
+            
+            Text("Pelajari")
+              .foregroundColor(Color.buttonActiveColor)
+              .titleLexend(size: 10)
+              .padding(.horizontal, 8)
+          }
+          .padding(.horizontal, 8)
+        }
+        .frame(maxWidth: .infinity, idealHeight: 36 ,maxHeight: 40)
+        .background(Color.danger100)
+        .clipShape(RoundedRectangle(cornerRadius: 6))
         .overlay(
-          RoundedRectangle(cornerRadius: 8)
+          RoundedRectangle(cornerRadius: 6)
             .stroke(
-              Color.init(hex: 0xEEF2F7),
+              Color.danger200,
               lineWidth: 1
             )
         )
-        .onTapGesture {
-          onTapDecisionTree()
-        }
         
       }
-      .frame(minHeight: 50)
-      
-      Divider()
-        .frame(maxWidth: .infinity, maxHeight: 1)
-        .background(Color.gray100)
-      
-      HStack {
-        Image("ic_probono_2", bundle: .module)
-          .resizable()
-          .frame(width: 24, height: 24)
-        
-        Text(
-          NSLocalizedString(
-            Constant.Home.Text.BOTTOM_PROBONO_TITLE,
-            comment: ""
-          )
-        )
-        .titleLexend(size: 12)
-        .padding(.trailing, 12)
-        
-        Spacer()
-        
-        Text(store.actionTitle())
-      }
-      .padding(.horizontal, 12)
-      .padding(.vertical, 8)
-      .frame(
-        maxWidth: .infinity,
-        minHeight: 40,
-        alignment: .center
-      )
-      .background(
-        LinearGradient(
-          colors: [
-            Color.gradientBlue,
-            Color.gradientBlue2,
-            Color.gradientBlue2
-          ],
-          startPoint: .leading,
-          endPoint: .trailing
-        )
-      )
-      .clipShape(RoundedRectangle(cornerRadius: 6))
-      .overlay(
-        RoundedRectangle(cornerRadius: 6)
-          .stroke(
-            Color.primaryInfo200,
-            lineWidth: 1
-          )
-      )
-      .padding(.bottom, 8)
-      .onTapGesture {
-        onTapProbono()
-      }
+      .padding(.bottom, 120)
     }
-  }
   
   @ViewBuilder
   func categoryBottomSheetContent(
