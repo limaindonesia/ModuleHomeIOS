@@ -176,6 +176,7 @@ public class PaymentViewController: NiblessViewController, SuccessViewDelegate {
           self.stopAnimation()
         }
       }.store(in: &subscriptions)
+    
   }
   
   deinit {

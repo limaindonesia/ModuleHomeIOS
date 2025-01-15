@@ -888,6 +888,7 @@ public class HomeStore: ObservableObject {
       return
     }
     
+    
     let lawyerInfoViewModel = LawyerInfoViewModel(
       id: userCases.id ?? 0,
       imageURL: URL(string: userCases.lawyer?.photo_url ?? ""),
@@ -898,7 +899,12 @@ public class HomeStore: ObservableObject {
       isDiscount: userCases.lawyer?.isDiscount ?? false,
       isProbono: userCases.service_type ?? "" == Constant.Home.Text.PROBONO,
       orderNumber: userCases.order_no ?? "",
-      detailIssues: userCases.description ?? ""
+      detailIssues: userCases.description ?? "",
+      //MARK: need to set again
+      category: "Pidana",
+      type: "Chat saja",
+      duration: "60 menit"
+      
     )
     
     ongoingNavigator.navigateToPayment(lawyerInfoViewModel)

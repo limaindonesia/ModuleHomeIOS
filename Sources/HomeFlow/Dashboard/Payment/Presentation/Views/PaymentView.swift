@@ -163,6 +163,19 @@ struct PaymentView: View {
         }
       }
       
+      BottomSheetView(
+        isPresented: $store.isPresentDetailConsultationBottomSheet,
+        dismissable: true
+      ) {
+        DetailConsultationContentView(
+          category: store.getCategoryBottomSheet(),
+          duration: store.getDurationBottomSheet(),
+          type: store.getTypeBottomSheet(),
+          desc: store.getDetailIssueName()
+        )
+      } onDismissed: {
+      }
+      
     }
     
   }
@@ -245,20 +258,13 @@ struct PaymentView: View {
           Spacer()
           
           Button {
-            store.showDetailIssues.toggle()
+            store.showDetailConsultationBottomSheet()
           } label: {
             Image("ic_down_arrow", bundle: .module)
           }
           
         }
         .padding(.horizontal, 7)
-        
-        if showDetailIssues {
-          Text(detailIssues)
-            .foregroundColor(Color.darkTextColor)
-            .bodyLexend(size: 14)
-            .padding(.horizontal, 7)
-        }
         
       }
       .padding(.horizontal, 7)

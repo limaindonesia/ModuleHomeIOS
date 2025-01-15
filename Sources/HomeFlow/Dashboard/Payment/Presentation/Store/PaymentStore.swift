@@ -38,6 +38,7 @@ public class PaymentStore: ObservableObject {
   @Published public var isPresentMakeSureBottomSheet: Bool = false
   @Published public var showDetailIssues: Bool = false
   @Published public var isPresentReasonBottomSheet: Bool = false
+  @Published public var isPresentDetailConsultationBottomSheet: Bool = false
   @Published public var isPresentWarningPaymentBottomSheet: Bool = false
   @Published public var reasons: [ReasonEntity] = []
   @Published public var showTimeRemainig: Bool = false
@@ -519,6 +520,22 @@ public class PaymentStore: ObservableObject {
     return lawyerInfoViewModel.imageURL
   }
   
+  public func getCategoryBottomSheet() -> String {
+    return lawyerInfoViewModel.category ?? ""
+  }
+  
+  public func getTypeBottomSheet() -> String {
+    return lawyerInfoViewModel.type ?? ""
+  }
+  
+  public func getDurationBottomSheet() -> String {
+    return lawyerInfoViewModel.duration ?? ""
+  }
+  
+  public func getDetailIssueName() -> String {
+    return lawyerInfoViewModel.detailIssues
+  }
+  
   public func getLawyersName() -> String {
     return lawyerInfoViewModel.name
   }
@@ -686,6 +703,14 @@ public class PaymentStore: ObservableObject {
         _ = await sendCancelationReason()
       }
     }
+  }
+  
+  public func showDetailConsultationBottomSheet() {
+    isPresentDetailConsultationBottomSheet = true
+  }
+  
+  public func hideDetailConsultationBottomSheet() {
+    isPresentDetailConsultationBottomSheet = false
   }
   
   public func showWarningPaymentBottomSheet() {

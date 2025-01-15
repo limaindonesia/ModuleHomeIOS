@@ -169,6 +169,27 @@ public class OrderProcessStore: ObservableObject {
   }
   
   //MARK: - Other function
+  public func getDurationPagePayment() -> String {
+    for item in orderServiceViewModel {
+      if item.type == typeSelected {
+        return item.duration
+      }
+    }
+    return ""
+  }
+  
+  public func getTypePagePayment() -> String {
+    for item in orderServiceViewModel {
+      if item.type == typeSelected {
+        return item.name
+      }
+    }
+    return ""
+  }
+  
+  public func getCategoryPagePayment() -> String {
+    return detailPriceAdvocate?.name ?? ""
+  }
   
   public func getOrderType() -> String {
     return typeSelected
@@ -456,7 +477,10 @@ public class OrderProcessStore: ObservableObject {
         isDiscount: lawyerInfoViewModel.isDiscount,
         isProbono: isProbonoActive,
         orderNumber: orderNumber,
-        detailIssues: issueText
+        detailIssues: issueText,
+        category: getCategoryPagePayment(),
+        type: getTypePagePayment(),
+        duration: getDurationPagePayment()
       )
       
       paymentNavigator.navigateToPayment(lawyerInfo)
