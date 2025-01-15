@@ -25,6 +25,8 @@ public class OrderProcessStore: ObservableObject {
   private let userSessionDataSource: UserSessionDataSourceLogic
   private let selectedPriceCategory: String
   
+  @Published public var orderServiceFilled: Bool = false
+  @Published public var detailCostFilled: Bool = false
   @Published public var issueText: String = ""
   @Published public var lawyerInfoViewModel: LawyerInfoViewModel = .init()
   @Published public var isPresentBottomSheet: Bool = false
@@ -36,14 +38,16 @@ public class OrderProcessStore: ObservableObject {
   @Published public var buttonActive: Bool = false
   @Published public var error: ErrorMessage = .init()
   @Published public var priceCategories: [PriceCategoryViewModel] = []
-
+  
+  
   private var treatmentEntities: [TreatmentEntity] = []
   private var orderServiceEntities: [OrderServiceEntity] = []
   private var userSessionData: UserSessionData?
   public var isLoading: Bool = false
   public var message: String = ""
+  public var typeSelected: String = ""
   private var detailPriceAdvocate: DetailPriceAdvocate?
-  
+  public var orderServiceViewModel: [OrderServiceViewModel] = []
   private var subscriptions = Set<AnyCancellable>()
   
   public init() {
@@ -82,15 +86,14 @@ public class OrderProcessStore: ObservableObject {
     self.paymentNavigator = paymentNavigator
     self.sktmNavigator = sktmNavigator
     
-    
+    setSelectedDetailPriceAdvocate()
     issues = createIssueCategories()
     setLawyerInfo()
     priceCategories = getPriceCategories()
-    setSelectedDetailPriceAdvocate()
     
     Task {
       await fetchUserSession()
-      await fetchTreatment()
+//      await fetchTreatment()
     }
     
     observer()
@@ -98,22 +101,6 @@ public class OrderProcessStore: ObservableObject {
   }
   
   //MARK: - API
-  
-//  public func getPaymentDetails() -> [FeeViewModel] {
-//    var items: [FeeViewModel] = []
-//    if let voucher = orderViewModel.voucher {
-//      items.append(voucher)
-//    }
-//    
-//    if let discount = orderViewModel.discount {
-//      items.append(discount)
-//    }
-//    
-//    items.append(orderViewModel.lawyerFee)
-//    items.append(orderViewModel.adminFee)
-//    
-//    return items.sorted(by: {$0.id < $1.id})
-//  }
   
   @MainActor
   private func requestBookingOrder() async -> BookingOrderEntity? {
@@ -126,7 +113,7 @@ public class OrderProcessStore: ObservableObject {
       lawyerId: lawyerInfoViewModel.id,
       skillId: category.id,
       description: issueText,
-      useProbono: isProbonoActive
+      orderType: getOrderType()
     )
     
     do {
@@ -173,7 +160,7 @@ public class OrderProcessStore: ObservableObject {
         HeaderRequest(
           token: userSessionData?.remoteSession.remoteToken),
         orderServiceParamRequest)
-      print("result orderServiceEntities == \(orderServiceEntities)")
+      setOrderServiceArrayModel()
       
     } catch {
       guard let error = error as? ErrorMessage else { return }
@@ -182,12 +169,130 @@ public class OrderProcessStore: ObservableObject {
   }
   
   //MARK: - Other function
+  
+  public func getOrderType() -> String {
+    return typeSelected
+  }
+  
+  public func getDetailInfoBottom() -> String {
+    if detailCostFilled {
+      return "Transaksi ini mungkin dikenakan biaya layanan."
+    } else {
+      return "Rincian akan ditampilkan setelah memilih konsultasi diatas"
+    }
+  }
+  
+  public func getOriginalPrice() -> String {
+    for item in orderServiceViewModel {
+      if item.type == typeSelected {
+        return item.original_price
+      }
+    }
+    return ""
+  }
+  
+  
+  
+  public func getDiscountPrice() -> String {
+    for item in orderServiceViewModel {
+      if item.type == typeSelected {
+        return item.discountPrice
+      }
+    }
+    return ""
+  }
+  
+  public func getPriceBottom() -> String {
+    for item in orderServiceViewModel {
+      if item.type == typeSelected {
+        return item.price
+      }
+    }
+    return ""
+  }
+  
+  public func getName() -> String {
+    for item in orderServiceViewModel {
+      if item.type == typeSelected {
+        return "Biaya \(item.name)"
+      }
+    }
+    return ""
+  }
+  
+  public func getDiscountName() -> String {
+    return "Diskon Perqara"
+  }
+  
+  public func getOrderServiceArrayModel() -> [OrderServiceViewModel] {
+    return orderServiceViewModel
+  }
+  
+  public func setOrderServiceArrayModel() {
+    orderServiceFilled = true
+    for (index, item) in orderServiceEntities.enumerated() {
+      var price = CurrencyFormatter.toCurrency(NSNumber(value: item.price))
+      let originalPrice = CurrencyFormatter.toCurrency(NSNumber(value: item.original_price))
+      var descPrice = "senilai \(item.price/item.duration)/menit"
+      var isDiscount = true
+      if item.price == item.original_price {
+        isDiscount = false
+      }
+      var isSKTM = false
+      if item.type == "PROBONO" {
+        isSKTM = true
+        if getSKTMQuota() > 0 {
+          price = "GRATIS"
+          descPrice = "kuota tersedia: \(getSKTMQuota())"
+        } else {
+          price = "GRATIS"
+          descPrice = "S&K Berlaku"
+        }
+      }
+      var isSaving = false
+      if item.type == "REGULAR_AUDIO_VIDEO" {
+        isSaving = true
+      }
+      let discountInt = (item.original_price - item.price)
+      let discount = "\(CurrencyFormatter.toCurrency(NSNumber(value: discountInt)))"
+      
+      orderServiceViewModel.append(OrderServiceViewModel.init(id: index, name: item.name, type: item.type, status: item.status, duration: "\(item.duration) Menit", price: price, original_price: originalPrice, icon_url: item.icon_url, isDiscount: isDiscount,isSKTM: isSKTM, isHaveQuotaSKTM: getUserSKTMData(), quotaSKTM: getSKTMQuota(), isKTPActive: false, isSaving: isSaving, isSelected: false, descPrice: descPrice, discountPrice: discount))
+    }
+    
+  }
+  
+  public func selectedUpdate(type: String) {
+    for (indexArray,item) in orderServiceViewModel.enumerated() {
+      if type == item.type {
+        typeSelected = type
+        orderServiceViewModel[indexArray].isSelected = true
+      } else {
+        orderServiceViewModel[indexArray].isSelected = false
+      }
+    }
+    orderServiceFilled = true
+    detailCostFilled = true
+    
+  }
+  
+  public func getSKTMQuota() -> Int {
+    if let quota = sktmModel?.data?.quota, quota > 0  {
+      return quota
+    }
+    return 0
+  }
+  
+  public func getUserSKTMData() -> Bool {
+    if let quota = sktmModel?.data?.quota, quota > 0  {
+      return true
+    }
+    return false
+  }
     
   public func setSelectedDetailPriceAdvocate() {
     for item in advocate.detail {
       if item?.skill_id == getSelectedCategoryID() {
         detailPriceAdvocate = item
-        print("detailPriceAdvocate data == \(String(describing: detailPriceAdvocate))")
       }
     }
     Task {
@@ -427,6 +532,22 @@ public class OrderProcessStore: ObservableObject {
       .subscribe(on: RunLoop.main)
       .sink { message in
         
+      }.store(in: &subscriptions)
+    
+    $orderServiceFilled
+      .dropFirst()
+      .receive(on: RunLoop.main)
+      .subscribe(on: RunLoop.main)
+      .sink { message in
+        print("$orderServiceFilled")
+      }.store(in: &subscriptions)
+    
+    $detailCostFilled
+      .dropFirst()
+      .receive(on: RunLoop.main)
+      .subscribe(on: RunLoop.main)
+      .sink { message in
+        print("$detailCostFilled")
       }.store(in: &subscriptions)
     
     $issueText

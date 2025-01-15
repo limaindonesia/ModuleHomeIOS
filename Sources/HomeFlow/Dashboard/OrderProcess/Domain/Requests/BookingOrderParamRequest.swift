@@ -13,20 +13,20 @@ public struct BookingOrderParamRequest: Paramable {
   public let lawyerId: Int
   public let skillId: Int
   public let description: String
-  public let useProbono: Bool
+  public let orderType: String
 
   public init(
     type: String,
     lawyerId: Int,
     skillId: Int,
     description: String,
-    useProbono: Bool
+    orderType: String
   ) {
     self.type = type
     self.lawyerId = lawyerId
     self.skillId = skillId
     self.description = description
-    self.useProbono = useProbono
+    self.orderType = orderType
   }
 
   func toParam() -> [String : Any] {
@@ -34,7 +34,7 @@ public struct BookingOrderParamRequest: Paramable {
       "lawyer_id" : lawyerId,
       "skill_id" : skillId,
       "description" : description,
-      "use_probono" : useProbono
+      "order_type" : orderType
     ]
 
     return [

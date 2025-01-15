@@ -263,8 +263,8 @@ public  struct OrderResponseModel: Codable {
   public struct Lawyer: Codable {
     public let id: Int?
     public let name: String?
-    public let price: Int?
-    public let prices: Prices?
+    public let price: String?
+    public let originalPrice: String?
     public let photoURL, gender: String?
     public let city: Skill?
     public let affidavitDate: String?
@@ -273,18 +273,18 @@ public  struct OrderResponseModel: Codable {
     public let avgRatings: String?
     public let totalConsultations: Int?
     public let slug: String?
-    public let isOnline, isProbono: Bool?
+    public let isOnline: Bool?
     public let agencyName: String?
     public let agencyProvince, agencyCity: Skill?
     public let description: String?
     public let isBusy, isVoiceCallActive, isVideoCallActive: Bool?
     public let educations: [JSONAny]?
-    public let skills: [Skill]?
-    public let skillIDS: [Int]?
     public let missedCallConsultation: LawyerRating?
+    public let isAudioVideoCallActive: Bool?
 
     enum CodingKeys: String, CodingKey {
-      case id, name, price, prices
+      case id, name, price
+      case originalPrice = "original_price"
       case photoURL = "photo_url"
       case gender, city
       case affidavitDate = "affidavit_date"
@@ -294,7 +294,6 @@ public  struct OrderResponseModel: Codable {
       case totalConsultations = "total_consultations"
       case slug
       case isOnline = "is_online"
-      case isProbono = "is_probono"
       case agencyName = "agency_name"
       case agencyProvince = "agency_province"
       case agencyCity = "agency_city"
@@ -302,9 +301,9 @@ public  struct OrderResponseModel: Codable {
       case isBusy = "is_busy"
       case isVoiceCallActive = "is_voice_call_active"
       case isVideoCallActive = "is_video_call_active"
-      case educations, skills
-      case skillIDS = "skill_ids"
+      case educations
       case missedCallConsultation = "missed_call_consultation"
+      case isAudioVideoCallActive = "is_audio_video_call_active"
     }
   }
 

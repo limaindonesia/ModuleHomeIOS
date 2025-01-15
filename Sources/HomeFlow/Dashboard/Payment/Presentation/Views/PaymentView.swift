@@ -269,21 +269,6 @@ struct PaymentView: View {
       .padding(.horizontal, 12)
       
       HStack(spacing: 8) {
-        Text("Durasi konsultasi:")
-          .bodyLexend(size: 12)
-        
-        HStack(spacing: 2) {
-          
-          Image("ic_timer", bundle: .module)
-            .renderingMode(.template)
-            .foregroundColor(Color.primaryInfo600)
-          
-          Text(consultationTime)
-            .foregroundColor(Color.primaryInfo600)
-            .titleLexend(size: 12)
-        }
-        
-        Spacer()
       }
       .padding(.all, 12)
     }

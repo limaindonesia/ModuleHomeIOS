@@ -101,7 +101,6 @@ public class PaymentStore: ObservableObject {
       await fetchCancelationReasons()
       await fetchTreatment()
       await requestOrderByNumber()
-      await calculateTimeRemainig()
     }
     
     observer()
@@ -263,6 +262,7 @@ public class PaymentStore: ObservableObject {
       orderViewModel = OrderEntity.mapTo(entity)
       indicateSuccess()
       hideVoucherBottomSheet()
+      calculateTimeRemainig()
     } catch {
       guard let error = error as? ErrorMessage else { return }
       indicateError(error: error)
@@ -574,8 +574,7 @@ public class PaymentStore: ObservableObject {
     return lawyerInfoViewModel.detailIssues
   }
   
-  @MainActor
-  public func calculateTimeRemainig() async {
+  public func calculateTimeRemainig() {
     paymentTimeRemaining.value = orderViewModel.getRemainingMinutes()
     showTimeRemainig = true
   }

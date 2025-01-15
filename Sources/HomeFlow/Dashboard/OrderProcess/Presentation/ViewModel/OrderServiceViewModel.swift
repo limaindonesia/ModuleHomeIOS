@@ -1,5 +1,5 @@
 //
-//  Untitled.swift
+//  OrderServiceViewModel.swift
 //  HomeFlow
 //
 //  Created by muhammad yusuf on 13/01/25.
@@ -7,35 +7,67 @@
 
 import Foundation
 
-public struct OrderServiceViewModel {
+public struct OrderServiceViewModel: Identifiable {
   
-  private let name: String
-  private let type: String
-  private let status: String // ACTIVE | INACTIVE
-  private let duration: Int
-  private let price: Int
-  private let original_price: Int
-  private let icon_url: String
+  public let id: Int
+  public let name: String
+  public let type: String
+  public let status: String // ACTIVE | INACTIVE
+  public let duration: String
+  public let price: String
+  public let original_price: String
+  public let icon_url: String
+  //
+  public let isDiscount: Bool
+  public let isSKTM: Bool
+  public let isHaveQuotaSKTM: Bool
+  public let quotaSKTM: Int
+  public let isKTPActive: Bool
+  public let isSaving: Bool
+  public var isSelected: Bool
+  public let descPrice: String
+  public let discountPrice: String
 
   public init() {
+    self.id = 0
     self.name = ""
     self.type = ""
     self.status = ""
-    self.duration = 0
-    self.price = 0
-    self.original_price = 0
+    self.duration = ""
+    self.price = ""
+    self.original_price = ""
     self.icon_url = ""
+    self.isDiscount = false
+    self.isSKTM = false
+    self.isHaveQuotaSKTM = false
+    self.quotaSKTM = 0
+    self.isKTPActive = false
+    self.isSaving = false
+    self.isSelected = false
+    self.descPrice = ""
+    self.discountPrice = ""
   }
 
   public init(
+    id: Int,
     name: String,
     type: String,
     status: String,
-    duration: Int,
-    price: Int,
-    original_price: Int,
-    icon_url: String
+    duration: String,
+    price: String,
+    original_price: String,
+    icon_url: String,
+    isDiscount: Bool,
+    isSKTM: Bool,
+    isHaveQuotaSKTM: Bool,
+    quotaSKTM: Int,
+    isKTPActive: Bool,
+    isSaving: Bool,
+    isSelected: Bool,
+    descPrice: String,
+    discountPrice: String
   ) {
+    self.id = id
     self.name = name
     self.type = type
     self.status = status
@@ -43,6 +75,15 @@ public struct OrderServiceViewModel {
     self.price = price
     self.original_price = original_price
     self.icon_url = icon_url
+    self.isDiscount = isDiscount
+    self.isSKTM = isSKTM
+    self.isHaveQuotaSKTM = isHaveQuotaSKTM
+    self.quotaSKTM = quotaSKTM
+    self.isKTPActive = isKTPActive
+    self.isSaving = isSaving
+    self.isSelected = isSelected
+    self.descPrice = descPrice
+    self.discountPrice = discountPrice
   }
 
 }

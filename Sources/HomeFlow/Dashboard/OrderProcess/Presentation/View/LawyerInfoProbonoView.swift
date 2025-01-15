@@ -63,61 +63,61 @@ struct LawyerInfoProbonoView: View {
 
         Spacer()
 
-        Image("ic_down_arrow", bundle: .module)
+        Image("ic_order_service_right_arrow", bundle: .module)
 
       }
       .padding(.horizontal, 12)
       .padding(.top, 12)
-
-      HStack {
-        if isProbono {
-          probonoPriceView()
-        } else {
-          regularPriceView()
-        }
-
-        Circle()
-          .fill(Color.darkGray300)
-          .frame(width: 6, height: 6)
-
-        HStack(spacing: 2) {
-          Image("ic_timer", bundle: .module)
-
-          Text(timeStr)
-            .foregroundColor(Color.gray600)
-            .bodyLexend(size: 12)
-        }
-
-        Spacer()
-      }
-      .padding(.all, 12)
-
-      Divider()
-        .frame(height: 1)
-        .foregroundColor(Color.black)
-        .padding(.horizontal, 12)
-
-      HStack {
-        ToggleView(
-          isActive: $toggleActive,
-          tapAction: {
-            isProbono = toggleActive
-          }
-        )
-
-        Text("Gunakan Kuota Pro Bono")
-          .foregroundColor(Color.darkTextColor)
-          .captionLexend(size: 12)
-
-        Spacer()
-
-        Text("Kuota: 3")
-          .captionLexend(size: 12)
-      }
-      .padding(.all, 12)
+//
+//      HStack {
+//        if isProbono {
+//          probonoPriceView()
+//        } else {
+//          regularPriceView()
+//        }
+//
+//        Circle()
+//          .fill(Color.darkGray300)
+//          .frame(width: 6, height: 6)
+//
+//        HStack(spacing: 2) {
+//          Image("ic_timer", bundle: .module)
+//
+//          Text(timeStr)
+//            .foregroundColor(Color.gray600)
+//            .bodyLexend(size: 12)
+//        }
+//
+//        Spacer()
+//      }
+//      .padding(.all, 12)
+//
+//      Divider()
+//        .frame(height: 1)
+//        .foregroundColor(Color.black)
+//        .padding(.horizontal, 12)
+//
+//      HStack {
+//        ToggleView(
+//          isActive: $toggleActive,
+//          tapAction: {
+//            isProbono = toggleActive
+//          }
+//        )
+//
+//        Text("Gunakan Kuota Pro Bono")
+//          .foregroundColor(Color.darkTextColor)
+//          .captionLexend(size: 12)
+//
+//        Spacer()
+//
+//        Text("Kuota: 3")
+//          .captionLexend(size: 12)
+//      }
+//      .padding(.all, 12)
 
     }
-    .frame(maxWidth: .infinity, minHeight: 160)
+    .frame(maxWidth: .infinity, minHeight: 80)
     .background(Color.white)
     .cornerRadius(12)
     .shadow(color: .gray200, radius: 8)

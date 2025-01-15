@@ -34,25 +34,26 @@ public struct OrderProcessView: View {
               store.showChangeCategory()
             }
             .padding(.horizontal, 16)
-            
-            if !store.isProbono() {
-              requestProbonoView { store.navigateToRequestProbono() }
-              .padding(.horizontal, 16)
-            }
           }
           
-          //paymentDetail()
+          if store.orderServiceFilled {
+            orderServiceOption()
+              .padding(.horizontal, 16)
+          }
+          
+          paymentDetail()
+            .padding(.horizontal, 16)
           
           .padding(.top, 16)
+          .padding(.bottom, 16)
         }
+        
         
         Spacer()
         
         PaymentBottomView(
           title: "Biaya",
-          price: store.isProbonoActive
-          ? store.getPriceProbonoOnly()
-          : store.getPrice(),
+          price: store.getPriceBottom(),
           totalAdjustment: "",
           buttonText: "Ke Pembayaran",
           isVoucherApplied: false,
@@ -107,6 +108,46 @@ public struct OrderProcessView: View {
     .ignoresSafeArea(.keyboard)
   }
   
+  func orderServiceOption() -> some View {
+    VStack(alignment: .leading, spacing: 12) {
+      Text("Pilih Konsultasi")
+        .foregroundColor(Color.darkTextColor)
+        .titleLexend(size: 14)
+      
+      ForEach(store.getOrderServiceArrayModel()) { item in
+        //MARK: some option maybe not use for now
+        ProcessOrderOptionView(isDiscount: item.isDiscount,
+                               isSKTM: item.isSKTM,
+                               isHaveQuotaSKTM: item.isHaveQuotaSKTM,
+                               isKTPActive: item.isKTPActive,
+                               isSaving: item.isSaving,
+                               quotaSKTM: item.quotaSKTM,
+                               isSelected: item.isSelected,
+                               name: item.name,
+                               type: item.type,
+                               status: item.status,
+                               duration: item.duration,
+                               price: item.price,
+                               original_price: item.original_price,
+                               iconURL: URL(string: "\(item.icon_url)"),
+                               descPrice: item.descPrice,
+                               action: {
+                                  store.selectedUpdate(type: item.type)
+                                },
+                               actionSKTM: {
+                                  store.navigateToRequestProbono()
+                                }
+                                )
+      }
+      
+    }
+    .padding(.all, 12)
+    .frame(maxWidth: .infinity)
+    .background(Color.white)
+    .cornerRadius(12)
+    .shadow(color: .gray200, radius: 8)
+  }
+  
   @ViewBuilder
   func showLawyerInfo() -> some View {
     if store.isProbono() {
@@ -135,47 +176,65 @@ public struct OrderProcessView: View {
     }
   }
   
-//  @ViewBuilder
-//  func paymentDetail() -> some View {
-//    VStack(alignment: .leading, spacing: 12) {
-//      Text("Rincian pembayaran")
-//        .titleLexend(size: 14)
-//      
-//      ForEach(store.getPaymentDetails()) { fee in
-//        FeeRowView(
-//          name: "name",
-//          amount: "10000",
-//          showInfo: true,
-//          onTap: {
-//            GLogger(
-//              .info,
-//              layer: "Presentation",
-//              message: "did tap info"
-//            )
-//          }
-//        )
-//      }
-//      
-//      Divider()
-//        .frame(height: 1)
-//      
-//      HStack {
-//        Text("Total Pembayaran")
-//          .titleLexend(size: 16)
-//        
-//        Spacer()
-//        
-//        Text(store.getTotalAmount())
-//          .titleLexend(size: 16)
-//      }
-//    }
-//    .padding(.all, 12)
-//    .frame(maxWidth: .infinity)
-//    .background(Color.white)
-//    .cornerRadius(12)
-//    .shadow(color: .gray200, radius: 8)
-//  }
-//  
+  
+  @ViewBuilder
+  func paymentDetail() -> some View {
+    VStack(alignment: .leading, spacing: 12) {
+      Text("Rincian biaya")
+        .titleLexend(size: 14)
+      
+      if store.detailCostFilled {
+        FeeRowView(
+          name: store.getName(),
+          amount: store.getOriginalPrice(),
+          showInfo: false,
+          onTap: {
+            GLogger(
+              .info,
+              layer: "Presentation",
+              message: "did tap info"
+            )
+          }
+        )
+        
+        FeeRowView(
+          name: store.getDiscountName(),
+          amount: store.getDiscountPrice(),
+          showInfo: false,
+          onTap: {
+            GLogger(
+              .info,
+              layer: "Presentation",
+              message: "did tap info"
+            )
+          }
+        )
+        
+        Divider()
+          .frame(height: 1)
+        
+        HStack {
+          Text("Total Biaya")
+            .titleLexend(size: 14)
+          
+          Spacer()
+          
+          Text(store.getPriceBottom())
+            .titleLexend(size: 14)
+        }
+      }
+      
+      Text(store.getDetailInfoBottom())
+        .foregroundColor(Color.darkGray400)
+        .captionLexend(size: 12)
+    }
+    .padding(.all, 12)
+    .frame(maxWidth: .infinity)
+    .background(Color.white)
+    .cornerRadius(12)
+    .shadow(color: .gray200, radius: 8)
+  }
+  
   @ViewBuilder
   func lawyerInfoView(
     imageURL: URL?,
@@ -206,44 +265,44 @@ public struct OrderProcessView: View {
         
         Spacer()
         
-        Image("ic_down_arrow", bundle: .module)
+        Image("ic_order_service_right_arrow", bundle: .module)
         
       }
       .padding(.all, 12)
-      
-      HStack {
-        Text(price)
-          .foregroundColor(Color.buttonActiveColor)
-          .titleLexend(size: 14)
-        
-        HStack(spacing: 4) {
-          StrikethroughText(
-            text: originalPrice,
-            color: .darkTextColor,
-            thickness: 1
-          )
-          
-          if isDiscount {
-            DiscountView()
-          }
-        }
-        
-        Circle()
-          .fill(Color.darkGray300)
-          .frame(width: 6, height: 6)
-        
-        HStack(spacing: 2) {
-          Image("ic_timer", bundle: .module)
-          
-          Text(timeStr)
-            .foregroundColor(Color.gray600)
-            .bodyLexend(size: 12)
-        }
-        Spacer()
-      }
-      .padding(.all, 12)
+//      
+//      HStack {
+//        Text(price)
+//          .foregroundColor(Color.buttonActiveColor)
+//          .titleLexend(size: 14)
+//        
+//        HStack(spacing: 4) {
+//          StrikethroughText(
+//            text: originalPrice,
+//            color: .darkTextColor,
+//            thickness: 1
+//          )
+//          
+//          if isDiscount {
+//            DiscountView()
+//          }
+//        }
+//        
+//        Circle()
+//          .fill(Color.darkGray300)
+//          .frame(width: 6, height: 6)
+//        
+//        HStack(spacing: 2) {
+//          Image("ic_timer", bundle: .module)
+//          
+//          Text(timeStr)
+//            .foregroundColor(Color.gray600)
+//            .bodyLexend(size: 12)
+//        }
+//        Spacer()
+//      }
+//      .padding(.all, 12)
     }
-    .frame(maxWidth: .infinity, maxHeight: 130)
+    .frame(maxWidth: .infinity, maxHeight: 80)
     .background(Color.white)
     .cornerRadius(12)
     .shadow(color: .gray200, radius: 8)

@@ -22,13 +22,23 @@ public struct OrderServiceEntity: Transformable {
   public let icon_url: String
 
   static func mapTo(_ entity: OrderServiceEntity) -> OrderServiceViewModel {
-    return OrderServiceViewModel(name: entity.name,
+    return OrderServiceViewModel(id: 0,
+                                 name: entity.name,
                                  type: entity.type,
                                  status: entity.status,
-                                 duration: entity.duration,
-                                 price: entity.price,
-                                 original_price: entity.original_price,
-                                 icon_url: entity.icon_url)
+                                 duration: "\(entity.duration)",
+                                 price: "\(entity.price)",
+                                 original_price: "\(entity.original_price)",
+                                 icon_url: entity.icon_url,
+                                 isDiscount: false,
+                                 isSKTM: false,
+                                 isHaveQuotaSKTM: false,
+                                 quotaSKTM: 0,
+                                 isKTPActive: false,
+                                 isSaving: false,
+                                 isSelected: false,
+                                 descPrice: "",
+                                 discountPrice: "")
   }
 
   static func map(from data: OrderServiceItemData) -> OrderServiceEntity {
