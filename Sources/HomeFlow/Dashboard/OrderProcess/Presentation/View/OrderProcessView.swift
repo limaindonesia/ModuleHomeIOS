@@ -69,9 +69,7 @@ public struct OrderProcessView: View {
       
       BottomSheetView(isPresented: $store.isPresentBottomSheet) {
         OrderInfoBottomSheetView(
-          price: store.isProbonoActive
-          ? store.getPriceProbonoOnly()
-          : store.getPrice()
+          price: store.getPriceBottom()
         ) {
           store.navigateToPayment()
         }
