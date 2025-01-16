@@ -40,7 +40,6 @@ struct PaymentView: View {
               } onTapTNC: {
                 store.showTNCBottomSheet()
               }
-              
               paymentOptions()
             }
             
@@ -251,9 +250,9 @@ struct PaymentView: View {
       
       VStack(alignment: .leading) {
         HStack {
-          Text("Detail")
+          Text("Detail Konsultasi")
             .foregroundColor(.darkTextColor)
-            .titleLexend(size: 12)
+            .captionLexend(size: 14)
           
           Spacer()
           
@@ -399,7 +398,7 @@ struct PaymentView: View {
         .titleLexend(size: 14)
       
       HStack {
-        Text("Pembayaran akan dilakukan dengan")
+        Text("Pembayaran akan dilakukan di halaman")
           .foregroundColor(Color.darkGray400)
           .captionLexend(size: 12)
         
@@ -434,7 +433,7 @@ struct PaymentView: View {
   @ViewBuilder
   func paymentDetail() -> some View {
     VStack(alignment: .leading, spacing: 12) {
-      Text("Rincian pembayaran")
+      Text("Rincian Biaya")
         .titleLexend(size: 14)
       
       ForEach(store.getPaymentDetails()) { fee in
@@ -456,7 +455,7 @@ struct PaymentView: View {
         .frame(height: 1)
       
       HStack {
-        Text("Total Pembayaran")
+        Text("Total Biaya")
           .titleLexend(size: 16)
         
         Spacer()

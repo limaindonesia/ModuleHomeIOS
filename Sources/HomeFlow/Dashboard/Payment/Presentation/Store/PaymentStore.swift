@@ -545,7 +545,7 @@ public class PaymentStore: ObservableObject {
   }
   
   public func getExpiredDate() -> String {
-    return "Bayar sebelum \(orderViewModel.expiredDate())"
+    return "Bayar sebelum \(orderViewModel.expiredHours())"
   }
   
   public func getTimeRemaining() -> String {

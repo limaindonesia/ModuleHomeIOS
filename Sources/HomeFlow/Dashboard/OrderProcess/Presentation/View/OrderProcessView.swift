@@ -13,6 +13,7 @@ import Lottie
 public struct OrderProcessView: View {
   
   @ObservedObject var store: OrderProcessStore
+  @State private var reader: ScrollViewProxy?
   
   private init() {
     self.store = .init()
@@ -25,29 +26,32 @@ public struct OrderProcessView: View {
   public var body: some View {
     ZStack {
       VStack {
-        ScrollView {
-          VStack(spacing: 12) {
-            showLawyerInfo()
+        ScrollViewReader { proxy in
+          ScrollView {
+            VStack(spacing: 12) {
+              showLawyerInfo()
+                .padding(.horizontal, 16)
+              
+              issueView {
+                store.showChangeCategory()
+              }
+              .id(1)
+              .padding(.horizontal, 16)
+            }
+            
+            if store.orderServiceFilled {
+              orderServiceOption()
+                .padding(.horizontal, 16)
+            }
+            paymentDetail()
               .padding(.horizontal, 16)
             
-            issueView {
-              store.showChangeCategory()
-            }
-            .padding(.horizontal, 16)
+              .padding(.top, 16)
+              .padding(.bottom, 16)
+          }.onAppear {
+            self.reader = proxy
           }
-          
-          if store.orderServiceFilled {
-            orderServiceOption()
-              .padding(.horizontal, 16)
-          }
-          
-          paymentDetail()
-            .padding(.horizontal, 16)
-          
-          .padding(.top, 16)
-          .padding(.bottom, 16)
         }
-        
         
         Spacer()
         
@@ -60,7 +64,14 @@ public struct OrderProcessView: View {
           isButtonActive: store.buttonActive,
           onTap: {
             if store.buttonActive {
-              store.processNavigation()
+              if store.isScrollToTop {
+                store.setErrorText()
+                withAnimation(.smooth) {
+                  self.reader?.scrollTo(1, anchor: .topTrailing)
+                }
+              } else {
+                store.processNavigation()
+              }
             }
           }
         )
@@ -267,38 +278,6 @@ public struct OrderProcessView: View {
         
       }
       .padding(.all, 12)
-//      
-//      HStack {
-//        Text(price)
-//          .foregroundColor(Color.buttonActiveColor)
-//          .titleLexend(size: 14)
-//        
-//        HStack(spacing: 4) {
-//          StrikethroughText(
-//            text: originalPrice,
-//            color: .darkTextColor,
-//            thickness: 1
-//          )
-//          
-//          if isDiscount {
-//            DiscountView()
-//          }
-//        }
-//        
-//        Circle()
-//          .fill(Color.darkGray300)
-//          .frame(width: 6, height: 6)
-//        
-//        HStack(spacing: 2) {
-//          Image("ic_timer", bundle: .module)
-//          
-//          Text(timeStr)
-//            .foregroundColor(Color.gray600)
-//            .bodyLexend(size: 12)
-//        }
-//        Spacer()
-//      }
-//      .padding(.all, 12)
     }
     .frame(maxWidth: .infinity, maxHeight: 80)
     .background(Color.white)
@@ -320,27 +299,40 @@ public struct OrderProcessView: View {
         .padding(.horizontal, 12)
         .padding(.trailing, 50)
       
-      VStack {
-        TextView(
-          text: $store.issueText,
-          textStyle: .lexendFont(style: .caption(size: 12)),
-          textColor: .darkTextColor,
-          backgroundColor: .gray050
-        )
-        .overlay(
-          RoundedRectangle(cornerRadius: 6)
-            .stroke(
-              store.isTextValid ? Color.gray500 : Color.red,
-              lineWidth: 2
-            )
-        )
+      ZStack(alignment: .topLeading) {
+        VStack {
+          TextView(
+            text: $store.issueText,
+            textStyle: .lexendFont(style: .caption(size: 12)),
+            textColor: .darkTextColor,
+            backgroundColor: .gray050
+          )
+          .overlay(
+            RoundedRectangle(cornerRadius: 6)
+              .stroke(
+                store.isTextValid ? Color.gray500 : Color.red,
+                lineWidth: 2
+              )
+          )
+        }
+        .frame(maxWidth: .infinity, idealHeight: 88)
+        .background(Color.gray050)
+        .cornerRadius(6)
+        .padding(.horizontal, 12)
+        
+        if store.issueText.isEmpty {
+          Text("Contoh: Saya memiliki permasalahan hutang, tapi saya tidak tahu harus bagaimana")
+            .foregroundColor(Color(.placeholderText))
+            .captionLexend(size: 12)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 5)
+            .allowsHitTesting(false)
+        }
+        
       }
-      .frame(maxWidth: .infinity, idealHeight: 88)
-      .background(Color.gray050)
-      .cornerRadius(6)
-      .padding(.horizontal, 12)
       
-      Text("*Minimal 10 Karakter")
+      
+      Text(store.errorText)
         .foregroundColor(store.isTextValid ? Color.gray500 : Color.red)
         .bodyLexend(size: 12)
         .padding(.horizontal, 12)
@@ -351,19 +343,10 @@ public struct OrderProcessView: View {
         .background(Color.gray200)
         .padding(.horizontal, 12)
       
-      Text("Kategori Hukum")
-        .titleLexend(size: 14)
-        .padding(.horizontal, 12)
-        .padding(.top, 16)
-      
       HStack {
-        Text(store.getIssueName())
-          .foregroundColor(Color.primaryInfo600)
-          .bodyLexend(size: 14)
-          .padding(.horizontal, 8)
-          .padding(.vertical, 6)
-          .background(Color.primaryInfo100)
-          .cornerRadius(14)
+        Text("Kategori Hukum")
+          .titleLexend(size: 14)
+          .padding(.horizontal, 12)
         
         Spacer()
         
@@ -375,6 +358,27 @@ public struct OrderProcessView: View {
             .titleLexend(size: 14)
         }
       }
+      .padding(.top, 10)
+      .padding(.horizontal, 12)
+      
+      HStack(
+        alignment: .center,
+        spacing: 8
+      ) {
+        Text("Pidana") //store.getIssueName()
+          .foregroundColor(Color.gray700)
+          .titleLexend(size: 14)
+          .padding(.horizontal, 8)
+          .padding(.vertical, 6)
+          .background(Color.clear)
+          .cornerRadius(14)
+      }
+      
+      .padding(.horizontal, 12)
+      .padding(.vertical, 8)
+      .frame(maxWidth: .infinity, alignment: .leading)
+      .background(Color.primaryInfo050)
+      .cornerRadius(8)
       .padding(.horizontal, 12)
       
       HStack(

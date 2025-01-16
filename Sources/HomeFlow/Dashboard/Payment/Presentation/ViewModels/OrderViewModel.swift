@@ -62,6 +62,11 @@ public class OrderViewModel {
     return date.formatted(with: "dd MMMM yyyy HH:mm")
   }
   
+  public func expiredHours() -> String {
+    let date = Double(expiredAt).epochToDate()
+    return date.formatted(with: "HH:mm")
+  }
+  
   public func getTotalAdjustment() -> String {
     let total = CurrencyFormatter.toCurrency(NSNumber(value: totalAdjustmentPositive()))
     return total

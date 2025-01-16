@@ -28,17 +28,17 @@ public class OrderProcessStore: ObservableObject {
   @Published public var orderServiceFilled: Bool = false
   @Published public var detailCostFilled: Bool = false
   @Published public var issueText: String = ""
+  @Published public var errorText: String = "minimal 10 karakter"
   @Published public var lawyerInfoViewModel: LawyerInfoViewModel = .init()
   @Published public var isPresentBottomSheet: Bool = false
   @Published public var isPresentChangeCategoryIssue: Bool = false
   @Published public var timeConsultation: String = ""
-  @Published public var issueTextError: String = ""
   @Published public var isTextValid: Bool = true
+  @Published public var isScrollToTop: Bool = true
   @Published public var isProbonoActive: Bool = false
   @Published public var buttonActive: Bool = false
   @Published public var error: ErrorMessage = .init()
   @Published public var priceCategories: [PriceCategoryViewModel] = []
-  
   
   private var treatmentEntities: [TreatmentEntity] = []
   private var orderServiceEntities: [OrderServiceEntity] = []
@@ -217,7 +217,7 @@ public class OrderProcessStore: ObservableObject {
   public func getDiscountPrice() -> String {
     for item in orderServiceViewModel {
       if item.type == typeSelected {
-        return item.discountPrice
+        return "- \(item.discountPrice)"
       }
     }
     return ""
@@ -235,7 +235,7 @@ public class OrderProcessStore: ObservableObject {
   public func getName() -> String {
     for item in orderServiceViewModel {
       if item.type == typeSelected {
-        return "Biaya \(item.name)"
+        return "Biaya Paket \(item.name)"
       }
     }
     return ""
@@ -254,7 +254,11 @@ public class OrderProcessStore: ObservableObject {
     for (index, item) in orderServiceEntities.enumerated() {
       var price = CurrencyFormatter.toCurrency(NSNumber(value: item.price))
       let originalPrice = CurrencyFormatter.toCurrency(NSNumber(value: item.original_price))
-      var descPrice = "senilai \(item.price/item.duration)/menit"
+      let priceSelect = Float(item.price)
+      let durationSelect = Float(item.duration)
+      let worthPriceMinuteFloat = Float(priceSelect/durationSelect).rounded(.up)
+      let worthPriceMinuteResult = Int(worthPriceMinuteFloat)
+      var descPrice = "senilai \(worthPriceMinuteResult)/menit"
       var isDiscount = true
       if item.price == item.original_price {
         isDiscount = false
@@ -287,6 +291,7 @@ public class OrderProcessStore: ObservableObject {
       if type == item.type {
         typeSelected = type
         orderServiceViewModel[indexArray].isSelected = true
+        self.buttonActive = true
       } else {
         orderServiceViewModel[indexArray].isSelected = false
       }
@@ -341,6 +346,13 @@ public class OrderProcessStore: ObservableObject {
       orderNumber: "",
       detailIssues: issueText
     )
+  }
+  
+  public func setErrorText() {
+    if issueText.count == 0 {
+      errorText = "Deskripsi masalah wajib diisi"
+    }
+    isTextValid = false
   }
   
   public func processNavigation() {
@@ -581,8 +593,12 @@ public class OrderProcessStore: ObservableObject {
       .subscribe(on: RunLoop.main)
       .sink { state in
         self.isTextValid = state
-        self.buttonActive = state
-        self.issueTextError = state ? "Minimal 10 Karakter" : ""
+        self.isScrollToTop = !state
+        if self.issueText.count < 11 {
+          self.errorText = "minimal 10 karakter"
+        } else {
+          self.errorText = ""
+        }
       }.store(in: &subscriptions)
     
     $isProbonoActive
