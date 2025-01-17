@@ -42,6 +42,9 @@ public struct HomeView: View {
         } onTapDecisionTree: {
           store.hideConsultationNowBottomSheet()
           store.navigateToDecisionTree()
+        } onTapProbono: {
+          store.hideConsultationNowBottomSheet()
+          store.navigateToProbonoService()
         }
       } onDismissed: {
         store.hideConsultationNowBottomSheet()
@@ -165,18 +168,8 @@ public struct HomeView: View {
             } onTapConsultation: {
               store.navigateToAdvocateList()
             } onTapProbonoService: {
-              store.navigateToDetailSKTM()
+              store.navigateToProbonoService()
             }.padding(.top, 330)
-            
-//            sktmNewView(
-//              onTapDecisionTree: {
-//                store.navigateToDecisionTree()
-//              }, onTapConsultation: {
-//                store.navigateToAdvocateList()
-//              }, onTapSKTM: {
-//                store.navigateToDetailSKTM()
-//              }
-//            ).padding(.top, 330)
             
             activeAdvocates(store.onlinedAdvocates)
           }
@@ -730,182 +723,182 @@ public struct HomeView: View {
   }
   
   @ViewBuilder
-    func sktmNewView(
-      onTapDecisionTree: @escaping () -> Void,
-      onTapConsultation: @escaping () -> Void,
-      onTapSKTM: @escaping () -> Void
-    ) -> some View {
-      VStack(alignment: .center, spacing: 12) {
+  func sktmNewView(
+    onTapDecisionTree: @escaping () -> Void,
+    onTapConsultation: @escaping () -> Void,
+    onTapSKTM: @escaping () -> Void
+  ) -> some View {
+    VStack(alignment: .center, spacing: 12) {
+      
+      HStack(alignment: .center, spacing: 8) {
         
-        HStack(alignment: .center, spacing: 8) {
-          
-          Image("ic_moto_2", bundle: .module)
-            .resizable()
-            .frame(width: 38, height: 38)
-            .aspectRatio(contentMode: .fill)
+        Image("ic_moto_2", bundle: .module)
+          .resizable()
+          .frame(width: 38, height: 38)
+          .aspectRatio(contentMode: .fill)
+          .padding(.trailing, 12)
+          .padding(.top, 5)
+        
+        VStack(alignment: .leading, spacing: 4) {
+          Text("Konsultasi Hukum Online")
+            .titleLexend(size: 16)
+          Text("Rasakan BEBASnya konsultasi hukum via chat, voice call atau video call.")
+            .captionLexend(size: 12)
             .padding(.trailing, 12)
-            .padding(.top, 5)
-          
-          VStack(alignment: .leading, spacing: 4) {
-            Text("Konsultasi Hukum Online")
-              .titleLexend(size: 16)
-            Text("Rasakan BEBASnya konsultasi hukum via chat, voice call atau video call.")
-              .captionLexend(size: 12)
-              .padding(.trailing, 12)
-          }
         }
-        .padding(.horizontal, 10)
+      }
+      .padding(.horizontal, 10)
+      
+      ZStack {
+        Image("ic_disc_60_home", bundle: .module)
+          .resizable()
+          .frame(width: 55, height: 17)
+          .aspectRatio(contentMode: .fit)
+          .padding(.top, -28)
+          .padding(.leading, 200)
+          .zIndex(1)
         
-        ZStack {
-          Image("ic_disc_60_home", bundle: .module)
-            .resizable()
-            .frame(width: 55, height: 17)
-            .aspectRatio(contentMode: .fit)
-            .padding(.top, -28)
-            .padding(.leading, 200)
-            .zIndex(1)
-          
-          Button {
-            store.showConsultationNowBottomSheet()
-          } label: {
-            HStack {
-              Text("Konsultasi Sekarang")
-                .foregroundColor(Color.white)
-                .titleLexend(size: 12)
-              
-              Image(systemName: "arrow.forward")
-                .resizable()
-                .frame(width: 10.67, height: 10.67)
-                .foregroundColor(.white)
-            }
-            .padding(.horizontal, 8)
+        Button {
+          store.showConsultationNowBottomSheet()
+        } label: {
+          HStack {
+            Text("Konsultasi Sekarang")
+              .foregroundColor(Color.white)
+              .titleLexend(size: 12)
+            
+            Image(systemName: "arrow.forward")
+              .resizable()
+              .frame(width: 10.67, height: 10.67)
+              .foregroundColor(.white)
           }
-          .frame(maxWidth: .infinity, maxHeight: 40)
-          .background(Color.buttonActiveColor)
-          .clipShape(RoundedRectangle(cornerRadius: 8))
-          .overlay(
-            RoundedRectangle(cornerRadius: 8)
-              .stroke(
-                Color.white,
-                lineWidth: 1
-              )
-          )
-          .padding(.horizontal, 10)
-          .padding(.top, 0)
-          .zIndex(0)
-          
-        }
-        
-        
-  //      HStack {
-  //        PositiveButton(
-  //          title: "Panduan Pilih Advokat",
-  //          action: {
-  //            onTapDecisionTree()
-  //          }
-  //        )
-  //
-  //        NegativeButton(
-  //          title: "Konsultasi Langsung",
-  //          action: {
-  //            onTapConsultation()
-  //          }
-  //        )
-  //      }
-  //      .padding(.horizontal, 10)
-  //      .padding(.top, 12)
-        
-        /*VStack {
-          
+          .padding(.horizontal, 8)
         }
         .frame(maxWidth: .infinity, maxHeight: 40)
-        .background(
-          LinearGradient(
-            stops: [
-              Gradient.Stop(color: Color.danger200, location: 0.1),
-              Gradient.Stop(color: Color.danger100, location: 0.2),
-              Gradient.Stop(color: Color.danger100, location: 0.3),
-              Gradient.Stop(color: Color.danger100, location: 0.4),
-              Gradient.Stop(color: Color.danger100, location: 0.5),
-            ],
-            startPoint: .leading,
-            endPoint: .trailing
-          )
-        )
+        .background(Color.buttonActiveColor)
         .clipShape(RoundedRectangle(cornerRadius: 8))
-          .overlay(
-            RoundedRectangle(cornerRadius: 8)
-              .stroke(
-                Color.danger200,
-                lineWidth: 1
-              )
-          )
-          .padding(.horizontal, 10)
-          .onTapGesture {
-            onTapSKTM()
-          }*/
-        
-        /*Image("ic_gradient_home", bundle: .module)
-          .resizable()
-          .aspectRatio(contentMode: .fill)
-          .frame(
-            maxWidth: .infinity,
-            maxHeight: 40
-          )
-          .clipped()
-          .contentShape(Rectangle())
-          .padding(.horizontal, 10)
-          .onTapGesture {
-            onTapSKTM()
-          }*/
-        
-        HStack {
-          Image("ic_probono", bundle: .module)
-            .resizable()
-            .frame(width: 24, height: 24)
-          
-          Text(store.probonoTitle())
-            .padding(.bottom, 5)
-          
-          Spacer()
-          
-          Text(store.actionTitle())
-        }
-        .padding(.horizontal, 12)
-        .frame(maxWidth: .infinity, maxHeight: 40, alignment: .center)
-        .background(
-          LinearGradient(
-            stops: [
-              Gradient.Stop(color: Color.danger200, location: 0.05),
-              Gradient.Stop(color: Color.danger100, location: 0.2),
-              Gradient.Stop(color: Color.danger100, location: 0.3),
-              Gradient.Stop(color: Color.danger100, location: 0.4),
-              Gradient.Stop(color: Color.danger100, location: 0.5),
-            ],
-            startPoint: .leading,
-            endPoint: .trailing
-          )
-        )
-        .clipShape(RoundedRectangle(cornerRadius: 6))
         .overlay(
-          RoundedRectangle(cornerRadius: 6)
+          RoundedRectangle(cornerRadius: 8)
             .stroke(
-              Color.danger200,
+              Color.white,
               lineWidth: 1
             )
         )
         .padding(.horizontal, 10)
-        .onTapGesture {
-          onTapSKTM()
-        }
+        .padding(.top, 0)
+        .zIndex(0)
         
       }
-      .frame(maxWidth: .infinity, minHeight: 166)
-      .background(Color.white)
-      .clipShape(RoundedRectangle(cornerRadius: 8))
-      .shadow(color: .gray200, radius: 10, x: 0, y: 15)
-      .padding(.horizontal, 16)
+      
+      
+      //      HStack {
+      //        PositiveButton(
+      //          title: "Panduan Pilih Advokat",
+      //          action: {
+      //            onTapDecisionTree()
+      //          }
+      //        )
+      //
+      //        NegativeButton(
+      //          title: "Konsultasi Langsung",
+      //          action: {
+      //            onTapConsultation()
+      //          }
+      //        )
+      //      }
+      //      .padding(.horizontal, 10)
+      //      .padding(.top, 12)
+      
+      /*VStack {
+       
+       }
+       .frame(maxWidth: .infinity, maxHeight: 40)
+       .background(
+       LinearGradient(
+       stops: [
+       Gradient.Stop(color: Color.danger200, location: 0.1),
+       Gradient.Stop(color: Color.danger100, location: 0.2),
+       Gradient.Stop(color: Color.danger100, location: 0.3),
+       Gradient.Stop(color: Color.danger100, location: 0.4),
+       Gradient.Stop(color: Color.danger100, location: 0.5),
+       ],
+       startPoint: .leading,
+       endPoint: .trailing
+       )
+       )
+       .clipShape(RoundedRectangle(cornerRadius: 8))
+       .overlay(
+       RoundedRectangle(cornerRadius: 8)
+       .stroke(
+       Color.danger200,
+       lineWidth: 1
+       )
+       )
+       .padding(.horizontal, 10)
+       .onTapGesture {
+       onTapSKTM()
+       }*/
+      
+      /*Image("ic_gradient_home", bundle: .module)
+       .resizable()
+       .aspectRatio(contentMode: .fill)
+       .frame(
+       maxWidth: .infinity,
+       maxHeight: 40
+       )
+       .clipped()
+       .contentShape(Rectangle())
+       .padding(.horizontal, 10)
+       .onTapGesture {
+       onTapSKTM()
+       }*/
+      
+      HStack {
+        Image("ic_probono", bundle: .module)
+          .resizable()
+          .frame(width: 24, height: 24)
+        
+        Text(store.probonoTitle())
+          .padding(.bottom, 5)
+        
+        Spacer()
+        
+        Text(store.actionTitle())
+      }
+      .padding(.horizontal, 12)
+      .frame(maxWidth: .infinity, maxHeight: 40, alignment: .center)
+      .background(
+        LinearGradient(
+          stops: [
+            Gradient.Stop(color: Color.danger200, location: 0.05),
+            Gradient.Stop(color: Color.danger100, location: 0.2),
+            Gradient.Stop(color: Color.danger100, location: 0.3),
+            Gradient.Stop(color: Color.danger100, location: 0.4),
+            Gradient.Stop(color: Color.danger100, location: 0.5),
+          ],
+          startPoint: .leading,
+          endPoint: .trailing
+        )
+      )
+      .clipShape(RoundedRectangle(cornerRadius: 6))
+      .overlay(
+        RoundedRectangle(cornerRadius: 6)
+          .stroke(
+            Color.danger200,
+            lineWidth: 1
+          )
+      )
+      .padding(.horizontal, 10)
+      .onTapGesture {
+        onTapSKTM()
+      }
+      
     }
+    .frame(maxWidth: .infinity, minHeight: 166)
+    .background(Color.white)
+    .clipShape(RoundedRectangle(cornerRadius: 8))
+    .shadow(color: .gray200, radius: 10, x: 0, y: 15)
+    .padding(.horizontal, 16)
+  }
   
   @ViewBuilder
   func activeAdvocates(_ items: [Advocate]) -> some View {
@@ -1215,157 +1208,207 @@ public struct HomeView: View {
   }
   
   @ViewBuilder
-    func consultationNowBottomSheetContent(
-      onTap: @escaping () -> Void,
-      onTapConsultation: @escaping () -> Void,
-      onTapDecisionTree: @escaping () -> Void
-    ) -> some View {
+  func consultationNowBottomSheetContent(
+    onTap: @escaping () -> Void,
+    onTapConsultation: @escaping () -> Void,
+    onTapDecisionTree: @escaping () -> Void,
+    onTapProbono: @escaping() -> Void
+  ) -> some View {
+    
+    VStack(alignment: .leading, spacing: 16) {
+      
+      HStack {
+        Text(
+          NSLocalizedString(
+            Constant.Home.Text.CONSULTATION_TITLE,
+            comment: ""
+          )
+        )
+        .titleLexend(size: 20)
+        
+        Spacer()
+        
+        Image("ic_disc_60", bundle: .module)
+          .resizable()
+          .frame(width: 73, height: 23)
+          .aspectRatio(contentMode: .fit)
+          .zIndex(0)
+      }
+      .frame(minHeight: 30)
       
       VStack(alignment: .leading, spacing: 16) {
         
-        HStack {
-          Text("Konsultasi Hukum Online")
-            .titleLexend(size: 16)
+        HStack(alignment: .center, spacing: 8) {
           
-          Spacer()
-          
-          
-          Image("ic_disc_60", bundle: .module)
+          Image("ic_people", bundle: .module)
             .resizable()
-            .frame(width: 73, height: 23)
-            .aspectRatio(contentMode: .fit)
-            .zIndex(0)
+            .frame(width: 40, height: 40)
+            .aspectRatio(contentMode: .fill)
+            .padding(.horizontal, 8)
           
-        }
-        .frame(minHeight: 30)
-        
-        
-        VStack {
-          
-          HStack(alignment: .center, spacing: 8) {
-            
-            Image("ic_people", bundle: .module)
-              .resizable()
-              .frame(width: 40, height: 40)
-              .aspectRatio(contentMode: .fill)
-              .padding(.horizontal, 8)
-            
-            VStack(alignment: .leading, spacing: 4) {
-              Text("Lihat semua Advokat")
-                .titleLexend(size: 14)
-                .frame(width: 150, height: 20)
-                .padding(.top, 8)
-              
-              Text("Anda memiliki kebebasan untuk memilih Advokat yang telah terdaftar di platform Perqara.")
-                .foregroundColor(Color.init(hex: 0x4D5B6A))
-                .captionLexend(size: 12)
-                .padding(.bottom, 8)
-            }
-            
-            Image("ic_right_arrow", bundle: .module)
-              .resizable()
-              .frame(width: 16, height: 16)
-              .aspectRatio(contentMode: .fill)
-              .padding(.horizontal, 8)
-          }
-          .frame(maxWidth: .infinity, maxHeight: 125)
-          .background(Color.init(hex: 0xF3FBFF))
-          .clipShape(RoundedRectangle(cornerRadius: 8))
-          .overlay(
-            RoundedRectangle(cornerRadius: 8)
-              .stroke(
-                Color.init(hex: 0xEEF2F7),
-                lineWidth: 1
+          VStack(alignment: .leading, spacing: 4) {
+            Text(
+              NSLocalizedString(
+                Constant.Home.Text.SHOW_ALL_ADVOCATE,
+                comment: ""
               )
-          )
-          .onTapGesture {
-            onTapConsultation()
+            )
+            .titleLexend(size: 14)
+            .frame(width: 150, height: 20, alignment: .leading)
+            .padding(.top, 8)
+            
+            Text(
+              NSLocalizedString(
+                Constant.Home.Text.SUB_SHOW_ALL_ADVOCATE,
+                comment: ""
+              )
+            )
+            .foregroundColor(Color.init(hex: 0x4D5B6A))
+            .captionLexend(size: 12)
+            .padding(.bottom, 8)
           }
           
           Spacer()
           
-          Spacer()
-          
-          HStack(alignment: .center, spacing: 8) {
-            
-            Image("ic_book", bundle: .module)
-              .resizable()
-              .frame(width: 40, height: 40)
-              .aspectRatio(contentMode: .fill)
-              .padding(.horizontal, 8)
-            
-            VStack(alignment: .leading, spacing: 4) {
-              Text("Panduan memilih Advokat")
-                .titleLexend(size: 14)
-                .frame(width: 200, height: 20)
-                .padding(.top, 8)
-              
-              Text("Perqara akan menanyakan pertanyaan seputar kasus Anda dan memberikan rekomendasi Advokat.")
-                .foregroundColor(Color.init(hex: 0x4D5B6A))
-                .captionLexend(size: 12)
-                .padding(.bottom, 8)
-            }
-            
-            Image("ic_right_arrow", bundle: .module)
-              .resizable()
-              .frame(width: 16, height: 16)
-              .aspectRatio(contentMode: .fill)
-              .padding(.horizontal, 8)
-          }
-          .frame(maxWidth: .infinity, maxHeight: 125)
-          .background(Color.init(hex: 0xF3FBFF))
-          .clipShape(RoundedRectangle(cornerRadius: 8))
-          .overlay(
-            RoundedRectangle(cornerRadius: 8)
-              .stroke(
-                Color.init(hex: 0xEEF2F7),
-                lineWidth: 1
-              )
-          )
-          .onTapGesture {
-            onTapDecisionTree()
-          }
-          
+          Image("ic_right_arrow", bundle: .module)
+            .resizable()
+            .frame(width: 24, height: 24)
+            .aspectRatio(contentMode: .fill)
+            .padding(.horizontal, 8)
         }
-        .frame(minHeight: 50)
-        
-        Divider()
-          .frame(maxWidth: .infinity, maxHeight: 1)
-          .background(Color.gray100)
-        
-        Button {
-          onTap()
-        } label: {
-          HStack {
-            Image("ic_probono", bundle: .module)
-            
-            Text("Dapatkan 3x konsultasi gratis dengan Pro bono")
-              .titleLexend(size: 10)
-              .padding(.horizontal, 8)
-            
-            Spacer()
-            
-            Text("Pelajari")
-              .foregroundColor(Color.buttonActiveColor)
-              .titleLexend(size: 10)
-              .padding(.horizontal, 8)
-          }
-          .padding(.horizontal, 8)
-        }
-        .frame(maxWidth: .infinity, idealHeight: 36 ,maxHeight: 40)
-        .background(Color.danger100)
-        .clipShape(RoundedRectangle(cornerRadius: 6))
+        .frame(
+          maxWidth: .infinity,
+          maxHeight: 125,
+          alignment: .leading
+        )
+        .padding(.horizontal, 12)
+        .background(Color.init(hex: 0xF3FBFF))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
         .overlay(
-          RoundedRectangle(cornerRadius: 6)
+          RoundedRectangle(cornerRadius: 8)
             .stroke(
-              Color.danger200,
+              Color.init(hex: 0xEEF2F7),
               lineWidth: 1
             )
         )
+        .onTapGesture {
+          onTapConsultation()
+        }
+        
+        HStack(alignment: .center, spacing: 8) {
+          
+          Image("ic_book", bundle: .module)
+            .resizable()
+            .frame(width: 40, height: 40)
+            .aspectRatio(contentMode: .fill)
+            .padding(.horizontal, 8)
+          
+          VStack(alignment: .leading, spacing: 4) {
+            Text(
+              NSLocalizedString(
+                Constant.Home.Text.GUIDE_ADVOCATE,
+                comment: ""
+              )
+            )
+            .titleLexend(size: 14)
+            .frame(
+              width: 200,
+              height: 20,
+              alignment: .leading
+            )
+            .padding(.top, 8)
+            
+            Text(NSLocalizedString(Constant.Home.Text.SUB_GUIDE_ADVOCATE, comment: ""))
+              .foregroundColor(Color.init(hex: 0x4D5B6A))
+              .captionLexend(size: 12)
+              .padding(.bottom, 8)
+          }
+          
+          Spacer()
+          
+          Image("ic_right_arrow", bundle: .module)
+            .resizable()
+            .frame(width: 24, height: 24)
+            .aspectRatio(contentMode: .fill)
+            .padding(.horizontal, 8)
+        }
+        .frame(
+          maxWidth: .infinity,
+          maxHeight: 125,
+          alignment: .leading
+        )
+        .padding(.horizontal, 12)
+        .background(Color.init(hex: 0xF3FBFF))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(
+          RoundedRectangle(cornerRadius: 8)
+            .stroke(
+              Color.init(hex: 0xEEF2F7),
+              lineWidth: 1
+            )
+        )
+        .onTapGesture {
+          onTapDecisionTree()
+        }
         
       }
-      .padding(.bottom, 120)
+      .frame(minHeight: 50)
+      
+      Divider()
+        .frame(maxWidth: .infinity, maxHeight: 1)
+        .background(Color.gray100)
+      
+      HStack {
+        Image("ic_probono_2", bundle: .module)
+          .resizable()
+          .frame(width: 24, height: 24)
+        
+        Text(
+          NSLocalizedString(
+            Constant.Home.Text.BOTTOM_PROBONO_TITLE,
+            comment: ""
+          )
+        )
+        .titleLexend(size: 12)
+        .padding(.trailing, 12)
+        
+        Spacer()
+        
+        Text(store.actionTitle())
+      }
+      .padding(.horizontal, 12)
+      .padding(.vertical, 8)
+      .frame(
+        maxWidth: .infinity,
+        minHeight: 40,
+        alignment: .center
+      )
+      .background(
+        LinearGradient(
+          colors: [
+            Color.gradientBlue,
+            Color.gradientBlue2,
+            Color.gradientBlue2
+          ],
+          startPoint: .leading,
+          endPoint: .trailing
+        )
+      )
+      .clipShape(RoundedRectangle(cornerRadius: 6))
+      .overlay(
+        RoundedRectangle(cornerRadius: 6)
+          .stroke(
+            Color.primaryInfo200,
+            lineWidth: 1
+          )
+      )
+      .padding(.bottom, 8)
+      .onTapGesture {
+        onTapProbono()
+      }
     }
+    .padding(.bottom, 80)
+  }
   
   @ViewBuilder
   func categoryBottomSheetContent(
