@@ -15,8 +15,8 @@ public struct OrderServiceViewModel: Identifiable {
   public let status: String // ACTIVE | INACTIVE
   public let duration: String
   public let price: String
-  public let original_price: String
-  public let icon_url: String
+  public let originalPrice: String
+  public let iconURL: String
   //
   public let isDiscount: Bool
   public let isSKTM: Bool
@@ -35,8 +35,8 @@ public struct OrderServiceViewModel: Identifiable {
     self.status = ""
     self.duration = ""
     self.price = ""
-    self.original_price = ""
-    self.icon_url = ""
+    self.originalPrice = ""
+    self.iconURL = ""
     self.isDiscount = false
     self.isSKTM = false
     self.isHaveQuotaSKTM = false
@@ -55,8 +55,8 @@ public struct OrderServiceViewModel: Identifiable {
     status: String,
     duration: String,
     price: String,
-    original_price: String,
-    icon_url: String,
+    originalPrice: String,
+    iconURL: String,
     isDiscount: Bool,
     isSKTM: Bool,
     isHaveQuotaSKTM: Bool,
@@ -73,8 +73,8 @@ public struct OrderServiceViewModel: Identifiable {
     self.status = status
     self.duration = duration
     self.price = price
-    self.original_price = original_price
-    self.icon_url = icon_url
+    self.originalPrice = originalPrice
+    self.iconURL = iconURL
     self.isDiscount = isDiscount
     self.isSKTM = isSKTM
     self.isHaveQuotaSKTM = isHaveQuotaSKTM

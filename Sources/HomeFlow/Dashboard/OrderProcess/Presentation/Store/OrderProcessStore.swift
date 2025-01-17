@@ -206,13 +206,11 @@ public class OrderProcessStore: ObservableObject {
   public func getOriginalPrice() -> String {
     for item in orderServiceViewModel {
       if item.type == typeSelected {
-        return item.original_price
+        return item.originalPrice
       }
     }
     return ""
   }
-  
-  
   
   public func getDiscountPrice() -> String {
     for item in orderServiceViewModel {
@@ -253,14 +251,14 @@ public class OrderProcessStore: ObservableObject {
     orderServiceFilled = true
     for (index, item) in orderServiceEntities.enumerated() {
       var price = CurrencyFormatter.toCurrency(NSNumber(value: item.price))
-      let originalPrice = CurrencyFormatter.toCurrency(NSNumber(value: item.original_price))
+      let originalPrice = CurrencyFormatter.toCurrency(NSNumber(value: item.originalPrice))
       let priceSelect = Float(item.price)
       let durationSelect = Float(item.duration)
       let worthPriceMinuteFloat = Float(priceSelect/durationSelect).rounded(.up)
       let worthPriceMinuteResult = Int(worthPriceMinuteFloat)
       var descPrice = "senilai \(worthPriceMinuteResult)/menit"
       var isDiscount = true
-      if item.price == item.original_price {
+      if item.price == item.originalPrice {
         isDiscount = false
       }
       var isSKTM = false
@@ -278,10 +276,30 @@ public class OrderProcessStore: ObservableObject {
       if item.type == "REGULAR_AUDIO_VIDEO" {
         isSaving = true
       }
-      let discountInt = (item.original_price - item.price)
+      let discountInt = (item.originalPrice - item.price)
       let discount = "\(CurrencyFormatter.toCurrency(NSNumber(value: discountInt)))"
       
-      orderServiceViewModel.append(OrderServiceViewModel.init(id: index, name: item.name, type: item.type, status: item.status, duration: "\(item.duration) Menit", price: price, original_price: originalPrice, icon_url: item.icon_url, isDiscount: isDiscount,isSKTM: isSKTM, isHaveQuotaSKTM: getUserSKTMData(), quotaSKTM: getSKTMQuota(), isKTPActive: false, isSaving: isSaving, isSelected: false, descPrice: descPrice, discountPrice: discount))
+      orderServiceViewModel.append(
+        OrderServiceViewModel.init(
+          id: index,
+          name: item.name,
+          type: item.type,
+          status: item.status,
+          duration: "\(item.duration) Menit",
+          price: price,
+          originalPrice: originalPrice,
+          iconURL: item.iconURL,
+          isDiscount: isDiscount,
+          isSKTM: isSKTM,
+          isHaveQuotaSKTM: getUserSKTMData(),
+          quotaSKTM: getSKTMQuota(),
+          isKTPActive: false,
+          isSaving: isSaving,
+          isSelected: false,
+          descPrice: descPrice,
+          discountPrice: discount
+        )
+      )
     }
     
   }

@@ -7,6 +7,7 @@
 
 
 import Foundation
+import AprodhitKit
 
 public struct OrderServiceEntity: Transformable {
   typealias D = OrderServiceItemData
@@ -18,27 +19,29 @@ public struct OrderServiceEntity: Transformable {
   public let status: String // ACTIVE | INACTIVE
   public let duration: Int
   public let price: Int
-  public let original_price: Int
-  public let icon_url: String
+  public let originalPrice: Int
+  public let iconURL: String
 
   static func mapTo(_ entity: OrderServiceEntity) -> OrderServiceViewModel {
-    return OrderServiceViewModel(id: 0,
-                                 name: entity.name,
-                                 type: entity.type,
-                                 status: entity.status,
-                                 duration: "\(entity.duration)",
-                                 price: "\(entity.price)",
-                                 original_price: "\(entity.original_price)",
-                                 icon_url: entity.icon_url,
-                                 isDiscount: false,
-                                 isSKTM: false,
-                                 isHaveQuotaSKTM: false,
-                                 quotaSKTM: 0,
-                                 isKTPActive: false,
-                                 isSaving: false,
-                                 isSelected: false,
-                                 descPrice: "",
-                                 discountPrice: "")
+    return OrderServiceViewModel(
+      id: 0,
+      name: entity.name,
+      type: entity.type,
+      status: entity.status,
+      duration: "\(entity.duration)",
+      price: "\(entity.price)",
+      originalPrice: "\(entity.originalPrice)",
+      iconURL: entity.iconURL,
+      isDiscount: false,
+      isSKTM: false,
+      isHaveQuotaSKTM: false,
+      quotaSKTM: 0,
+      isKTPActive: false,
+      isSaving: false,
+      isSelected: false,
+      descPrice: "",
+      discountPrice: ""
+    )
   }
 
   static func map(from data: OrderServiceItemData) -> OrderServiceEntity {
@@ -47,8 +50,33 @@ public struct OrderServiceEntity: Transformable {
                               status: data.status ?? "",
                               duration: data.duration ?? 0,
                               price: data.price ?? 0,
-                              original_price: data.original_price ?? 0,
-                              icon_url: data.icon_url ?? "")
+                              originalPrice: data.original_price ?? 0,
+                              iconURL: data.icon_url ?? "")
   }
 
+  public func getImageURL() -> URL? {
+    return URL(string: iconURL)
+  }
+  
+  public func getDuration() -> String {
+    return "\(duration) Menit"
+  }
+  
+  public func getPrice() -> String {
+    return CurrencyFormatter.toCurrency(NSNumber(value: price))
+  }
+  
+  public func getOriginalPrice() -> String {
+    return CurrencyFormatter.toCurrency(NSNumber(value: originalPrice))
+  }
+  
+  public func getPricePerMinutes() -> String {
+    let result = price/duration
+    return "Setara \(result)/menit"
+  }
+  
+  public func getProbonoStatus() -> String {
+    return "KTP telah terverifikasi"
+  }
+  
 }

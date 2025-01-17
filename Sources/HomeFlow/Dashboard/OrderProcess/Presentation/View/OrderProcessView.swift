@@ -117,6 +117,7 @@ public struct OrderProcessView: View {
     .ignoresSafeArea(.keyboard)
   }
   
+  @ViewBuilder
   func orderServiceOption() -> some View {
     VStack(alignment: .leading, spacing: 12) {
       Text("Pilih Konsultasi")
@@ -125,28 +126,29 @@ public struct OrderProcessView: View {
       
       ForEach(store.getOrderServiceArrayModel()) { item in
         //MARK: some option maybe not use for now
-        ProcessOrderOptionView(isDiscount: item.isDiscount,
-                               isSKTM: item.isSKTM,
-                               isHaveQuotaSKTM: item.isHaveQuotaSKTM,
-                               isKTPActive: item.isKTPActive,
-                               isSaving: item.isSaving,
-                               quotaSKTM: item.quotaSKTM,
-                               isSelected: item.isSelected,
-                               name: item.name,
-                               type: item.type,
-                               status: item.status,
-                               duration: item.duration,
-                               price: item.price,
-                               original_price: item.original_price,
-                               iconURL: URL(string: "\(item.icon_url)"),
-                               descPrice: item.descPrice,
-                               action: {
-                                  store.selectedUpdate(type: item.type)
-                                },
-                               actionSKTM: {
-                                  store.navigateToRequestProbono()
-                                }
-                                )
+        ProcessOrderOptionView(
+          isDiscount: item.isDiscount,
+          isSKTM: item.isSKTM,
+          isHaveQuotaSKTM: item.isHaveQuotaSKTM,
+          isKTPActive: item.isKTPActive,
+          isSaving: item.isSaving,
+          quotaSKTM: item.quotaSKTM,
+          isSelected: item.isSelected,
+          name: item.name,
+          type: item.type,
+          status: item.status,
+          duration: item.duration,
+          price: item.price,
+          original_price: item.originalPrice,
+          iconURL: URL(string: item.iconURL),
+          descPrice: item.descPrice,
+          action: {
+            store.selectedUpdate(type: item.type)
+          },
+          actionSKTM: {
+            store.navigateToRequestProbono()
+          }
+        )
       }
       
     }
