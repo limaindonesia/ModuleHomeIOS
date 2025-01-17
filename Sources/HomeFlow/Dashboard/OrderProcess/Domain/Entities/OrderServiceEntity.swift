@@ -36,6 +36,7 @@ public struct OrderServiceEntity: Transformable {
                                  quotaSKTM: 0,
                                  isKTPActive: false,
                                  isSaving: false,
+                                 isDisable: false,
                                  isSelected: false,
                                  descPrice: "",
                                  discountPrice: "")
@@ -51,4 +52,7 @@ public struct OrderServiceEntity: Transformable {
                               icon_url: data.icon_url ?? "")
   }
 
+  public func isSKTM() -> Bool {
+    return type == "PROBONO"
+  }
 }

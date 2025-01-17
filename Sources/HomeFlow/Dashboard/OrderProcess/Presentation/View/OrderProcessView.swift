@@ -131,6 +131,7 @@ public struct OrderProcessView: View {
                                isKTPActive: item.isKTPActive,
                                isSaving: item.isSaving,
                                quotaSKTM: item.quotaSKTM,
+                               isDisable: item.isDisable,
                                isSelected: item.isSelected,
                                name: item.name,
                                type: item.type,

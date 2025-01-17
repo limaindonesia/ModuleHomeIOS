@@ -25,6 +25,7 @@ public struct OrderServiceViewModel: Identifiable {
   public let isKTPActive: Bool
   public let isSaving: Bool
   public var isSelected: Bool
+  public var isDisable: Bool
   public let descPrice: String
   public let discountPrice: String
 
@@ -43,6 +44,7 @@ public struct OrderServiceViewModel: Identifiable {
     self.quotaSKTM = 0
     self.isKTPActive = false
     self.isSaving = false
+    self.isDisable = false
     self.isSelected = false
     self.descPrice = ""
     self.discountPrice = ""
@@ -63,6 +65,7 @@ public struct OrderServiceViewModel: Identifiable {
     quotaSKTM: Int,
     isKTPActive: Bool,
     isSaving: Bool,
+    isDisable: Bool,
     isSelected: Bool,
     descPrice: String,
     discountPrice: String
@@ -81,6 +84,7 @@ public struct OrderServiceViewModel: Identifiable {
     self.quotaSKTM = quotaSKTM
     self.isKTPActive = isKTPActive
     self.isSaving = isSaving
+    self.isDisable = isDisable
     self.isSelected = isSelected
     self.descPrice = descPrice
     self.discountPrice = discountPrice
