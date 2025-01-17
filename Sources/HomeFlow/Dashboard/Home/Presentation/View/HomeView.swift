@@ -160,15 +160,23 @@ public struct HomeView: View {
               }
             )
             
-            sktmNewView(
-              onTapDecisionTree: {
-                store.navigateToDecisionTree()
-              }, onTapConsultation: {
-                store.navigateToAdvocateList()
-              }, onTapSKTM: {
-                store.navigateToDetailSKTM()
-              }
-            ).padding(.top, 330)
+            probonoServiceView {
+              store.navigateToDecisionTree()
+            } onTapConsultation: {
+              store.navigateToAdvocateList()
+            } onTapProbonoService: {
+              store.navigateToDetailSKTM()
+            }.padding(.top, 330)
+            
+//            sktmNewView(
+//              onTapDecisionTree: {
+//                store.navigateToDecisionTree()
+//              }, onTapConsultation: {
+//                store.navigateToAdvocateList()
+//              }, onTapSKTM: {
+//                store.navigateToDetailSKTM()
+//              }
+//            ).padding(.top, 330)
             
             activeAdvocates(store.onlinedAdvocates)
           }
@@ -714,7 +722,7 @@ public struct HomeView: View {
         onTapProbonoService()
       }
     }
-    .frame(maxWidth: .infinity, minHeight: 210)
+    .frame(maxWidth: .infinity, minHeight: 220)
     .background(Color.white)
     .clipShape(RoundedRectangle(cornerRadius: 8))
     .shadow(color: .gray200, radius: 10, x: 0, y: 15)
