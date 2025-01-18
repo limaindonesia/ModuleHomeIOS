@@ -188,7 +188,6 @@ public struct OrderProcessView: View {
     }
   }
   
-  
   @ViewBuilder
   func paymentDetail() -> some View {
     VStack(alignment: .leading, spacing: 12) {
