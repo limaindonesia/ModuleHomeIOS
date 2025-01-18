@@ -8,13 +8,13 @@
 import Foundation
 
 public struct BookingOrderParamRequest: Paramable {
-
+  
   public let type: String
   public let lawyerId: Int
   public let skillId: Int
   public let description: String
   public let orderType: String
-
+  
   public init(
     type: String,
     lawyerId: Int,
@@ -28,19 +28,19 @@ public struct BookingOrderParamRequest: Paramable {
     self.description = description
     self.orderType = orderType
   }
-
-  func toParam() -> [String : Any] {
+  
+  public func toParam() -> [String : Any] {
     let consultation: [String : Any] = [
       "lawyer_id" : lawyerId,
       "skill_id" : skillId,
       "description" : description,
       "order_type" : orderType
     ]
-
+    
     return [
       "type" : type,
       "consultation" : consultation
     ]
   }
-
+  
 }

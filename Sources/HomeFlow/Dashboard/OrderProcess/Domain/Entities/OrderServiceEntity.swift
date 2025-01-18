@@ -38,6 +38,7 @@ public struct OrderServiceEntity: Transformable {
       quotaSKTM: 0,
       isKTPActive: false,
       isSaving: false,
+      isDisable: false,
       isSelected: false,
       descPrice: "",
       discountPrice: ""

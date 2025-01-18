@@ -17,7 +17,6 @@ public struct OrderServiceViewModel: Identifiable {
   public let price: String
   public let originalPrice: String
   public let iconURL: String
-  //
   public let isDiscount: Bool
   public let isSKTM: Bool
   public let isHaveQuotaSKTM: Bool

@@ -282,7 +282,28 @@ public class OrderProcessStore: ObservableObject {
       if item.status == "INACTIVE" {
         isDisable = true
       }
-      orderServiceViewModel.append(OrderServiceViewModel.init(id: index, name: item.name, type: item.type, status: item.status, duration: "\(item.duration) Menit", price: price, original_price: originalPrice, icon_url: item.icon_url, isDiscount: isDiscount,isSKTM: isSKTM, isHaveQuotaSKTM: getUserSKTMData(), quotaSKTM: getSKTMQuota(), isKTPActive: false, isSaving: isSaving, isDisable: isDisable, isSelected: false, descPrice: descPrice, discountPrice: discount))
+      orderServiceViewModel.append(
+        OrderServiceViewModel.init(
+          id: index,
+          name: item.name,
+          type: item.type,
+          status: item.status,
+          duration: "\(item.duration) Menit",
+          price: price,
+          originalPrice: originalPrice,
+          iconURL: item.iconURL,
+          isDiscount: isDiscount,
+          isSKTM: isSKTM,
+          isHaveQuotaSKTM: getUserSKTMData(),
+          quotaSKTM: getSKTMQuota(),
+          isKTPActive: false,
+          isSaving: isSaving,
+          isDisable: isDisable,
+          isSelected: false,
+          descPrice: descPrice,
+          discountPrice: discount
+        )
+      )
     }
     
   }
