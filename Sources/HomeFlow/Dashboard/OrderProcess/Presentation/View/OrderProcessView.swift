@@ -89,17 +89,15 @@ public struct OrderProcessView: View {
       BottomSheetView(isPresented: $store.isPresentChangeCategoryIssue) {
         PriceCategoryView(
           categoryPrices: store.priceCategories,
-          onSelectPriceCategory: { price in
-            store.setPriceCategory(price)
-          },
-          onSelectCategory: { viewModel in
-            store.setSelected(viewModel)
-          },
-          onTap: {
-            store.dismissChangeCategory()
+          categoryPricesNonSelected: store.getUnSelectedArray(),
+          selectedID: store.getSelectedID(),
+          lawyerInfo: store.lawyerInfoViewModel,
+          onSelectCategory: { index in
+            store.onTapChange(id: index)
           }
         )
-        .frame(height: 350)
+        .padding(.horizontal, -16)
+        .frame(height: store.getHeightChangeBottomSheet())
       }
       
       if store.isLoading {
@@ -367,7 +365,7 @@ public struct OrderProcessView: View {
         alignment: .center,
         spacing: 8
       ) {
-        Text("Pidana") //store.getIssueName()
+        Text(store.getIssueName())
           .foregroundColor(Color.gray700)
           .titleLexend(size: 14)
           .padding(.horizontal, 8)

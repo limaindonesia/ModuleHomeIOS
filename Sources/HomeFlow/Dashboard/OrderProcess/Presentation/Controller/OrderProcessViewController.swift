@@ -15,6 +15,7 @@ import Combine
 public class OrderProcessViewController: NiblessViewController {
 
   private let store: OrderProcessStore
+  public var bottomSheetManager: BottomSheetManager!
 
   //Variable
   private var subscriptions = Set<AnyCancellable>()
@@ -88,6 +89,26 @@ public class OrderProcessViewController: NiblessViewController {
         describing: OrderProcessViewController.self
       )
     )
+  }
+
+}
+
+extension OrderProcessViewController: BottomSheetManagerDelegate {
+  public func dismissSheet() {
+    
+  }
+  
+
+  public func presentSheet() {
+//    let popUp = PopUpViewController(payloadListView: [], type: .categoryLawyer)
+//    popUp.delegateCategoryLawyer = self
+//    popUp.categoryLawyer = store.advocate
+//    var isUserHaveQuota = false
+//    if store.getSKTMQuota() > 0 {
+//      isUserHaveQuota = true
+//    }
+//    popUp.isHaveQuotaSKTM = isUserHaveQuota
+//    self.present(popUp, animated: true)
   }
 
 }
