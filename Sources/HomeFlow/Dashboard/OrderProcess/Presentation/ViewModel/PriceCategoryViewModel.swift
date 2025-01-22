@@ -9,39 +9,43 @@ import Foundation
 
 public struct PriceCategoryViewModel: Identifiable {
   public var id: Int
-  public let title: String
+  public var lawyerSkillPriceId: Int
+  public let skillId: Int
+  public let name: String
+  public let caseExample: String
   public let price: String
   public let originalPrice: String
-  public let isDiscount: Bool
-  public let isProbono: Bool
-  public let categories: [CategoryViewModel]
+  public var isSelected: Bool
   
-  private init() {
+  public init() {
     self.id = 0
-    self.title = ""
+    self.lawyerSkillPriceId = 0
+    self.skillId = 0
+    self.name = ""
+    self.caseExample = ""
     self.price = ""
     self.originalPrice = ""
-    self.isDiscount = false
-    self.isProbono = false
-    self.categories = []
+    self.isSelected = false
   }
   
   public init(
     id: Int,
-    title: String,
+    lawyerSkillPriceId: Int,
+    skillId: Int,
+    name: String,
+    caseExample: String,
     price: String,
     originalPrice: String,
-    isDiscount: Bool,
-    isProbono: Bool,
-    categories: [CategoryViewModel]
+    isSelected: Bool
   ) {
     self.id = id
-    self.title = title
+    self.lawyerSkillPriceId = lawyerSkillPriceId
+    self.skillId = skillId
+    self.name = name
+    self.caseExample = caseExample
     self.price = price
     self.originalPrice = originalPrice
-    self.isDiscount = isDiscount
-    self.isProbono = isProbono
-    self.categories = categories
+    self.isSelected = isSelected
   }
   
 }

@@ -9,21 +9,20 @@ import Foundation
 import AprodhitKit
 import GnDKit
 import Combine
+import UIKit
 
 public class OrderProcessStore: ObservableObject {
   
   //Dependency
-  private let advocate: Advocate
+  public let advocate: Advocate
+  public var selectedPriceCategories: PriceCategoryViewModel
   private let sktmModel: ClientGetSKTM?
   private let repository: OrderProcessRepositoryLogic
   private let treatmentRepository: TreatmentRepositoryLogic
   private let orderServiceRepository: OrderServiceRepositoryLogic
   private let paymentNavigator: PaymentNavigator
   private let sktmNavigator: SKTMNavigator
-  private var category: CategoryViewModel
-  public var issues: [CategoryViewModel] = []
   private let userSessionDataSource: UserSessionDataSourceLogic
-  private let selectedPriceCategory: String
   
   @Published public var orderServiceFilled: Bool = false
   @Published public var detailCostFilled: Bool = false
@@ -40,6 +39,7 @@ public class OrderProcessStore: ObservableObject {
   @Published public var error: ErrorMessage = .init()
   @Published public var priceCategories: [PriceCategoryViewModel] = []
   
+  public var priceCategoriesCopy: [PriceCategoryViewModel] = []
   private var treatmentEntities: [TreatmentEntity] = []
   private var orderServiceEntities: [OrderServiceEntity] = []
   private var userSessionData: UserSessionData?
@@ -52,21 +52,19 @@ public class OrderProcessStore: ObservableObject {
   
   public init() {
     self.advocate = .init()
-    self.category = .init()
+    self.selectedPriceCategories = .init()
     self.sktmModel = .init()
     self.userSessionDataSource = MockUserSessionDataSource()
     self.treatmentRepository = MockTreatmentRepository()
     self.orderServiceRepository = MockOrderServiceRepository()
     self.repository = MockOrderProcessRepository()
     self.paymentNavigator = MockNavigator()
-    self.selectedPriceCategory = ""
     self.sktmNavigator = MockNavigator()
   }
   
   public init(
     advocate: Advocate,
-    category: CategoryViewModel,
-    selectedPriceCategory: String,
+    selectedPriceCategories: PriceCategoryViewModel,
     sktmModel: ClientGetSKTM?,
     userSessionDataSource: UserSessionDataSourceLogic,
     repository: OrderProcessRepositoryLogic,
@@ -76,8 +74,7 @@ public class OrderProcessStore: ObservableObject {
     sktmNavigator: SKTMNavigator
   ) {
     self.advocate = advocate
-    self.selectedPriceCategory = selectedPriceCategory
-    self.category = category
+    self.selectedPriceCategories = selectedPriceCategories
     self.sktmModel = sktmModel
     self.userSessionDataSource = userSessionDataSource
     self.treatmentRepository = treatmentRepository
@@ -87,9 +84,9 @@ public class OrderProcessStore: ObservableObject {
     self.sktmNavigator = sktmNavigator
     
     setSelectedDetailPriceAdvocate()
-    issues = createIssueCategories()
     setLawyerInfo()
     priceCategories = getPriceCategories()
+    priceCategoriesCopy = priceCategories
     
     Task {
       await fetchUserSession()
@@ -111,7 +108,7 @@ public class OrderProcessStore: ObservableObject {
     let bookingOrderParamRequest = BookingOrderParamRequest(
       type: "INSTANT_CONSULTATION",
       lawyerId: lawyerInfoViewModel.id,
-      skillId: category.id,
+      skillId: selectedPriceCategories.skillId,
       description: issueText,
       orderType: getOrderType()
     )
@@ -169,6 +166,40 @@ public class OrderProcessStore: ObservableObject {
   }
   
   //MARK: - Other function
+  public func getUnSelectedArray() -> [PriceCategoryViewModel] {
+    var array: [PriceCategoryViewModel] = []
+    for (index, item) in priceCategories.enumerated() {
+      array.append(PriceCategoryViewModel(
+        id: item.id,
+        lawyerSkillPriceId: item.lawyerSkillPriceId,
+        skillId: item.skillId,
+        name: item.name,
+        caseExample: item.caseExample,
+        price: item.price,
+        originalPrice: item.originalPrice,
+        isSelected: false))
+    }
+    return array
+  }
+  
+  public func getSelectedID() -> Int {
+    return selectedPriceCategories.id
+  }
+  
+  public func getHeightChangeBottomSheet() -> CGFloat {
+    var height: CGFloat = 0
+    if priceCategories.count == 1 {
+      height = 400
+    } else if priceCategories.count == 2 {
+      height = 500
+    } else if priceCategories.count == 3 {
+      height = 600
+    } else if priceCategories.count > 3 {
+      height = (UIScreen.main.bounds.height - 200)
+    }
+    return height
+  }
+  
   public func getDurationPagePayment() -> String {
     for item in orderServiceViewModel {
       if item.type == typeSelected {
@@ -189,6 +220,10 @@ public class OrderProcessStore: ObservableObject {
   
   public func getCategoryPagePayment() -> String {
     return detailPriceAdvocate?.name ?? ""
+  }
+  
+  public func getIssueName() -> String {
+    return selectedPriceCategories.name
   }
   
   public func getOrderType() -> String {
@@ -308,6 +343,21 @@ public class OrderProcessStore: ObservableObject {
     
   }
   
+  public func onTapChange(id: Int) {
+    priceCategories = []
+    for (indexArray,item) in priceCategoriesCopy.enumerated() {
+      if id == item.id {
+        priceCategoriesCopy[indexArray].isSelected = true
+        selectedPriceCategories = item
+      } else {
+        priceCategoriesCopy[indexArray].isSelected = false
+      }
+    }
+    priceCategories = priceCategoriesCopy
+    setSelectedDetailPriceAdvocate(withFetch: false)
+    dismissChangeCategory()
+  }
+  
   public func selectedUpdate(type: String) {
     for (indexArray,item) in orderServiceViewModel.enumerated() {
       if type == item.type {
@@ -337,14 +387,16 @@ public class OrderProcessStore: ObservableObject {
     return false
   }
     
-  public func setSelectedDetailPriceAdvocate() {
+  public func setSelectedDetailPriceAdvocate(withFetch: Bool = true) {
     for item in advocate.detail {
-      if item?.skill_id == getSelectedCategoryID() {
+      if item?.skill_id == selectedPriceCategories.skillId {
         detailPriceAdvocate = item
       }
     }
-    Task {
-      await fetchOrderService()
+    if withFetch {
+      Task {
+        await fetchOrderService()
+      }
     }
     
   }
@@ -361,7 +413,7 @@ public class OrderProcessStore: ObservableObject {
       imageURL: advocate.getImageName(),
       name: advocate.getName(),
       agency: advocate.agency_name ?? "",
-      price: selectedPriceCategory,
+      price: selectedPriceCategories.price,
       originalPrice: advocate.getOriginalPrice(),
       isDiscount: advocate.isDiscount,
       isProbono: sktmQuota > 0,
@@ -413,27 +465,6 @@ public class OrderProcessStore: ObservableObject {
     }
   }
   
-  public func getSelectedCategoryID() -> Int {
-    return category.id
-  }
-  
-  public func setSelected(_ category: CategoryViewModel) {
-    self.category = category
-  }
-  
-  private func createIssueCategories() -> [CategoryViewModel] {
-    return advocate.detail.map {
-      CategoryViewModel(
-        id: $0?.skill_id ?? 0,
-        name: $0?.name ?? ""
-      )
-    }
-  }
-  
-  public func getIssueName() -> String {
-    return category.name
-  }
-  
   public func showChangeCategory() {
     isPresentChangeCategoryIssue = true
   }
@@ -454,22 +485,23 @@ public class OrderProcessStore: ObservableObject {
   }
   
   public func getPriceCategories() -> [PriceCategoryViewModel] {
-    var categories: [CategoryViewModel] = []
-    for item in advocate.detail {
-      categories.append(CategoryViewModel.init(id: item?.skill_id ?? 0, name: item?.name ?? ""))
+    var categories: [PriceCategoryViewModel] = []
+    for (indexArray,item) in advocate.detail.enumerated() {
+      var selected = false
+      if item?.name == selectedPriceCategories.name {
+        selected = true
+      }
+      categories.append(PriceCategoryViewModel(
+        id: indexArray,
+        lawyerSkillPriceId: item?.lawyer_skill_price_id ?? 0,
+        skillId: item?.skill_id ?? 0,
+        name: item?.name ?? "",
+        caseExample: item?.case_example ?? "",
+        price: item?.price ?? "",
+        originalPrice: item?.original_price ?? "",
+        isSelected: selected))
     }
-    
-    return advocate.detail.enumerated().map{ (index, price) in
-      return PriceCategoryViewModel(
-        id: index + 1,
-        title: "Kategori Hukum",
-        price: price?.price ?? "",
-        originalPrice: price?.original_price ?? "",
-        isDiscount: advocate.isDiscount,
-        isProbono: sktmModel?.data?.quota ?? 0 > 0,
-        categories: categories
-      )
-    } ?? []
+    return categories
   }
   
   public func setPriceCategory(_ price: String) {

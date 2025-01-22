@@ -13,183 +13,146 @@ struct PriceCategoryView: View {
   
   @State var showCategory: Bool = false
   @State var categoryPrices: [PriceCategoryViewModel]
+  var categoryPricesNonSelected: [PriceCategoryViewModel] = []
+  var selectedID: Int
+  var lawyerInfo: LawyerInfoViewModel
+  var onSelectCategory: (Int) -> Void
   
-  var copyOfCategoryPrices: [PriceCategoryViewModel] = []
-  var onSelectPriceCategory: (String) -> Void
-  var onSelectCategory: (CategoryViewModel) -> Void
-  var onTap: () -> Void
+  @State var selectedIndex: Int?
   
   init(
     categoryPrices: [PriceCategoryViewModel],
-    onSelectPriceCategory: @escaping (String) -> Void,
-    onSelectCategory: @escaping (CategoryViewModel) -> Void,
-    onTap: @escaping () -> Void
+    categoryPricesNonSelected: [PriceCategoryViewModel],
+    selectedID: Int,
+    lawyerInfo: LawyerInfoViewModel,
+    onSelectCategory: @escaping (Int) -> Void
   ) {
     self.categoryPrices = categoryPrices
-    self.onSelectPriceCategory = onSelectPriceCategory
+    self.categoryPricesNonSelected = categoryPricesNonSelected
+    self.selectedID = selectedID
+    self.lawyerInfo = lawyerInfo
     self.onSelectCategory = onSelectCategory
-    self.onTap = onTap
     
-    self.copyOfCategoryPrices = categoryPrices
   }
   
   var body: some View {
-    NavigationView {
-      VStack(alignment: .leading) {
-        Text("Pilih Konsultasi")
-          .titleLexend(size: 16)
-        
-        ScrollView(showsIndicators: false) {
-          ForEach(categoryPrices) { price in
-            NavigationLink {
-              ChangeCategoryIssueView(
-                issues: price.categories,
-                onSelectedCategory: { viewModel in
-                  onSelectCategory(viewModel)
-                },
-                onTap: { _ in
-                  onTap()
-                }
-              )
-              .navigationBarBackButtonHidden()
-              .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                  HStack {
-                    Button {
-                      showCategory = false
-                      self.categoryPrices = []
-                    } label: {
-                      Image(systemName: "arrow.backward")
-                        .renderingMode(.template)
-                        .foregroundColor(.black)
-                    }
-                    Text("Pilih Kategori")
-                      .titleLexend(size: 14)
-                  }
-                }
-              }
-            } label: {
-              priceContentView(price: price)
-                .frame(width: screen.width - 16 - 16)
-            }
-            .simultaneousGesture(TapGesture().onEnded{ _ in
-              onSelectPriceCategory(price.price)
-            })
-          }
-        }
-      }
-      .onAppear {
-        self.categoryPrices = copyOfCategoryPrices
-      }
-    }
-    .navigationTitle("Pilih Kategori")
-  }
-  
-  @ViewBuilder
-  func priceContentView(price: PriceCategoryViewModel) -> some View {
     VStack(alignment: .leading) {
-      Text(price.title)
-        .foregroundColor(Color.darkTextColor)
-        .bodyLexend(size: 12)
-        .padding(.all, 8)
-      
-      ChipLayout(models: price.categories) { category in
-        ChipTextView(
-          text: category.name,
-          textColor: .buttonActiveColor,
-          backgroundColor: .primary050
-        )
-      }
-      .padding(.horizontal, 8)
-      
       HStack {
+        CircleAvatarImageView(
+          lawyerInfo.imageURL,
+          width: 48,
+          height: 48
+        )
+        .padding(.leading, 16)
+        .padding(.trailing, 8)
+        .padding(.bottom, 8)
         
-        if price.isProbono {
-          probonoPriceView(price: price)
-            .padding(.top, 12)
-        } else if price.isDiscount {
-          discountPriceView(price: price)
-            .padding(.top, 12)
-        } else {
-          normalPriceView(price: price.price)
-            .padding(.top, 12)
-        }
-        
-        Spacer()
-        
-        Image("ic_chevron", bundle: .module)
+        Text(lawyerInfo.name)
+          .titleLexend(size: 16)
+          .padding(.trailing, 16)
+          .padding(.bottom, 8)
       }
-      .padding(.horizontal, 8)
-      .frame(maxWidth: .infinity, minHeight: 50)
-      .background(Color.gray050)
-    }
-    .clipShape(RoundedRectangle(cornerRadius: 12))
-    .overlay {
-      RoundedRectangle(cornerRadius: 12)
-        .stroke(Color.gray100, lineWidth: 1)
-    }
-  }
-  
-  @ViewBuilder
-  func discountPriceView(price: PriceCategoryViewModel) -> some View {
-    HStack {
-      Text(price.price)
-        .foregroundColor(Color.buttonActiveColor)
-        .bodyLexend(size: 14)
+      .frame(maxWidth: UIScreen.main.bounds.width,alignment: .leading)
+      .background(Color.white)
+      .padding(.bottom, 8)
       
-      StrikethroughText(
-        text: price.originalPrice,
-        color: Color.black,
-        thickness: 1
-      )
-      
-      DiscountView()
-    }
-  }
-  
-  @ViewBuilder
-  func normalPriceView(price: String) -> some View {
-    HStack {
-      Text(price)
-        .foregroundColor(Color.buttonActiveColor)
-        .titleStyle(size: 14)
+      VStack {
+        ScrollView(showsIndicators: false) {
+          VStack(alignment: .leading) {
+            ForEach(0..<categoryPrices.count, id: \.self) { index in
+              VStack(alignment: .leading) {
+                HStack {
+                  Text(categoryPrices[index].name)
+                    .foregroundColor(Color.gray800)
+                    .titleLexend(size: 14)
+                    .padding(.leading, 12)
+                    .padding(.top, 8)
+                  
+                  Spacer()
+                  
+                  Image(categoryPrices[index].isSelected ? "ic_order_service_selected" : "ic_order_service_unselect", bundle: .module)
+                    .padding(.trailing, 12)
+                    .padding(.top, 8)
+                  
+                }
+                
+                Text(categoryPrices[index].caseExample)
+                  .foregroundColor(Color.gray600)
+                  .captionLexend(size: 12)
+                  .padding(.leading, 12)
+                  .padding(.trailing, 40)
+                
+                Divider()
+                  .background(categoryPrices[index].isSelected ? Color.primaryInfo200 : Color.gray200)
+                  .frame(height: 1)
+                  .padding(.leading, 12)
+                  .padding(.trailing, 40)
+                
+                HStack {
+                  Text("Mulai dari")
+                    .foregroundColor(Color.darkGray400)
+                    .captionLexend(size: 10)
+                    .padding(.leading, 12)
+                    .padding(.bottom, 12)
+                  
+                  Text(categoryPrices[index].price)
+                    .foregroundColor(Color.buttonActiveColor)
+                    .titleLexend(size: 14)
+                    .padding(.bottom, 12)
+
+                }
+                
+              }
+              .onTapGesture {
+                categoryPrices = []
+                categoryPrices = categoryPricesNonSelected
+                categoryPrices[index].isSelected = true
+                selectedIndex = index
+              }
+              .background(categoryPrices[index].isSelected ? Color.primaryInfo050 : Color.white)
+              .clipShape(RoundedRectangle(cornerRadius: 12))
+              .overlay {
+                RoundedRectangle(cornerRadius: 12)
+                  .stroke(categoryPrices[index].isSelected ? Color.primaryInfo200 : Color.gray200, lineWidth: 1)
+              }
+              .padding(.vertical, 8)
+            }
+          }
+          .padding(.horizontal, 16)
+          .padding(.vertical, 8)
+        }
+      }
       
       Spacer()
       
-      Image("ic_next", bundle: .module)
-        .resizable()
-        .frame(width: 15, height: 18)
-    }
-  }
-  
-  @ViewBuilder
-  func probonoPriceView(price: PriceCategoryViewModel) -> some View {
-    HStack {
-      Image("ic_probono", bundle: .module)
       
-      Divider()
-        .frame(width: 1, height: 10)
-        .background(Color.lightGrayBg)
       
       VStack(alignment: .leading) {
-        Text(price.price)
-          .foregroundColor(Color.buttonActiveColor)
-          .titleStyle(size: 14)
-          .lineLimit(1)
+        Divider()
+          .frame(maxWidth: .infinity, maxHeight: 1)
         
-        StrikethroughText(
-          text: price.originalPrice,
-          color: .lightTextColor,
-          thickness: 1
+        Button {
+          onSelectCategory(selectedIndex ?? 0)
+        } label: {
+          Text("Pilih")
+            .foregroundColor(Color.white)
+            .titleLexend(size: 12)
+            .frame(maxWidth: .infinity, maxHeight: 40)
+            .padding(.horizontal, 5)
+        }
+        .background(
+          RoundedRectangle(cornerRadius: 8)
+            .fill(Color.buttonActiveColor)
         )
-        .foregroundColor(Color.lightTextColor)
       }
-      
-      Image("ic_next", bundle: .module)
-        .resizable()
-        .frame(width: 15, height: 18)
+      .padding(.horizontal, 16)
+      .edgesIgnoringSafeArea(.all)
+      .background(Color.white)
+      .frame(maxWidth: .infinity, maxHeight: 44)
     }
+    .background(Color.gray050)
   }
+  
 }
 
 #Preview {
@@ -198,53 +161,36 @@ struct PriceCategoryView: View {
       [
         PriceCategoryViewModel(
           id: 1,
-          title: "Kategori Hukum",
-          price: "Rp60.000",
-          originalPrice: "Rp150.000",
-          isDiscount: true,
-          isProbono: false,
-          categories: [
-            CategoryViewModel(
-              id: 1,
-              name: "Pidana"),
-            CategoryViewModel(
-              id: 2,
-              name: "Perdata"),
-            CategoryViewModel(
-              id: 3,
-              name: "Ketenagakerjaan"),
-            CategoryViewModel(
-              id: 4,
-              name: "Perkawinan & Perceraian"),
-            CategoryViewModel(
-              id: 5,
-              name: "Pidana"
-            )
-          ]
-        ),
+          lawyerSkillPriceId: 1,
+          skillId: 1,
+          name: "lawyer 1",
+          caseExample: "abshjdbajhdbaj bdjha bsbdabdabshd bhajsb dabdbajbdjabdjbajdbjas bjdsba bdjas bdjab jdhbajh basj dabdaj adsadadsadasd ",
+          price: "90.000",
+          originalPrice: "100.000",
+          isSelected: false),
         PriceCategoryViewModel(
           id: 2,
-          title: "Kategori Hukum",
-          price: "Rp60.000",
-          originalPrice: "Rp150.000",
-          isDiscount: true,
-          isProbono: false,
-          categories: [
-            CategoryViewModel(
-              id: 1,
-              name: "Ketenagakerjaan"),
-            CategoryViewModel(
-              id: 2,
-              name: "Perkawinan & Perceraian"),
-            CategoryViewModel(
-              id: 3,
-              name: "Pidana"
-            )
-          ]
-        )
+          lawyerSkillPriceId: 1,
+          skillId: 1,
+          name: "lawyer 1",
+          caseExample: "abshjdbajhdbaj bdjha bsbdabdabshd bhajsb dabdbajbdjabdjbajdbjas bjdsba bdjas bdjab jdhbajh basj dabdaj asdajndjkasndsjksanjkd njkanjdsk ajkndj kasnjk dnjkasnjkd nakjs dnkjankjdnaksndankdadajns",
+          price: "90.000",
+          originalPrice: "100.000",
+          isSelected: true)
       ],
-    onSelectPriceCategory: { _ in},
-    onSelectCategory: { _ in },
-    onTap: {}
-  ).padding(.all, 8)
+    categoryPricesNonSelected: [],
+    selectedID: 0,
+    lawyerInfo: LawyerInfoViewModel(
+      id: 0,
+      imageURL: nil,
+      name: "Lawyer Name",
+      agency: "",
+      price: "",
+      originalPrice: "",
+      isDiscount: false,
+      isProbono: false,
+      orderNumber: "",
+      detailIssues: ""),
+    onSelectCategory: { _ in }
+  )
 }

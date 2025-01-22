@@ -70,17 +70,17 @@ struct ChangeCategoryIssueView: View {
     }
   }
 }
-
-#Preview {
-  ChangeCategoryIssueView(
-    issues: [
-      CategoryViewModel(id: 1, name: "Perdata"),
-      CategoryViewModel(id: 2, name: "Pertanahan"),
-      CategoryViewModel(id: 3, name: "Ketenagakerjaan"),
-      CategoryViewModel(id: 4, name: "Perkawaninan dan Perceraian")
-    ],
-    selectedID: 1
-  ) { _ in } onTap: { _ in }
-}
+//
+//#Preview {
+//  ChangeCategoryIssueView(
+//    issues: [
+//      CategoryViewModel(id: 1, name: "Perdata"),
+//      CategoryViewModel(id: 2, name: "Pertanahan"),
+//      CategoryViewModel(id: 3, name: "Ketenagakerjaan"),
+//      CategoryViewModel(id: 4, name: "Perkawaninan dan Perceraian")
+//    ],
+//    selectedID: 1
+//  ) { _ in } onTap: { _ in }
+//}
 
 
