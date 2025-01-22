@@ -368,8 +368,9 @@ public class PaymentStore: ObservableObject {
         headers: HeaderRequest(token: token).toHeaders(),
         parameters: UserCasesParamRequest(type: "ongoing")
       )
-      
-      userCase = entities[0]
+      if entities.count > 0 {
+        userCase = entities[0]
+      }
       
     } catch {
       guard let error = error as? ErrorMessage else { return }
