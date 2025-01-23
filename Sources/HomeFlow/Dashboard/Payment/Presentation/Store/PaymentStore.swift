@@ -57,6 +57,7 @@ public class PaymentStore: ObservableObject {
   public var reason: String? = nil
   public var payments: [PaymentMethodViewModel] = []
   public var selectedPaymentCategory: PaymentCategory = .VA
+  public var firstDuration:String = ""
   
   private var subscriptions = Set<AnyCancellable>()
   
@@ -105,6 +106,7 @@ public class PaymentStore: ObservableObject {
     }
     
     observer()
+    setupFirstDuration()
   }
   
   //MARK: - Fetch API
@@ -295,7 +297,6 @@ public class PaymentStore: ObservableObject {
       )
       
       viewModel = VoucherEntity.mapTo(entity)
-      
       lawyerInfoViewModel.duration = "\(viewModel.duration) Menit"
       indicateSuccess()
       hideVoucherBottomSheet()
@@ -323,6 +324,7 @@ public class PaymentStore: ObservableObject {
         )
       )
       
+      lawyerInfoViewModel.duration = firstDuration
       indicateSuccess()
       
     } catch {
@@ -433,6 +435,9 @@ public class PaymentStore: ObservableObject {
   }
   
   //MARK: - Other function
+  public func setupFirstDuration() {
+    firstDuration = lawyerInfoViewModel.duration ?? ""
+  }
   
   public var activatePayButton: AnyPublisher<Bool, Never> {
     Publishers.CombineLatest($isEWalletChecked, $isVirtualAccountChecked).map { (ewallet, va) in
