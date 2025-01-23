@@ -166,6 +166,10 @@ public class OrderProcessStore: ObservableObject {
   }
   
   //MARK: - Other function
+  public func isOrderProbono() -> Bool {
+    return typeSelected == "PROBONO"
+  }
+  
   public func getUnSelectedArray() -> [PriceCategoryViewModel] {
     var array: [PriceCategoryViewModel] = []
     for (index, item) in priceCategories.enumerated() {
@@ -541,7 +545,7 @@ public class OrderProcessStore: ObservableObject {
         price: lawyerInfoViewModel.price,
         originalPrice: lawyerInfoViewModel.originalPrice,
         isDiscount: lawyerInfoViewModel.isDiscount,
-        isProbono: isProbonoActive,
+        isProbono: isOrderProbono(),
         orderNumber: orderNumber,
         detailIssues: issueText,
         category: getCategoryPagePayment(),

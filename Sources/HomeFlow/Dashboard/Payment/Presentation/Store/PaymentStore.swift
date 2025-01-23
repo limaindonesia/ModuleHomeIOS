@@ -296,6 +296,7 @@ public class PaymentStore: ObservableObject {
       
       viewModel = VoucherEntity.mapTo(entity)
       
+      lawyerInfoViewModel.duration = "\(viewModel.duration) Menit"
       indicateSuccess()
       hideVoucherBottomSheet()
       activateButton = false
