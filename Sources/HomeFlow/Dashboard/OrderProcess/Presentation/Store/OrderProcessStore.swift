@@ -27,7 +27,7 @@ public class OrderProcessStore: ObservableObject {
   @Published public var orderServiceFilled: Bool = false
   @Published public var detailCostFilled: Bool = false
   @Published public var issueText: String = ""
-  @Published public var errorText: String = "minimal 10 karakter"
+  @Published public var errorText: String = "Minimal 10 karakter"
   @Published public var lawyerInfoViewModel: LawyerInfoViewModel = .init()
   @Published public var isPresentBottomSheet: Bool = false
   @Published public var isPresentChangeCategoryIssue: Bool = false
@@ -514,7 +514,7 @@ public class OrderProcessStore: ObservableObject {
   
   public func isValidText(_ text: String) -> AnyPublisher<Bool, Never> {
     return Future<Bool, Never> { promise in
-      promise(.success(text.count > 10))
+      promise(.success(text.count > 9))
     }.eraseToAnyPublisher()
   }
   
@@ -652,8 +652,8 @@ public class OrderProcessStore: ObservableObject {
       .sink { state in
         self.isTextValid = state
         self.isScrollToTop = !state
-        if self.issueText.count < 11 {
-          self.errorText = "minimal 10 karakter"
+        if self.issueText.count < 10 {
+          self.errorText = "Minimal 10 karakter"
         } else {
           self.errorText = ""
         }
