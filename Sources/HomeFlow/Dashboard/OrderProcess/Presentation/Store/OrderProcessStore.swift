@@ -90,7 +90,7 @@ public class OrderProcessStore: ObservableObject {
     
     Task {
       await fetchUserSession()
-//      await fetchTreatment()
+      await fetchOrderService()
     }
     
     observer()
@@ -358,7 +358,7 @@ public class OrderProcessStore: ObservableObject {
       }
     }
     priceCategories = priceCategoriesCopy
-    setSelectedDetailPriceAdvocate(withFetch: false)
+    setSelectedDetailPriceAdvocate()
     dismissChangeCategory()
   }
   
@@ -391,15 +391,10 @@ public class OrderProcessStore: ObservableObject {
     return false
   }
     
-  public func setSelectedDetailPriceAdvocate(withFetch: Bool = true) {
+  public func setSelectedDetailPriceAdvocate() {
     for item in advocate.detail {
       if item?.skill_id == selectedPriceCategories.skillId {
         detailPriceAdvocate = item
-      }
-    }
-    if withFetch {
-      Task {
-        await fetchOrderService()
       }
     }
     
