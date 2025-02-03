@@ -122,6 +122,7 @@ struct DetailConsultationContentView: View {
         
       }
     }
+    .padding(.horizontal, 16)
   }
   
 }

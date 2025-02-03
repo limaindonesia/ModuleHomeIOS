@@ -23,6 +23,7 @@ public class OrderProcessStore: ObservableObject {
   private let paymentNavigator: PaymentNavigator
   private let sktmNavigator: SKTMNavigator
   private let userSessionDataSource: UserSessionDataSourceLogic
+  private let probonoNavigator: ProbonoNavigator
   
   @Published public var orderServiceFilled: Bool = false
   @Published public var detailCostFilled: Bool = false
@@ -60,6 +61,7 @@ public class OrderProcessStore: ObservableObject {
     self.repository = MockOrderProcessRepository()
     self.paymentNavigator = MockNavigator()
     self.sktmNavigator = MockNavigator()
+    self.probonoNavigator = MockNavigator()
   }
   
   public init(
@@ -71,7 +73,8 @@ public class OrderProcessStore: ObservableObject {
     treatmentRepository: TreatmentRepositoryLogic,
     orderServiceRepository: OrderServiceRepositoryLogic,
     paymentNavigator: PaymentNavigator,
-    sktmNavigator: SKTMNavigator
+    sktmNavigator: SKTMNavigator,
+    probonoNavigator: ProbonoNavigator
   ) {
     self.advocate = advocate
     self.selectedPriceCategories = selectedPriceCategories
@@ -82,6 +85,7 @@ public class OrderProcessStore: ObservableObject {
     self.repository = repository
     self.paymentNavigator = paymentNavigator
     self.sktmNavigator = sktmNavigator
+    self.probonoNavigator = probonoNavigator
     
     setSelectedDetailPriceAdvocate()
     setLawyerInfo()
@@ -554,24 +558,27 @@ public class OrderProcessStore: ObservableObject {
   }
   
   public func navigateToRequestProbono() {
-    guard let _ = userSessionData else {
-      sktmNavigator.navigateToUploadSKTM()
-      return
-    }
     
-    guard let status = sktmModel?.data?.status else {
-      sktmNavigator.navigateToUploadSKTM()
-      return
-    }
+    probonoNavigator.navigateToProbonoService(page: Constant.Page.ORDER_PROCESS)
     
-    if status == "ON_PROCESS" || status == "ACTIVE"
-        || status == "EMPTY_QUOTA" || status == "EXPIRED"
-        || status == "FAILED" {
-      
-      sktmNavigator.navigateToDetailSKTM(sktmModel)
-    } else {
-      sktmNavigator.navigateToUploadSKTM()
-    }
+//    guard let _ = userSessionData else {
+//      sktmNavigator.navigateToUploadSKTM()
+//      return
+//    }
+//    
+//    guard let status = sktmModel?.data?.status else {
+//      sktmNavigator.navigateToUploadSKTM()
+//      return
+//    }
+//    
+//    if status == "ON_PROCESS" || status == "ACTIVE"
+//        || status == "EMPTY_QUOTA" || status == "EXPIRED"
+//        || status == "FAILED" {
+//      
+//      sktmNavigator.navigateToDetailSKTM(sktmModel)
+//    } else {
+//      sktmNavigator.navigateToUploadSKTM()
+//    }
     
   }
   

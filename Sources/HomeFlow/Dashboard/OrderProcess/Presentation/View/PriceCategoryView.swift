@@ -150,6 +150,7 @@ struct PriceCategoryView: View {
       .background(Color.white)
       .frame(maxWidth: .infinity, maxHeight: 44)
     }
+    .padding(.horizontal, 16)
     .background(Color.gray050)
   }
   

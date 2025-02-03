@@ -880,7 +880,7 @@ public class HomeStore: ObservableObject {
   }
   
   public func navigateToProbonoService() {
-    probonoNavigator.navigateToProbonoService()
+    probonoNavigator.navigateToProbonoService(page: Constant.Page.HOME)
   }
   
   public func switchToProfile() {

@@ -27,7 +27,7 @@ public struct OrderProcessView: View {
     ZStack {
       VStack {
         ScrollViewReader { proxy in
-          ScrollView {
+          ScrollView(showsIndicators: false) {
             VStack(spacing: 12) {
               showLawyerInfo()
                 .padding(.horizontal, 16)

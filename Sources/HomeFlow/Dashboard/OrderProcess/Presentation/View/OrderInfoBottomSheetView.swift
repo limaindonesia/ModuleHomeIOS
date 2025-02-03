@@ -163,6 +163,7 @@ struct OrderInfoBottomSheetView: View {
         }
       )
     }
+    .padding(.horizontal, 16)
   }
   
   @ViewBuilder

@@ -90,6 +90,7 @@ struct CancelationReasonContentView: View {
       }
       .keyboardResponsive()
     }
+    .padding(.horizontal, 16)
   }
   
   @ViewBuilder

@@ -108,7 +108,9 @@ struct PaymentView: View {
         BottomSheetView(isPresented: $store.isPresentTncBottomSheet) {
           VStack {
             VoucherTNCView(text: store.getTNCVoucher())
-          }.frame(height: frame.height/2)
+          }
+          .frame(height: frame.height/2)
+          .padding(.horizontal, 16)
         }
       }
       
