@@ -1407,6 +1407,7 @@ public struct HomeView: View {
         onTapProbono()
       }
     }
+    .padding(.horizontal, 16)
     .padding(.bottom, 80)
   }
   
@@ -1453,6 +1454,7 @@ public struct HomeView: View {
       }
       
     }
+    .padding(.horizontal, 16)
     .padding(.bottom, 85)
   }
   
