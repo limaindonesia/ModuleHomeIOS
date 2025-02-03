@@ -37,4 +37,8 @@ public protocol PaymentRepositoryLogic {
   
   func requestPaymentMethod(headers: HeaderRequest) async throws -> [PaymentMethodEntity]
   
+  func requestEligibleVoucher(
+    headers: HeaderRequest,
+    parameters: EligibleVoucherParamRequests
+  ) async throws -> [EligibleVoucherEntity]
 }

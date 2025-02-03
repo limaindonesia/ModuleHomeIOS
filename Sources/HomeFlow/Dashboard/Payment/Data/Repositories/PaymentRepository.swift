@@ -234,4 +234,37 @@ public struct PaymentRepository: PaymentRepositoryLogic,
     }
   }
   
+  public func requestEligibleVoucher(
+    headers: HeaderRequest,
+    parameters: EligibleVoucherParamRequests
+  ) async throws -> [EligibleVoucherEntity] {
+    do {
+      let response = try await remote.requestEligibleVoucher(
+        headers: headers.toHeaders(),
+        parameters: parameters.toParam()
+      )
+      guard let methods = response.data else {
+        return []
+      }
+      
+      return methods.map(EligibleVoucherEntity.map(from:))
+      
+    } catch {
+      guard let error = error as? NetworkErrorMessage
+      else {
+        throw ErrorMessage(
+          id: -5,
+          title: "Unkown Error",
+          message: error.localizedDescription
+        )
+      }
+      
+      throw ErrorMessage(
+        id: error.code,
+        title: "Failed",
+        message: error.description
+      )
+    }
+  }
+  
 }

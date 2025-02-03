@@ -1497,6 +1497,7 @@ public struct HomeView: View {
       sktmRepository: HomeRepositoryImpl(
         remoteDataSource: FakeHomeRemoteDataSource()
       ),
+      idCardRepository: MockGetKTPRepository(),
       cancelationRepository: MockPaymentRepository(),
       meRepository: MockHomeRepository(),
       onlineAdvocateNavigator: MockNavigator(),

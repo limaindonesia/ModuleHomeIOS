@@ -199,4 +199,23 @@ public struct FakePaymentRemoteDataSource: PaymentRemoteDataSourceLogic,
     
   }
   
+  public func requestEligibleVoucher(
+    headers: [String : String],
+    parameters: [String : Any]
+  ) async throws -> EligibleVoucherResponseModel {
+    
+    guard let data = try? loadJSONFromFile(filename: "payment_method", inBundle: .module)
+    else {
+      throw URLError(.badURL)
+    }
+    
+    do {
+      let model = try JSONDecoder().decode(EligibleVoucherResponseModel.self, from: data)
+      return model
+      
+    } catch {
+      throw URLError(.badURL)
+    }
+  }
+  
 }

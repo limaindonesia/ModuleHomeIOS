@@ -39,6 +39,11 @@ public protocol PaymentRemoteDataSourceLogic {
   
   func requestPaymentMethods(headers: [String : String]) async throws -> PaymentMethodResponseModel
   
+  func requestEligibleVoucher(
+    headers: [String : String],
+    parameters: [String : Any]
+  ) async throws -> EligibleVoucherResponseModel
+  
 }
 
 public struct PaymentRemoteDataSource: PaymentRemoteDataSourceLogic,
@@ -314,6 +319,33 @@ public struct PaymentRemoteDataSource: PaymentRemoteDataSourceLogic,
         withEncoding: .url
       )
       let response = try JSONDecoder().decode(PaymentMethodResponseModel.self, from: data)
+      return response
+      
+    } catch {
+      guard let error = error as? NetworkErrorMessage else {
+        throw NetworkErrorMessage(
+          code: -1,
+          description: "Unknown Error"
+        )
+      }
+      
+      throw error
+    }
+  }
+  
+  public func requestEligibleVoucher(
+    headers: [String : String],
+    parameters: [String : Any]
+  ) async throws -> EligibleVoucherResponseModel {
+    do {
+      let data = try await service.request(
+        with: Endpoint.PAYMENT_METHOD,
+        withMethod: .get,
+        withHeaders: headers,
+        withParameter: [:],
+        withEncoding: .url
+      )
+      let response = try JSONDecoder().decode(EligibleVoucherResponseModel.self, from: data)
       return response
       
     } catch {

@@ -45,6 +45,7 @@ public class PaymentStore: ObservableObject {
   @Published var isVirtualAccountChecked: Bool = false
   @Published var isEWalletChecked: Bool = false
   @Published var isPayButtonActive: Bool = false
+  @Published var voucherCount: Int = 0
   
   public var paymentTimeRemaining: CurrentValueSubject<TimeInterval, Never> = .init(0)
   private var treatmentEntities: [TreatmentEntity] = []
@@ -58,6 +59,7 @@ public class PaymentStore: ObservableObject {
   public var payments: [PaymentMethodViewModel] = []
   public var selectedPaymentCategory: PaymentCategory = .VA
   public var firstDuration:String = ""
+  public var elligibleVoucherEntity: [EligibleVoucherEntity] = []
   
   private var subscriptions = Set<AnyCancellable>()
   
@@ -72,6 +74,10 @@ public class PaymentStore: ObservableObject {
     self.paymentNavigator = MockNavigator()
     self.dashboardResponder = MockNavigator()
     self.cancelationRepository = MockPaymentRepository()
+    
+    Task {
+      await requestElligibleVoucher()
+    }
   }
   
   public init(
@@ -99,6 +105,7 @@ public class PaymentStore: ObservableObject {
     
     Task {
       await fetchUserSession()
+      await requestElligibleVoucher()
       await requestPaymentMethods()
       await fetchCancelationReasons()
       await fetchTreatment()
@@ -110,6 +117,27 @@ public class PaymentStore: ObservableObject {
   }
   
   //MARK: - Fetch API
+  
+  @MainActor
+  public func requestElligibleVoucher() async {
+    do {
+      let entities = try await paymentRepository.requestEligibleVoucher(
+        headers: HeaderRequest(token: userSessionData?.remoteSession.remoteToken),
+        parameters: EligibleVoucherParamRequests(
+          orderNumber: lawyerInfoViewModel.orderNumber
+        )
+      )
+      
+      elligibleVoucherEntity = entities
+      voucherCount = entities.count
+    } catch {
+      guard let error = error as? ErrorMessage else {
+        return
+      }
+      
+      indicateError(error: error)
+    }
+  }
   
   @MainActor
   public func requestPaymentMethods() async {
@@ -603,6 +631,10 @@ public class PaymentStore: ObservableObject {
     showTimeRemainig = true
   }
   
+  public var voucherCountInfo: String {
+    return "\(voucherCount) Voucher tersedia"
+  }
+  
   //MARK: - Navigator
   
   @MainActor
@@ -762,7 +794,7 @@ public class PaymentStore: ObservableObject {
       .subscribe(on: RunLoop.main)
       .sink { value in
         if value <= 0 {
-          self.showReasonBottomSheet()
+//          self.showReasonBottomSheet()
         }
       }
       .store(in: &subscriptions)

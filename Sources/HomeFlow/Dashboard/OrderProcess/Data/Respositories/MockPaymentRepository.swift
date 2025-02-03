@@ -118,4 +118,24 @@ public struct MockPaymentRepository: PaymentRepositoryLogic,
     return []
   }
   
+  public func requestEligibleVoucher(
+    headers: HeaderRequest,
+    parameters: EligibleVoucherParamRequests
+  ) async throws -> [EligibleVoucherEntity] {
+    return [
+      .init(
+        name: "Bronze Pertamina",
+        code: "BRONZE12",
+        tnc: "",
+        expiredDate: Date()
+      ),
+      .init(
+        name: "Bronze Shell",
+        code: "BRONZE99",
+        tnc: "",
+        expiredDate: Date()
+      )
+    ]
+  }
+  
 }

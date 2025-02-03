@@ -72,12 +72,17 @@ struct PaymentView: View {
           voucher: $store.voucherCode,
           showXMark: $store.showXMark,
           voucherErrorText: $store.voucherErrorText,
+          vouchers: $store.elligibleVoucherEntity,
           onTap: { voucher in
             Task {
               await store.applyVoucher()
             }
-          },
-          onClear: {
+          }, onUseVoucher: { voucher in
+            store.voucherCode = voucher
+            Task {
+              await store.applyVoucher()
+            }
+          }, onClear: {
             Task {
               await store.removeVoucher()
             }
@@ -296,7 +301,7 @@ struct PaymentView: View {
         onTapTNC()
       }
     } else {
-      voucherCode {
+      voucherCode(voucherCount: store.voucherCountInfo){
         onTapVoucher()
       }
     }
@@ -357,7 +362,10 @@ struct PaymentView: View {
   }
   
   @ViewBuilder
-  func voucherCode(onTap: @escaping () -> Void) -> some View {
+  func voucherCode(
+    voucherCount: String,
+    onTap: @escaping () -> Void
+  ) -> some View {
     VStack(alignment: .leading) {
       Text("Kode Promo dan Voucher")
         .titleLexend(size: 16)
@@ -370,6 +378,10 @@ struct PaymentView: View {
           .titleLexend(size: 14)
         
         Spacer()
+        
+        Text(voucherCount)
+          .foregroundStyle(Color.primaryInfo700)
+          .captionLexend(size: 10)
         
         Image("ic_chevron", bundle: .module)
       }
@@ -546,20 +558,20 @@ struct PaymentView: View {
         .background(Color.gray200)
       
       ScrollViewReader { proxy in
-          ScrollView(.horizontal, showsIndicators: true) {
-              HStack {
-                ForEach(store.getEWallets(), id: \.id) { item in
-                  KFImage(item.icon)
-                }
-              }
-              .onAppear {
-                  DispatchQueue.main.async {
-                      proxy.scrollTo(0, anchor: .center)
-                  }
-              }
+        ScrollView(.horizontal, showsIndicators: true) {
+          HStack {
+            ForEach(store.getEWallets(), id: \.id) { item in
+              KFImage(item.icon)
+            }
           }
+          .onAppear {
+            DispatchQueue.main.async {
+              proxy.scrollTo(0, anchor: .center)
+            }
+          }
+        }
       }
-
+      
     }
     .padding(.all, 12)
     .frame(maxWidth: .infinity)

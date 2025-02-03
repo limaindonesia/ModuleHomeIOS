@@ -21,6 +21,7 @@ public class HomeStore: ObservableObject {
   private let homeRepository: HomeRepositoryLogic
   private let ongoingRepository: OngoingRepositoryLogic
   private let sktmRepository: SKTMRepositoryLogic
+  private let idCardRepository: GetKTPDataRepositoryLogic
   private let userSessionDataSource: UserSessionDataSourceLogic
   private let cancelationRepository: PaymentCancelationRepositoryLogic
   private let meRepository: MeRepositoryLogic
@@ -89,12 +90,14 @@ public class HomeStore: ObservableObject {
   public var promotionBannerViewModel: BannerPromotionViewModel = .init()
   public var selectedReason: ReasonEntity? = nil
   public var reason: String? = nil
+  public var idCardEntity: IDCardEntity = .init()
   
   public init(
     userSessionDataSource: UserSessionDataSourceLogic,
     homeRepository: HomeRepositoryLogic,
     ongoingRepository: OngoingRepositoryLogic,
     sktmRepository: SKTMRepositoryLogic,
+    idCardRepository: GetKTPDataRepositoryLogic,
     cancelationRepository: PaymentCancelationRepositoryLogic,
     meRepository: MeRepositoryLogic,
     onlineAdvocateNavigator: OnlineAdvocateNavigator,
@@ -114,6 +117,7 @@ public class HomeStore: ObservableObject {
     self.homeRepository = homeRepository
     self.ongoingRepository = ongoingRepository
     self.sktmRepository = sktmRepository
+    self.idCardRepository = idCardRepository
     self.cancelationRepository = cancelationRepository
     self.meRepository = meRepository
     self.onlineAdvocateNavigator = onlineAdvocateNavigator
@@ -150,7 +154,7 @@ public class HomeStore: ObservableObject {
       
       await fetchOngoingUserCases()
       await fetchAllAPI()
-      await fetchSKTM()
+      await fetchProbonoStatus()
       showShimmer = false
     }
     
@@ -441,12 +445,28 @@ public class HomeStore: ObservableObject {
     
     await fetchAllAPI()
     await fetchOngoingUserCases()
-    await fetchSKTM()
+    await fetchProbonoStatus()
     await requestMe()
     await checkBottomSheet()
     
     indicateSuccess(message: "")
     hideTabBar = false
+  }
+  
+  private func fetchProbonoStatus() async {
+    idCardRepository
+      .checkKTPStatus(headers: HeaderRequest(token: userSessionData?.remoteSession.remoteToken))
+      .sink { result in
+        switch result {
+        case .failure(let error):
+          self.indicateError(error: error)
+        case .finished:
+          break
+        }
+      } receiveValue: { [weak self] entity in
+        guard let self = self else { return }
+        idCardEntity = entity
+      }.store(in: &subscriptions)
   }
   
   @MainActor

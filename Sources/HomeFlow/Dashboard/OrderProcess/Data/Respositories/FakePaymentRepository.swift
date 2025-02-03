@@ -108,4 +108,24 @@ public struct FakePaymentRepository: PaymentRepositoryLogic {
   public func requestPaymentMethod(headers: HeaderRequest) async throws -> [PaymentMethodEntity] {
     return .init()
   }
+  
+  public func requestEligibleVoucher(
+    headers: HeaderRequest,
+    parameters: EligibleVoucherParamRequests
+  ) async throws -> [EligibleVoucherEntity] {
+    return [
+      .init(
+        name: "Bronze Pertamina",
+        code: "BRONZE12",
+        tnc: "",
+        expiredDate: Date()
+      ),
+      .init(
+        name: "Bronze Shell",
+        code: "BRONZE99",
+        tnc: "",
+        expiredDate: Date()
+      )
+    ]
+  }
 }
