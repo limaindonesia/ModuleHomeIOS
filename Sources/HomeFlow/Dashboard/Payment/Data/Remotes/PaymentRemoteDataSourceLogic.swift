@@ -339,10 +339,10 @@ public struct PaymentRemoteDataSource: PaymentRemoteDataSourceLogic,
   ) async throws -> EligibleVoucherResponseModel {
     do {
       let data = try await service.request(
-        with: Endpoint.PAYMENT_METHOD,
+        with: Endpoint.ELLIGIBLE_VOUCHER,
         withMethod: .get,
         withHeaders: headers,
-        withParameter: [:],
+        withParameter: parameters,
         withEncoding: .url
       )
       let response = try JSONDecoder().decode(EligibleVoucherResponseModel.self, from: data)

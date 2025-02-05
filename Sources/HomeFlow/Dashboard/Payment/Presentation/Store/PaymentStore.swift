@@ -19,6 +19,7 @@ public class PaymentStore: ObservableObject {
   private let paymentRepository: PaymentRepositoryLogic
   private let treatmentRepository: TreatmentRepositoryLogic
   private let ongoingRepository: OngoingRepositoryLogic
+  private let probonoRepository: GetKTPDataRepositoryLogic
   private let cancelationRepository: PaymentCancelationRepositoryLogic
   private let ongoingNavigator: OngoingNavigator
   private let paymentNavigator: PaymentNavigator
@@ -46,6 +47,7 @@ public class PaymentStore: ObservableObject {
   @Published var isEWalletChecked: Bool = false
   @Published var isPayButtonActive: Bool = false
   @Published var voucherCount: Int = 0
+  @Published public var elligibleVoucherEntity: [EligibleVoucherEntity] = []
   
   public var paymentTimeRemaining: CurrentValueSubject<TimeInterval, Never> = .init(0)
   private var treatmentEntities: [TreatmentEntity] = []
@@ -58,8 +60,8 @@ public class PaymentStore: ObservableObject {
   public var reason: String? = nil
   public var payments: [PaymentMethodViewModel] = []
   public var selectedPaymentCategory: PaymentCategory = .VA
-  public var firstDuration:String = ""
-  public var elligibleVoucherEntity: [EligibleVoucherEntity] = []
+  public var firstDuration: String = ""
+  public var idCardEntity: IDCardEntity = .init()
   
   private var subscriptions = Set<AnyCancellable>()
   
@@ -74,6 +76,7 @@ public class PaymentStore: ObservableObject {
     self.paymentNavigator = MockNavigator()
     self.dashboardResponder = MockNavigator()
     self.cancelationRepository = MockPaymentRepository()
+    self.probonoRepository = MockGetKTPRepository()
     
     Task {
       await requestElligibleVoucher()
@@ -88,6 +91,7 @@ public class PaymentStore: ObservableObject {
     treatmentRepository: TreatmentRepositoryLogic,
     ongoingRepository: OngoingRepositoryLogic,
     cancelationRepository: PaymentCancelationRepositoryLogic,
+    probonoRepository: GetKTPDataRepositoryLogic,
     ongoingNavigator: OngoingNavigator,
     paymentNavigator: PaymentNavigator,
     dashboardResponder: DashboardResponder
@@ -98,6 +102,7 @@ public class PaymentStore: ObservableObject {
     self.paymentRepository = paymentRepository
     self.treatmentRepository = treatmentRepository
     self.ongoingRepository = ongoingRepository
+    self.probonoRepository = probonoRepository
     self.ongoingNavigator = ongoingNavigator
     self.paymentNavigator = paymentNavigator
     self.dashboardResponder = dashboardResponder
@@ -117,6 +122,23 @@ public class PaymentStore: ObservableObject {
   }
   
   //MARK: - Fetch API
+  
+  @MainActor
+  private func fetchProbonoStatus() async {
+    probonoRepository
+      .checkKTPStatus(headers: HeaderRequest(token: userSessionData?.remoteSession.remoteToken))
+      .sink { result in
+        switch result {
+        case .failure(let error):
+          self.indicateError(error: error)
+        case .finished:
+          break
+        }
+      } receiveValue: { [weak self] entity in
+        guard let self = self else { return }
+        idCardEntity = entity
+      }.store(in: &subscriptions)
+  }
   
   @MainActor
   public func requestElligibleVoucher() async {
@@ -181,18 +203,30 @@ public class PaymentStore: ObservableObject {
   public func sendCancelationReason() async -> Bool {
     indicateLoading()
     var success: Bool = false
+    var parameters: CancelPaymentRequest = .init(dismiss: false)
     
     do {
       guard let token = userSessionData?.remoteSession.remoteToken else {
         return false
       }
-      success = try await cancelationRepository.requestCancelReason(
-        headers: HeaderRequest(token: token),
-        parameters: CancelPaymentRequest(
+      
+      if let title = selectedReason?.title, title.contains("Lainnya") {
+        parameters = CancelPaymentRequest(
           orderNumber: getOrderNumber(),
           reasonID: selectedReason?.id ?? 0,
-          reason: ((selectedReason?.title.contains("Lainnya")) != nil) ? reason : selectedReason?.title
+          reason: reason
         )
+      } else {
+        parameters = CancelPaymentRequest(
+          orderNumber: getOrderNumber(),
+          reasonID: selectedReason?.id ?? 0,
+          reason: selectedReason?.title
+        )
+      }
+      
+      success = try await cancelationRepository.requestCancelReason(
+        headers: HeaderRequest(token: token),
+        parameters: parameters
       )
       
       indicateSuccess()
@@ -526,7 +560,7 @@ public class PaymentStore: ObservableObject {
   }
   
   public func isProbono() -> Bool {
-    return lawyerInfoViewModel.isProbono
+    return lawyerInfoViewModel.isProbono && idCardEntity.status == .ACTIVE
   }
   
   private func fetchUserSession() async {
@@ -794,7 +828,7 @@ public class PaymentStore: ObservableObject {
       .subscribe(on: RunLoop.main)
       .sink { value in
         if value <= 0 {
-//          self.showReasonBottomSheet()
+          self.showReasonBottomSheet()
         }
       }
       .store(in: &subscriptions)

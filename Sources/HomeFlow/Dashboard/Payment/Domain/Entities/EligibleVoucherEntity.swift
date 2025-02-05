@@ -9,7 +9,7 @@ import Foundation
 import AprodhitKit
 import GnDKit
 
-public struct EligibleVoucherEntity: TransformableWithoutViewModel, Identifiable {
+public final class EligibleVoucherEntity: TransformableWithoutViewModel, Identifiable {
   
   public typealias D = EligibleVoucherResponseModel.Datum
   public typealias E = EligibleVoucherEntity
@@ -19,25 +19,29 @@ public struct EligibleVoucherEntity: TransformableWithoutViewModel, Identifiable
   public let code: String
   public let tnc: String
   public let expiredDate: Date
+  public var isUsed: Bool
   
   public init(
     name: String,
     code: String,
     tnc: String,
-    expiredDate: Date
+    expiredDate: Date,
+    isUsed: Bool
   ) {
     self.name = name
     self.code = code
     self.tnc = tnc
     self.expiredDate = expiredDate
+    self.isUsed = isUsed
   }
   
   public static func map(from data: EligibleVoucherResponseModel.Datum) -> EligibleVoucherEntity {
     return EligibleVoucherEntity(
-      name: "",
-      code: "",
-      tnc: "",
-      expiredDate: Date()
+      name: data.name ?? "",
+      code: data.code ?? "",
+      tnc: data.tnc ?? "",
+      expiredDate: (data.endDate ?? "").toDate() ?? Date(),
+      isUsed: false
     )
   }
   

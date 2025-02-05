@@ -78,11 +78,16 @@ struct PaymentView: View {
               await store.applyVoucher()
             }
           }, onUseVoucher: { voucher in
-            store.voucherCode = voucher
             Task {
+              store.voucherCode = voucher
               await store.applyVoucher()
             }
-          }, onClear: {
+          }, onCancelVoucher: { _ in
+            Task {
+              await store.removeVoucher()
+            }
+          },
+          onClear: {
             Task {
               await store.removeVoucher()
             }

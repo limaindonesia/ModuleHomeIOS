@@ -118,13 +118,15 @@ public struct FakePaymentRepository: PaymentRepositoryLogic {
         name: "Bronze Pertamina",
         code: "BRONZE12",
         tnc: "",
-        expiredDate: Date()
+        expiredDate: Date(),
+        isUsed: false
       ),
       .init(
         name: "Bronze Shell",
         code: "BRONZE99",
         tnc: "",
-        expiredDate: Date()
+        expiredDate: Date(),
+        isUsed: false
       )
     ]
   }

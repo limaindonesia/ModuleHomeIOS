@@ -19,6 +19,7 @@ struct VoucherBottomSheetView: View {
   
   private var onTap: (String) -> Void
   private var onUseVoucher: (String) -> Void
+  private var onCancelVoucher: (String) -> Void
   private var onClear: () -> Void
   
   init(
@@ -29,6 +30,7 @@ struct VoucherBottomSheetView: View {
     vouchers: Binding<[EligibleVoucherEntity]>,
     onTap: @escaping (String) -> Void,
     onUseVoucher: @escaping (String) -> Void,
+    onCancelVoucher: @escaping (String) -> Void,
     onClear: @escaping () -> Void
   ) {
     self._activateButton = activateButton
@@ -39,6 +41,7 @@ struct VoucherBottomSheetView: View {
     self.onTap = onTap
     self.onUseVoucher = onUseVoucher
     self.onClear = onClear
+    self.onCancelVoucher = onCancelVoucher
   }
   
   var body: some View {
@@ -114,74 +117,28 @@ struct VoucherBottomSheetView: View {
       }
       
       Divider()
-        .frame(height: 1)
-        .padding(.top, 28)
+        .frame(maxWidth:.infinity, maxHeight: 1)
+        .background(Color.gray200)
+        .padding(.vertical, 8)
         .padding(.horizontal, 16)
       
       Text("Pilih promo untuk transaksi anda")
         .titleLexend(size: 14)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.bottom, 16)
-        .padding(.top, 16)
         .padding(.horizontal, 16)
       
       voucherListView()
       
-      Spacer()
     }
-    .frame(height: 420)
   }
   
   @ViewBuilder
   func voucherListView() -> some View {
     ScrollView(showsIndicators: false) {
       ForEach(vouchers, id: \.id) { voucher in
-        VStack(alignment: .leading, spacing: 8) {
-          HStack(alignment: .top) {
-            Image("ic_probono_2", bundle: .module)
-            
-            VStack(alignment: .leading, spacing: 8) {
-              Text(voucher.name)
-                .titleLexend(size: 14)
-              
-              Button {
-                
-              } label: {
-                Text("Lihat Syarat dan Ketentuan")
-                  .foregroundStyle(Color.buttonActiveColor)
-                  .titleLexend(size: 12)
-              }
-            }
-            
-          }
-          
-          Divider()
-            .frame(height: 1)
-          
-          HStack {
-            Text(voucher.dateStr)
-              .foregroundStyle(Color.darkGray400)
-              .captionLexend(size: 12)
-            
-            Spacer()
-            
-            ButtonPrimary(
-              title: "Pakai",
-              color: .buttonActiveColor,
-              height: 30
-            ) {
-              onUseVoucher(voucher.code)
-            }
-          }
-        }
-        .padding(.all, 12)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.white)
-        .clipShape(RoundedRectangle(cornerRadius: 8))
-        .shadow(color: Color.gray200, radius: 5)
-        .padding(.horizontal, 16)
+        voucherRowView(voucher: voucher)
+          .padding(.vertical, 4)
       }
-      .padding(.vertical, 8)
     }
   }
   
@@ -202,6 +159,69 @@ struct VoucherBottomSheetView: View {
         .captionLexend(size: 12)
     }
   }
+  
+  @ViewBuilder
+  func voucherRowView(voucher: EligibleVoucherEntity) -> some View {
+    VStack(alignment: .leading, spacing: 8) {
+      HStack(alignment: .top) {
+        Image("ic_probono_2", bundle: .module)
+        
+        VStack(alignment: .leading, spacing: 8) {
+          Text(voucher.name)
+            .titleLexend(size: 14)
+          
+          Button {
+            
+          } label: {
+            Text("Lihat Syarat dan Ketentuan")
+              .foregroundStyle(Color.buttonActiveColor)
+              .titleLexend(size: 12)
+          }
+        }
+        
+      }
+      
+      Divider()
+        .frame(height: 1)
+      
+      HStack {
+        Text(voucher.dateStr)
+          .foregroundStyle(Color.darkGray400)
+          .captionLexend(size: 12)
+        
+        Spacer()
+        
+        if voucher.isUsed {
+          ButtonSecondary(
+            title: "Batal",
+            backgroundColor: Color.clear,
+            tintColor: Color.red,
+            cornerRadius: 6,
+            height: 30
+          ) {
+            onCancelVoucher(voucher.code)
+            voucher.isUsed = false
+          }
+        } else {
+          ButtonPrimary(
+            title: "Pakai",
+            color: voucher.isUsed ? Color.white : .buttonActiveColor,
+            height: 30
+          ) {
+            onUseVoucher(voucher.code)
+            voucher.isUsed = true
+          }
+        }
+        
+      }
+    }
+    .padding(.all, 12)
+    .frame(maxWidth: .infinity, alignment: .leading)
+    .background(voucher.isUsed ? Color.primaryInfo050 : Color.white)
+    .clipShape(RoundedRectangle(cornerRadius: 8))
+    .shadow(color: Color.gray200, radius: 5)
+    .padding(.horizontal, 16)
+  }
 }
 
 #Preview {
@@ -216,12 +236,22 @@ struct VoucherBottomSheetView: View {
           name: "Bronze Pertamina",
           code: "BRONZE12",
           tnc: "",
-          expiredDate: Date()
+          expiredDate: Date(),
+          isUsed: false
+        ),
+        EligibleVoucherEntity(
+          name: "Bronze Shell",
+          code: "BRONZE100",
+          tnc: "",
+          expiredDate: Date(),
+          isUsed: true
         )
       ]
     ), onTap: { _ in
       
     }, onUseVoucher: { _ in
+      
+    }, onCancelVoucher: { _ in
       
     }, onClear: { }
   )
