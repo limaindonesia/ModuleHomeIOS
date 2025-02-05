@@ -126,14 +126,14 @@ public struct MockPaymentRepository: PaymentRepositoryLogic,
       .init(
         name: "Bronze Pertamina",
         code: "BRONZE12",
-        tnc: "",
+        tnc: "<p>ini syarat dan ketentuan</p>",
         expiredDate: Date(),
         isUsed: false
       ),
       .init(
         name: "Bronze Shell",
         code: "BRONZE99",
-        tnc: "",
+        tnc: "<p>ini syarat dan ketentuan</p>",
         expiredDate: Date(),
         isUsed: false
       )

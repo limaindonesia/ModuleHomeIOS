@@ -21,6 +21,14 @@ public final class EligibleVoucherEntity: TransformableWithoutViewModel, Identif
   public let expiredDate: Date
   public var isUsed: Bool
   
+  public init() {
+    self.name = ""
+    self.code = ""
+    self.tnc = ""
+    self.expiredDate = Date()
+    self.isUsed = false
+  }
+  
   public init(
     name: String,
     code: String,

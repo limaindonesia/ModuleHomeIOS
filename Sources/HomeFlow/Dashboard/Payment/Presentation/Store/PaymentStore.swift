@@ -41,13 +41,14 @@ public class PaymentStore: ObservableObject {
   @Published public var isPresentReasonBottomSheet: Bool = false
   @Published public var isPresentDetailConsultationBottomSheet: Bool = false
   @Published public var isPresentWarningPaymentBottomSheet: Bool = false
+  @Published public var isPresentVoucherTnCBottomSheet: Bool = false
   @Published public var reasons: [ReasonEntity] = []
   @Published public var showTimeRemainig: Bool = false
   @Published var isVirtualAccountChecked: Bool = false
   @Published var isEWalletChecked: Bool = false
   @Published var isPayButtonActive: Bool = false
   @Published var voucherCount: Int = 0
-  @Published public var elligibleVoucherEntity: [EligibleVoucherEntity] = []
+  @Published public var elligibleVoucherEntities: [EligibleVoucherEntity] = []
   
   public var paymentTimeRemaining: CurrentValueSubject<TimeInterval, Never> = .init(0)
   private var treatmentEntities: [TreatmentEntity] = []
@@ -62,6 +63,8 @@ public class PaymentStore: ObservableObject {
   public var selectedPaymentCategory: PaymentCategory = .VA
   public var firstDuration: String = ""
   public var idCardEntity: IDCardEntity = .init()
+  public var voucherTnC: String = ""
+  public var eligibleVoucherEntity: EligibleVoucherEntity = .init()
   
   private var subscriptions = Set<AnyCancellable>()
   
@@ -150,7 +153,7 @@ public class PaymentStore: ObservableObject {
         )
       )
       
-      elligibleVoucherEntity = entities
+      elligibleVoucherEntities = entities
       voucherCount = entities.count
     } catch {
       guard let error = error as? ErrorMessage else {
@@ -497,6 +500,44 @@ public class PaymentStore: ObservableObject {
   }
   
   //MARK: - Other function
+  
+  public func getVoucherTnC() -> String {
+    return """
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Numbered List</title>
+          <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100&display=swap" rel="stylesheet">
+          <style>
+              body {
+                  font-family: 'Lexend-Light', sans-serif;
+                  font-weight: 300;
+                  font-size: 14px;
+                  marging: 0;
+                  padding: 0;
+              }
+              ol {
+                display: block;
+                list-style-type: decimal;
+                margin-top: 1em;
+                margin-bottom: 1em;
+                margin-left: 0;
+                margin-right: 0;
+                padding-left: 20px;
+              }
+          </style>
+      </head>
+        <body>\(eligibleVoucherEntity.tnc)</body>
+      </html>
+  """
+  }
+  
+  public func showVoucherTnCBottomSheet() {
+    isPresentTncBottomSheet = true
+  }
+  
   public func setupFirstDuration() {
     firstDuration = lawyerInfoViewModel.duration ?? ""
   }
@@ -828,7 +869,7 @@ public class PaymentStore: ObservableObject {
       .subscribe(on: RunLoop.main)
       .sink { value in
         if value <= 0 {
-          self.showReasonBottomSheet()
+          //          self.showReasonBottomSheet()
         }
       }
       .store(in: &subscriptions)

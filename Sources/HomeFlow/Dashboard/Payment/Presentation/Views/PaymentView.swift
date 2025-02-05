@@ -66,20 +66,34 @@ struct PaymentView: View {
         .padding(.horizontal, 16)
       }
       
+      BottomSheetNewView(isPresented: $store.isPresentVoucherTnCBottomSheet) {
+        VoucherTnCBottomSheetView(
+          voucherName: store.eligibleVoucherEntity.name,
+          voucherTnC: store.getVoucherTnC(),
+          voucherCode: store.eligibleVoucherEntity.code
+        ) { code in
+          Task {
+            store.voucherCode = code
+            store.isPresentVoucherTnCBottomSheet = false
+            await store.applyVoucher()
+          }
+        }
+      }
+      
       BottomSheetView(isPresented: $store.isPresentVoucherBottomSheet) {
         VoucherBottomSheetView(
           activateButton: $store.activateButton,
           voucher: $store.voucherCode,
           showXMark: $store.showXMark,
           voucherErrorText: $store.voucherErrorText,
-          vouchers: $store.elligibleVoucherEntity,
+          vouchers: $store.elligibleVoucherEntities,
           onTap: { voucher in
             Task {
               await store.applyVoucher()
             }
-          }, onUseVoucher: { voucher in
+          }, onUseVoucher: { code in
             Task {
-              store.voucherCode = voucher
+              store.voucherCode = code
               await store.applyVoucher()
             }
           }, onCancelVoucher: { _ in
@@ -91,6 +105,11 @@ struct PaymentView: View {
             Task {
               await store.removeVoucher()
             }
+          },
+          onTapTnC: { voucher in
+            store.eligibleVoucherEntity = voucher
+            store.isPresentVoucherTnCBottomSheet = true
+            store.isPresentVoucherBottomSheet = false
           }
         )
       }

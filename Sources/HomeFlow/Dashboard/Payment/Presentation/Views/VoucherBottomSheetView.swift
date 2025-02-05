@@ -21,6 +21,7 @@ struct VoucherBottomSheetView: View {
   private var onUseVoucher: (String) -> Void
   private var onCancelVoucher: (String) -> Void
   private var onClear: () -> Void
+  private var onTapTnC: (EligibleVoucherEntity) -> Void
   
   init(
     activateButton: Binding<Bool>,
@@ -31,7 +32,8 @@ struct VoucherBottomSheetView: View {
     onTap: @escaping (String) -> Void,
     onUseVoucher: @escaping (String) -> Void,
     onCancelVoucher: @escaping (String) -> Void,
-    onClear: @escaping () -> Void
+    onClear: @escaping () -> Void,
+    onTapTnC: @escaping (EligibleVoucherEntity) -> Void
   ) {
     self._activateButton = activateButton
     self._voucher = voucher
@@ -42,6 +44,7 @@ struct VoucherBottomSheetView: View {
     self.onUseVoucher = onUseVoucher
     self.onClear = onClear
     self.onCancelVoucher = onCancelVoucher
+    self.onTapTnC = onTapTnC
   }
   
   var body: some View {
@@ -171,7 +174,7 @@ struct VoucherBottomSheetView: View {
             .titleLexend(size: 14)
           
           Button {
-            
+            onTapTnC(voucher)
           } label: {
             Text("Lihat Syarat dan Ketentuan")
               .foregroundStyle(Color.buttonActiveColor)
@@ -247,12 +250,11 @@ struct VoucherBottomSheetView: View {
           isUsed: true
         )
       ]
-    ), onTap: { _ in
-      
-    }, onUseVoucher: { _ in
-      
-    }, onCancelVoucher: { _ in
-      
-    }, onClear: { }
+    ),
+    onTap: { _ in },
+    onUseVoucher: { _ in },
+    onCancelVoucher: { _ in },
+    onClear: { },
+    onTapTnC: { _ in }
   )
 }
