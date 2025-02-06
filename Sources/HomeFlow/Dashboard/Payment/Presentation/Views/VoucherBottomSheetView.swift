@@ -18,8 +18,8 @@ struct VoucherBottomSheetView: View {
   @Binding var vouchers: [EligibleVoucherEntity]
   
   private var onTap: (String) -> Void
-  private var onUseVoucher: (String) -> Void
-  private var onCancelVoucher: (String) -> Void
+  private var onUseVoucher: (EligibleVoucherEntity) -> Void
+  private var onCancelVoucher: (EligibleVoucherEntity) -> Void
   private var onClear: () -> Void
   private var onTapTnC: (EligibleVoucherEntity) -> Void
   
@@ -30,8 +30,8 @@ struct VoucherBottomSheetView: View {
     voucherErrorText: Binding<String>,
     vouchers: Binding<[EligibleVoucherEntity]>,
     onTap: @escaping (String) -> Void,
-    onUseVoucher: @escaping (String) -> Void,
-    onCancelVoucher: @escaping (String) -> Void,
+    onUseVoucher: @escaping (EligibleVoucherEntity) -> Void,
+    onCancelVoucher: @escaping (EligibleVoucherEntity) -> Void,
     onClear: @escaping () -> Void,
     onTapTnC: @escaping (EligibleVoucherEntity) -> Void
   ) {
@@ -202,7 +202,7 @@ struct VoucherBottomSheetView: View {
             cornerRadius: 6,
             height: 30
           ) {
-            onCancelVoucher(voucher.code)
+            onCancelVoucher(voucher)
             voucher.isUsed = false
           }
         } else {
@@ -211,7 +211,7 @@ struct VoucherBottomSheetView: View {
             color: voucher.isUsed ? Color.white : .buttonActiveColor,
             height: 30
           ) {
-            onUseVoucher(voucher.code)
+            onUseVoucher(voucher)
             voucher.isUsed = true
           }
         }

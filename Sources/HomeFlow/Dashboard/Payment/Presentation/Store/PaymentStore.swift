@@ -504,9 +504,6 @@ public class PaymentStore: ObservableObject {
   
   private func handleAutoApplyVoucher(_ entity: OrderEntity) {
     voucherCode = entity.voucherAuto.code
-    Task {
-      await applyVoucher()
-    }
   }
   
   public func getVoucherTnC() -> String {

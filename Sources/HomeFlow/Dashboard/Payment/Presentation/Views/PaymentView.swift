@@ -91,9 +91,10 @@ struct PaymentView: View {
             Task {
               await store.applyVoucher()
             }
-          }, onUseVoucher: { code in
+          }, onUseVoucher: { voucher in
             Task {
-              store.voucherCode = code
+              store.eligibleVoucherEntity = voucher
+              store.voucherCode = voucher.code
               await store.applyVoucher()
             }
           }, onCancelVoucher: { _ in
