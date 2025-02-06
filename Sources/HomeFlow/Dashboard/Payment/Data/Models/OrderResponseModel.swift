@@ -9,7 +9,7 @@ import Foundation
 import GnDKit
 
 // MARK: - OrderNumberResponseModel
-public  struct OrderResponseModel: Codable {
+public struct OrderResponseModel: Codable {
   public let success: Bool?
   public let data: DataClass?
   public let message: String?
@@ -32,6 +32,7 @@ public  struct OrderResponseModel: Codable {
     public let orderItems: OrderItems?
     public let orderAdjustments: [OrderAdjustment]?
     public let paymentMethods: [PaymentMethod]?
+    public let voucher: Voucher?
     public let expiredAt: Int?
 
     enum CodingKeys: String, CodingKey {
@@ -44,6 +45,7 @@ public  struct OrderResponseModel: Codable {
       case orderAdjustments = "order_adjustments"
       case paymentMethods = "payment_methods"
       case expiredAt = "expired_at"
+      case voucher = "voucher"
     }
 
     public init(from decoder: any Decoder) throws {
@@ -58,6 +60,7 @@ public  struct OrderResponseModel: Codable {
       self.orderAdjustments = try container.decodeIfPresent([OrderAdjustment].self, forKey: .orderAdjustments)
       self.paymentMethods = try container.decodeIfPresent([PaymentMethod].self, forKey: .paymentMethods)
       self.expiredAt = try container.decodeIfPresent(Int.self, forKey: .expiredAt)
+      self.voucher = try container.decodeIfPresent(Voucher.self, forKey: .voucher)
     }
   }
 
@@ -406,4 +409,20 @@ public  struct OrderResponseModel: Codable {
     }
   }
 
+  // MARK: - Voucher
+  public struct Voucher: Codable {
+    public let code, amount, tnc, description: String?
+    public let duration: Int?
+    
+    public init(from decoder: any Decoder) throws {
+      let container: KeyedDecodingContainer<OrderResponseModel.Voucher.CodingKeys> = try decoder.container(keyedBy: OrderResponseModel.Voucher.CodingKeys.self)
+      self.code = try container.decodeIfPresent(String.self, forKey: OrderResponseModel.Voucher.CodingKeys.code)
+      self.amount = try container.decodeIfPresent(String.self, forKey: OrderResponseModel.Voucher.CodingKeys.amount)
+      self.tnc = try container.decodeIfPresent(String.self, forKey: OrderResponseModel.Voucher.CodingKeys.tnc)
+      self.description = try container.decodeIfPresent(String.self, forKey: OrderResponseModel.Voucher.CodingKeys.description)
+      self.duration = try container.decodeIfPresent(Int.self, forKey: OrderResponseModel.Voucher.CodingKeys.duration)
+    }
+    
+  }
+  
 }

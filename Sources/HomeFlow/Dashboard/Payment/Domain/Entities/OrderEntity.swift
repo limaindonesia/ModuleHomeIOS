@@ -24,6 +24,7 @@ public struct OrderEntity: Transformable {
   public let total: String
   public let totalAdjustment: Int
   public let expiredAt: Int
+  public let voucherAuto: VoucherEntity
 
   init() {
     self.consultationID = 0
@@ -34,6 +35,7 @@ public struct OrderEntity: Transformable {
     self.total = ""
     self.totalAdjustment = 0
     self.expiredAt = 0
+    self.voucherAuto = .init()
   }
 
   public init(
@@ -44,7 +46,8 @@ public struct OrderEntity: Transformable {
     voucher: FeeEntity?,
     total: String,
     totalAdjustment: Int,
-    expiredAt: Int
+    expiredAt: Int,
+    voucherAuto: VoucherEntity
   ) {
     self.consultationID = consultationID
     self.lawyerFee = lawyerFee
@@ -54,6 +57,7 @@ public struct OrderEntity: Transformable {
     self.total = total
     self.expiredAt = expiredAt
     self.totalAdjustment = totalAdjustment
+    self.voucherAuto = voucherAuto
   }
 
   static func map(from data: OrderResponseModel.DataClass) -> OrderEntity {
@@ -94,7 +98,15 @@ public struct OrderEntity: Transformable {
       voucher: voucherEntity,
       total: data.totalAmount ?? "",
       totalAdjustment: data.totalAdjustment ?? 0,
-      expiredAt: data.expiredAt ?? 0
+      expiredAt: data.expiredAt ?? 0,
+      voucherAuto: VoucherEntity(
+        success: true,
+        code: data.voucher?.code ?? "",
+        amount: data.voucher?.amount ?? "",
+        tnc: data.voucher?.tnc ?? "",
+        descriptions: data.voucher?.description ?? "",
+        duration: data.voucher?.duration ?? 0
+      )
     )
   }
 

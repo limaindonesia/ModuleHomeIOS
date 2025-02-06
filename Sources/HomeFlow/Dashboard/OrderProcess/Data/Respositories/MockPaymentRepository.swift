@@ -27,7 +27,8 @@ public struct MockPaymentRepository: PaymentRepositoryLogic,
       voucher: nil,
       total: "Rp60.000",
       totalAdjustment: 150000,
-      expiredAt: 1729926810
+      expiredAt: 1729926810,
+      voucherAuto: .init()
     )
     
   }

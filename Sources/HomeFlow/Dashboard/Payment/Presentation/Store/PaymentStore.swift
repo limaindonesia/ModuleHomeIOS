@@ -331,6 +331,7 @@ public class PaymentStore: ObservableObject {
       indicateSuccess()
       hideVoucherBottomSheet()
       calculateTimeRemainig()
+      handleAutoApplyVoucher(entity)
     } catch {
       guard let error = error as? ErrorMessage else { return }
       indicateError(error: error)
@@ -500,6 +501,13 @@ public class PaymentStore: ObservableObject {
   }
   
   //MARK: - Other function
+  
+  private func handleAutoApplyVoucher(_ entity: OrderEntity) {
+    voucherCode = entity.voucherAuto.code
+    Task {
+      await applyVoucher()
+    }
+  }
   
   public func getVoucherTnC() -> String {
     return """
