@@ -12,6 +12,10 @@ public struct OrderNumberParamRequest: Paramable {
   public let voucherCode: String
 
   public func toParam() -> [String : Any] {
+    if voucherCode.isEmpty {
+      return ["order_no" : orderNumber]
+    }
+    
     return  [
       "order_no" : orderNumber,
       "voucher_code": voucherCode

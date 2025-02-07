@@ -13,20 +13,14 @@ struct VoucherTnCBottomSheetView: View {
   
   @State var contentHeight: CGFloat = 0
   
-  public let voucherName: String
-  public let voucherCode: String
-  public let voucherTnC: String
-  public var onTapUsed: (String) -> Void
+  public let voucher: EligibleVoucherEntity
+  public var onTapUsed: (EligibleVoucherEntity) -> Void
   
   init(
-    voucherName: String,
-    voucherTnC: String,
-    voucherCode: String,
-    onTapUsed: @escaping (String) -> Void
+    voucher: EligibleVoucherEntity,
+    onTapUsed: @escaping (EligibleVoucherEntity) -> Void
   ) {
-    self.voucherName = voucherName
-    self.voucherTnC = voucherTnC
-    self.voucherCode = voucherCode
+    self.voucher = voucher
     self.onTapUsed = onTapUsed
   }
   
@@ -37,7 +31,7 @@ struct VoucherTnCBottomSheetView: View {
         .padding(.top, 16)
       
       HTMLWebView(
-        htmlContent: voucherTnC,
+        htmlContent: voucher.tnc,
         contentHeight: $contentHeight
       )
       .frame(height: contentHeight)
@@ -45,13 +39,13 @@ struct VoucherTnCBottomSheetView: View {
       HStack {
         Image("ticket-discount", bundle: .module)
         
-        Text(voucherName)
+        Text(voucher.name)
           .titleLexend(size: 14)
         
         Spacer()
         
         Button {
-          onTapUsed(voucherCode)
+          onTapUsed(voucher)
         } label: {
           Text("Pakai")
             .foregroundStyle(Color.buttonActiveColor)
@@ -70,13 +64,12 @@ struct VoucherTnCBottomSheetView: View {
     }
     .padding(.horizontal, 16)
   }
+  
 }
 
 #Preview {
   VoucherTnCBottomSheetView(
-    voucherName: "Bronze Pertamina",
-    voucherTnC: "",
-    voucherCode: "",
+    voucher: .init(),
     onTapUsed: { code in
     }
   )

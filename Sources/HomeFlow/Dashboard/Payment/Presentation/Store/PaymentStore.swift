@@ -51,8 +51,8 @@ public class PaymentStore: ObservableObject {
   @Published public var elligibleVoucherEntities: [EligibleVoucherEntity] = []
   
   public var paymentTimeRemaining: CurrentValueSubject<TimeInterval, Never> = .init(0)
+  public var message = CurrentValueSubject<String, Never>("")
   private var treatmentEntities: [TreatmentEntity] = []
-  private var message: String = ""
   private var userSessionData: UserSessionData?
   private var paymentEntity: PaymentEntity = .init()
   public var expiredDateTime: String = ""
@@ -65,6 +65,7 @@ public class PaymentStore: ObservableObject {
   public var idCardEntity: IDCardEntity = .init()
   public var voucherTnC: String = ""
   public var eligibleVoucherEntity: EligibleVoucherEntity = .init()
+  public var showSnackBar = PassthroughSubject<Bool, Never>()
   
   private var subscriptions = Set<AnyCancellable>()
   
@@ -295,8 +296,8 @@ public class PaymentStore: ObservableObject {
   }
   
   @MainActor
-  public func applyVoucher() async {
-    voucherViewModel = await requestVoucher()
+  public func applyVoucher(_ code: String) async {
+    voucherViewModel = await requestVoucher(code)
     
     if voucherViewModel.success {
       voucherFilled = true
@@ -310,6 +311,8 @@ public class PaymentStore: ObservableObject {
   public func removeVoucher() async {
     let success = await requestRemoveVoucher()
     if success {
+      voucherViewModel.setCode("")
+      eligibleVoucherEntity = .init()
       voucherFilled = false
       getTimeConsultation(from: treatmentEntities)
       await requestOrderByNumber()
@@ -329,7 +332,6 @@ public class PaymentStore: ObservableObject {
       let entity = try await paymentRepository.requestOrderByNumber(headers, parameters)
       orderViewModel = OrderEntity.mapTo(entity)
       indicateSuccess()
-      hideVoucherBottomSheet()
       calculateTimeRemainig()
       handleAutoApplyVoucher(entity)
     } catch {
@@ -350,7 +352,7 @@ public class PaymentStore: ObservableObject {
   }
   
   @MainActor
-  private func requestVoucher() async -> VoucherViewModel {
+  private func requestVoucher(_ code: String) async -> VoucherViewModel {
     var viewModel: VoucherViewModel = .init()
     
     do {
@@ -358,14 +360,16 @@ public class PaymentStore: ObservableObject {
         headers: HeaderRequest(token: userSessionData?.remoteSession.remoteToken),
         parameters: VoucherParamRequest(
           orderNumber: lawyerInfoViewModel.orderNumber,
-          voucherCode: voucherCode
+          voucherCode: code
         )
       )
       
+      indicateSuccess()
+      
       viewModel = VoucherEntity.mapTo(entity)
       lawyerInfoViewModel.duration = "\(viewModel.duration) Menit"
-      indicateSuccess()
-      hideVoucherBottomSheet()
+      showSnackBar.send(true)
+      message.send("Berhasil mendapatkan Promo")
       activateButton = false
       
     } catch {
@@ -386,12 +390,21 @@ public class PaymentStore: ObservableObject {
         headers: HeaderRequest(token: userSessionData?.remoteSession.remoteToken),
         parameters: VoucherParamRequest(
           orderNumber: lawyerInfoViewModel.orderNumber,
-          voucherCode: voucherCode
+          voucherCode: voucherViewModel.code
         )
       )
       
-      lawyerInfoViewModel.duration = firstDuration
       indicateSuccess()
+      
+      lawyerInfoViewModel.duration = firstDuration
+      
+      //modify array of vouchers
+      let index = elligibleVoucherEntities.firstIndex {
+        return $0.code == voucherViewModel.code
+      } ?? 0
+      
+      elligibleVoucherEntities[index].isUsed = false
+      
       
     } catch {
       guard let error = error as? ErrorMessage else {
@@ -414,7 +427,7 @@ public class PaymentStore: ObservableObject {
         parameters: PaymentParamRequest(
           orderNumber: lawyerInfoViewModel.orderNumber,
           consultationGuideAnswerId: 2,
-          voucherCode: voucherCode,
+          voucherCode: voucherViewModel.code,
           paymentChannelCategory: selectedPaymentCategory.rawValue
         )
       )
@@ -503,7 +516,26 @@ public class PaymentStore: ObservableObject {
   //MARK: - Other function
   
   private func handleAutoApplyVoucher(_ entity: OrderEntity) {
-    voucherCode = entity.voucherAuto.code
+    if let voucher = entity.voucherAuto, voucher.success  {
+      voucherFilled = true
+      voucherViewModel.duration = voucher.duration
+      voucherViewModel.setCode(voucher.code)
+      voucherViewModel.setAmount(voucher.amount)
+      setDuration(voucher.duration)
+      eligibleVoucherEntity = EligibleVoucherEntity(
+        name: "",
+        code: voucher.code,
+        tnc: voucher.tnc,
+        expiredDate: Date(),
+        isUsed: false
+      )
+      updateVoucherArrays()
+    } else{
+      voucherFilled = false
+      voucherCode = ""
+      voucherViewModel.setCode("")
+      setDuration(0)
+    }
   }
   
   public func getVoucherTnC() -> String {
@@ -540,7 +572,7 @@ public class PaymentStore: ObservableObject {
   }
   
   public func showVoucherTnCBottomSheet() {
-    isPresentTncBottomSheet = true
+    isPresentVoucherTnCBottomSheet = true
   }
   
   public func setupFirstDuration() {
@@ -715,6 +747,12 @@ public class PaymentStore: ObservableObject {
     return "\(voucherCount) Voucher tersedia"
   }
   
+  public func updateVoucherArrays() {
+    if let index = elligibleVoucherEntities.firstIndex(where: { $0.code == eligibleVoucherEntity.code}) {
+      elligibleVoucherEntities[index].isUsed = true
+    }
+  }
+  
   //MARK: - Navigator
   
   @MainActor
@@ -760,6 +798,14 @@ public class PaymentStore: ObservableObject {
   }
   
   //MARK: - Indicate
+  
+  public func showVoucherTncBottomSheet() {
+    isPresentVoucherTnCBottomSheet = true
+  }
+  
+  public func hideVoucherTncBottomSheet() {
+    isPresentVoucherTnCBottomSheet = false
+  }
   
   public func showWarningBottomSheet() {
     isPresentMakeSureBottomSheet = true

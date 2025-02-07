@@ -12,13 +12,12 @@ import AprodhitKit
 import Combine
 import Lottie
 
-public class PaymentViewController: NiblessViewController, SuccessViewDelegate {
+public class PaymentViewController: BaseViewController, SuccessViewDelegate {
   
   private let store: PaymentStore
   public var rejectionBottomSheetManager: DismissableActionBottomSheetManager!
   
   public var animationView: Lottie.LottieAnimationView?
-  private var subscriptions = Set<AnyCancellable>()
   
   public init(store: PaymentStore) {
     self.store = store
@@ -164,6 +163,14 @@ public class PaymentViewController: NiblessViewController, SuccessViewDelegate {
   }
   
   private func observeStore() {
+    
+    showSnackbar(
+      with: store.message,
+      state: store.showSnackBar,
+      color: UIColor.success050,
+      textColor: UIColor.successColor
+    )
+    
     store.$isLoading
       .dropFirst()
       .removeDuplicates()

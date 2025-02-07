@@ -11,9 +11,9 @@ public class VoucherViewModel {
 
   public private(set) var success: Bool
   public private(set) var code: String
-  public let amount: String
-  public let tnc: String
-  public let duration: Int
+  public private(set) var amount: String
+  public var tnc: String
+  public var duration: Int
 
   public init() {
     self.success = false
@@ -41,4 +41,7 @@ public class VoucherViewModel {
     self.code = code
   }
   
+  public func setAmount(_ value: String) {
+    self.amount = value
+  }
 }

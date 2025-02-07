@@ -24,7 +24,7 @@ public struct OrderEntity: Transformable {
   public let total: String
   public let totalAdjustment: Int
   public let expiredAt: Int
-  public let voucherAuto: VoucherEntity
+  public let voucherAuto: VoucherEntity?
 
   init() {
     self.consultationID = 0
@@ -47,7 +47,7 @@ public struct OrderEntity: Transformable {
     total: String,
     totalAdjustment: Int,
     expiredAt: Int,
-    voucherAuto: VoucherEntity
+    voucherAuto: VoucherEntity?
   ) {
     self.consultationID = consultationID
     self.lawyerFee = lawyerFee
@@ -63,6 +63,7 @@ public struct OrderEntity: Transformable {
   static func map(from data: OrderResponseModel.DataClass) -> OrderEntity {
     var voucherEntity: FeeEntity? = nil
     var discountEntity: FeeEntity? = nil
+    var voucherAutoEntity: VoucherEntity? = nil
     
     let lawyerFee = data.orderItems?.lawyerFee
     let adminFee = data.orderItems?.adminFee
@@ -84,6 +85,17 @@ public struct OrderEntity: Transformable {
       
     }
     
+    if let voucher = data.voucher, voucher.code != nil {
+      voucherAutoEntity = VoucherEntity(
+        success: true,
+        code: voucher.code ?? "",
+        amount: voucher.amount ?? "",
+        tnc: voucher.tnc ?? "",
+        descriptions: voucher.description ?? "",
+        duration: voucher.duration ?? 0
+      )
+    }
+    
     return OrderEntity(
       consultationID: data.consultations?[0].id ?? 0,
       lawyerFee: FeeEntity(
@@ -99,14 +111,7 @@ public struct OrderEntity: Transformable {
       total: data.totalAmount ?? "",
       totalAdjustment: data.totalAdjustment ?? 0,
       expiredAt: data.expiredAt ?? 0,
-      voucherAuto: VoucherEntity(
-        success: true,
-        code: data.voucher?.code ?? "",
-        amount: data.voucher?.amount ?? "",
-        tnc: data.voucher?.tnc ?? "",
-        descriptions: data.voucher?.description ?? "",
-        duration: data.voucher?.duration ?? 0
-      )
+      voucherAuto: voucherAutoEntity ?? .init()
     )
   }
 
