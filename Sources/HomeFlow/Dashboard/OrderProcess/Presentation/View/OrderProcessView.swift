@@ -38,6 +38,7 @@ public struct OrderProcessView: View {
               .id(1)
               .padding(.horizontal, 16)
             }
+            .padding(.top, 16)
             
             if store.orderServiceFilled {
               orderServiceOption()
@@ -48,7 +49,8 @@ public struct OrderProcessView: View {
             
               .padding(.top, 16)
               .padding(.bottom, 16)
-          }.onAppear {
+          }
+          .onAppear {
             self.reader = proxy
           }
         }
@@ -126,7 +128,7 @@ public struct OrderProcessView: View {
         //MARK: some option maybe not use for now
         ProcessOrderOptionView(
           isDiscount: item.isDiscount,
-          isSKTM: item.isSKTM,
+          isSKTM: store.isProbono(),
           isHaveQuotaSKTM: item.isHaveQuotaSKTM,
           isKTPActive: item.isKTPActive,
           isSaving: item.isSaving,
@@ -206,18 +208,20 @@ public struct OrderProcessView: View {
           }
         )
         
-        FeeRowView(
-          name: store.getDiscountName(),
-          amount: store.getDiscountPrice(),
-          showInfo: false,
-          onTap: {
-            GLogger(
-              .info,
-              layer: "Presentation",
-              message: "did tap info"
-            )
-          }
-        )
+        if store.typeSelected != "PROBONO" {
+          FeeRowView(
+            name: store.getDiscountName(),
+            amount: store.getDiscountPrice(),
+            showInfo: false,
+            onTap: {
+              GLogger(
+                .info,
+                layer: "Presentation",
+                message: "did tap info"
+              )
+            }
+          )
+        }
         
         Divider()
           .frame(height: 1)
@@ -228,7 +232,7 @@ public struct OrderProcessView: View {
           
           Spacer()
           
-          Text(store.getPriceBottom())
+          Text(store.getTotalPrice())
             .titleLexend(size: 14)
         }
       }
