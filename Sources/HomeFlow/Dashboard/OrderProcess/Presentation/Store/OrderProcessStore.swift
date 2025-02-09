@@ -20,6 +20,7 @@ public class OrderProcessStore: ObservableObject {
   private let repository: OrderProcessRepositoryLogic
   private let treatmentRepository: TreatmentRepositoryLogic
   private let orderServiceRepository: OrderServiceRepositoryLogic
+  private let probonoRepository: GetKTPDataRepositoryLogic
   private let paymentNavigator: PaymentNavigator
   private let sktmNavigator: SKTMNavigator
   private let userSessionDataSource: UserSessionDataSourceLogic
@@ -49,6 +50,7 @@ public class OrderProcessStore: ObservableObject {
   public var typeSelected: String = ""
   private var detailPriceAdvocate: DetailPriceAdvocate?
   public var orderServiceViewModel: [OrderServiceViewModel] = []
+  public var idCardEntity: IDCardEntity = .init()
   private var subscriptions = Set<AnyCancellable>()
   
   public init() {
@@ -62,6 +64,7 @@ public class OrderProcessStore: ObservableObject {
     self.paymentNavigator = MockNavigator()
     self.sktmNavigator = MockNavigator()
     self.probonoNavigator = MockNavigator()
+    self.probonoRepository = MockGetKTPRepository()
   }
   
   public init(
@@ -72,6 +75,7 @@ public class OrderProcessStore: ObservableObject {
     repository: OrderProcessRepositoryLogic,
     treatmentRepository: TreatmentRepositoryLogic,
     orderServiceRepository: OrderServiceRepositoryLogic,
+    probonoRepository: GetKTPDataRepositoryLogic,
     paymentNavigator: PaymentNavigator,
     sktmNavigator: SKTMNavigator,
     probonoNavigator: ProbonoNavigator
@@ -83,6 +87,7 @@ public class OrderProcessStore: ObservableObject {
     self.treatmentRepository = treatmentRepository
     self.orderServiceRepository = orderServiceRepository
     self.repository = repository
+    self.probonoRepository = probonoRepository
     self.paymentNavigator = paymentNavigator
     self.sktmNavigator = sktmNavigator
     self.probonoNavigator = probonoNavigator
@@ -94,6 +99,7 @@ public class OrderProcessStore: ObservableObject {
     
     Task {
       await fetchUserSession()
+      await fetchProbonoStatus()
       await fetchOrderService()
     }
     
@@ -102,6 +108,23 @@ public class OrderProcessStore: ObservableObject {
   }
   
   //MARK: - API
+  
+  @MainActor
+  private func fetchProbonoStatus() async {
+    probonoRepository
+      .checkKTPStatus(headers: HeaderRequest(token: userSessionData?.remoteSession.remoteToken))
+      .sink { result in
+        switch result {
+        case .failure(let error):
+          self.indicateError(error: error)
+        case .finished:
+          break
+        }
+      } receiveValue: { [weak self] entity in
+        guard let self = self else { return }
+        idCardEntity = entity
+      }.store(in: &subscriptions)
+  }
   
   @MainActor
   private func requestBookingOrder() async -> BookingOrderEntity? {
@@ -265,6 +288,20 @@ public class OrderProcessStore: ObservableObject {
   }
   
   public func getPriceBottom() -> String {
+    if typeSelected == "PROBONO" {
+      return "Gratis"
+    }
+    
+    for item in orderServiceViewModel {
+      if item.type == typeSelected {
+        return item.price
+      }
+    }
+    
+    return "-"
+  }
+  
+  public func getTotalPrice() -> String {
     for item in orderServiceViewModel {
       if item.type == typeSelected {
         return item.price
@@ -304,17 +341,17 @@ public class OrderProcessStore: ObservableObject {
       if item.price == item.originalPrice {
         isDiscount = false
       }
-      var isSKTM = false
-      if item.type == "PROBONO" {
-        isSKTM = true
-        if getSKTMQuota() > 0 {
-          price = "GRATIS"
-          descPrice = "kuota tersedia: \(getSKTMQuota())"
-        } else {
-          price = "GRATIS"
-          descPrice = "S&K Berlaku"
-        }
-      }
+//      var isSKTM = false
+//      if item.type == "PROBONO" {
+//        isSKTM = true
+//        if getSKTMQuota() > 0 {
+//          price = "GRATIS"
+//          descPrice = "kuota tersedia: \(getSKTMQuota())"
+//        } else {
+//          price = "GRATIS"
+//          descPrice = "S&K Berlaku"
+//        }
+//      }
       var isSaving = false
       if item.type == "REGULAR_AUDIO_VIDEO" {
         isSaving = true
@@ -336,10 +373,10 @@ public class OrderProcessStore: ObservableObject {
           originalPrice: originalPrice,
           iconURL: item.iconURL,
           isDiscount: isDiscount,
-          isSKTM: isSKTM,
+          isSKTM: false,
           isHaveQuotaSKTM: getUserSKTMData(),
           quotaSKTM: getSKTMQuota(),
-          isKTPActive: false,
+          isKTPActive: idCardEntity.status == .ACTIVE,
           isSaving: isSaving,
           isDisable: isDisable,
           isSelected: false,
@@ -369,6 +406,10 @@ public class OrderProcessStore: ObservableObject {
   public func selectedUpdate(type: String) {
     for (indexArray,item) in orderServiceViewModel.enumerated() {
       if type == item.type {
+        if type == "PROBONO" && !item.isKTPActive {
+          return
+        }
+        
         typeSelected = type
         orderServiceViewModel[indexArray].isSelected = true
         self.buttonActive = true
@@ -444,10 +485,7 @@ public class OrderProcessStore: ObservableObject {
   }
   
   public func isProbono() -> Bool {
-    guard let quota = sktmModel?.data?.quota else {
-      return false
-    }
-    return quota > 0
+    return idCardEntity.status == .ACTIVE
   }
   
   private func getTimeConsultation(from entities: [TreatmentEntity]) {
