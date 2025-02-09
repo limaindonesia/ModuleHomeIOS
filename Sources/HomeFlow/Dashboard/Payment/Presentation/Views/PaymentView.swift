@@ -54,7 +54,7 @@ struct PaymentView: View {
         
         PaymentBottomView(
           title: "Total Pembayaran",
-          price: store.getTotalAmount(),
+          price: store.getPriceBottom(),
           totalAdjustment: store.getTotalAdjustment(),
           buttonText: "Bayar",
           isVoucherApplied: store.voucherFilled,

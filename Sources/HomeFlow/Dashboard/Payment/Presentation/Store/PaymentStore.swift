@@ -81,10 +81,6 @@ public class PaymentStore: ObservableObject {
     self.dashboardResponder = MockNavigator()
     self.cancelationRepository = MockPaymentRepository()
     self.probonoRepository = MockGetKTPRepository()
-    
-    Task {
-      await requestElligibleVoucher()
-    }
   }
   
   public init(
@@ -114,6 +110,7 @@ public class PaymentStore: ObservableObject {
     
     Task {
       await fetchUserSession()
+      await fetchProbonoStatus()
       await requestElligibleVoucher()
       await requestPaymentMethods()
       await fetchCancelationReasons()
@@ -638,7 +635,7 @@ public class PaymentStore: ObservableObject {
   }
   
   public func isProbono() -> Bool {
-    return lawyerInfoViewModel.isProbono && idCardEntity.status == .ACTIVE
+    return lawyerInfoViewModel.isProbono
   }
   
   private func fetchUserSession() async {
@@ -720,9 +717,14 @@ public class PaymentStore: ObservableObject {
   }
   
   public func getTotalAmount() -> String {
+    return orderViewModel.totalAmount
+  }
+  
+  public func getPriceBottom() -> String {
     if isProbono() {
       return "Gratis"
     }
+    
     return orderViewModel.totalAmount
   }
   
@@ -894,6 +896,11 @@ public class PaymentStore: ObservableObject {
       .receive(on: RunLoop.main)
       .subscribe(on: RunLoop.main)
       .sink { state in
+        if self.isProbono() {
+          self.isPayButtonActive = true
+          return
+        }
+        
         self.isPayButtonActive = state
       }.store(in: &subscriptions)
     
@@ -920,7 +927,7 @@ public class PaymentStore: ObservableObject {
       .subscribe(on: RunLoop.main)
       .sink { value in
         if value <= 0 {
-          //          self.showReasonBottomSheet()
+//          self.showReasonBottomSheet()
         }
       }
       .store(in: &subscriptions)
