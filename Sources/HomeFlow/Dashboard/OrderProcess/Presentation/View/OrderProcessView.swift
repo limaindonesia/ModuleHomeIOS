@@ -40,10 +40,9 @@ public struct OrderProcessView: View {
             }
             .padding(.top, 16)
             
-            if store.orderServiceFilled {
-              orderServiceOption()
-                .padding(.horizontal, 16)
-            }
+            orderServiceOptions()
+              .padding(.horizontal, 16)
+            
             paymentDetail()
               .padding(.horizontal, 16)
             
@@ -83,7 +82,6 @@ public struct OrderProcessView: View {
         Task {
           await store.fetchUserSession()
           await store.fetchProbonoStatus()
-          await store.fetchOrderService()
         }
       }
       
@@ -114,18 +112,17 @@ public struct OrderProcessView: View {
   }
   
   @ViewBuilder
-  func orderServiceOption() -> some View {
+  func orderServiceOptions() -> some View {
     VStack(alignment: .leading, spacing: 12) {
       Text("Pilih Konsultasi")
         .foregroundColor(Color.darkTextColor)
         .titleLexend(size: 14)
       
-      ForEach(store.getOrderServiceArrayModel()) { item in
-        //MARK: some option maybe not use for now
+      ForEach(store.orderServiceViewModel, id: \.id) { item in
         ProcessOrderOptionView(
           isDiscount: item.isDiscount,
-          isSKTM: store.isProbono(),
-          isHaveQuotaSKTM: item.isHaveQuotaSKTM,
+          isSKTM: false,
+          isHaveQuotaSKTM: false,
           isKTPActive: item.isKTPActive,
           isSaving: item.isSaving,
           quotaSKTM: item.quotaSKTM,

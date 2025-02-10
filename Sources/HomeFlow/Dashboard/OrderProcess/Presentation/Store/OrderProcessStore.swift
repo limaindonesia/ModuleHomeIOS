@@ -40,6 +40,7 @@ public class OrderProcessStore: ObservableObject {
   @Published public var buttonActive: Bool = false
   @Published public var error: ErrorMessage = .init()
   @Published public var priceCategories: [PriceCategoryViewModel] = []
+  @Published public var orderServiceViewModel: [OrderServiceViewModel] = []
   
   public var priceCategoriesCopy: [PriceCategoryViewModel] = []
   private var treatmentEntities: [TreatmentEntity] = []
@@ -49,7 +50,6 @@ public class OrderProcessStore: ObservableObject {
   public var message: String = ""
   public var typeSelected: String = ""
   private var detailPriceAdvocate: DetailPriceAdvocate?
-  public var orderServiceViewModel: [OrderServiceViewModel] = []
   public var idCardEntity: IDCardEntity = .init()
   private var subscriptions = Set<AnyCancellable>()
   
@@ -117,6 +117,9 @@ public class OrderProcessStore: ObservableObject {
       } receiveValue: { [weak self] entity in
         guard let self = self else { return }
         idCardEntity = entity
+        Task {
+          await self.fetchOrderService()
+        }
       }.store(in: &subscriptions)
   }
   
@@ -171,15 +174,17 @@ public class OrderProcessStore: ObservableObject {
   @MainActor
   public func fetchOrderService() async {
     orderServiceEntities.removeAll()
+    orderServiceViewModel.removeAll()
     
     let orderServiceParamRequest = OrderServiceParamRequest(
       lawyerSkillPriceId: "\(detailPriceAdvocate?.lawyer_skill_price_id ?? 0)")
     
     do {
       orderServiceEntities = try await orderServiceRepository.fetchOrderService(
-        HeaderRequest(
-          token: userSessionData?.remoteSession.remoteToken),
-        orderServiceParamRequest)
+        HeaderRequest(token: userSessionData?.remoteSession.remoteToken),
+        orderServiceParamRequest
+      )
+      
       setOrderServiceArrayModel()
       
     } catch {
@@ -324,15 +329,16 @@ public class OrderProcessStore: ObservableObject {
   }
   
   public func setOrderServiceArrayModel() {
-    orderServiceFilled = true
+//    orderServiceFilled = true
+    
     for (index, item) in orderServiceEntities.enumerated() {
-      var price = CurrencyFormatter.toCurrency(NSNumber(value: item.price))
+      let price = CurrencyFormatter.toCurrency(NSNumber(value: item.price))
       let originalPrice = CurrencyFormatter.toCurrency(NSNumber(value: item.originalPrice))
       let priceSelect = Float(item.price)
       let durationSelect = Float(item.duration)
       let worthPriceMinuteFloat = Float(priceSelect/durationSelect).rounded(.up)
       let worthPriceMinuteResult = Int(worthPriceMinuteFloat)
-      var descPrice = "senilai \(worthPriceMinuteResult)/menit"
+      let descPrice = "senilai \(worthPriceMinuteResult)/menit"
       var isDiscount = true
       if item.price == item.originalPrice {
         isDiscount = false
@@ -354,10 +360,13 @@ public class OrderProcessStore: ObservableObject {
       }
       let discountInt = (item.originalPrice - item.price)
       let discount = "\(CurrencyFormatter.toCurrency(NSNumber(value: discountInt)))"
+      
       var isDisable = false
+      
       if item.status == "INACTIVE" {
         isDisable = true
       }
+      
       orderServiceViewModel.append(
         OrderServiceViewModel.init(
           id: index,

@@ -699,16 +699,26 @@ public class PaymentStore: ObservableObject {
   
   public func getPaymentDetails() -> [FeeViewModel] {
     var items: [FeeViewModel] = []
-    if let voucher = orderViewModel.voucher {
-      items.append(voucher)
-    }
     
-    if let discount = orderViewModel.discount {
-      items.append(discount)
+    if isProbono() {
+      items.append(
+        FeeViewModel(
+          id: orderViewModel.lawyerFee.id,
+          name: orderViewModel.lawyerFee.name,
+          amount: "Rp0"
+        )
+      )
+    } else {
+      if let voucher = orderViewModel.voucher {
+        items.append(voucher)
+      }
+      
+      if let discount = orderViewModel.discount {
+        items.append(discount)
+      }
+      items.append(orderViewModel.lawyerFee)
+      items.append(orderViewModel.adminFee)
     }
-    
-    items.append(orderViewModel.lawyerFee)
-    items.append(orderViewModel.adminFee)
     
     return items.sorted(by: {$0.id < $1.id})
   }

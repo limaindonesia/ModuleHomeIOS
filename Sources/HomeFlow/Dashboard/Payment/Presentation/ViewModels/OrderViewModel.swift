@@ -12,7 +12,7 @@ public class OrderViewModel {
 
   public let consultationID: Int
   public let expiredAt: Int
-  public let lawyerFee: FeeViewModel
+  public var lawyerFee: FeeViewModel
   public let adminFee: FeeViewModel
   public let discount: FeeViewModel?
   public let voucher: FeeViewModel?
@@ -81,7 +81,7 @@ public class OrderViewModel {
 public struct FeeViewModel: Identifiable {
   public var id: Int
   public let name: String
-  public let amount: String
+  public var amount: String
   public let showInfo: Bool
 
   public init() {

@@ -472,26 +472,24 @@ struct PaymentView: View {
       Text("Rincian Biaya")
         .titleLexend(size: 14)
       
-      if !store.isProbono() {
-        ForEach(store.getPaymentDetails()) { fee in
-          FeeRowView(
-            name: fee.name,
-            amount: fee.amount,
-            showInfo: fee.showInfo,
-            onTap: {
-              GLogger(
-                .info,
-                layer: "Presentation",
-                message: "did tap info"
-              )
-            }
-          )
-        }
-        
-        Divider()
-          .frame(height: 1)
+      ForEach(store.getPaymentDetails()) { fee in
+        FeeRowView(
+          name: fee.name,
+          amount: fee.amount,
+          showInfo: fee.showInfo,
+          onTap: {
+            GLogger(
+              .info,
+              layer: "Presentation",
+              message: "did tap info"
+            )
+          }
+        )
       }
       
+      Divider()
+        .frame(height: 1)
+ 
       HStack {
         Text("Total Biaya")
           .titleLexend(size: 16)
