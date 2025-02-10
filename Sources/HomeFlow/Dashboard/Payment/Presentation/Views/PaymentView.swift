@@ -65,6 +65,17 @@ struct PaymentView: View {
         )
         .padding(.horizontal, 16)
       }
+      .onAppear {
+        Task {
+          await store.fetchUserSession()
+          await store.fetchProbonoStatus()
+          await store.requestElligibleVoucher()
+          await store.requestPaymentMethods()
+          await store.fetchCancelationReasons()
+          await store.fetchTreatment()
+          await store.requestOrderByNumber()
+        }
+      }
       
       BottomSheetNewView(isPresented: $store.isPresentVoucherTnCBottomSheet) {
         VoucherTnCBottomSheetView(voucher: store.eligibleVoucherEntity) { voucher in
@@ -134,17 +145,6 @@ struct PaymentView: View {
           .frame(height: frame.height/2)
           .padding(.horizontal, 16)
         }
-      }
-      
-      if store.isLoading {
-        BlurView(style: .dark)
-        
-        LottieView {
-          LottieAnimation.named("perqara-loading", bundle: .module)
-        }
-        .looping()
-        .frame(width: 72, height: 72)
-        .padding(.bottom, 50)
       }
       
       BottomSheetView(isPresented: $store.isPresentWarningPaymentBottomSheet) {
@@ -472,23 +472,25 @@ struct PaymentView: View {
       Text("Rincian Biaya")
         .titleLexend(size: 14)
       
-      ForEach(store.getPaymentDetails()) { fee in
-        FeeRowView(
-          name: fee.name,
-          amount: fee.amount,
-          showInfo: fee.showInfo,
-          onTap: {
-            GLogger(
-              .info,
-              layer: "Presentation",
-              message: "did tap info"
-            )
-          }
-        )
+      if !store.isProbono() {
+        ForEach(store.getPaymentDetails()) { fee in
+          FeeRowView(
+            name: fee.name,
+            amount: fee.amount,
+            showInfo: fee.showInfo,
+            onTap: {
+              GLogger(
+                .info,
+                layer: "Presentation",
+                message: "did tap info"
+              )
+            }
+          )
+        }
+        
+        Divider()
+          .frame(height: 1)
       }
-      
-      Divider()
-        .frame(height: 1)
       
       HStack {
         Text("Total Biaya")

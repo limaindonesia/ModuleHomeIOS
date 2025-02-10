@@ -79,6 +79,13 @@ public struct OrderProcessView: View {
         )
         .padding(.horizontal, 16)
       }
+      .onAppear {
+        Task {
+          await store.fetchUserSession()
+          await store.fetchProbonoStatus()
+          await store.fetchOrderService()
+        }
+      }
       
       BottomSheetView(isPresented: $store.isPresentBottomSheet) {
         OrderInfoBottomSheetView(
@@ -100,17 +107,6 @@ public struct OrderProcessView: View {
         )
         .padding(.horizontal, -16)
         .frame(height: store.getHeightChangeBottomSheet())
-      }
-      
-      if store.isLoading {
-        BlurView(style: .dark)
-        
-        LottieView {
-          LottieAnimation.named("perqara-loading", bundle: .module)
-        }
-        .looping()
-        .frame(width: 72, height: 72)
-        .padding(.bottom, 50)
       }
       
     }

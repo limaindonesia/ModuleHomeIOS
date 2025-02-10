@@ -97,12 +97,6 @@ public class OrderProcessStore: ObservableObject {
     priceCategories = getPriceCategories()
     priceCategoriesCopy = priceCategories
     
-    Task {
-      await fetchUserSession()
-      await fetchProbonoStatus()
-      await fetchOrderService()
-    }
-    
     observer()
     
   }
@@ -110,7 +104,7 @@ public class OrderProcessStore: ObservableObject {
   //MARK: - API
   
   @MainActor
-  private func fetchProbonoStatus() async {
+  public func fetchProbonoStatus() async {
     probonoRepository
       .checkKTPStatus(headers: HeaderRequest(token: userSessionData?.remoteSession.remoteToken))
       .sink { result in
@@ -176,6 +170,8 @@ public class OrderProcessStore: ObservableObject {
   
   @MainActor
   public func fetchOrderService() async {
+    orderServiceEntities.removeAll()
+    
     let orderServiceParamRequest = OrderServiceParamRequest(
       lawyerSkillPriceId: "\(detailPriceAdvocate?.lawyer_skill_price_id ?? 0)")
     
@@ -199,7 +195,7 @@ public class OrderProcessStore: ObservableObject {
   
   public func getUnSelectedArray() -> [PriceCategoryViewModel] {
     var array: [PriceCategoryViewModel] = []
-    for (index, item) in priceCategories.enumerated() {
+    for (_, item) in priceCategories.enumerated() {
       array.append(PriceCategoryViewModel(
         id: item.id,
         lawyerSkillPriceId: item.lawyerSkillPriceId,
@@ -374,8 +370,8 @@ public class OrderProcessStore: ObservableObject {
           iconURL: item.iconURL,
           isDiscount: isDiscount,
           isSKTM: false,
-          isHaveQuotaSKTM: getUserSKTMData(),
-          quotaSKTM: getSKTMQuota(),
+          isHaveQuotaSKTM: false,
+          quotaSKTM: 0,
           isKTPActive: idCardEntity.status == .ACTIVE,
           isSaving: isSaving,
           isDisable: isDisable,
@@ -494,7 +490,9 @@ public class OrderProcessStore: ObservableObject {
     timeConsultation = "\(entity.duration) Menit"
   }
   
-  private func fetchUserSession() async {
+  //MARK: - Fetch Local
+  
+  public func fetchUserSession() async {
     do {
       userSessionData = try await userSessionDataSource.fetchData()
     } catch {
@@ -668,21 +666,21 @@ public class OrderProcessStore: ObservableObject {
         
       }.store(in: &subscriptions)
     
-    $orderServiceFilled
-      .dropFirst()
-      .receive(on: RunLoop.main)
-      .subscribe(on: RunLoop.main)
-      .sink { message in
-        print("$orderServiceFilled")
-      }.store(in: &subscriptions)
-    
-    $detailCostFilled
-      .dropFirst()
-      .receive(on: RunLoop.main)
-      .subscribe(on: RunLoop.main)
-      .sink { message in
-        print("$detailCostFilled")
-      }.store(in: &subscriptions)
+//    $orderServiceFilled
+//      .dropFirst()
+//      .receive(on: RunLoop.main)
+//      .subscribe(on: RunLoop.main)
+//      .sink { message in
+//        print("$orderServiceFilled")
+//      }.store(in: &subscriptions)
+//    
+//    $detailCostFilled
+//      .dropFirst()
+//      .receive(on: RunLoop.main)
+//      .subscribe(on: RunLoop.main)
+//      .sink { message in
+//        print("$detailCostFilled")
+//      }.store(in: &subscriptions)
     
     $issueText
       .dropFirst()

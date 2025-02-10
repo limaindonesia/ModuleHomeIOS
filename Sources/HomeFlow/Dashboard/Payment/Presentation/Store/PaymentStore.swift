@@ -108,16 +108,6 @@ public class PaymentStore: ObservableObject {
     self.dashboardResponder = dashboardResponder
     self.cancelationRepository = cancelationRepository
     
-    Task {
-      await fetchUserSession()
-      await fetchProbonoStatus()
-      await requestElligibleVoucher()
-      await requestPaymentMethods()
-      await fetchCancelationReasons()
-      await fetchTreatment()
-      await requestOrderByNumber()
-    }
-    
     observer()
     setupFirstDuration()
   }
@@ -125,7 +115,7 @@ public class PaymentStore: ObservableObject {
   //MARK: - Fetch API
   
   @MainActor
-  private func fetchProbonoStatus() async {
+  public func fetchProbonoStatus() async {
     probonoRepository
       .checkKTPStatus(headers: HeaderRequest(token: userSessionData?.remoteSession.remoteToken))
       .sink { result in
@@ -143,6 +133,8 @@ public class PaymentStore: ObservableObject {
   
   @MainActor
   public func requestElligibleVoucher() async {
+    elligibleVoucherEntities.removeAll()
+    
     do {
       let entities = try await paymentRepository.requestEligibleVoucher(
         headers: HeaderRequest(token: userSessionData?.remoteSession.remoteToken),
@@ -164,6 +156,8 @@ public class PaymentStore: ObservableObject {
   
   @MainActor
   public func requestPaymentMethods() async {
+    payments.removeAll()
+    
     do {
       guard let token = userSessionData?.remoteSession.remoteToken else {
         return
@@ -271,6 +265,8 @@ public class PaymentStore: ObservableObject {
   
   @MainActor
   public func fetchCancelationReasons() async {
+    reasons.removeAll()
+    
     guard let token = userSessionData?.remoteSession.remoteToken
     else { return }
     
@@ -338,7 +334,8 @@ public class PaymentStore: ObservableObject {
   }
   
   @MainActor
-  private func fetchTreatment() async {
+  public func fetchTreatment() async {
+    treatmentEntities.removeAll()
     do {
       treatmentEntities = try await treatmentRepository.fetchTreatments()
       getTimeConsultation(from: treatmentEntities)
@@ -638,7 +635,7 @@ public class PaymentStore: ObservableObject {
     return lawyerInfoViewModel.isProbono
   }
   
-  private func fetchUserSession() async {
+  public func fetchUserSession() async {
     do {
       userSessionData = try await userSessionDataSource.fetchData()
     } catch {
