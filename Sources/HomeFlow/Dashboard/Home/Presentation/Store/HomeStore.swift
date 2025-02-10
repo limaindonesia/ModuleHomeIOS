@@ -893,7 +893,8 @@ public class HomeStore: ObservableObject {
       roomkey: userCases.room_key ?? "",
       consultId: userCases.booking?.consultation_id ?? 0,
       status: findOnProcessUserCassesFailed(userCase: userCases),
-      paymentCategory: .VA
+      paymentCategory: .VA,
+      isProbono: false
     )
   }
   

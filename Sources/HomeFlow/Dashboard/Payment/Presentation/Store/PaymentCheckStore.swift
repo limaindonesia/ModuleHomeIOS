@@ -399,7 +399,8 @@ public class PaymentCheckStore: ObservableObject {
       waitingRoomNavigator.navigateToWaitingRoom(
         userCase: userCase,
         roomKey: roomKey,
-        paymentCategory: paymentCategory
+        paymentCategory: paymentCategory,
+        isProbono: lawyerInfo.isProbono
       )
       
       return

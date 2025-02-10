@@ -774,7 +774,8 @@ public class PaymentStore: ObservableObject {
         roomkey: paymentEntity.roomKey,
         consultId: userCase.booking?.consultation_id ?? 0,
         status: false,
-        paymentCategory: selectedPaymentCategory
+        paymentCategory: selectedPaymentCategory,
+        isProbono: isProbono()
       )
       
     }
