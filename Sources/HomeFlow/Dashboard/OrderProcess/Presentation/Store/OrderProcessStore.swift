@@ -194,6 +194,7 @@ public class OrderProcessStore: ObservableObject {
   }
   
   //MARK: - Other function
+  
   public func isOrderProbono() -> Bool {
     return typeSelected == "PROBONO"
   }
@@ -329,66 +330,128 @@ public class OrderProcessStore: ObservableObject {
   }
   
   public func setOrderServiceArrayModel() {
-//    orderServiceFilled = true
-    
     for (index, item) in orderServiceEntities.enumerated() {
-      let price = CurrencyFormatter.toCurrency(NSNumber(value: item.price))
-      let originalPrice = CurrencyFormatter.toCurrency(NSNumber(value: item.originalPrice))
-      let priceSelect = Float(item.price)
-      let durationSelect = Float(item.duration)
-      let worthPriceMinuteFloat = Float(priceSelect/durationSelect).rounded(.up)
-      let worthPriceMinuteResult = Int(worthPriceMinuteFloat)
-      let descPrice = "senilai \(worthPriceMinuteResult)/menit"
-      var isDiscount = true
-      if item.price == item.originalPrice {
-        isDiscount = false
-      }
-//      var isSKTM = false
-//      if item.type == "PROBONO" {
-//        isSKTM = true
-//        if getSKTMQuota() > 0 {
-//          price = "GRATIS"
-//          descPrice = "kuota tersedia: \(getSKTMQuota())"
-//        } else {
-//          price = "GRATIS"
-//          descPrice = "S&K Berlaku"
-//        }
-//      }
-      var isSaving = false
-      if item.type == "REGULAR_AUDIO_VIDEO" {
-        isSaving = true
-      }
-      let discountInt = (item.originalPrice - item.price)
-      let discount = "\(CurrencyFormatter.toCurrency(NSNumber(value: discountInt)))"
       
-      var isDisable = false
-      
-      if item.status == "INACTIVE" {
-        isDisable = true
-      }
-      
-      orderServiceViewModel.append(
-        OrderServiceViewModel.init(
-          id: index,
-          name: item.name,
-          type: item.type,
-          status: item.status,
-          duration: "\(item.duration) Menit",
-          price: price,
-          originalPrice: originalPrice,
-          iconURL: item.iconURL,
-          isDiscount: isDiscount,
-          isSKTM: false,
-          isHaveQuotaSKTM: false,
-          quotaSKTM: 0,
-          isKTPActive: idCardEntity.status == .ACTIVE,
-          isSaving: isSaving,
-          isDisable: isDisable,
-          isSelected: false,
-          descPrice: descPrice,
-          discountPrice: discount
+      if idCardEntity.status == .USED {
+        if item.type != "PROBONO" {
+          let price = CurrencyFormatter.toCurrency(NSNumber(value: item.price))
+          let originalPrice = CurrencyFormatter.toCurrency(NSNumber(value: item.originalPrice))
+          let priceSelect = Float(item.price)
+          let durationSelect = Float(item.duration)
+          let worthPriceMinuteFloat = Float(priceSelect/durationSelect).rounded(.up)
+          let worthPriceMinuteResult = Int(worthPriceMinuteFloat)
+          let descPrice = "senilai \(worthPriceMinuteResult)/menit"
+          var isDiscount = true
+          if item.price == item.originalPrice {
+            isDiscount = false
+          }
+    //      var isSKTM = false
+    //      if item.type == "PROBONO" {
+    //        isSKTM = true
+    //        if getSKTMQuota() > 0 {
+    //          price = "GRATIS"
+    //          descPrice = "kuota tersedia: \(getSKTMQuota())"
+    //        } else {
+    //          price = "GRATIS"
+    //          descPrice = "S&K Berlaku"
+    //        }
+    //      }
+          var isSaving = false
+          if item.type == "REGULAR_AUDIO_VIDEO" {
+            isSaving = true
+          }
+          let discountInt = (item.originalPrice - item.price)
+          let discount = "\(CurrencyFormatter.toCurrency(NSNumber(value: discountInt)))"
+          
+          var isDisable = false
+          
+          if item.status == "INACTIVE" {
+            isDisable = true
+          }
+          
+          orderServiceViewModel.append(
+            OrderServiceViewModel.init(
+              id: index,
+              name: item.name,
+              type: item.type,
+              status: item.status,
+              duration: "\(item.duration) Menit",
+              price: price,
+              originalPrice: originalPrice,
+              iconURL: item.iconURL,
+              isDiscount: isDiscount,
+              isSKTM: false,
+              isHaveQuotaSKTM: false,
+              quotaSKTM: 0,
+              isKTPActive: idCardEntity.status == .ACTIVE,
+              isSaving: isSaving,
+              isDisable: isDisable,
+              isSelected: false,
+              descPrice: descPrice,
+              discountPrice: discount
+            )
+          )
+        }
+      } else {
+        let price = CurrencyFormatter.toCurrency(NSNumber(value: item.price))
+        let originalPrice = CurrencyFormatter.toCurrency(NSNumber(value: item.originalPrice))
+        let priceSelect = Float(item.price)
+        let durationSelect = Float(item.duration)
+        let worthPriceMinuteFloat = Float(priceSelect/durationSelect).rounded(.up)
+        let worthPriceMinuteResult = Int(worthPriceMinuteFloat)
+        let descPrice = "senilai \(worthPriceMinuteResult)/menit"
+        var isDiscount = true
+        if item.price == item.originalPrice {
+          isDiscount = false
+        }
+  //      var isSKTM = false
+  //      if item.type == "PROBONO" {
+  //        isSKTM = true
+  //        if getSKTMQuota() > 0 {
+  //          price = "GRATIS"
+  //          descPrice = "kuota tersedia: \(getSKTMQuota())"
+  //        } else {
+  //          price = "GRATIS"
+  //          descPrice = "S&K Berlaku"
+  //        }
+  //      }
+        var isSaving = false
+        if item.type == "REGULAR_AUDIO_VIDEO" {
+          isSaving = true
+        }
+        let discountInt = (item.originalPrice - item.price)
+        let discount = "\(CurrencyFormatter.toCurrency(NSNumber(value: discountInt)))"
+        
+        var isDisable = false
+        
+        if item.status == "INACTIVE" {
+          isDisable = true
+        }
+        
+        orderServiceViewModel.append(
+          OrderServiceViewModel.init(
+            id: index,
+            name: item.name,
+            type: item.type,
+            status: item.status,
+            duration: "\(item.duration) Menit",
+            price: price,
+            originalPrice: originalPrice,
+            iconURL: item.iconURL,
+            isDiscount: isDiscount,
+            isSKTM: false,
+            isHaveQuotaSKTM: false,
+            quotaSKTM: 0,
+            isKTPActive: idCardEntity.status == .ACTIVE,
+            isSaving: isSaving,
+            isDisable: isDisable,
+            isSelected: false,
+            descPrice: descPrice,
+            discountPrice: discount
+          )
         )
-      )
+      }
+      
     }
     
   }

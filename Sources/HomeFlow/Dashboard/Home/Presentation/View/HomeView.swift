@@ -1469,7 +1469,7 @@ public struct HomeView: View {
         Color.black.opacity(0.5)
         
         PromotionBannerView(imageURL: imageURL){
-          store.navigateToDetailSKTM()
+          store.navigateToProbonoService()
         } onTapConsult: {
           store.navigateToAdvocateList()
         } onTapBlog: {
