@@ -530,7 +530,7 @@ public struct HomeView: View {
         lawyersName: item.lawyer?.getName() ?? "",
         issueType: item.skill?.name ?? "",
         onTap: {
-          store.navigateToWaitingRoom()
+          store.navigateToWaitingRoom(isProbono: item.service_type == "PROBONO")
         }
       )
       
@@ -562,7 +562,7 @@ public struct HomeView: View {
         issueType: item.skill?.name ?? "",
         buttonText: item.getButtonText(),
         onTap: {
-          store.navigateToWaitingRoom()
+          store.navigateToWaitingRoom(isProbono: item.service_type == "PROBONO")
         }
       )
       
