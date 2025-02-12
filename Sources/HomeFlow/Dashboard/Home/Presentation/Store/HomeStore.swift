@@ -381,6 +381,7 @@ public class HomeStore: ObservableObject {
       )
       
       ongoingConsultation = !arrayOfuserCases.isEmpty
+      Prefs.saveConsultStatus(isConsult: !arrayOfuserCases.isEmpty)
       
       guard !arrayOfuserCases.isEmpty else { return }
       userCases = arrayOfuserCases[0]
