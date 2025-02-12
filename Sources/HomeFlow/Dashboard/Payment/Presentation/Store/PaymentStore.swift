@@ -393,12 +393,14 @@ public class PaymentStore: ObservableObject {
       lawyerInfoViewModel.duration = firstDuration
       
       //modify array of vouchers
-      let index = elligibleVoucherEntities.firstIndex {
-        return $0.code == voucherViewModel.code
-      } ?? 0
       
-      elligibleVoucherEntities[index].isUsed = false
-      
+      if !elligibleVoucherEntities.isEmpty {
+        let index = elligibleVoucherEntities.firstIndex {
+          return $0.code == voucherViewModel.code
+        } ?? 0
+        
+        elligibleVoucherEntities[index].isUsed = false
+      }
       
     } catch {
       guard let error = error as? ErrorMessage else {

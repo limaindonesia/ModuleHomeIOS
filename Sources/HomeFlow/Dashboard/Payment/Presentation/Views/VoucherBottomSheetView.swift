@@ -130,8 +130,11 @@ struct VoucherBottomSheetView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, 16)
       
-      voucherListView()
-      
+      if vouchers.isEmpty {
+        voucherEmptyView()
+      } else {
+        voucherListView()
+      }
     }
   }
   
@@ -161,6 +164,7 @@ struct VoucherBottomSheetView: View {
       Text("Belum ada promo berlangsung")
         .captionLexend(size: 12)
     }
+    .padding(.bottom, 24)
   }
   
   @ViewBuilder
