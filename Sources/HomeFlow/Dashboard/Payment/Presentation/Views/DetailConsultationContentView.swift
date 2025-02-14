@@ -43,7 +43,7 @@ struct DetailConsultationContentView: View {
       ScrollView(showsIndicators: true) {
         HStack(spacing: 16) {
           HStack(spacing: 16) {
-            Text("Kategory")
+            Text("Kategori")
               .foregroundColor(Color.gray700)
               .captionLexend(size: 14)
             

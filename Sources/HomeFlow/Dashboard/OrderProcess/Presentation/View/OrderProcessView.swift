@@ -40,10 +40,9 @@ public struct OrderProcessView: View {
             }
             .padding(.top, 16)
             
-            if store.orderServiceFilled {
-              orderServiceOption()
-                .padding(.horizontal, 16)
-            }
+            orderServiceOptions()
+              .padding(.horizontal, 16)
+            
             paymentDetail()
               .padding(.horizontal, 16)
             
@@ -79,6 +78,12 @@ public struct OrderProcessView: View {
         )
         .padding(.horizontal, 16)
       }
+      .onAppear {
+        Task {
+          await store.fetchUserSession()
+          await store.fetchProbonoStatus()
+        }
+      }
       
       BottomSheetView(isPresented: $store.isPresentBottomSheet) {
         OrderInfoBottomSheetView(
@@ -102,34 +107,22 @@ public struct OrderProcessView: View {
         .frame(height: store.getHeightChangeBottomSheet())
       }
       
-      if store.isLoading {
-        BlurView(style: .dark)
-        
-        LottieView {
-          LottieAnimation.named("perqara-loading", bundle: .module)
-        }
-        .looping()
-        .frame(width: 72, height: 72)
-        .padding(.bottom, 50)
-      }
-      
     }
     .ignoresSafeArea(.keyboard)
   }
   
   @ViewBuilder
-  func orderServiceOption() -> some View {
+  func orderServiceOptions() -> some View {
     VStack(alignment: .leading, spacing: 12) {
       Text("Pilih Konsultasi")
         .foregroundColor(Color.darkTextColor)
         .titleLexend(size: 14)
       
-      ForEach(store.getOrderServiceArrayModel()) { item in
-        //MARK: some option maybe not use for now
+      ForEach(store.orderServiceViewModel, id: \.id) { item in
         ProcessOrderOptionView(
           isDiscount: item.isDiscount,
-          isSKTM: store.isProbono(),
-          isHaveQuotaSKTM: item.isHaveQuotaSKTM,
+          isSKTM: false,
+          isHaveQuotaSKTM: false,
           isKTPActive: item.isKTPActive,
           isSaving: item.isSaving,
           quotaSKTM: item.quotaSKTM,

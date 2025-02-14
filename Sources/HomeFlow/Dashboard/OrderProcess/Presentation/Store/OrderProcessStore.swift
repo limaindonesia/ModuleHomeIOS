@@ -40,6 +40,7 @@ public class OrderProcessStore: ObservableObject {
   @Published public var buttonActive: Bool = false
   @Published public var error: ErrorMessage = .init()
   @Published public var priceCategories: [PriceCategoryViewModel] = []
+  @Published public var orderServiceViewModel: [OrderServiceViewModel] = []
   
   public var priceCategoriesCopy: [PriceCategoryViewModel] = []
   private var treatmentEntities: [TreatmentEntity] = []
@@ -49,7 +50,6 @@ public class OrderProcessStore: ObservableObject {
   public var message: String = ""
   public var typeSelected: String = ""
   private var detailPriceAdvocate: DetailPriceAdvocate?
-  public var orderServiceViewModel: [OrderServiceViewModel] = []
   public var idCardEntity: IDCardEntity = .init()
   private var subscriptions = Set<AnyCancellable>()
   
@@ -97,12 +97,6 @@ public class OrderProcessStore: ObservableObject {
     priceCategories = getPriceCategories()
     priceCategoriesCopy = priceCategories
     
-    Task {
-      await fetchUserSession()
-      await fetchProbonoStatus()
-      await fetchOrderService()
-    }
-    
     observer()
     
   }
@@ -110,7 +104,7 @@ public class OrderProcessStore: ObservableObject {
   //MARK: - API
   
   @MainActor
-  private func fetchProbonoStatus() async {
+  public func fetchProbonoStatus() async {
     probonoRepository
       .checkKTPStatus(headers: HeaderRequest(token: userSessionData?.remoteSession.remoteToken))
       .sink { result in
@@ -123,6 +117,9 @@ public class OrderProcessStore: ObservableObject {
       } receiveValue: { [weak self] entity in
         guard let self = self else { return }
         idCardEntity = entity
+        Task {
+          await self.fetchOrderService()
+        }
       }.store(in: &subscriptions)
   }
   
@@ -176,14 +173,18 @@ public class OrderProcessStore: ObservableObject {
   
   @MainActor
   public func fetchOrderService() async {
+    orderServiceEntities.removeAll()
+    orderServiceViewModel.removeAll()
+    
     let orderServiceParamRequest = OrderServiceParamRequest(
       lawyerSkillPriceId: "\(detailPriceAdvocate?.lawyer_skill_price_id ?? 0)")
     
     do {
       orderServiceEntities = try await orderServiceRepository.fetchOrderService(
-        HeaderRequest(
-          token: userSessionData?.remoteSession.remoteToken),
-        orderServiceParamRequest)
+        HeaderRequest(token: userSessionData?.remoteSession.remoteToken),
+        orderServiceParamRequest
+      )
+      
       setOrderServiceArrayModel()
       
     } catch {
@@ -193,13 +194,14 @@ public class OrderProcessStore: ObservableObject {
   }
   
   //MARK: - Other function
+  
   public func isOrderProbono() -> Bool {
     return typeSelected == "PROBONO"
   }
   
   public func getUnSelectedArray() -> [PriceCategoryViewModel] {
     var array: [PriceCategoryViewModel] = []
-    for (index, item) in priceCategories.enumerated() {
+    for (_, item) in priceCategories.enumerated() {
       array.append(PriceCategoryViewModel(
         id: item.id,
         lawyerSkillPriceId: item.lawyerSkillPriceId,
@@ -328,62 +330,128 @@ public class OrderProcessStore: ObservableObject {
   }
   
   public func setOrderServiceArrayModel() {
-    orderServiceFilled = true
     for (index, item) in orderServiceEntities.enumerated() {
-      var price = CurrencyFormatter.toCurrency(NSNumber(value: item.price))
-      let originalPrice = CurrencyFormatter.toCurrency(NSNumber(value: item.originalPrice))
-      let priceSelect = Float(item.price)
-      let durationSelect = Float(item.duration)
-      let worthPriceMinuteFloat = Float(priceSelect/durationSelect).rounded(.up)
-      let worthPriceMinuteResult = Int(worthPriceMinuteFloat)
-      var descPrice = "senilai \(worthPriceMinuteResult)/menit"
-      var isDiscount = true
-      if item.price == item.originalPrice {
-        isDiscount = false
-      }
-//      var isSKTM = false
-//      if item.type == "PROBONO" {
-//        isSKTM = true
-//        if getSKTMQuota() > 0 {
-//          price = "GRATIS"
-//          descPrice = "kuota tersedia: \(getSKTMQuota())"
-//        } else {
-//          price = "GRATIS"
-//          descPrice = "S&K Berlaku"
-//        }
-//      }
-      var isSaving = false
-      if item.type == "REGULAR_AUDIO_VIDEO" {
-        isSaving = true
-      }
-      let discountInt = (item.originalPrice - item.price)
-      let discount = "\(CurrencyFormatter.toCurrency(NSNumber(value: discountInt)))"
-      var isDisable = false
-      if item.status == "INACTIVE" {
-        isDisable = true
-      }
-      orderServiceViewModel.append(
-        OrderServiceViewModel.init(
-          id: index,
-          name: item.name,
-          type: item.type,
-          status: item.status,
-          duration: "\(item.duration) Menit",
-          price: price,
-          originalPrice: originalPrice,
-          iconURL: item.iconURL,
-          isDiscount: isDiscount,
-          isSKTM: false,
-          isHaveQuotaSKTM: getUserSKTMData(),
-          quotaSKTM: getSKTMQuota(),
-          isKTPActive: idCardEntity.status == .ACTIVE,
-          isSaving: isSaving,
-          isDisable: isDisable,
-          isSelected: false,
-          descPrice: descPrice,
-          discountPrice: discount
+      
+      if idCardEntity.status == .USED {
+        if item.type != "PROBONO" {
+          let price = CurrencyFormatter.toCurrency(NSNumber(value: item.price))
+          let originalPrice = CurrencyFormatter.toCurrency(NSNumber(value: item.originalPrice))
+          let priceSelect = Float(item.price)
+          let durationSelect = Float(item.duration)
+          let worthPriceMinuteFloat = Float(priceSelect/durationSelect).rounded(.up)
+          let worthPriceMinuteResult = Int(worthPriceMinuteFloat)
+          let descPrice = "senilai \(worthPriceMinuteResult)/menit"
+          var isDiscount = true
+          if item.price == item.originalPrice {
+            isDiscount = false
+          }
+    //      var isSKTM = false
+    //      if item.type == "PROBONO" {
+    //        isSKTM = true
+    //        if getSKTMQuota() > 0 {
+    //          price = "GRATIS"
+    //          descPrice = "kuota tersedia: \(getSKTMQuota())"
+    //        } else {
+    //          price = "GRATIS"
+    //          descPrice = "S&K Berlaku"
+    //        }
+    //      }
+          var isSaving = false
+          if item.type == "REGULAR_AUDIO_VIDEO" {
+            isSaving = true
+          }
+          let discountInt = (item.originalPrice - item.price)
+          let discount = "\(CurrencyFormatter.toCurrency(NSNumber(value: discountInt)))"
+          
+          var isDisable = false
+          
+          if item.status == "INACTIVE" {
+            isDisable = true
+          }
+          
+          orderServiceViewModel.append(
+            OrderServiceViewModel.init(
+              id: index,
+              name: item.name,
+              type: item.type,
+              status: item.status,
+              duration: "\(item.duration) Menit",
+              price: price,
+              originalPrice: originalPrice,
+              iconURL: item.iconURL,
+              isDiscount: isDiscount,
+              isSKTM: false,
+              isHaveQuotaSKTM: false,
+              quotaSKTM: 0,
+              isKTPActive: idCardEntity.status == .ACTIVE,
+              isSaving: isSaving,
+              isDisable: isDisable,
+              isSelected: false,
+              descPrice: descPrice,
+              discountPrice: discount
+            )
+          )
+        }
+      } else {
+        let price = CurrencyFormatter.toCurrency(NSNumber(value: item.price))
+        let originalPrice = CurrencyFormatter.toCurrency(NSNumber(value: item.originalPrice))
+        let priceSelect = Float(item.price)
+        let durationSelect = Float(item.duration)
+        let worthPriceMinuteFloat = Float(priceSelect/durationSelect).rounded(.up)
+        let worthPriceMinuteResult = Int(worthPriceMinuteFloat)
+        let descPrice = "senilai \(worthPriceMinuteResult)/menit"
+        var isDiscount = true
+        if item.price == item.originalPrice {
+          isDiscount = false
+        }
+  //      var isSKTM = false
+  //      if item.type == "PROBONO" {
+  //        isSKTM = true
+  //        if getSKTMQuota() > 0 {
+  //          price = "GRATIS"
+  //          descPrice = "kuota tersedia: \(getSKTMQuota())"
+  //        } else {
+  //          price = "GRATIS"
+  //          descPrice = "S&K Berlaku"
+  //        }
+  //      }
+        var isSaving = false
+        if item.type == "REGULAR_AUDIO_VIDEO" {
+          isSaving = true
+        }
+        let discountInt = (item.originalPrice - item.price)
+        let discount = "\(CurrencyFormatter.toCurrency(NSNumber(value: discountInt)))"
+        
+        var isDisable = false
+        
+        if item.status == "INACTIVE" {
+          isDisable = true
+        }
+        
+        orderServiceViewModel.append(
+          OrderServiceViewModel.init(
+            id: index,
+            name: item.name,
+            type: item.type,
+            status: item.status,
+            duration: "\(item.duration) Menit",
+            price: price,
+            originalPrice: originalPrice,
+            iconURL: item.iconURL,
+            isDiscount: isDiscount,
+            isSKTM: false,
+            isHaveQuotaSKTM: false,
+            quotaSKTM: 0,
+            isKTPActive: idCardEntity.status == .ACTIVE,
+            isSaving: isSaving,
+            isDisable: isDisable,
+            isSelected: false,
+            descPrice: descPrice,
+            discountPrice: discount
+          )
         )
-      )
+      }
+      
     }
     
   }
@@ -494,7 +562,9 @@ public class OrderProcessStore: ObservableObject {
     timeConsultation = "\(entity.duration) Menit"
   }
   
-  private func fetchUserSession() async {
+  //MARK: - Fetch Local
+  
+  public func fetchUserSession() async {
     do {
       userSessionData = try await userSessionDataSource.fetchData()
     } catch {
@@ -668,21 +738,21 @@ public class OrderProcessStore: ObservableObject {
         
       }.store(in: &subscriptions)
     
-    $orderServiceFilled
-      .dropFirst()
-      .receive(on: RunLoop.main)
-      .subscribe(on: RunLoop.main)
-      .sink { message in
-        print("$orderServiceFilled")
-      }.store(in: &subscriptions)
-    
-    $detailCostFilled
-      .dropFirst()
-      .receive(on: RunLoop.main)
-      .subscribe(on: RunLoop.main)
-      .sink { message in
-        print("$detailCostFilled")
-      }.store(in: &subscriptions)
+//    $orderServiceFilled
+//      .dropFirst()
+//      .receive(on: RunLoop.main)
+//      .subscribe(on: RunLoop.main)
+//      .sink { message in
+//        print("$orderServiceFilled")
+//      }.store(in: &subscriptions)
+//    
+//    $detailCostFilled
+//      .dropFirst()
+//      .receive(on: RunLoop.main)
+//      .subscribe(on: RunLoop.main)
+//      .sink { message in
+//        print("$detailCostFilled")
+//      }.store(in: &subscriptions)
     
     $issueText
       .dropFirst()

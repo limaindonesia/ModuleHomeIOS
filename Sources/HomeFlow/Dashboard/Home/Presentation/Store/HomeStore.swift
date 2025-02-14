@@ -381,6 +381,7 @@ public class HomeStore: ObservableObject {
       )
       
       ongoingConsultation = !arrayOfuserCases.isEmpty
+      Prefs.saveConsultStatus(isConsult: !arrayOfuserCases.isEmpty)
       
       guard !arrayOfuserCases.isEmpty else { return }
       userCases = arrayOfuserCases[0]
@@ -890,13 +891,14 @@ public class HomeStore: ObservableObject {
     mainTabBarResponder.gotoProfile()
   }
   
-  public func navigateToWaitingRoom() {
+  public func navigateToWaitingRoom(isProbono: Bool) {
     ongoingNavigator.navigateToWaitingRoom(
       userCases,
       roomkey: userCases.room_key ?? "",
       consultId: userCases.booking?.consultation_id ?? 0,
       status: findOnProcessUserCassesFailed(userCase: userCases),
-      paymentCategory: .VA
+      paymentCategory: .VA,
+      isProbono: isProbono
     )
   }
   
