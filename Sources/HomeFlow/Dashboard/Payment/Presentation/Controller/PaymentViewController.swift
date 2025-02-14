@@ -164,13 +164,6 @@ public class PaymentViewController: BaseViewController, SuccessViewDelegate {
   
   private func observeStore() {
     
-    showSnackbar(
-      with: store.message,
-      state: store.showSnackBar,
-      color: UIColor.success050,
-      textColor: UIColor.successColor
-    )
-    
     store.$isLoading
       .dropFirst()
       .removeDuplicates()

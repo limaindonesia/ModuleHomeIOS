@@ -77,8 +77,14 @@ struct PaymentView: View {
         }
       }
       
-      BottomSheetNewView(isPresented: $store.isPresentVoucherTnCBottomSheet) {
-        VoucherTnCBottomSheetView(voucher: store.eligibleVoucherEntity) { voucher in
+      BottomSheetNewView(
+        isPresented: $store.isPresentVoucherTnCBottomSheet,
+        constantHeight: 400
+      ) {
+        VoucherTnCBottomSheetView(
+          voucher: store.eligibleVoucherEntity,
+          constantHeight: 250
+        ) { voucher in
           Task {
             store.eligibleVoucherEntity = voucher
             store.updateVoucherArrays()
@@ -135,16 +141,14 @@ struct PaymentView: View {
         }
       }
       
-      GeometryReader { proxy in
-        let frame = proxy.frame(in: .local)
-        
-        BottomSheetView(isPresented: $store.isPresentTncBottomSheet) {
-          VStack {
-            VoucherTNCView(text: store.getTNCVoucher())
-          }
-          .frame(height: frame.height/2)
-          .padding(.horizontal, 16)
-        }
+      BottomSheetNewView(
+        isPresented: $store.isPresentTncBottomSheet,
+        constantHeight: 400
+      ) {
+        TNCView(
+          htmlText: store.eligibleVoucherEntity.getHTMLText(),
+          constantHeight: 250
+        )
       }
       
       BottomSheetView(isPresented: $store.isPresentWarningPaymentBottomSheet) {
@@ -202,9 +206,45 @@ struct PaymentView: View {
           desc: store.getDetailIssueName()
         )
       } onDismissed: {
+        
       }
       
+      if store.showSnackBar {
+        GeometryReader { proxy in
+          let frame = proxy.frame(in: .local)
+          
+          HStack {
+            Image("check-circle", bundle: .module)
+            Text("Berhasil mendapatkan promo")
+              .foregroundStyle(Color.success900)
+              .captionLexend(size: 14)
+            Button {
+              withAnimation(.easeInOut(duration: 0.3)) {
+                store.showSnackBar = false
+              }
+            } label: {
+              Image("ic_close", bundle: .module)
+            }
+          }
+          .padding(.all, 8)
+          .background(Color.success050)
+          .clipShape(RoundedRectangle(cornerRadius: 8))
+          .overlay {
+            RoundedRectangle(cornerRadius: 8).stroke(Color.success200)
+          }
+          .position(x: frame.midX, y: frame.minY + 30)
+          .onAppear {
+            Task {
+              try? await Task.sleep(nanoseconds: 3_000_000_000)
+              withAnimation(.easeInOut(duration: 0.3)) {
+                store.showSnackBar = false
+              }
+            }
+          }
+        }
+      }
     }
+    .animation(.easeInOut(duration: 0.3), value: store.showSnackBar) // Animate based on showSnackBar
     
   }
   
@@ -489,7 +529,7 @@ struct PaymentView: View {
       
       Divider()
         .frame(height: 1)
- 
+      
       HStack {
         Text("Total Biaya")
           .titleLexend(size: 16)

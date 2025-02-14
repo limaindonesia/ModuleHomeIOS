@@ -12,16 +12,19 @@ import AprodhitKit
 struct VoucherTnCBottomSheetView: View {
   
   @State var contentHeight: CGFloat = 0
+  let constantHeight: CGFloat?
   
   public let voucher: EligibleVoucherEntity
   public var onTapUsed: (EligibleVoucherEntity) -> Void
   
   init(
     voucher: EligibleVoucherEntity,
+    constantHeight: CGFloat? = nil,
     onTapUsed: @escaping (EligibleVoucherEntity) -> Void
   ) {
     self.voucher = voucher
     self.onTapUsed = onTapUsed
+    self.constantHeight = constantHeight
   }
   
   var body: some View {
@@ -30,11 +33,19 @@ struct VoucherTnCBottomSheetView: View {
         .titleLexend(size: 16)
         .padding(.top, 16)
       
-      HTMLWebView(
-        htmlContent: voucher.tnc,
-        contentHeight: $contentHeight
-      )
-      .frame(height: contentHeight)
+      if let constantHeight = constantHeight {
+        HTMLWebView(
+          htmlContent: voucher.getHTMLText(),
+          contentHeight: .constant(constantHeight)
+        )
+        .frame(height: constantHeight)
+      } else {
+        HTMLWebView(
+          htmlContent: voucher.getHTMLText(),
+          contentHeight: $contentHeight
+        )
+        .frame(height: contentHeight)
+      }
       
       HStack {
         Image("ticket-discount", bundle: .module)

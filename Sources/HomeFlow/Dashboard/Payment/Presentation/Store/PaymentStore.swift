@@ -49,6 +49,7 @@ public class PaymentStore: ObservableObject {
   @Published var isPayButtonActive: Bool = false
   @Published var voucherCount: Int = 0
   @Published public var elligibleVoucherEntities: [EligibleVoucherEntity] = []
+  @Published public var showSnackBar: Bool = false
   
   public var paymentTimeRemaining: CurrentValueSubject<TimeInterval, Never> = .init(0)
   public var message = CurrentValueSubject<String, Never>("")
@@ -65,7 +66,6 @@ public class PaymentStore: ObservableObject {
   public var idCardEntity: IDCardEntity = .init()
   public var voucherTnC: String = ""
   public var eligibleVoucherEntity: EligibleVoucherEntity = .init()
-  public var showSnackBar = PassthroughSubject<Bool, Never>()
   
   private var subscriptions = Set<AnyCancellable>()
   
@@ -362,8 +362,7 @@ public class PaymentStore: ObservableObject {
       
       viewModel = VoucherEntity.mapTo(entity)
       lawyerInfoViewModel.duration = "\(viewModel.duration) Menit"
-      showSnackBar.send(true)
-      message.send("Berhasil mendapatkan Promo")
+      showSnackBar = true
       activateButton = false
       
     } catch {
@@ -526,6 +525,7 @@ public class PaymentStore: ObservableObject {
         isUsed: false
       )
       updateVoucherArrays()
+      showSnackBar = true
     } else{
       voucherFilled = false
       voucherCode = ""

@@ -1,9 +1,7 @@
 //
 //  ContentWebView.swift
-//  EMtrade
 //
 //  Created by Ilham Hadi Prabawa on 23/03/22.
-//  Copyright © 2022 Emtrade. All rights reserved.
 //
 
 import UIKit
@@ -148,7 +146,7 @@ public class ContentWebView: UIView {
             </html>
       """
     
-    webView.loadHTMLString(htmlCode, baseURL: nil)
+    webView.loadHTMLString(htmlText, baseURL: nil)
   }
   
   private func setupApprovedView() {
