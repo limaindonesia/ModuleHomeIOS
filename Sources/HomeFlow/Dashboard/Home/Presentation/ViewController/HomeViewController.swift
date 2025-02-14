@@ -62,6 +62,10 @@ public class HomeViewController: NiblessViewController {
     view.backgroundColor = .white
     
     observeStore()
+    
+    NotificationCenter.default.addObserver(self, selector: #selector(self.deeplinkDetailLawyer(_:)), name: NSNotification.Name(rawValue: "deeplinkDetailLawyer"), object: nil)
+    
+    NotificationCenter.default.addObserver(self, selector: #selector(self.deeplinkRefund(_:)), name: NSNotification.Name(rawValue: "deeplinkRefund"), object: nil)
   }
 
   public override func viewDidLayoutSubviews() {
@@ -76,6 +80,22 @@ public class HomeViewController: NiblessViewController {
 
   }
 
+  @objc func deeplinkDetailLawyer(_ notification: NSNotification) {
+      if let name = notification.userInfo?["name"] as? String {
+        self.dismiss(animated: false)
+        store.navigateToSearch(with: name, isFromDeeplink: true)
+      }
+  }
+  
+  @objc func deeplinkRefund(_ notification: NSNotification) {
+      if let name = notification.userInfo?["idConsultation"] as? Int {
+        self.store.navigateToRefundForm()
+        self.releaseBottomSheet()
+        self.hideTabbar(false)
+      }
+  }
+  
+  
   func hideTabbar(_ state: Bool) {
     self.tabBarController?.tabBar.isHidden = state
   }

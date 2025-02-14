@@ -799,7 +799,9 @@ public class HomeStore: ObservableObject {
     onlineAdvocateNavigator.navigateToAdvocateDetail(
       index: Int(index),
       advocates: onlinedAdvocates,
-      sktmModel: sktmModel
+      sktmModel: sktmModel,
+      isAnimated: true,
+      isFromDeeplink: false
     )
   }
   
@@ -816,10 +818,11 @@ public class HomeStore: ObservableObject {
     )
   }
   
-  public func navigateToSearch(with text: String) {
+  public func navigateToSearch(with text: String, isFromDeeplink: Bool = false) {
     searchNavigator.navigateToAdvocateListInSearchMode(
       searchText: text,
-      sktmModel: sktmModel
+      sktmModel: sktmModel,
+      isFromDeeplink: isFromDeeplink
     )
   }
   
