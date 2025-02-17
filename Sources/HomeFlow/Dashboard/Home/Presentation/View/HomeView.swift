@@ -381,14 +381,15 @@ public struct HomeView: View {
         .position(x: frame.midX, y: 100)
         .zIndex(1)
         
+        //Promotion Banner
         Image("bg_home", bundle: .module)
           .resizable()
           .aspectRatio(contentMode: .fill)
-        //          .frame(height: 264)
           .position(x: frame.midX, y: 240)
           .zIndex(0)
           .onTapGesture {
-            store.navigateToAdvocateList()
+            store.selectedSkill = .init(id: 7, name: "Perpajakan")
+            store.navigateToAdvocateListWithSkill()
           }
         
         //        KFImage(store.promotionBannerViewModel.bannerImageURL)
