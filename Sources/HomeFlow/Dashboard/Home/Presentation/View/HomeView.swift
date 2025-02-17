@@ -38,7 +38,7 @@ public struct HomeView: View {
           store.navigateToDetailSKTM()
         } onTapConsultation: {
           store.hideConsultationNowBottomSheet()
-          store.navigateToAdvocateList()
+          store.navigateToAdvocateListWithSkill()
         } onTapDecisionTree: {
           store.hideConsultationNowBottomSheet()
           store.navigateToDecisionTree()

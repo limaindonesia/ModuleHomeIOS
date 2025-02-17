@@ -667,7 +667,10 @@ public class OrderProcessStore: ObservableObject {
   
   public func navigateToRequestProbono() {
     
-    probonoNavigator.navigateToProbonoService(page: Constant.Page.ORDER_PROCESS)
+    probonoNavigator.navigateToProbonoService(
+      page: Constant.Page.ORDER_PROCESS,
+      skills: []
+    )
     
 //    guard let _ = userSessionData else {
 //      sktmNavigator.navigateToUploadSKTM()

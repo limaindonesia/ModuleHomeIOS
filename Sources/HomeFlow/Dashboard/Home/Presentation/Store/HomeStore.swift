@@ -829,21 +829,23 @@ public class HomeStore: ObservableObject {
   }
   
   public func navigateToAdvocateListWithSkill() {
-    guard let skill = selectedSkill else { return }
+    if let skill = selectedSkill {
+      advocateListNavigator.navigateToAdvocateListWithSkill(
+        categoryAdvocate: skill.skillName,
+        listCategoryId: [skill.getID()],
+        listSkillAdvocate: skills,
+        listingType: Constant.Text.GENERAL,
+        sktmModel: nil
+      )
+      return
+    }
+    
     advocateListNavigator.navigateToAdvocateListWithSkill(
-      categoryAdvocate: skill.skillName,
-      listCategoryId: [skill.getID()],
+      categoryAdvocate: "",
+      listCategoryId: [],
       listSkillAdvocate: skills,
       listingType: Constant.Text.GENERAL,
       sktmModel: nil
-    )
-  }
-  
-  public func navigateToAdvocateListFromSkill() {
-    guard let skill = selectedSkill else { return }
-    advocateListNavigator.navigateToAdvocateListWithSkill(
-      categoriIds: [skill.getID()],
-      listingType: Constant.Text.GENERAL
     )
   }
 
@@ -889,7 +891,10 @@ public class HomeStore: ObservableObject {
   }
   
   public func navigateToProbonoService() {
-    probonoNavigator.navigateToProbonoService(page: Constant.Page.HOME)
+    probonoNavigator.navigateToProbonoService(
+      page: Constant.Page.HOME,
+      skills: skills
+    )
   }
   
   public func switchToProfile() {
