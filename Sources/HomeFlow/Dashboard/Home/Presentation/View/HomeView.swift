@@ -1471,8 +1471,8 @@ public struct HomeView: View {
         PromotionBannerView(imageURL: imageURL){
           store.navigateToProbonoService()
         } onTapConsult: {
-          store.selectedSkill = AdvocateSkills(id: 7, name: "")
-          store.navigateToAdvocateListFromSkill()
+          store.selectedSkill = AdvocateSkills(id: 7, name: "Perpajakan")
+          store.navigateToAdvocateListWithSkill()
         } onTapBlog: {
           store.navigateToBlog()
         } onTapClose: {
