@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "Konsultasi Sekarang@1x.png",
+      "filename" : "system_message_banner_app_value.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "Konsultasi Sekarang@2x.png",
+      "filename" : "system_message_banner_app_value@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "Konsultasi Sekarang@3x.png",
+      "filename" : "system_message_banner_app_value@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

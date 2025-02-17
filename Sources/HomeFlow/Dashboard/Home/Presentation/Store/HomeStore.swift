@@ -835,10 +835,18 @@ public class HomeStore: ObservableObject {
       listCategoryId: [skill.getID()],
       listSkillAdvocate: skills,
       listingType: Constant.Text.GENERAL,
-      sktmModel: sktmModel
+      sktmModel: nil
     )
   }
   
+  public func navigateToAdvocateListFromSkill() {
+    guard let skill = selectedSkill else { return }
+    advocateListNavigator.navigateToAdvocateListWithSkill(
+      categoriIds: [skill.getID()],
+      listingType: Constant.Text.GENERAL
+    )
+  }
+
   public func navigateToAdvocateList() {
     advocateListNavigator.navigateToAdvocateList(
       listingType: Constant.Text.GENERAL,
