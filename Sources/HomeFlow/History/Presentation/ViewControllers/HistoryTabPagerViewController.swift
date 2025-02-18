@@ -31,6 +31,7 @@ public class HistoryTabPagerViewController: SlidingTabController {
     
     navigationController?.setNavigationBarHidden(true, animated: false)
   }
+  
   public override func viewDidLoad() {
     super.viewDidLoad()
     
@@ -40,33 +41,12 @@ public class HistoryTabPagerViewController: SlidingTabController {
   public override func setupNavBar() {
     super.setupNavBar()
     
-    let titleLabel = UILabel()
-    titleLabel.text = "Riwayat Konsultasi"
-    titleLabel.font = .dmSansFont(style: .title(size: 16))
-    
-    let button = UIButton()
-    button.setImage(
-      UIImage(
-        named: "ic_arrow_back",
-        in: .module,
-        compatibleWith: .none
-      ),
-      for: .normal
-    )
-    button.setTitle("", for: .normal)
-    button.addTarget(
-      self,
-      action: #selector(didBack),
-      for: .touchUpInside
-    )
-    
     navigationBar.hstack(
-      UIView().withWidth(20),
       alignment: .fill,
       distribution: .fillProportionally
     )
     .withMargins(.allSides(15))
-    .withHeight(10)
+    .withHeight(80)
   }
   
   private func buildTab() {
@@ -76,8 +56,8 @@ public class HistoryTabPagerViewController: SlidingTabController {
     let legalFormViewController = makeLegalFormViewControllerFactory()
     
     tabs = [
-      TabModel(title: "Chat", page: consultationHistoryViewController),
-      TabModel(title: "Ringkasan", page: legalFormViewController)
+      TabModel(title: "Konsultasi", page: consultationHistoryViewController),
+      TabModel(title: "Dokumen Hukum", page: legalFormViewController)
     ]
     
     horizontalBarBackgroundColor = UIColor.buttonActiveColor
