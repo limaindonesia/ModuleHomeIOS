@@ -850,13 +850,12 @@ public class HomeStore: ObservableObject {
   }
   
   public func navigateToAdvocatesFromPopupBanner() {
-    let filteredSkills = skills.filter { $0.id == 7 || $0.id == 70 }
+    let filteredSkills = skills.filter{ $0.id == 7 || $0.id == 70 }
     
     if filteredSkills.count > 0 {
-      let skill = skills.filter { $0.id == 7 }.first
       advocateListNavigator.navigateToAdvocateListWithSkill(
-        categoryAdvocate: skill?.skillName ?? "",
-        listCategoryId: [7, 70],
+        categoryAdvocate: filteredSkills.first.map{ $0.skillName } ?? "",
+        listCategoryId: filteredSkills.map{ $0.getID() },
         listSkillAdvocate: skills,
         listingType: Constant.Text.GENERAL,
         sktmModel: nil
@@ -872,7 +871,7 @@ public class HomeStore: ObservableObject {
       sktmModel: nil
     )
   }
-
+  
   public func navigateToAdvocateList() {
     advocateListNavigator.navigateToAdvocateList(
       listingType: Constant.Text.GENERAL,
