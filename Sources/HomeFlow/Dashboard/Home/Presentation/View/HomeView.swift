@@ -388,8 +388,7 @@ public struct HomeView: View {
           .position(x: frame.midX, y: 240)
           .zIndex(0)
           .onTapGesture {
-            store.selectedSkill = .init(id: 7, name: "Perpajakan")
-            store.navigateToAdvocateListWithSkill()
+            store.navigateToAdvocatesFromPopupBanner()
           }
         
         //        KFImage(store.promotionBannerViewModel.bannerImageURL)
@@ -1472,8 +1471,7 @@ public struct HomeView: View {
         PromotionBannerView(imageURL: imageURL){
           store.navigateToProbonoService()
         } onTapConsult: {
-          store.selectedSkill = AdvocateSkills(id: 7, name: "Perpajakan")
-          store.navigateToAdvocateListWithSkill()
+          store.navigateToAdvocatesFromPopupBanner()
         } onTapBlog: {
           store.navigateToBlog()
         } onTapClose: {
