@@ -97,16 +97,16 @@ public struct HomeView: View {
         imageURL: store.promotionBannerViewModel.popupImageURL
       )
       
-      if store.isLoading {
-        BlurView(style: .dark)
-        
-        LottieView {
-          LottieAnimation.named("perqara-loading", bundle: .module)
-        }
-        .looping()
-        .frame(width: 72, height: 72)
-        .padding(.bottom, 50)
-      }
+//      if store.isLoading {
+//        BlurView(style: .dark)
+//        
+//        LottieView {
+//          LottieAnimation.named("perqara-loading", bundle: .module)
+//        }
+//        .looping()
+//        .frame(width: 72, height: 72)
+//        .padding(.bottom, 50)
+//      }
       
     }
     .ignoresSafeArea(edges: .all)
