@@ -8,6 +8,7 @@
 import UIKit
 import AprodhitKit
 import GnDKit
+import SwiftUI
 
 public class ConsultationHistoryViewController: NiblessViewController {
   
@@ -19,10 +20,15 @@ public class ConsultationHistoryViewController: NiblessViewController {
     super.init()
   }
   
+  public override func loadView() {
+    super.loadView()
+    
+    let contentView = UIHostingController(rootView: ConsultationHistoryView())
+    addFullScreen(childViewController: contentView)
+  }
+  
   public override func viewDidLoad() {
     super.viewDidLoad()
-    
-    view.backgroundColor = .systemPink
   }
   
 }

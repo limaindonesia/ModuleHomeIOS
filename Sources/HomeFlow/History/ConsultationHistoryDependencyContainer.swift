@@ -6,14 +6,23 @@
 //
 
 import Foundation
+import AprodhitKit
+import GnDKit
 
 public class ConsultationHistoryDependencyContainer {
   
-  public init() {
-    
+  private let networkService: NetworkServiceLogic
+  private let userSessionDataSource: UserSessionDataSourceLogic
+  
+  public init(
+    networkService: NetworkServiceLogic,
+    userSessionDataSource: UserSessionDataSourceLogic
+  ) {
+    self.networkService = networkService
+    self.userSessionDataSource = userSessionDataSource
   }
   
-  func makeMainController() -> HistoryTabPagerViewController {
+  public func makeViewController() -> HistoryTabPagerViewController {
     
     let consultationHistoryFactory = {
       return self.makeConsultationHistoryViewController()
@@ -30,11 +39,11 @@ public class ConsultationHistoryDependencyContainer {
     
   }
   
-  func makeConsultationHistoryViewController() -> ConsultationHistoryViewController {
+  private func makeConsultationHistoryViewController() -> ConsultationHistoryViewController {
     return ConsultationHistoryViewController(storeFactory: self)
   }
   
-  func makeLegalFormViewController() -> LegalFormViewController {
+  private func makeLegalFormViewController() -> LegalFormViewController {
     return LegalFormViewController(storeFactory: self)
   }
   
