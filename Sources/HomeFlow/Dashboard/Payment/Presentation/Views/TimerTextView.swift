@@ -10,6 +10,7 @@ import SwiftUI
 struct TimerTextView: View {
   
   @State var paymentTimeRemaining: TimeInterval = 0
+  let textColor: Color
   var onUpdateTimer: (TimeInterval) -> Void
   var onTimerTimeUp: () -> Void
   
@@ -19,9 +20,22 @@ struct TimerTextView: View {
     in: .common
   ).autoconnect()
   
+  
+  init(
+    paymentTimeRemaining: TimeInterval,
+    textColor: Color = .white,
+    onUpdateTimer: @escaping (TimeInterval) -> Void,
+    onTimerTimeUp: @escaping () -> Void
+  ) {
+    self.paymentTimeRemaining = paymentTimeRemaining
+    self.textColor = textColor
+    self.onUpdateTimer = onUpdateTimer
+    self.onTimerTimeUp = onTimerTimeUp
+  }
+  
   var body: some View {
     Text(paymentTimeRemaining.timeString())
-      .foregroundStyle(.white)
+      .foregroundStyle(textColor)
       .titleLexend(size: 10)
       .onReceive(timer) { _ in
         receiveTimer()

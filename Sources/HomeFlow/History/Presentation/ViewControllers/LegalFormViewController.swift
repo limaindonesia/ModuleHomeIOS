@@ -8,6 +8,7 @@
 import Foundation
 import AprodhitKit
 import GnDKit
+import SwiftUI
 
 public class LegalFormViewController: NiblessViewController {
   
@@ -19,10 +20,17 @@ public class LegalFormViewController: NiblessViewController {
     super.init()
   }
   
-  
+  public override func loadView() {
+    super.loadView()
+    
+    let contentView = UIHostingController(rootView: LegalFormView())
+    addFullScreen(childViewController: contentView)
+    
+  }
+
   public override func viewDidLoad() {
     super.viewDidLoad()
     
-    view.backgroundColor = .yellow
+    view.backgroundColor = .white
   }
 }

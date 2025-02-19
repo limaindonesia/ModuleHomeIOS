@@ -32,8 +32,22 @@ public class HistoryTabPagerViewController: SlidingTabController {
     navigationController?.setNavigationBarHidden(true, animated: false)
   }
   
+  public override func viewDidLayoutSubviews() {
+    super.viewDidLayoutSubviews()
+
+//    view.frame = .init(
+//      x: 0,
+//      y: 0,
+//      width: screen.width,
+//      height: screen.height - 90
+//    )
+
+  }
+  
   public override func viewDidLoad() {
     super.viewDidLoad()
+    
+    view.backgroundColor = .white
     
     buildTab()
   }

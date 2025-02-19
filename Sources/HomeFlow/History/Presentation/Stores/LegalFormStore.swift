@@ -9,6 +9,8 @@ import Foundation
 
 public class LegalFormStore: ObservableObject {
   
+  public init() {}
+  
 }
 
 public protocol LegalFormStoreFactory {
