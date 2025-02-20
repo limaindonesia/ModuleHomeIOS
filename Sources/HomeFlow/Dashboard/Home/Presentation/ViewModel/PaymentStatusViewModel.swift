@@ -32,5 +32,9 @@ public class PaymentStatusViewModel {
   public func getPaymentURL() -> URL? {
     return URL(string: paymentURL)
   }
+  
+  public func getStringURL() -> String? {
+    return paymentURL
+  }
 
 }
