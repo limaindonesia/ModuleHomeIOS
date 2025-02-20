@@ -16,6 +16,18 @@ public class DocumentHistoryViewModel: DocumentBaseViewModel {
   public let date: String
   public let onNext: () -> Void
   
+  public override init() {
+    self.price = ""
+    self.onNext = {}
+    self.status = .DONE
+    self.date = ""
+    
+    super.init(
+      type: .HISTORY,
+      title: ""
+    )
+  }
+  
   public init(
     type: DocumentRowType,
     title: String,

@@ -16,6 +16,18 @@ public class DocumentActiveViewModel: DocumentBaseViewModel {
   public let timeRemaining: TimeInterval
   public let onPayment: () -> Void
   
+  public override init() {
+    self.price = ""
+    self.onPayment = {}
+    self.status = .ON_PROCESS
+    self.timeRemaining = 0
+    
+    super.init(
+      type: .HISTORY,
+      title: ""
+    )
+  }
+  
   public init(
     type: DocumentRowType,
     title: String,

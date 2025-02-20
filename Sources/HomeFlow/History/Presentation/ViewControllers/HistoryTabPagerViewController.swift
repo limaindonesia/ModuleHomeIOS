@@ -35,12 +35,12 @@ public class HistoryTabPagerViewController: SlidingTabController {
   public override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
 
-//    view.frame = .init(
-//      x: 0,
-//      y: 0,
-//      width: screen.width,
-//      height: screen.height - 90
-//    )
+    view.frame = .init(
+      x: 0,
+      y: 0,
+      width: screen.width,
+      height: screen.height - 95
+    )
 
   }
   

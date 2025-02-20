@@ -16,6 +16,21 @@ public class HistoryConsultationViewModel: ConsultationBaseModel {
   public var price: String
   public var readSummaries: () -> Void
   
+  public override init() {
+    self.status = .DONE
+    self.date = ""
+    self.issues = ""
+    self.serviceName = ""
+    self.price = ""
+    self.readSummaries = {}
+    
+    super.init(
+      name: "",
+      imageURL: nil,
+      type: .HISTORY
+    )
+  }
+  
   public init(
     name: String,
     imageURL: URL?,

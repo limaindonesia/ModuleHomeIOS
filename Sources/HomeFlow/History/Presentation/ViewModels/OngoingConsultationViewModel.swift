@@ -16,6 +16,21 @@ public class OngoingConsultationViewModel: ConsultationBaseModel {
   public var price: String
   public var backToConsultation: () -> Void
   
+  public override init() {
+    self.status = .ONGOING
+    self.timeRemaining = 0.0
+    self.issues = ""
+    self.serviceName = ""
+    self.price = ""
+    self.backToConsultation = {}
+    
+    super.init(
+      name: "",
+      imageURL: nil,
+      type: .INCOMING
+    )
+  }
+  
   public init(
     name: String,
     imageURL: URL?,

@@ -23,7 +23,7 @@ public class ConsultationHistoryViewController: NiblessViewController {
   public override func loadView() {
     super.loadView()
     
-    let contentView = UIHostingController(rootView: ConsultationHistoryView())
+    let contentView = UIHostingController(rootView: ConsultationHistoryView(store: store))
     addFullScreen(childViewController: contentView)
   }
   

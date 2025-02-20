@@ -52,7 +52,7 @@ public class ConsultationHistoryDependencyContainer {
   }
   
   public func makeLegalFormStore() -> LegalFormStore {
-    return LegalFormStore()
+    return LegalFormStore(legalFormRepository: MockLegalFormRepository())
   }
   
 }

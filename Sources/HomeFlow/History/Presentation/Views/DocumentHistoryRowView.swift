@@ -23,11 +23,11 @@ public struct DocumentHistoryRowView: View {
       
       HStack {
         Text(viewModel.status.rawValue)
-          .foregroundStyle(Color.warning600)
+          .foregroundStyle(viewModel.status == .DONE ? Color.success900 : Color.danger800)
           .captionLexend(size: 10)
           .padding(.horizontal, 6)
           .padding(.vertical, 4)
-          .background(Color.warning100)
+          .background(viewModel.status == .DONE ? Color.success100 : Color.danger100)
           .clipShape(RoundedRectangle(cornerRadius: 8))
         
         Spacer()

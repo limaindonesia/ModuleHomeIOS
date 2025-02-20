@@ -23,7 +23,7 @@ public class LegalFormViewController: NiblessViewController {
   public override func loadView() {
     super.loadView()
     
-    let contentView = UIHostingController(rootView: LegalFormView())
+    let contentView = UIHostingController(rootView: LegalFormView(store: store))
     addFullScreen(childViewController: contentView)
     
   }

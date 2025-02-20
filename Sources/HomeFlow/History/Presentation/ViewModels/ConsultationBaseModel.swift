@@ -12,7 +12,6 @@ import GnDKit
 public enum ConsultationRowType {
   case INCOMING
   case HISTORY
-  case DOCUMENT
 }
 
 public enum ConsultationStatus: String {
@@ -27,6 +26,12 @@ open class ConsultationBaseModel: Identifiable, Hashable {
   public var type: ConsultationRowType
   public let imageURL: URL?
   public let name: String
+  
+  public init() {
+    self.name = ""
+    self.imageURL = nil
+    self.type = .HISTORY
+  }
   
   public init(
     name: String,
