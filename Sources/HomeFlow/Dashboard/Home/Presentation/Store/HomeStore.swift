@@ -91,6 +91,9 @@ public class HomeStore: ObservableObject {
   public var selectedReason: ReasonEntity? = nil
   public var reason: String? = nil
   public var idCardEntity: IDCardEntity = .init()
+  public var systemImages: [String] = ["bg_home1","bg_home2","bg_home3","bg_home4"]
+  public var systemImagesX: [Int] = [24,39,54,69]
+  
   
   public init(
     userSessionDataSource: UserSessionDataSourceLogic,
@@ -614,6 +617,10 @@ public class HomeStore: ObservableObject {
     return []
   }
   
+  public func getImageDot(indexSelectedImage: Int, indexSelectedDot: Int) -> String {
+    return indexSelectedImage == indexSelectedDot ? "bg_home_dot_selected" : "bg_home_dot_unselected"
+  }
+  
   public func selectCategory(_ id: Int, name: String) async {
     
     for i in 0 ..< categories.count {
@@ -779,6 +786,26 @@ public class HomeStore: ObservableObject {
   public func hideReasonBottomSheet() {
     isPresentReasonBottomSheet = false
     hideTabBar = false
+  }
+  
+  public func correctedIndex(for index: Int) -> Int {
+    let count = systemImages.count
+    return (count + index) % count
+  }
+  
+  public func navigationBannerHome(index: Int) {
+    switch index {
+    case 0:
+      navigateToSeeAllAdvocate()
+    case 1:
+      navigateToAdvocatesFromPopupBanner()
+    case 2:
+      navigateToSeeAllAdvocate()
+    case 3:
+      navigateToProbonoService()
+    default:
+      break
+    }
   }
   
   //MARK: - Navigator
