@@ -14,6 +14,7 @@ public class LegalFormStore: ObservableObject {
   
   @Published var activeViewModels: [DocumentBaseViewModel] = []
   @Published var historyViewModels: [DocumentBaseViewModel] = []
+  @Published var isPresentBottomSheet: Bool = false
   
   private var entities: [LegalFormDocumentEntity] = []
   

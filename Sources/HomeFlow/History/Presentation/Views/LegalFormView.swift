@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import AprodhitKit
 
 public struct LegalFormView: View {
   
@@ -17,16 +18,18 @@ public struct LegalFormView: View {
   
   public var body: some View {
     
-    ScrollView(.vertical, showsIndicators: false) {
+    ZStack {
       
-      VStack(spacing: 0) {
+      ScrollView(.vertical, showsIndicators: false) {
         
-        documentView()
-        
-        Divider()
-          .background(Color.gray100)
-          .frame(maxWidth: .infinity, maxHeight: 1)
-        
+        VStack(spacing: 0) {
+          
+          documentView()
+          
+          Divider()
+            .background(Color.gray100)
+            .frame(maxWidth: .infinity, maxHeight: 1)
+          
           VStack(alignment: .leading, spacing: 8) {
             
             HStack {
@@ -44,7 +47,7 @@ public struct LegalFormView: View {
                 .foregroundStyle(Color.gray500)
                 .captionLexend(size: 14)
                 .padding(.horizontal, 16)
-             
+              
             } else {
               ForEach(store.historyViewModels, id: \.id) { model in
                 if let historyModel = model as? DocumentHistoryViewModel {
@@ -67,14 +70,19 @@ public struct LegalFormView: View {
           }
           .frame(maxWidth: .infinity)
           .padding(.vertical, 16)
-      
+          
+        }
+        .padding(.bottom, 24)
+        .onAppear {
+          Task {
+            await store.fetchDocuments()
+          }
+        }
         
       }
-      .padding(.bottom, 24)
-      .onAppear {
-        Task {
-          await store.fetchDocuments()
-        }
+      
+      BottomSheetView(isPresented: $store.isPresentBottomSheet) {
+        LegalFormBottomSheetContentView()
       }
       
     }
@@ -117,7 +125,7 @@ public struct LegalFormView: View {
       .padding(.all, 16)
       .padding(.top, 65)
       .onTapGesture {
-        
+        store.isPresentBottomSheet = true
       }
     } else {
       VStack(alignment: .leading, spacing: 8) {
