@@ -47,7 +47,7 @@ struct SubmitRatingBottomContentView: View {
       }
       .frame(maxWidth: .infinity, alignment: .center)
       
-      VStack(alignment: .leading) {
+      VStack(alignment: .leading, spacing: 8) {
         Text("Bagaimana pengalaman pembuatan dokumen?")
         Text("Sering dibahas:")
         Text("Kemudahan")
@@ -65,14 +65,31 @@ struct SubmitRatingBottomContentView: View {
                 .stroke(Color.gray500, lineWidth: 2)
             )
           }
-          .frame(maxWidth: .infinity, idealHeight: 88)
           .background(Color.gray050)
+          .frame(maxWidth: .infinity, maxHeight: 100)
           .cornerRadius(6)
-          .padding(.horizontal, 12)
           
           
           
         }
+        
+        HStack {
+          Image("", bundle: .module)
+          Text("Nama anda akan dirahasiakan oleh sistem")
+        }
+        .padding(.all)
+        .background(Color.primaryInfo050)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .frame(maxWidth: .infinity)
+      }
+      
+      ButtonPrimary(
+        title: "Kirim",
+        color: .gray200,
+        width: .infinity,
+        height: 40
+      ) {
+        
       }
       
     }
