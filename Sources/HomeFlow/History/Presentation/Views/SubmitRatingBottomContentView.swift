@@ -10,6 +10,7 @@ import GnDKit
 import AprodhitKit
 
 struct SubmitRatingBottomContentView: View {
+  
   var body: some View {
     VStack(alignment: .leading) {
       Text("Nilai Pengalaman Anda")
@@ -46,7 +47,43 @@ struct SubmitRatingBottomContentView: View {
       }
       .frame(maxWidth: .infinity, alignment: .center)
       
-      
+      VStack(alignment: .leading) {
+        Text("Bagaimana pengalaman pembuatan dokumen?")
+        Text("Sering dibahas:")
+        Text("Kemudahan")
+        
+        ZStack(alignment: .topLeading) {
+          VStack {
+            TextView(
+              text: .constant(""),
+              textStyle: .lexendFont(style: .caption(size: 12)),
+              textColor: .darkTextColor,
+              backgroundColor: .gray050
+            )
+            .overlay(
+              RoundedRectangle(cornerRadius: 6)
+                .stroke(
+                  store.isTextValid ? Color.gray500 : Color.red,
+                  lineWidth: 2
+                )
+            )
+          }
+          .frame(maxWidth: .infinity, idealHeight: 88)
+          .background(Color.gray050)
+          .cornerRadius(6)
+          .padding(.horizontal, 12)
+          
+          if store.issueText.isEmpty {
+            Text("Ulasan atau penilaian Anda...")
+              .foregroundColor(Color(.placeholderText))
+              .captionLexend(size: 12)
+              .padding(.horizontal, 16)
+              .padding(.vertical, 5)
+              .allowsHitTesting(false)
+          }
+          
+        }
+      }
       
     }
     .padding(.horizontal, 16)
