@@ -944,6 +944,26 @@ public class HomeStore: ObservableObject {
   }
   
   public func navigateToPayment() {
+    let lawyerInfoViewModel = LawyerInfoViewModel(
+      id: userCases.id ?? 0,
+      imageURL: URL(string: userCases.lawyer?.photo_url ?? ""),
+      name: userCases.lawyer?.getName() ?? "",
+      agency: userCases.lawyer?.agency_name ?? "",
+      price: userCases.getPrice(),
+      originalPrice: userCases.lawyer?.getOriginalPrice() ?? "",
+      isDiscount: userCases.lawyer?.isDiscount ?? false,
+      isProbono: userCases.service_type ?? "" == Constant.Home.Text.PROBONO,
+      orderNumber: userCases.order_no ?? "",
+      detailIssues: userCases.description ?? "",
+      category: userCases.skill?.name ?? "",
+      type: userCases.service_type_name ?? "",
+      duration: "\(userCases.booking?.duration ?? 0)"
+    )
+    
+    ongoingNavigator.navigateToPayment(lawyerInfoViewModel)
+  }
+  
+  public func navigateToPaymentCheck() {
     if let _ = paymentStatus.getPaymentURL() {
       let lawyerInfoViewModel = LawyerInfoViewModel(
         id: userCases.id ?? 0,
@@ -967,6 +987,7 @@ public class HomeStore: ObservableObject {
       } else {
         selectedPaymentCategory = .EWALLET
       }
+      
       ongoingNavigator.navigateToPaymentCheck(
         lawyerInfo: lawyerInfoViewModel,
         price: userCases.getPrice(),
@@ -976,28 +997,8 @@ public class HomeStore: ObservableObject {
         orderID: userCases.order_no ?? "",
         paymentCategory: selectedPaymentCategory
       )
-      return
+      
     }
-    
-    let lawyerInfoViewModel = LawyerInfoViewModel(
-      id: userCases.id ?? 0,
-      imageURL: URL(string: userCases.lawyer?.photo_url ?? ""),
-      name: userCases.lawyer?.getName() ?? "",
-      agency: userCases.lawyer?.agency_name ?? "",
-      price: userCases.getPrice(),
-      originalPrice: userCases.lawyer?.getOriginalPrice() ?? "",
-      isDiscount: userCases.lawyer?.isDiscount ?? false,
-      isProbono: userCases.service_type ?? "" == Constant.Home.Text.PROBONO,
-      orderNumber: userCases.order_no ?? "",
-      detailIssues: userCases.description ?? "",
-      //MARK: need to set again
-      category: "Pidana",
-      type: "Chat saja",
-      duration: "60 menit"
-    )
-    
-    ongoingNavigator.navigateToPayment(lawyerInfoViewModel)
-    
   }
   
   public func openURL() {
