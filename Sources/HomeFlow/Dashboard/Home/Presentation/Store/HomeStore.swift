@@ -957,7 +957,7 @@ public class HomeStore: ObservableObject {
       detailIssues: userCases.description ?? "",
       category: userCases.skill?.name ?? "",
       type: userCases.service_type_name ?? "",
-      duration: "\(userCases.booking?.duration ?? 0)"
+      duration: "\(userCases.booking?.duration ?? 0) Menit"
     )
     
     ongoingNavigator.navigateToPayment(lawyerInfoViewModel)
@@ -978,7 +978,7 @@ public class HomeStore: ObservableObject {
         detailIssues: userCases.description ?? "",
         category: userCases.skill?.name ?? "",
         type: userCases.service_type_name ?? "",
-        duration: "\(userCases.booking?.duration ?? 0)"
+        duration: "\(userCases.booking?.duration ?? 0) Menit"
       )
       var selectedPaymentCategory: PaymentCategory = .VA
       let latestSelectedPayment = UserDefaults.standard.object(forKey: "latestSelectedPayment") as? String
