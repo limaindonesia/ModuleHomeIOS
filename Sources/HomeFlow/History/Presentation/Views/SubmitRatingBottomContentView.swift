@@ -62,10 +62,7 @@ struct SubmitRatingBottomContentView: View {
             )
             .overlay(
               RoundedRectangle(cornerRadius: 6)
-                .stroke(
-                  store.isTextValid ? Color.gray500 : Color.red,
-                  lineWidth: 2
-                )
+                .stroke(Color.gray500, lineWidth: 2)
             )
           }
           .frame(maxWidth: .infinity, idealHeight: 88)
@@ -73,14 +70,7 @@ struct SubmitRatingBottomContentView: View {
           .cornerRadius(6)
           .padding(.horizontal, 12)
           
-          if store.issueText.isEmpty {
-            Text("Ulasan atau penilaian Anda...")
-              .foregroundColor(Color(.placeholderText))
-              .captionLexend(size: 12)
-              .padding(.horizontal, 16)
-              .padding(.vertical, 5)
-              .allowsHitTesting(false)
-          }
+          
           
         }
       }
