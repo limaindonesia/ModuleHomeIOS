@@ -943,8 +943,42 @@ public class HomeStore: ObservableObject {
     )
   }
   
-  
   public func navigateToPayment() {
+    if let _ = paymentStatus.getPaymentURL() {
+      let lawyerInfoViewModel = LawyerInfoViewModel(
+        id: userCases.id ?? 0,
+        imageURL: URL(string: userCases.lawyer?.photo_url ?? ""),
+        name: userCases.lawyer?.getName() ?? "",
+        agency: userCases.lawyer?.agency_name ?? "",
+        price: userCases.getPrice(),
+        originalPrice: userCases.lawyer?.getOriginalPrice() ?? "",
+        isDiscount: userCases.lawyer?.isDiscount ?? false,
+        isProbono: userCases.service_type ?? "" == Constant.Home.Text.PROBONO,
+        orderNumber: userCases.order_no ?? "",
+        detailIssues: userCases.description ?? "",
+        category: userCases.skill?.name ?? "",
+        type: userCases.service_type_name ?? "",
+        duration: "\(userCases.booking?.duration ?? 0)"
+      )
+      var selectedPaymentCategory: PaymentCategory = .VA
+      let latestSelectedPayment = UserDefaults.standard.object(forKey: "latestSelectedPayment") as? String
+      if latestSelectedPayment == "VA" {
+        selectedPaymentCategory = .VA
+      } else {
+        selectedPaymentCategory = .EWALLET
+      }
+      ongoingNavigator.navigateToPaymentCheck(
+        lawyerInfo: lawyerInfoViewModel,
+        price: userCases.getPrice(),
+        roomkey: userCases.room_key ?? "",
+        consultId: userCases.booking?.consultation_id ?? 0,
+        urlPayment: paymentStatus.getStringURL() ?? "",
+        orderID: userCases.order_no ?? "",
+        paymentCategory: selectedPaymentCategory
+      )
+      return
+    }
+    
     let lawyerInfoViewModel = LawyerInfoViewModel(
       id: userCases.id ?? 0,
       imageURL: URL(string: userCases.lawyer?.photo_url ?? ""),
@@ -956,26 +990,14 @@ public class HomeStore: ObservableObject {
       isProbono: userCases.service_type ?? "" == Constant.Home.Text.PROBONO,
       orderNumber: userCases.order_no ?? "",
       detailIssues: userCases.description ?? "",
-      category: userCases.skill?.name ?? "",
-      type: userCases.service_type_name ?? "",
-      duration: "\(userCases.booking?.duration ?? 0)"
+      //MARK: need to set again
+      category: "Pidana",
+      type: "Chat saja",
+      duration: "60 menit"
     )
-    var selectedPaymentCategory: PaymentCategory = .VA
-    let latestSelectedPayment = UserDefaults.standard.object(forKey: "latestSelectedPayment") as? String
-    if latestSelectedPayment == "VA" {
-      selectedPaymentCategory = .VA
-    } else {
-      selectedPaymentCategory = .EWALLET
-    }
-    ongoingNavigator.navigateToPaymentCheck(
-      lawyerInfo: lawyerInfoViewModel,
-      price: userCases.getPrice(),
-      roomkey: userCases.room_key ?? "",
-      consultId: userCases.booking?.consultation_id ?? 0,
-      urlPayment: paymentStatus.getStringURL() ?? "",
-      orderID: userCases.order_no ?? "",
-      paymentCategory: selectedPaymentCategory
-    )
+    
+    ongoingNavigator.navigateToPayment(lawyerInfoViewModel)
+    
   }
   
   public func openURL() {
