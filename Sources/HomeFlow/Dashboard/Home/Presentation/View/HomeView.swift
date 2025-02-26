@@ -512,7 +512,7 @@ public struct HomeView: View {
         issueType: item.skill?.name ?? "",
         price: item.getPrice(),
         onTap: {
-          store.navigateToPayment()
+          store.navigateToPaymentCheck()
         },
         onTimerTimesUp: {
           Task {
