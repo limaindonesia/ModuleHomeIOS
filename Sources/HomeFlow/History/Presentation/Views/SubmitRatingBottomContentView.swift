@@ -37,8 +37,9 @@ struct SubmitRatingBottomContentView: View {
       .background(Color.gray050)
       .clipShape(RoundedRectangle(cornerRadius: 8))
       .frame(maxWidth: .infinity)
+      .padding(.bottom, 12)
       
-      VStack {
+      VStack(spacing: 8) {
         StarRatingView(rating: 5, tappable: true, spacing: 8)
         
         Text("(1 kurang membantu, 5 sangat membantu)")
@@ -49,8 +50,14 @@ struct SubmitRatingBottomContentView: View {
       
       VStack(alignment: .leading, spacing: 8) {
         Text("Bagaimana pengalaman pembuatan dokumen?")
+          .titleLexend(size: 16)
+        
         Text("Sering dibahas:")
+          .foregroundStyle(Color.primaryInfo700)
+          .captionLexend(size: 12)
+        
         Text("Kemudahan")
+          .captionLexend(size: 12)
         
         ZStack(alignment: .topLeading) {
           VStack {
@@ -66,7 +73,7 @@ struct SubmitRatingBottomContentView: View {
             )
           }
           .background(Color.gray050)
-          .frame(maxWidth: .infinity, maxHeight: 100)
+          .frame(maxWidth: .infinity, idealHeight: 100)
           .cornerRadius(6)
           
           
@@ -74,14 +81,20 @@ struct SubmitRatingBottomContentView: View {
         }
         
         HStack {
-          Image("", bundle: .module)
+          Image("info", bundle: .module)
+            .renderingMode(.template)
+            .foregroundStyle(Color.buttonActiveColor)
           Text("Nama anda akan dirahasiakan oleh sistem")
+            .foregroundStyle(Color.primaryInfo700)
+            .captionLexend(size: 14)
+          Spacer()
         }
-        .padding(.all)
+        .padding(.all, 8)
         .background(Color.primaryInfo050)
         .clipShape(RoundedRectangle(cornerRadius: 8))
-        .frame(maxWidth: .infinity)
+        .frame(maxWidth: .infinity, alignment: .leading)
       }
+      .padding(.top, 8)
       
       ButtonPrimary(
         title: "Kirim",
@@ -93,6 +106,7 @@ struct SubmitRatingBottomContentView: View {
       }
       
     }
+    .padding(.bottom, 24)
     .padding(.horizontal, 16)
   }
   
