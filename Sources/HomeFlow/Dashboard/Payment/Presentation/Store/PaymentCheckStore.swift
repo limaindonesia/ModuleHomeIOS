@@ -488,7 +488,8 @@ public class PaymentCheckStore: ObservableObject {
   public func navigateToRefundForm() {
     refundNavigator.navigateToForm(
       meViewModel.consultationID,
-      userCases: userCase
+      userCases: userCase,
+      isFromDeeplink: false
     )
   }
   

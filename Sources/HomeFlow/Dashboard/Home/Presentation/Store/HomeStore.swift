@@ -1016,7 +1016,8 @@ public class HomeStore: ObservableObject {
   public func navigateToRefundForm() {
     refundNavigator.navigateToForm(
       meViewModel.consultationID,
-      userCases: userCases
+      userCases: userCases,
+      isFromDeeplink: false
     )
   }
   
