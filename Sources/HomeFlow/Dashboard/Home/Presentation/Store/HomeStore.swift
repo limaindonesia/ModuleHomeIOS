@@ -91,6 +91,7 @@ public class HomeStore: ObservableObject {
   public var selectedReason: ReasonEntity? = nil
   public var reason: String? = nil
   public var idCardEntity: IDCardEntity = .init()
+  public var isFromDeeplink: Bool = false
   
   public init(
     userSessionDataSource: UserSessionDataSourceLogic,
@@ -800,7 +801,10 @@ public class HomeStore: ObservableObject {
     onlineAdvocateNavigator.navigateToAdvocateDetail(
       index: Int(index),
       advocates: onlinedAdvocates,
-      sktmModel: sktmModel
+      sktmModel: sktmModel,
+      isFromDeeplink: isFromDeeplink,
+      slug: "",
+      navigationController: nil
     )
   }
   
@@ -1012,7 +1016,8 @@ public class HomeStore: ObservableObject {
   public func navigateToRefundForm() {
     refundNavigator.navigateToForm(
       meViewModel.consultationID,
-      userCases: userCases
+      userCases: userCases,
+      isFromDeeplink: false
     )
   }
   
