@@ -13,7 +13,6 @@ import Combine
 import Kingfisher
 
 public struct HomeView: View {
-  
   @ObservedObject var store: HomeStore
   @State var offSet: CGFloat = 0
   @State var isRefreshing: Bool = false
@@ -21,6 +20,7 @@ public struct HomeView: View {
     started: false,
     released: false
   )
+  @State private var photosIndex = 0
   
   public init(store: HomeStore) {
     self.store = store
@@ -381,26 +381,34 @@ public struct HomeView: View {
         .position(x: frame.midX, y: 100)
         .zIndex(1)
         
-        //Promotion Banner
-        Image("bg_home", bundle: .module)
-          .resizable()
-          .aspectRatio(contentMode: .fill)
-          .position(x: frame.midX, y: 240)
-          .zIndex(0)
-          .onTapGesture {
-            store.navigateToAdvocatesFromPopupBanner()
+        ZStack {
+          ForEach(0 ..< store.systemImages.count, id:\.self) { indexDot in
+            Image(store.getImageDot(indexSelectedImage: photosIndex, indexSelectedDot: indexDot), bundle: .module)
+              .resizable()
+              .aspectRatio(contentMode: .fit)
+              .frame(width: 10,height: 10)
+              .position(x: CGFloat(store.systemImagesX[indexDot]), y: 355)
           }
-        
-        //        KFImage(store.promotionBannerViewModel.bannerImageURL)
-        //          .resizable()
-        //          .aspectRatio(contentMode: .fill)
-        ////          .frame(height: 264)
-        //          .position(x: frame.midX, y: 255)
-        //          .zIndex(1)
-        //          .onTapGesture {
-        //            store.navigateToAdvocateList()
-        //          }
-        
+          .zIndex(1)
+          
+          InfinitePageView(
+            selection: $photosIndex,
+            before: { store.correctedIndex(for: $0 - 1) },
+            after: { store.correctedIndex(for: $0 + 1) },
+            view: { index in
+              Image(store.systemImages[index], bundle: .module)
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .onTapGesture {
+                  store.navigationBannerHome(index: index)
+                }
+            }
+          )
+          .position(x: frame.midX, y: 240)
+          .frame(height: 300)
+          .zIndex(0)
+        }
+        .zIndex(0)
       }
       
     }
