@@ -200,7 +200,7 @@ public class PaymentCheckStore: ObservableObject {
       
       let entities = try await paymentCheckRepository.fetchOngoingUserCases(
         headers: HeaderRequest(token: token).toHeaders(),
-        parameters: UserCasesParamRequest(type: "ongoing")
+        parameters: UserCasesParamRequest(type: .ONGOING)
       )
       
       userCase = entities[0]

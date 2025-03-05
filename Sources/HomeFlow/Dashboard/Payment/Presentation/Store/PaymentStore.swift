@@ -443,7 +443,7 @@ public class PaymentStore: ObservableObject {
       
       let entities = try await ongoingRepository.fetchOngoingUserCases(
         headers: HeaderRequest(token: token).toHeaders(),
-        parameters: UserCasesParamRequest(type: "ongoing")
+        parameters: UserCasesParamRequest(type: .ONGOING)
       )
       if entities.count > 0 {
         userCase = entities[0]

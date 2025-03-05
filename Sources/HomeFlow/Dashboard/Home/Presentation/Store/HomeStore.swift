@@ -377,7 +377,7 @@ public class HomeStore: ObservableObject {
     do {
       arrayOfuserCases = try await ongoingRepository.fetchOngoingUserCases(
         headers: HeaderRequest(token: data.remoteSession.remoteToken).toHeaders(),
-        parameters: UserCasesParamRequest(type: "ongoing")
+        parameters: UserCasesParamRequest(type: .ONGOING)
       )
       
       ongoingConsultation = !arrayOfuserCases.isEmpty
