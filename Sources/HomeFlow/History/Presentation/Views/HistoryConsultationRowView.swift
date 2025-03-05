@@ -8,6 +8,7 @@
 import SwiftUI
 import GnDKit
 import AprodhitKit
+import Kingfisher
 
 public struct HistoryConsultationRowView: View {
   private let viewModel: HistoryConsultationViewModel
@@ -42,7 +43,13 @@ public struct HistoryConsultationRowView: View {
         .padding(.vertical, 8)
       
       HStack(alignment: .top) {
-        Image(systemName: "person.fill")
+        KFImage
+          .url(viewModel.imageURL)
+          .placeholder {
+            Image(systemName: "person.fill")
+              .resizable()
+              .aspectRatio(contentMode: .fill)
+          }
           .resizable()
           .aspectRatio(contentMode: .fit)
           .frame(width: 56, height: 84)
@@ -58,6 +65,7 @@ public struct HistoryConsultationRowView: View {
           Text(viewModel.name)
             .foregroundStyle(Color.darkTextColor)
             .titleLexend(size: 14)
+            .lineLimit(2)
           
           HStack {
             TagView(
@@ -85,9 +93,9 @@ public struct HistoryConsultationRowView: View {
             } label: {
               Text("Baca Ringkasan")
                 .foregroundStyle(Color.primaryInfo700)
-                .titleLexend(size: 14)
+                .titleLexend(size: 12)
             }
-
+            
           }
           .padding(.vertical, 8)
         }
