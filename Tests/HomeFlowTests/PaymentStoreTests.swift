@@ -26,6 +26,7 @@ final class PaymentStoreTests: XCTestCase {
       treatmentRepository: MockTreatmentRepository(),
       ongoingRepository: MockPaymentRepository(),
       cancelationRepository: MockPaymentCancelationRepository(),
+      probonoRepository: MockGetKTPRepository(),
       ongoingNavigator: MockNavigator(),
       paymentNavigator: MockNavigator(),
       dashboardResponder: MockNavigator()

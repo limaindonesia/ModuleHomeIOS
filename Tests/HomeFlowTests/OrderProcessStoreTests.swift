@@ -14,18 +14,46 @@ final class OrderProcessStoreTests: XCTestCase {
   var sut: OrderProcessStore!
   
   private func makeSUT() {
-    let advocate = Advocate(id: 1, name: "", price: 60000, photo_url: "URL", gender: "", city: nil, year_exp: nil, avg_ratings: nil, total_consultations: nil, slug: nil, is_online: nil, agency_name: "Peradi Malang", agency_province: nil, agency_city: nil, description: nil, is_busy: nil, educations: [], skills: [], reviews: [], prices: nil, is_video_call_active: nil, is_voice_call_active: nil)
+    let advocate = Advocate(
+      id: 1,
+      name: "",
+      is_discount: false,
+      price: "60000",
+      original_price: "90000",
+      photo_url: "URL",
+      gender: "",
+      city: nil,
+      year_exp: nil,
+      avg_ratings: nil,
+      total_consultations: nil,
+      slug: nil,
+      is_online: nil,
+      agency_name: "Peradi Malang",
+      agency_province: nil,
+      agency_city: nil,
+      description: nil,
+      is_busy: nil,
+      educations: [],
+      skills: [],
+      reviews: [],
+      is_video_call_active: nil,
+      is_voice_call_active: nil,
+      is_audio_video_call_active: nil,
+      detail: []
+    )
     
     sut = OrderProcessStore(
       advocate: advocate,
-      category: .init(),
-      selectedPriceCategory: "Rp60.000",
+      selectedPriceCategories: .init(),
       sktmModel: .init(),
       userSessionDataSource: MockUserSessionDataSource(),
       repository: MockOrderProcessRepository(),
       treatmentRepository: MockTreatmentRepository(),
+      orderServiceRepository: MockOrderServiceRepository(),
+      probonoRepository: MockGetKTPRepository(),
       paymentNavigator: MockNavigator(),
-      sktmNavigator: MockNavigator()
+      sktmNavigator: MockNavigator(),
+      probonoNavigator: MockNavigator()
     )
   }
   
@@ -101,7 +129,7 @@ final class OrderProcessStoreTests: XCTestCase {
   @MainActor
   func test_initStore_validationOnTextArea_notStarted() async {
     //given
-   
+    
     //when
     makeSUT()
     
@@ -113,7 +141,7 @@ final class OrderProcessStoreTests: XCTestCase {
   @MainActor
   func test_initStore_buttonShouldNotActivated() async {
     //given
-   
+    
     //when
     makeSUT()
     
@@ -143,7 +171,7 @@ final class OrderProcessStoreTests: XCTestCase {
     try? await Task.sleep(nanoseconds: 3000)
     
     //then
-    XCTAssertEqual(sut.issueTextError, "Minimal 10 Karakter")
+    XCTAssertEqual(sut.errorText, "Minimal 10 Karakter")
   }
   
 }
