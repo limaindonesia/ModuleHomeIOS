@@ -48,7 +48,13 @@ public class ConsultationHistoryDependencyContainer {
   }
   
   public func makeConsultationHistoryStore() -> ConsultationHistoryStore {
-    return ConsultationHistoryStore()
+    let remoteDataSource = ConsultationHistoryRemoteDataSourceImpl(service: networkService)
+    let repository = ConsultationHistoryRepositoryImpl(remoteDataSource: remoteDataSource)
+    
+    return ConsultationHistoryStore(
+      userSessionDataSource: userSessionDataSource,
+      consultationRepository: repository
+    )
   }
   
   public func makeLegalFormStore() -> LegalFormStore {
