@@ -151,7 +151,7 @@ enum JSONResponse {
                   "lawyer": {
                     "id": 1,
                     "name": "ini dari postman",
-                    "price": 10000,
+                    "price": "Rp10.000",
                     "photo_url": "",
                     "gender": "MALE",
                     "city": {
@@ -355,7 +355,7 @@ enum JSONResponse {
                   "lawyer": {
                     "id": 1,
                     "name": "ini dari postman",
-                    "price": 10000,
+                    "price": "Rp10.000",
                     "photo_url": "",
                     "gender": "MALE",
                     "city": {
