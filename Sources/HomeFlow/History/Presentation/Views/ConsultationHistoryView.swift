@@ -152,29 +152,6 @@ public struct ConsultationHistoryView: View {
               await store.loadMoreContentIfNeeded(currentItem: model)
             }
           }
-//        HistoryConsultationRowView(
-//          viewModel: .init(
-//            name: model.name,
-//            imageURL: model.imageURL,
-//            type: .HISTORY,
-//            status: model.status,
-//            serviceName: model.serviceName,
-//            date: model.dateStr(),
-//            issues: model.issues,
-//            price: model.price,
-//            readSummaries: {
-//              
-//            },
-//            onTap: {
-//              self.store.navigateToDetailHistory()
-//            }
-//          )
-//        )
-//        .onAppear{
-//          Task {
-//            await store.loadMoreContentIfNeeded(currentItem: model)
-//          }
-//        }
       }
       
     }
