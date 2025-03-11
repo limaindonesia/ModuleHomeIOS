@@ -110,7 +110,6 @@ public class HistoryPagerTabViewController: SlidingTabController {
   
   private func subscribe(to publisher: AnyPublisher<LegalFormNavigation, Never>) {
     publisher
-      .removeDuplicates()
       .receive(on: DispatchQueue.main)
       .sink { [weak self] action in
         guard let self = self else { return }
