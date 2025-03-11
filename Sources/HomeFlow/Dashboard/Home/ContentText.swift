@@ -8,7 +8,7 @@
 import SwiftUI
 
 // View to split up a string into Text views, split by spaces.
-struct ContentText: View {
+/*struct ContentText: View {
   private var splitText: [String]
   let count: Int
 
@@ -140,3 +140,4 @@ struct ContentView_Previews: PreviewProvider {
     ContentView()
   }
 }
+*/
