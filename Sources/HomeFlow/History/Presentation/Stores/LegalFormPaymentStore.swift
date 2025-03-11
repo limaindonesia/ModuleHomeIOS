@@ -19,7 +19,7 @@ public class LegalFormPaymentStore: ObservableObject {
   private let paymentRepository: PaymentRepositoryLogic
   private let cancelationRepository: PaymentCancelationRepositoryLogic
   private let paymentNavigator: PaymentNavigator
-  private let dashboardResponder: DashboardResponder
+  private let historyNavigator: ConsultationHistoryNavigator
   
   @Published public var isLoading: Bool = false
   @Published public var isPresentVoucherBottomSheet: Bool = false
@@ -72,8 +72,8 @@ public class LegalFormPaymentStore: ObservableObject {
     self.orderProcessRepository = MockOrderProcessRepository()
     self.paymentRepository = MockPaymentRepository()
     self.paymentNavigator = MockNavigator()
-    self.dashboardResponder = MockNavigator()
     self.cancelationRepository = MockPaymentRepository()
+    self.historyNavigator = MockNavigator()
   }
   
   public init(
@@ -83,7 +83,7 @@ public class LegalFormPaymentStore: ObservableObject {
     paymentRepository: PaymentRepositoryLogic,
     cancelationRepository: PaymentCancelationRepositoryLogic,
     paymentNavigator: PaymentNavigator,
-    dashboardResponder: DashboardResponder
+    historyNavigator: ConsultationHistoryNavigator
   ) {
     self.userSessionDataSource = userSessionDataSource
     self.entity = entity
@@ -91,7 +91,7 @@ public class LegalFormPaymentStore: ObservableObject {
     self.paymentRepository = paymentRepository
     self.paymentNavigator = paymentNavigator
     self.cancelationRepository = cancelationRepository
-    self.dashboardResponder = dashboardResponder
+    self.historyNavigator = historyNavigator
     
     observer()
   }
@@ -149,9 +149,9 @@ public class LegalFormPaymentStore: ObservableObject {
     var success: Bool = false
     
     if paymentTimeRemaining <= 0 {
-      success = await sendCancelationReason()
+      success = await postCancelationReason()
     } else {
-      success = await requestCancelationPayment()
+      success = await postCancelationPayment()
     }
     
     if success {
@@ -162,7 +162,7 @@ public class LegalFormPaymentStore: ObservableObject {
   }
   
   @MainActor
-  private func sendCancelationReason() async -> Bool {
+  private func postCancelationReason() async -> Bool {
     indicateLoading()
     var success: Bool = false
     var parameters: CancelPaymentRequest = .init(dismiss: false)
@@ -204,7 +204,7 @@ public class LegalFormPaymentStore: ObservableObject {
   }
   
   @MainActor
-  private func requestCancelationPayment() async -> Bool {
+  private func postCancelationPayment() async -> Bool {
     indicateLoading()
     var success: Bool = false
     
@@ -413,7 +413,7 @@ public class LegalFormPaymentStore: ObservableObject {
   }
   
   @MainActor
-  public func dismissReason() async -> Bool {
+  private func dismissReason() async -> Bool {
     indicateLoading()
     var success: Bool = false
     
@@ -545,6 +545,7 @@ public class LegalFormPaymentStore: ObservableObject {
         try? await Task.sleep(nanoseconds: 1 * 1_000_000_000)
         backToHome()
       }
+      return
     }
     
     hideReasonBottomSheet()
@@ -653,7 +654,7 @@ public class LegalFormPaymentStore: ObservableObject {
   }
   
   public func backToHome() {
-    dashboardResponder.gotoDashboard()
+    historyNavigator.navigateBack()
   }
   
   
@@ -725,7 +726,7 @@ public class LegalFormPaymentStore: ObservableObject {
     isPresentReasonBottomSheet = false
     Task {
       if paymentTimeRemaining <= 0 {
-        _ = await sendCancelationReason()
+        _ = await postCancelationReason()
       }
     }
   }

@@ -9,13 +9,14 @@ import Foundation
 import GnDKit
 import AprodhitKit
 
-/*public struct CancelReasonRequestParams: Paramable {
+public struct CancelReasonRequestParams: Paramable {
   
   private let type: String?
   
-  public init(type: String?) {
+  public init(type: String? = nil) {
     self.type = type
   }
+  
   
   func toParam() -> [String : Any] {
     if let type = type {
@@ -25,4 +26,4 @@ import AprodhitKit
     return [:]
   }
   
-}*/
+}

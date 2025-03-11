@@ -11,7 +11,8 @@ import AprodhitKit
 
 struct LegalFormBottomSheetContentView: View {
   
-  
+  var onNext: () -> Void
+  var onCancel: () -> Void
   
   var body: some View {
     VStack(spacing: 16) {
@@ -33,7 +34,7 @@ struct LegalFormBottomSheetContentView: View {
           width: .infinity,
           height: 40
         ) {
-          
+          onCancel()
         }
         
         ButtonPrimary(
@@ -42,7 +43,7 @@ struct LegalFormBottomSheetContentView: View {
           width: .infinity,
           height: 40
         ) {
-          
+          onNext()
         }
       }
       
@@ -53,5 +54,8 @@ struct LegalFormBottomSheetContentView: View {
 }
 
 #Preview {
-  LegalFormBottomSheetContentView()
+  LegalFormBottomSheetContentView(
+    onNext: {},
+    onCancel: {}
+  )
 }

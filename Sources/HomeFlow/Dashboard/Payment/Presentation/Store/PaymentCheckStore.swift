@@ -208,7 +208,8 @@ public class PaymentCheckStore: ObservableObject {
   public func requestReasons() async {
     do {
       reasons = try await cancelationRepository.requestReasons(
-        headers: HeaderRequest(token: userSessionData?.remoteSession.remoteToken)
+        headers: HeaderRequest(token: userSessionData?.remoteSession.remoteToken),
+        parameters: .init()
       )
       indicateSuccess()
     } catch {

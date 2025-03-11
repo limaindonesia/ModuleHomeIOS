@@ -102,7 +102,7 @@ public class HistoryPagerTabDependencyContainer {
     let repository = LegalFormRepositoryImpl(remote: remote)
     return LegalFormStore(
       userSessionDataSource: userSessionDataSource,
-      legalFormRepository: MockLegalFormRepository(),
+      legalFormRepository: repository,
       legalFormNavigator: sharedViewModel,
       paymentNavigator: sharedViewModel,
       bottomSheetResponder: sharedViewModel
@@ -127,7 +127,7 @@ public class HistoryPagerTabDependencyContainer {
       paymentRepository: paymentRepository,
       cancelationRepository: cancelationRepository,
       paymentNavigator: sharedViewModel,
-      dashboardResponder: sharedViewModel
+      historyNavigator: sharedViewModel
     )
   }
   

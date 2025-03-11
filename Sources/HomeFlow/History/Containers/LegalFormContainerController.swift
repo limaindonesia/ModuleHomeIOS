@@ -11,7 +11,7 @@ import AprodhitKit
 import GnDKit
 import Combine
 
-public class LegalFormContainerController: NiblessNavigationController {
+/*public class LegalFormContainerController: NiblessNavigationController {
   
   let sharedViewModel: LegalFormViewModel
   
@@ -59,24 +59,7 @@ public class LegalFormContainerController: NiblessNavigationController {
   }
   
   private func present(_ view: HistoryPagerTabViewState) {
-    switch view {
-    case .main:
-      presentLegalForm()
-    case .detail(let entity):
-      presentDetail(entity)
-    case .payment:
-      break
-    case .checkStatus:
-      break
-    case .documentDetail:
-      break
-    case .paymentGateway(let url):
-      break
-    case .consultationDetail:
-      break
-    case .consultationHistory:
-      break
-    }
+    
   }
   
   private func observeViewModel(){
@@ -92,4 +75,4 @@ public class LegalFormContainerController: NiblessNavigationController {
     pushViewController(makeDetailLegalFormControllerFactory(entity), animated: true)
   }
   
-}
+}*/

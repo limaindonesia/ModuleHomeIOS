@@ -17,6 +17,7 @@ public enum HistoryPagerTabViewState {
   case paymentGateway(URL?)
   case consultationHistory
   case consultationDetail
+  case openURL(URL?)
   
   public func hidesNavigationBar() -> Bool {
     switch self {
@@ -39,7 +40,8 @@ extension HistoryPagerTabViewState: Equatable {
       (.detail(_), .detail(_)),
       (.paymentGateway(_), .paymentGateway(_)),
       (.consultationHistory, .consultationHistory),
-      (.consultationDetail, .consultationDetail):
+      (.consultationDetail, .consultationDetail),
+      (.openURL(_), .openURL(_)):
       return true
     default:
       return false

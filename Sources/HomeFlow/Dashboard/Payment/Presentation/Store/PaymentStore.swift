@@ -617,6 +617,7 @@ public class PaymentStore: ObservableObject {
         try? await Task.sleep(nanoseconds: 1 * 1_000_000_000)
         backToHome()
       }
+      return
     }
     
     hideReasonBottomSheet()

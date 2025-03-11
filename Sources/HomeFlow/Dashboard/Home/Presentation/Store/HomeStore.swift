@@ -476,7 +476,10 @@ public class HomeStore: ObservableObject {
       guard let token = userSessionData?.remoteSession.remoteToken else {
         return
       }
-      reasons = try await cancelationRepository.requestReasons(headers: HeaderRequest(token: token))
+      reasons = try await cancelationRepository.requestReasons(
+        headers: HeaderRequest(token: token),
+        parameters: .init()
+      )
       indicateSuccess()
     } catch {
       guard let error = error as? ErrorMessage else { return }

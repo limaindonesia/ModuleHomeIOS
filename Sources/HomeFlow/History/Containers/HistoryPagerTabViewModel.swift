@@ -14,7 +14,7 @@ public typealias HistoryPagerTabNavigation = NavigationAction<HistoryPagerTabVie
 public class HistoryPagerTabViewModel: LegalFormNavigator,
                                        BottomSheetResponder,
                                        PaymentNavigator,
-                                       DashboardResponder {
+                                       ConsultationHistoryNavigator {
   
   @Published public var navigationAction: LegalFormNavigation = .present(view: .main)
   @Published public var presentBottomSheet: Bool = false
@@ -74,8 +74,14 @@ public class HistoryPagerTabViewModel: LegalFormNavigator,
     navigationAction = .present(view: .paymentGateway(url))
   }
   
-  public func gotoDashboard() {
+  public func navigateToDetailHistory(_ model: UserCases) {
     
+  }
+  
+  public func openURL() {
+    if let url = URL(string: "https://dev1.perqara.com/legal-form") {
+      navigationAction = .present(view: .openURL(url))
+    }
   }
   
 }

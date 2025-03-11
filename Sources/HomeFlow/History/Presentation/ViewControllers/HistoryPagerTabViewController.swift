@@ -145,6 +145,8 @@ public class HistoryPagerTabViewController: SlidingTabController {
       presentHistoryDetail()
     case .consultationHistory:
       presentConsultationHistory()
+    case .openURL(let url):
+      gotoURL(url)
     }
   }
   
@@ -176,7 +178,7 @@ public class HistoryPagerTabViewController: SlidingTabController {
   }
   
   private func presentLegalForm() {
-    
+    navigationController?.popToRootViewController(animated: true)
   }
   
   private func presentDetail(_ entity: LegalFormEntity) {
@@ -207,6 +209,16 @@ public class HistoryPagerTabViewController: SlidingTabController {
     vc.onDismiss = {
       self.sharedViewModel.showBottomSheet(false)
     }
+    
+    vc.onNext = {
+      self.sharedViewModel.openURL()
+    }
+    
+    vc.onCancel = {
+      self.dismiss(animated: true)
+      self.sharedViewModel.showBottomSheet(false)
+    }
+    
     present(vc, animated: true, completion: nil)
   }
   
@@ -222,6 +234,14 @@ public class HistoryPagerTabViewController: SlidingTabController {
   
   private func presentPaymentGateway(_ paymentURL: URL?) {
     if let url = paymentURL,
+       UIApplication.shared.canOpenURL(url) {
+      
+      UIApplication.shared.open(url)
+    }
+  }
+  
+  private func gotoURL(_ url: URL?) {
+    if let url = url,
        UIApplication.shared.canOpenURL(url) {
       
       UIApplication.shared.open(url)

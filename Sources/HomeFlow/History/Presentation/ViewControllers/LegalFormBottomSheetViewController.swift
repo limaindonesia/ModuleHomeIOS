@@ -13,11 +13,19 @@ import AprodhitKit
 class LegalFormBottomSheetViewController: NiblessViewController {
   
   var onDismiss: (() -> Void)?
+  var onCancel: (() -> Void)?
+  var onNext: (() -> Void)?
   
   override func loadView() {
     super.loadView()
     
-    let rootView = UIHostingController(rootView: LegalFormBottomSheetContentView())
+    let contentView = LegalFormBottomSheetContentView {
+      self.onNext?()
+    } onCancel: {
+      self.onCancel?()
+    }
+
+    let rootView = UIHostingController(rootView: contentView)
     addFullScreen(childViewController: rootView)
     
   }
