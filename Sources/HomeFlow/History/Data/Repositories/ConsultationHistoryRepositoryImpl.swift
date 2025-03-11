@@ -21,7 +21,7 @@ public class ConsultationHistoryRepositoryImpl: ConsultationHistoryRepositoryLog
   public func getConsultations(
     headers: HeaderRequest,
     parameters: UserCasesParamRequest
-  ) async throws -> [ConsultationHistoryEntity] {
+  ) async throws -> ([ConsultationHistoryEntity], [UserCases]) {
     
     do {
       let json = try await remoteDataSource.requestConsultation(
@@ -31,6 +31,8 @@ public class ConsultationHistoryRepositoryImpl: ConsultationHistoryRepositoryLog
       
       let consultations = json.data?.data?.map { model in
         ConsultationHistoryEntity(
+          id: model.id ?? 0,
+          orderNumber: model.order_no ?? "",
           type: model.getType(),
           name: model.lawyer?.name ?? "",
           imageURL: model.lawyer?.getImageName(),
@@ -43,7 +45,10 @@ public class ConsultationHistoryRepositoryImpl: ConsultationHistoryRepositoryLog
         )
       }
       
-      return consultations ?? []
+      let arrayOfConsultations = consultations ?? []
+      let arrayOfUserCases = json.data?.data ?? []
+      
+      return (arrayOfConsultations, arrayOfUserCases)
       
     } catch {
       guard let error = error as? NetworkErrorMessage

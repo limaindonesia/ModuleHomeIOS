@@ -25,6 +25,7 @@ public class ConsultationHistoryStore: ObservableObject {
   @Published var showNotSignedInStatus: Bool = false
   
   private var userSessionData: UserSessionData? = nil
+  private var arrayOfUserCases: [UserCases] = []
   private var page: Int = 1
   private let limit: Int = 10
   private var canLoadMorePages = true
@@ -47,10 +48,12 @@ public class ConsultationHistoryStore: ObservableObject {
   
   @MainActor
   public func fetchActiveConsultations() async {
+    activeConsultationViewModels.removeAll()
+    
     indicateLoading()
         
     do {
-      let models = try await consultationRepository.getConsultations(
+      let (models, _) = try await consultationRepository.getConsultations(
         headers: HeaderRequest(token: userSessionData?.remoteSession.remoteToken),
         parameters: UserCasesParamRequest(type: .ONGOING)
       )
@@ -83,6 +86,8 @@ public class ConsultationHistoryStore: ObservableObject {
   
   @MainActor
   public func fetchHistoryConsultations() async {
+    historyViewModels.removeAll()
+    arrayOfUserCases.removeAll()
     
     guard let userSessionData = userSessionData else {
       showNotSignedInStatus = true
@@ -93,7 +98,7 @@ public class ConsultationHistoryStore: ObservableObject {
     page = 1
     
     do {
-      let models = try await consultationRepository.getConsultations(
+      let (models, userCases) = try await consultationRepository.getConsultations(
         headers: HeaderRequest(token: userSessionData.remoteSession.remoteToken),
         parameters: UserCasesParamRequest(
           type: .HISTORY,
@@ -106,6 +111,8 @@ public class ConsultationHistoryStore: ObservableObject {
       if models.isEmpty {
         canLoadMorePages = false
       }
+      
+      arrayOfUserCases = userCases
       
       historyViewModels = models.map { model in
         return HistoryConsultationViewModel(
@@ -120,7 +127,7 @@ public class ConsultationHistoryStore: ObservableObject {
         ) {
           
         } onTap: {
-          self.navigateToDetailHistory()
+          self.navigateToDetailHistory(entity: model)
         }
       }
       
@@ -143,7 +150,7 @@ public class ConsultationHistoryStore: ObservableObject {
     guard let userSessionData = userSessionData else { return }
     
     do {
-      let models = try await consultationRepository.getConsultations(
+      let (models, userCases) = try await consultationRepository.getConsultations(
         headers: HeaderRequest(token: userSessionData.remoteSession.remoteToken),
         parameters: UserCasesParamRequest(
           type: .HISTORY,
@@ -170,11 +177,12 @@ public class ConsultationHistoryStore: ObservableObject {
         ) {
           
         } onTap:{
-          self.navigateToDetailHistory()
+          self.navigateToDetailHistory(entity: model)
         }
       }
       
       historyViewModels.append(contentsOf: histories)
+      arrayOfUserCases.append(contentsOf: userCases)
       
       updatePage()
       
@@ -233,8 +241,10 @@ public class ConsultationHistoryStore: ObservableObject {
     loginNavigator.navigateToLogin()
   }
   
-  public func navigateToDetailHistory() {
-    consultationNavigator.navigateToDetailHistory(.init())
+  public func navigateToDetailHistory(entity: ConsultationHistoryEntity) {
+    if let userCases = arrayOfUserCases.filter({ $0.id == entity.id }).first {
+      consultationNavigator.navigateToDetailHistory(userCases)
+    }
   }
   
   public func didBack() {

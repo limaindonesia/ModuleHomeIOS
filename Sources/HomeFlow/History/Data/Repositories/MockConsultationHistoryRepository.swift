@@ -14,7 +14,7 @@ public class MockConsultationHistoryRepository: ConsultationHistoryRepositoryLog
   public func getConsultations(
     headers: HeaderRequest,
     parameters: UserCasesParamRequest
-  ) async throws -> [ConsultationHistoryEntity] {
+  ) async throws -> ([ConsultationHistoryEntity], [UserCases]) {
     
     let service = MockNetworkService()
     
@@ -232,6 +232,8 @@ public class MockConsultationHistoryRepository: ConsultationHistoryRepositoryLog
     
     let model = jsonModel.data?.data?.map{ model in
       return ConsultationHistoryEntity(
+        id: model.id ?? 0,
+        orderNumber: model.order_no ?? "",
         type: model.getType(),
         name: model.lawyer?.name ?? "",
         imageURL: model.lawyer?.getImageName(),
@@ -244,7 +246,10 @@ public class MockConsultationHistoryRepository: ConsultationHistoryRepositoryLog
       )
     }
     
-    return model ?? []
+    let arrrayOfUserCases = jsonModel.data?.data ?? []
+    let arrayOfModels = model ?? []
+    
+    return (arrayOfModels, arrrayOfUserCases)
     
   }
   

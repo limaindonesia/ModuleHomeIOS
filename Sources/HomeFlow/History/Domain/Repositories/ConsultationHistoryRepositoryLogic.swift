@@ -13,6 +13,6 @@ public protocol ConsultationHistoryRepositoryLogic {
   func getConsultations(
     headers: HeaderRequest,
     parameters: UserCasesParamRequest
-  ) async throws -> [ConsultationHistoryEntity]
+  ) async throws -> ([ConsultationHistoryEntity], [UserCases])
   
 }

@@ -11,6 +11,8 @@ import GnDKit
 
 public struct ConsultationHistoryEntity {
   
+  public let id: Int
+  public let orderNumber: String
   public let type: ConsultationRowType
   public let name: String
   public let imageURL: URL?
