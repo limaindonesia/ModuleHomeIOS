@@ -37,7 +37,7 @@ public class HomeViewController: NiblessViewController {
   public override func viewWillDisappear(_ animated: Bool) {
     super.viewWillDisappear(animated)
     
-    navigationController?.setNavigationBarHidden(false, animated: false)
+//    navigationController?.setNavigationBarHidden(false, animated: false)
     
     store.stopSocket()
 
