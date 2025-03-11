@@ -18,7 +18,7 @@ public struct ConsultationHistoryResponse: Codable {
 
 // MARK: - DataClass
 public struct ConsultationHistoryMetaData: Codable {
-  let data: [ConsultationHistoryData]?
+  let data: [UserCases]?
   let links: Links?
   let meta: Meta?
 }

@@ -13,14 +13,14 @@ public struct OrderResponseModel: Codable {
   public let success: Bool?
   public let data: DataClass?
   public let message: String?
-
+  
   public init(from decoder: any Decoder) throws {
     let container = try decoder.container(keyedBy: CodingKeys.self)
     self.success = try container.decodeIfPresent(Bool.self, forKey: .success)
     self.data = try container.decodeIfPresent(DataClass.self, forKey: .data)
     self.message = try container.decodeIfPresent(String.self, forKey: .message)
   }
-
+  
   // MARK: - DataClass
   public struct DataClass: Codable {
     public let orderNo: String?
@@ -34,7 +34,8 @@ public struct OrderResponseModel: Codable {
     public let paymentMethods: [PaymentMethod]?
     public let voucher: Voucher?
     public let expiredAt: Int?
-
+    public let legalForm: LegalForm?
+    
     enum CodingKeys: String, CodingKey {
       case orderNo = "order_no"
       case totalPrice = "total_price"
@@ -46,8 +47,9 @@ public struct OrderResponseModel: Codable {
       case paymentMethods = "payment_methods"
       case expiredAt = "expired_at"
       case voucher = "voucher"
+      case legalForm = "legal_form"
     }
-
+    
     public init(from decoder: any Decoder) throws {
       let container = try decoder.container(keyedBy: CodingKeys.self)
       self.orderNo = try container.decodeIfPresent(String.self, forKey: .orderNo)
@@ -61,9 +63,10 @@ public struct OrderResponseModel: Codable {
       self.paymentMethods = try container.decodeIfPresent([PaymentMethod].self, forKey: .paymentMethods)
       self.expiredAt = try container.decodeIfPresent(Int.self, forKey: .expiredAt)
       self.voucher = try container.decodeIfPresent(Voucher.self, forKey: .voucher)
+      self.legalForm = try container.decodeIfPresent(LegalForm.self, forKey: .legalForm)
     }
   }
-
+  
   // MARK: - Consultation
   public struct Consultation: Codable {
     public let id: Int?
@@ -82,7 +85,7 @@ public struct OrderResponseModel: Codable {
     public let currentTime, paymentURL, paymentExpiredAt: String?
     public let payment, refund: LawyerRating?
     public let serviceType, lawyerIncome, autoCanceledAt: String?
-
+    
     enum CodingKeys: String, CodingKey {
       case id, skill, description
       case lawyerAttendance = "lawyer_attendance"
@@ -111,7 +114,7 @@ public struct OrderResponseModel: Codable {
       case lawyerIncome = "lawyer_income"
       case autoCanceledAt = "auto_canceled_at"
     }
-
+    
     public init(from decoder: any Decoder) throws {
       let container = try decoder.container(keyedBy: CodingKeys.self)
       self.id = try container.decodeIfPresent(Int.self, forKey: .id)
@@ -147,14 +150,14 @@ public struct OrderResponseModel: Codable {
       self.autoCanceledAt = try container.decodeIfPresent(String.self, forKey: .autoCanceledAt)
     }
   }
-
+  
   // MARK: - Booking
   public struct Booking: Codable {
     public let id, parentID, consultationID, bookingableID: Int?
     public let bookingableType, bookingDate, bookingTime: String?
     public let duration, status: Int?
     public let createdAt, updatedAt: String?
-
+    
     enum CodingKeys: String, CodingKey {
       case id
       case parentID = "parent_id"
@@ -167,7 +170,7 @@ public struct OrderResponseModel: Codable {
       case createdAt = "created_at"
       case updatedAt = "updated_at"
     }
-
+    
     public init(from decoder: any Decoder) throws {
       let container = try decoder.container(keyedBy: CodingKeys.self)
       self.id = try container.decodeIfPresent(Int.self, forKey: .id)
@@ -182,9 +185,9 @@ public struct OrderResponseModel: Codable {
       self.createdAt = try container.decodeIfPresent(String.self, forKey: .createdAt)
       self.updatedAt = try container.decodeIfPresent(String.self, forKey: .updatedAt)
     }
-
+    
   }
-
+  
   // MARK: - Client
   public struct Client: Codable {
     public let id: Int?
@@ -192,7 +195,7 @@ public struct OrderResponseModel: Codable {
     public let address: Address?
     public let profileCompletions: ProfileCompletions?
     public let isCompleted: Bool?
-
+    
     enum CodingKeys: String, CodingKey {
       case id, name
       case photoURL = "photo_url"
@@ -201,7 +204,7 @@ public struct OrderResponseModel: Codable {
       case profileCompletions = "profile_completions"
       case isCompleted = "is_completed"
     }
-
+    
     public init(from decoder: any Decoder) throws {
       let container = try decoder.container(keyedBy: CodingKeys.self)
       self.id = try container.decodeIfPresent(Int.self, forKey: .id)
@@ -214,7 +217,7 @@ public struct OrderResponseModel: Codable {
       self.isCompleted = try container.decodeIfPresent(Bool.self, forKey: .isCompleted)
     }
   }
-
+  
   // MARK: - Address
   public struct Address: Codable {
     public let id: Int?
@@ -222,7 +225,7 @@ public struct OrderResponseModel: Codable {
     public let cityID: Int?
     public let cityName: String?
     public let postalCodeID, status: Int?
-
+    
     enum CodingKeys: String, CodingKey {
       case id, address
       case cityID = "city_id"
@@ -230,7 +233,7 @@ public struct OrderResponseModel: Codable {
       case postalCodeID = "postal_code_id"
       case status
     }
-
+    
     public init(from decoder: any Decoder) throws {
       let container = try decoder.container(keyedBy: CodingKeys.self)
       self.id = try container.decodeIfPresent(Int.self, forKey: .id)
@@ -241,19 +244,19 @@ public struct OrderResponseModel: Codable {
       self.status = try container.decodeIfPresent(Int.self, forKey: .status)
     }
   }
-
+  
   // MARK: - ProfileCompletions
   public struct ProfileCompletions: Codable {
     public let validationPercentage: Int?
     public let validationMessage: String?
     public let sectionValidations: [JSONAny]?
-
+    
     enum CodingKeys: String, CodingKey {
       case validationPercentage = "validation_percentage"
       case validationMessage = "validation_message"
       case sectionValidations = "section_validations"
     }
-
+    
     public init(from decoder: any Decoder) throws {
       let container = try decoder.container(keyedBy: CodingKeys.self)
       self.validationPercentage = try container.decodeIfPresent(Int.self, forKey: .validationPercentage)
@@ -261,7 +264,7 @@ public struct OrderResponseModel: Codable {
       self.sectionValidations = try container.decodeIfPresent([JSONAny].self, forKey: .sectionValidations)
     }
   }
-
+  
   // MARK: - Lawyer
   public struct Lawyer: Codable {
     public let id: Int?
@@ -284,7 +287,7 @@ public struct OrderResponseModel: Codable {
     public let educations: [JSONAny]?
     public let missedCallConsultation: LawyerRating?
     public let isAudioVideoCallActive: Bool?
-
+    
     enum CodingKeys: String, CodingKey {
       case id, name, price
       case originalPrice = "original_price"
@@ -309,23 +312,23 @@ public struct OrderResponseModel: Codable {
       case isAudioVideoCallActive = "is_audio_video_call_active"
     }
   }
-
+  
   // MARK: - Skill
   public struct Skill: Codable {
     public let id: Int?
     public let name: String?
   }
-
+  
   // MARK: - LawyerRating
   public struct LawyerRating: Codable {
   }
-
+  
   // MARK: - Prices
   public struct Prices: Codable {
     public let isDiscount, isProbono: Bool?
     public let rangePrice, price, originalPrice: String?
     public let detail: [Detail]?
-
+    
     enum CodingKeys: String, CodingKey {
       case isDiscount = "is_discount"
       case isProbono = "is_probono"
@@ -335,61 +338,64 @@ public struct OrderResponseModel: Codable {
       case detail
     }
   }
-
+  
   // MARK: - Detail
   public struct Detail: Codable {
     public let type, price, originalPrice: String?
     public let skills: [Skill]?
-
+    
     enum CodingKeys: String, CodingKey {
       case type, price
       case originalPrice = "original_price"
       case skills
     }
   }
-
+  
   public struct OrderAdjustment: Codable {
     public let name, amount: String?
-
+    
     public init(name: String?, amount: String?) {
       self.name = name
       self.amount = amount
     }
-
+    
     public init(from decoder: any Decoder) throws {
       let container: KeyedDecodingContainer<OrderResponseModel.OrderAdjustment.CodingKeys> = try decoder.container(keyedBy: OrderResponseModel.OrderAdjustment.CodingKeys.self)
       self.name = try container.decodeIfPresent(String.self, forKey: OrderResponseModel.OrderAdjustment.CodingKeys.name)
       self.amount = try container.decodeIfPresent(String.self, forKey: OrderResponseModel.OrderAdjustment.CodingKeys.amount)
     }
   }
-
+  
   // MARK: - OrderItems
   public struct OrderItems: Codable {
     public let adminFee: AdminFee?
     public let lawyerFee: AdminFee?
     public let discount: AdminFee?
     public let voucher: AdminFee?
-
+    public let documentFee: AdminFee?
+    
     enum CodingKeys: String, CodingKey {
       case adminFee = "admin_fee"
       case lawyerFee = "lawyer_fee"
       case discount
       case voucher
+      case documentFee = "document_fee"
     }
-
+    
     public init(from decoder: any Decoder) throws {
       let container = try decoder.container(keyedBy: CodingKeys.self)
       self.adminFee = try container.decodeIfPresent(AdminFee.self, forKey: .adminFee)
       self.lawyerFee = try container.decodeIfPresent(AdminFee.self, forKey: .lawyerFee)
       self.discount = try container.decodeIfPresent(AdminFee.self, forKey: .discount)
       self.voucher = try container.decodeIfPresent(AdminFee.self, forKey: .voucher)
+      self.documentFee = try container.decodeIfPresent(AdminFee.self, forKey: .documentFee)
     }
   }
-
+  
   // MARK: - AdminFee
   public struct AdminFee: Codable {
     public let name, amount: String?
-
+    
     public init(from decoder: any Decoder) throws {
       let container = try decoder.container(keyedBy: CodingKeys.self)
       self.name = try container.decodeIfPresent(String.self, forKey: .name)
@@ -401,14 +407,14 @@ public struct OrderResponseModel: Codable {
   public struct PaymentMethod: Codable {
     public let name: String?
     public let icon: String?
-
+    
     public init(from decoder: any Decoder) throws {
       let container = try decoder.container(keyedBy: CodingKeys.self)
       self.name = try container.decodeIfPresent(String.self, forKey: .name)
       self.icon = try container.decodeIfPresent(String.self, forKey: .icon)
     }
   }
-
+  
   // MARK: - Voucher
   public struct Voucher: Codable {
     public let code, amount, tnc, description: String?
@@ -421,6 +427,41 @@ public struct OrderResponseModel: Codable {
       self.tnc = try container.decodeIfPresent(String.self, forKey: OrderResponseModel.Voucher.CodingKeys.tnc)
       self.description = try container.decodeIfPresent(String.self, forKey: OrderResponseModel.Voucher.CodingKeys.description)
       self.duration = try container.decodeIfPresent(Int.self, forKey: OrderResponseModel.Voucher.CodingKeys.duration)
+    }
+    
+  }
+  
+  // MARK: - LegalForm
+  public struct LegalForm: Codable {
+    public let id, categoryID, name, price: String?
+    public let finalPrice, description: String?
+    public let pictureURL: String?
+    public let category, rating: String?
+    public let totalCreated: Int?
+    
+    enum CodingKeys: String, CodingKey {
+      case id
+      case categoryID
+      case name, price
+      case finalPrice
+      case description
+      case pictureURL
+      case category, rating
+      case totalCreated
+    }
+    
+    public init(from decoder: any Decoder) throws {
+      let container: KeyedDecodingContainer<OrderResponseModel.LegalForm.CodingKeys> = try decoder.container(keyedBy: OrderResponseModel.LegalForm.CodingKeys.self)
+      self.id = try container.decodeIfPresent(String.self, forKey: OrderResponseModel.LegalForm.CodingKeys.id)
+      self.categoryID = try container.decodeIfPresent(String.self, forKey: OrderResponseModel.LegalForm.CodingKeys.categoryID)
+      self.name = try container.decodeIfPresent(String.self, forKey: OrderResponseModel.LegalForm.CodingKeys.name)
+      self.price = try container.decodeIfPresent(String.self, forKey: OrderResponseModel.LegalForm.CodingKeys.price)
+      self.finalPrice = try container.decodeIfPresent(String.self, forKey: OrderResponseModel.LegalForm.CodingKeys.finalPrice)
+      self.description = try container.decodeIfPresent(String.self, forKey: OrderResponseModel.LegalForm.CodingKeys.description)
+      self.pictureURL = try container.decodeIfPresent(String.self, forKey: OrderResponseModel.LegalForm.CodingKeys.pictureURL)
+      self.category = try container.decodeIfPresent(String.self, forKey: OrderResponseModel.LegalForm.CodingKeys.category)
+      self.rating = try container.decodeIfPresent(String.self, forKey: OrderResponseModel.LegalForm.CodingKeys.rating)
+      self.totalCreated = try container.decodeIfPresent(Int.self, forKey: OrderResponseModel.LegalForm.CodingKeys.totalCreated)
     }
     
   }

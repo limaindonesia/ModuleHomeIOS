@@ -9,13 +9,6 @@ import Foundation
 import GnDKit
 import AprodhitKit
 
-//limit: Int?,
-//skip: Int?,
-//type: String?,
-//status: String?,
-//q: String?,
-//paginate: Bool
-
 public protocol ConsultationHistoryRemoteDataSourceLogic {
   
   func requestConsultation(

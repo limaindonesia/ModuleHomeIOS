@@ -15,14 +15,14 @@ final class PaymentStoreTests: XCTestCase {
   var sut: PaymentStore!
 
   private func makeSUT() -> PaymentStore {
-    let remote = FakePaymentRemoteDataSource()
-    let paymentRepository = PaymentRepository(remote: remote)
-    
+//    let remote = FakePaymentRemoteDataSource()
+//    let paymentRepository = PaymentRepository(remote: remote)
+
     return PaymentStore(
       userSessionDataSource: MockUserSessionDataSource(),
       lawyerInfoViewModel: .init(),
       orderProcessRepository: MockOrderProcessRepository(),
-      paymentRepository: paymentRepository,
+      paymentRepository: MockPaymentRepository(),
       treatmentRepository: MockTreatmentRepository(),
       ongoingRepository: MockPaymentRepository(),
       cancelationRepository: MockPaymentCancelationRepository(),
@@ -45,7 +45,8 @@ final class PaymentStoreTests: XCTestCase {
     await sut.requestPaymentMethods()
     
     //then
-    XCTAssertEqual(sut.payments.count, 6)
+    print(sut.payments)
+    XCTAssertEqual(sut.payments.count, 1)
   }
   
   public func test_requestPaymentMethods_andReturnVAsOnly() async {

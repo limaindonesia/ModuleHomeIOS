@@ -14,11 +14,12 @@ final class LegalDocumentRemoteTests: XCTestCase {
   
   var sut: LegalDocumentRemoteDataSourceLogic!
   
-  func test_getHistoryLegalDocument_shouldReturnSuccess() {
+  func test_getHistoryLegalDocument_shouldReturnSuccess() async {
     
     //given
-    var service = MockNetworkService()
-    var mockData = """
+    var response: LegalDocumentResponseModel?
+    let service = MockNetworkService()
+    let mockData = """
       {
           "success": true,
           "data": {
@@ -294,10 +295,52 @@ final class LegalDocumentRemoteTests: XCTestCase {
     service.mockData = mockData.data(using: .utf8)!
     
     //when
-    sut = LegalDocumentRemoteDataSourceImpl(service: service)
+    sut = LegalFormRemoteDataSourceImpl(service: service)
     
+    do {
+      response = try await sut.requestHistoryLegalDocuments(
+        headers: [:],
+        parameters: [:]
+      )
+    }
+    catch {
+      
+    }
     
     //then
+    XCTAssertEqual(response?.data?.data?.count, 6)
+    XCTAssertEqual(response?.data?.data![0].status, "ON_PROGRESS")
+    XCTAssertEqual(response?.data?.data![3].status, "BOOKED")
+    
+  }
+  
+  func test_getHistoryLegalDocument_shouldReturnFailure() async {
+    
+    //given
+    var nError: NetworkErrorMessage?
+    let service = MockNetworkService()
+    service.mockError = NetworkErrorMessage(
+      code: 1,
+      description: "Gagal banget"
+    )
+    
+    //when
+    sut = LegalFormRemoteDataSourceImpl(service: service)
+    
+    do {
+      _ = try await sut.requestHistoryLegalDocuments(
+        headers: [:],
+        parameters: [:]
+      )
+    }
+    catch {
+      guard let error = error as? NetworkErrorMessage
+      else { return }
+      nError = error
+    }
+    
+    //then
+    XCTAssertNotNil(nError)
     
   }
   

@@ -77,7 +77,7 @@ final class HomeRemoteDataSourceTests: XCTestCase {
     sut = HomeRemoteDataSourceImpl(service: service)
 
     //when
-    let model = try await sut.fetchSkills(params: ["": ""])
+    let model = try await sut.fetchSkills(params: [:])
 
     //then
     let success = try XCTUnwrap(model.success)

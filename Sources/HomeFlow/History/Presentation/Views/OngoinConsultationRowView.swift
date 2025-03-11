@@ -8,10 +8,11 @@
 import SwiftUI
 import GnDKit
 import AprodhitKit
+import Kingfisher
 
 public struct OngoinConsultationRowView: View {
   
-  private let viewModel: OngoingConsultationViewModel
+  @ObservedObject private var viewModel: OngoingConsultationViewModel
   
   public init(viewModel: OngoingConsultationViewModel) {
     self.viewModel = viewModel
@@ -32,13 +33,19 @@ public struct OngoinConsultationRowView: View {
         Spacer()
         
         HStack(spacing: 0) {
-          Image("ic_order_service_clock", bundle: .module)
+          KFImage
+            .url(viewModel.imageURL)
+            .placeholder {
+              Image("img_placeholder_lawyer", bundle: .module)
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+            }
             .renderingMode(.template)
             .foregroundStyle(Color.gray600)
             .padding(.trailing, 4)
           
           TimerTextView(
-            paymentTimeRemaining: viewModel.timeRemaining,
+            paymentTimeRemaining: $viewModel.timeRemaining,
             textColor: Color.gray900
           ) { time in
             
@@ -61,7 +68,7 @@ public struct OngoinConsultationRowView: View {
         .padding(.vertical, 8)
       
       HStack(alignment: .top) {
-        Image(systemName: "person.fill")
+        Image("img_placeholder_lawyer", bundle: .module)
           .resizable()
           .aspectRatio(contentMode: .fit)
           .frame(width: 56, height: 84)

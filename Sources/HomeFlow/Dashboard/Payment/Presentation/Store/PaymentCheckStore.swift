@@ -31,7 +31,7 @@ public class PaymentCheckStore: ObservableObject {
   private let refundNavigator: RefundNavigator
   private let mainTabBarResponder: MainTabBarResponder
   
-  public var paymentTimeRemaining: CurrentValueSubject<TimeInterval, Never> = .init(0)
+  @Published public var paymentTimeRemaining: TimeInterval = 0
   @Published public var showTimeRemainig: Bool = false
   @Published public var isLoading: Bool = false
   @Published public var isPresentReasonBottomSheet: Bool = false
@@ -106,19 +106,12 @@ public class PaymentCheckStore: ObservableObject {
     self.refundNavigator = refundNavigator
     self.mainTabBarResponder = mainTabBarResponder
     
-    Task {
-      await fetchUserSession()
-      await requestReasons()
-      await requestUserCases()
-      await calculateTimeRemaining()
-    }
-    
     observer()
   }
   
   //MARK: - Fetch Local Data
   
-  private func fetchUserSession() async {
+  public func fetchUserSession() async {
     do {
       userSessionData = try await userSessionDataSource.fetchData()
       
@@ -175,7 +168,7 @@ public class PaymentCheckStore: ObservableObject {
   
   @MainActor
   public func requestCancelation() async {
-    if paymentTimeRemaining.value <= 0 {
+    if paymentTimeRemaining <= 0 {
       let success = await sendCancelationReason()
       if success {
         isPresentReasonBottomSheet = false
@@ -353,7 +346,7 @@ public class PaymentCheckStore: ObservableObject {
   
   @MainActor
   public func onDismissedReasonBottomSheet() async {
-    if paymentTimeRemaining.value <= 0 {
+    if paymentTimeRemaining <= 0 {
       let success = await dismissReason()
       if success {
         isPresentReasonBottomSheet = false
@@ -377,20 +370,20 @@ public class PaymentCheckStore: ObservableObject {
   }
   
   @MainActor
-  private func calculateTimeRemaining() {
+  public func calculateTimeRemaining() {
     guard let expired = userCase?.payment_expired_at else { return }
     guard let expDate = expired.toDate() else { return }
     let timeRemaining = Date().findMinutesDiff(with: expDate)
-    paymentTimeRemaining.value = timeRemaining
+    paymentTimeRemaining = timeRemaining
     showTimeRemainig = true
   }
   
   public func getTimeRemaining() -> String {
-    if paymentTimeRemaining.value == 0 {
+    if paymentTimeRemaining == 0 {
       return "00:00"
     }
     
-    return paymentTimeRemaining.value.timeString()
+    return paymentTimeRemaining.timeString()
   }
   
   private func checkStatus(from viewModel: PaymentStatusViewModel) {
@@ -419,7 +412,7 @@ public class PaymentCheckStore: ObservableObject {
   }
   
   private func observer() {
-    paymentTimeRemaining
+    $paymentTimeRemaining
       .dropFirst()
       .removeDuplicates()
       .receive(on: RunLoop.main)

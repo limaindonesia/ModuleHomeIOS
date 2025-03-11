@@ -10,6 +10,9 @@ import GnDKit
 import AprodhitKit
 
 struct LegalFormBottomSheetContentView: View {
+  
+  
+  
   var body: some View {
     VStack(spacing: 16) {
       Image("ic_web_legaldoc", bundle: .module)
@@ -44,8 +47,8 @@ struct LegalFormBottomSheetContentView: View {
       }
       
     }
+    .background(Color.white)
     .padding(.horizontal, 16)
-    .padding(.bottom)
   }
 }
 

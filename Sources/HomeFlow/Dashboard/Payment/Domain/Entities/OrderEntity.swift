@@ -25,6 +25,7 @@ public struct OrderEntity: Transformable {
   public let totalAdjustment: Int
   public let expiredAt: Int
   public let voucherAuto: VoucherEntity?
+  public let legalForm: LegalFormEntity
 
   init() {
     self.consultationID = 0
@@ -36,6 +37,7 @@ public struct OrderEntity: Transformable {
     self.totalAdjustment = 0
     self.expiredAt = 0
     self.voucherAuto = .init()
+    self.legalForm = .init()
   }
 
   public init(
@@ -47,7 +49,8 @@ public struct OrderEntity: Transformable {
     total: String,
     totalAdjustment: Int,
     expiredAt: Int,
-    voucherAuto: VoucherEntity?
+    voucherAuto: VoucherEntity?,
+    legalForm: LegalFormEntity
   ) {
     self.consultationID = consultationID
     self.lawyerFee = lawyerFee
@@ -58,12 +61,16 @@ public struct OrderEntity: Transformable {
     self.expiredAt = expiredAt
     self.totalAdjustment = totalAdjustment
     self.voucherAuto = voucherAuto
+    self.legalForm = legalForm
   }
 
   static func map(from data: OrderResponseModel.DataClass) -> OrderEntity {
     var voucherEntity: FeeEntity? = nil
     var discountEntity: FeeEntity? = nil
     var voucherAutoEntity: VoucherEntity? = nil
+    var documentFeeEntity: FeeEntity? = nil
+    var adminFeeEntity: FeeEntity? = nil
+    var legalFormEntity: LegalFormEntity? = nil
     
     let lawyerFee = data.orderItems?.lawyerFee
     let adminFee = data.orderItems?.adminFee
@@ -82,7 +89,6 @@ public struct OrderEntity: Transformable {
         name: discount.name ?? "",
         amount: discount.amount ?? ""
       )
-      
     }
     
     if let voucher = data.voucher, voucher.code != nil {
@@ -93,6 +99,41 @@ public struct OrderEntity: Transformable {
         tnc: voucher.tnc ?? "",
         descriptions: voucher.description ?? "",
         duration: voucher.duration ?? 0
+      )
+    }
+    
+    if let fee = data.orderItems?.documentFee {
+      documentFeeEntity = FeeEntity(
+        name: fee.name ?? "",
+        amount: fee.amount ?? ""
+      )
+    }
+    
+    if let fee = data.orderItems?.adminFee {
+      adminFeeEntity = FeeEntity(
+        name: fee.name ?? "",
+        amount: fee.amount ?? ""
+      )
+    }
+    
+    if let legalForm = data.legalForm {
+      legalFormEntity = LegalFormEntity(
+        type: .COMPLETED,
+        status: .DONE,
+        title: legalForm.name ?? "",
+        timeRemaining: 0.0,
+        date: "",
+        price: legalForm.price ?? "",
+        rating: Int(legalForm.rating ?? "") ?? 0,
+        legalFormID: legalForm.id ?? "",
+        orderNumber: "",
+        paymentURL: "",
+        adminFee: adminFeeEntity ?? .init(),
+        legalFormFee: documentFeeEntity ?? .init(),
+        discount: discountEntity ?? .init(),
+        totalAmount: legalForm.finalPrice ?? "",
+        paymentMethod: "",
+        paymentStatus: ""
       )
     }
     
@@ -111,7 +152,8 @@ public struct OrderEntity: Transformable {
       total: data.totalAmount ?? "",
       totalAdjustment: data.totalAdjustment ?? 0,
       expiredAt: data.expiredAt ?? 0,
-      voucherAuto: voucherAutoEntity ?? .init()
+      voucherAuto: voucherAutoEntity ?? .init(),
+      legalForm: legalFormEntity ?? .init()
     )
   }
 
@@ -151,24 +193,14 @@ public struct OrderEntity: Transformable {
       ),
       discount: discountViewModel,
       voucher: voucherViewModel,
+      documentFee: FeeViewModel(
+        id: 1,
+        name: entity.legalForm.legalFormFee.name,
+        amount: entity.legalForm.legalFormFee.amount
+      ),
       totalAmount: entity.total,
       totalAdjustment: entity.totalAdjustment
     )
   }
 
-}
-
-public struct FeeEntity {
-  public let name: String
-  public let amount: String
-
-  public init() {
-    self.name = ""
-    self.amount = ""
-  }
-
-  public init(name: String, amount: String) {
-    self.name = name
-    self.amount = amount
-  }
 }

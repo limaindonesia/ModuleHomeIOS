@@ -11,9 +11,9 @@ import AprodhitKit
 
 public struct DocumentActiveRowView: View {
   
-  public let viewModel: DocumentActiveViewModel
+  @ObservedObject public var viewModel: DocumentActiveViewModel
   
-  public  init(viewModel: DocumentActiveViewModel) {
+  public init(viewModel: DocumentActiveViewModel) {
     self.viewModel = viewModel
   }
   
@@ -32,19 +32,10 @@ public struct DocumentActiveRowView: View {
         
         Spacer()
         
-        HStack(spacing: 0) {
-          
-          timerView(
-            showTimeRemainig: true,
-            paymentTimeRemaining: viewModel.timeRemaining
-          )
-          
-          Image("ic_right_arrow", bundle: .module)
-            .resizable()
-            .aspectRatio(contentMode: .fit)
-            .frame(width: 16, height: 16)
-            .padding(.leading, 8)
-        }
+        timerView(
+          showTimeRemainig: true,
+          paymentTimeRemaining: $viewModel.timeRemaining
+        )
       }
       .padding(.top, 8)
       
@@ -74,7 +65,7 @@ public struct DocumentActiveRowView: View {
               width: 120,
               height: 30
             ) {
-              
+              viewModel.onPayment()
             }
           }
           .padding(.vertical, 8)
@@ -92,7 +83,7 @@ public struct DocumentActiveRowView: View {
   @ViewBuilder
   func timerView(
     showTimeRemainig: Bool,
-    paymentTimeRemaining: TimeInterval
+    paymentTimeRemaining: Binding<TimeInterval>
   ) -> some View {
     
     HStack(spacing: 2) {

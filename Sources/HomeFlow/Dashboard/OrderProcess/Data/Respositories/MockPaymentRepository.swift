@@ -28,7 +28,8 @@ public struct MockPaymentRepository: PaymentRepositoryLogic,
       total: "Rp60.000",
       totalAdjustment: 150000,
       expiredAt: 1729926810,
-      voucherAuto: .init()
+      voucherAuto: .init(),
+      legalForm: .init()
     )
     
   }
@@ -82,7 +83,10 @@ public struct MockPaymentRepository: PaymentRepositoryLogic,
     return [.init()]
   }
   
-  public func requestReasons(headers: HeaderRequest) async throws -> [ReasonEntity] {
+  public func requestReasons(
+    headers: HeaderRequest,
+    parameters: CancelReasonRequestParams
+  ) async throws -> [ReasonEntity] {
     return [
       ReasonEntity(id: 1, title: "Ingin melihat advokat lain"),
       ReasonEntity(id: 2, title: "Bidang keahlian advokat tidak sesuai dengan permasalahan saya"),
@@ -116,7 +120,10 @@ public struct MockPaymentRepository: PaymentRepositoryLogic,
   }
   
   public func requestPaymentMethod(headers: HeaderRequest) async throws -> [PaymentMethodEntity] {
-    return []
+    return [
+      .init(),
+      .init()
+    ]
   }
   
   public func requestEligibleVoucher(

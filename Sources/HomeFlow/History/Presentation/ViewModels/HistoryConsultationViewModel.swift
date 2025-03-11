@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import AprodhitKit
 
 public class HistoryConsultationViewModel: ConsultationBaseModel {
   
@@ -15,6 +16,7 @@ public class HistoryConsultationViewModel: ConsultationBaseModel {
   public var serviceName: String
   public var price: String
   public var readSummaries: () -> Void
+  public var onTap: () -> Void
   
   public override init() {
     self.status = .DONE
@@ -23,6 +25,7 @@ public class HistoryConsultationViewModel: ConsultationBaseModel {
     self.serviceName = ""
     self.price = ""
     self.readSummaries = {}
+    self.onTap = {}
     
     super.init(
       name: "",
@@ -40,7 +43,8 @@ public class HistoryConsultationViewModel: ConsultationBaseModel {
     date: String,
     issues: String,
     price: String,
-    readSummaries: @escaping () -> Void
+    readSummaries: @escaping () -> Void,
+    onTap: @escaping () -> Void
   ) {
     self.status = status
     self.date = date
@@ -48,6 +52,7 @@ public class HistoryConsultationViewModel: ConsultationBaseModel {
     self.serviceName = serviceName
     self.price = price
     self.readSummaries = readSummaries
+    self.onTap = onTap
     
     super.init(
       name: name,

@@ -234,13 +234,13 @@ public class MockConsultationHistoryRepository: ConsultationHistoryRepositoryLog
       return ConsultationHistoryEntity(
         type: model.getType(),
         name: model.lawyer?.name ?? "",
-        imageURL: URL(string: model.lawyer?.photoURL ?? ""),
+        imageURL: model.lawyer?.getImageName(),
         consultationStatus: .DONE,
-        dateTime: model.waitingExpiredAt ?? "",
-        issue: model.lawyer?.skills?.first?.name ?? "",
-        serviceType: model.serviceTypeName ?? "",
+        dateTime: model.waiting_expired_at ?? "",
+        issue: model.lawyer?.detail[0]?.skills[0]?.name ?? "",
+        serviceType: model.service_type_name ?? "",
         price: model.lawyer?.price ?? "",
-        waitingExpiredAt: model.waitingExpiredAt ?? ""
+        waitingExpiredAt: model.waiting_expired_at ?? ""
       )
     }
     

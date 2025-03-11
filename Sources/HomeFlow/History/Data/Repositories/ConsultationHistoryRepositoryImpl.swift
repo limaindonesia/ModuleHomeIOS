@@ -33,13 +33,13 @@ public class ConsultationHistoryRepositoryImpl: ConsultationHistoryRepositoryLog
         ConsultationHistoryEntity(
           type: model.getType(),
           name: model.lawyer?.name ?? "",
-          imageURL: URL(string: model.lawyer?.photoURL ?? ""),
+          imageURL: model.lawyer?.getImageName(),
           consultationStatus: .DONE,
-          dateTime: model.waitingExpiredAt ?? "",
+          dateTime: model.waiting_expired_at ?? "",
           issue: model.skill?.name ?? "",
-          serviceType: model.serviceTypeName ?? "",
+          serviceType: model.service_type_name ?? "",
           price: model.lawyer?.price ?? "",
-          waitingExpiredAt: model.waitingExpiredAt ?? ""
+          waitingExpiredAt: model.waiting_expired_at ?? ""
         )
       }
       

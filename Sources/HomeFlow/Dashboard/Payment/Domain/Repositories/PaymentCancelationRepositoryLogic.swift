@@ -10,7 +10,10 @@ import AprodhitKit
 
 public protocol PaymentCancelationRepositoryLogic {
   
-  func requestReasons(headers: HeaderRequest) async throws -> [ReasonEntity]
+  func requestReasons(
+    headers: HeaderRequest,
+    parameters: CancelReasonRequestParams
+  ) async throws -> [ReasonEntity]
   
   func requestCancelReason(
     headers: HeaderRequest,

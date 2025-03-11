@@ -14,32 +14,41 @@ public class ConsultationHistoryStore: ObservableObject {
   //Dependencies
   private let userSessionDataSource: UserSessionDataSourceLogic
   private let consultationRepository: ConsultationHistoryRepositoryLogic
+  private let advocateNavigator: OnlineAdvocateNavigator
+  private let loginNavigator: LoginNavigator
+  private let consultationNavigator: ConsultationHistoryNavigator
   
   @Published var activeConsultationViewModels: [OngoingConsultationViewModel] = []
   @Published var historyViewModels: [HistoryConsultationViewModel] = []
   @Published var isLoading: Bool = false
   @Published var error: ErrorMessage = .init()
+  @Published var showNotSignedInStatus: Bool = false
   
   private var userSessionData: UserSessionData? = nil
   private var page: Int = 1
-  private let limit: Int = 20
+  private let limit: Int = 10
   private var canLoadMorePages = true
   
   public init(
     userSessionDataSource: UserSessionDataSourceLogic,
-    consultationRepository: ConsultationHistoryRepositoryLogic
+    consultationRepository: ConsultationHistoryRepositoryLogic,
+    advocateNavigator: OnlineAdvocateNavigator,
+    loginNavigator: LoginNavigator,
+    consultationNavigator: ConsultationHistoryNavigator
   ) {
     self.userSessionDataSource = userSessionDataSource
     self.consultationRepository = consultationRepository
+    self.advocateNavigator = advocateNavigator
+    self.loginNavigator = loginNavigator
+    self.consultationNavigator = consultationNavigator
   }
   
   //MARK: - Fetch API
   
   @MainActor
   public func fetchActiveConsultations() async {
-    
     indicateLoading()
-    
+        
     do {
       let models = try await consultationRepository.getConsultations(
         headers: HeaderRequest(token: userSessionData?.remoteSession.remoteToken),
@@ -55,7 +64,7 @@ public class ConsultationHistoryStore: ObservableObject {
           timeRemaining: model.getTimeRemaining(),
           issues: model.issue,
           serviceName: model.serviceType,
-          price: "Rp\(model.price)"
+          price: model.price
         ) {
           
         }
@@ -74,12 +83,18 @@ public class ConsultationHistoryStore: ObservableObject {
   
   @MainActor
   public func fetchHistoryConsultations() async {
+    
+    guard let userSessionData = userSessionData else {
+      showNotSignedInStatus = true
+      return
+    }
+    
     indicateLoading()
     page = 1
     
     do {
       let models = try await consultationRepository.getConsultations(
-        headers: HeaderRequest(token: userSessionData?.remoteSession.remoteToken),
+        headers: HeaderRequest(token: userSessionData.remoteSession.remoteToken),
         parameters: UserCasesParamRequest(
           type: .HISTORY,
           limit: limit,
@@ -101,9 +116,11 @@ public class ConsultationHistoryStore: ObservableObject {
           serviceName: model.serviceType,
           date: model.dateTime,
           issues: model.issue,
-          price: "Rp\(model.price)"
+          price: model.price
         ) {
           
+        } onTap: {
+          self.navigateToDetailHistory()
         }
       }
       
@@ -122,9 +139,12 @@ public class ConsultationHistoryStore: ObservableObject {
   
   @MainActor
   public func loadMoreHistories() async {
+    
+    guard let userSessionData = userSessionData else { return }
+    
     do {
       let models = try await consultationRepository.getConsultations(
-        headers: HeaderRequest(token: userSessionData?.remoteSession.remoteToken),
+        headers: HeaderRequest(token: userSessionData.remoteSession.remoteToken),
         parameters: UserCasesParamRequest(
           type: .HISTORY,
           limit: limit,
@@ -146,9 +166,11 @@ public class ConsultationHistoryStore: ObservableObject {
           serviceName: model.serviceType,
           date: model.dateTime,
           issues: model.issue,
-          price: "Rp\(model.price)"
+          price: model.price
         ) {
           
+        } onTap:{
+          self.navigateToDetailHistory()
         }
       }
       
@@ -173,6 +195,7 @@ public class ConsultationHistoryStore: ObservableObject {
       guard let error = error as? ErrorMessage
       else { return }
       
+      showNotSignedInStatus = true
       indicateError(error: error)
     }
   }
@@ -197,7 +220,25 @@ public class ConsultationHistoryStore: ObservableObject {
   //MARK: - Navigator
   
   public func naviagteToAdvocateListing() {
-    
+    advocateNavigator.navigateToListAdvocate(
+      categoryAdvocate: "",
+      listCategoryID: [],
+      listSkillAdvocate: [],
+      listingType: "",
+      sktmModel: nil
+    )
+  }
+  
+  public func navigateToLogin() {
+    loginNavigator.navigateToLogin()
+  }
+  
+  public func navigateToDetailHistory() {
+    consultationNavigator.navigateToDetailHistory(.init())
+  }
+  
+  public func didBack() {
+    advocateNavigator.navigateBack()
   }
   
   //MARK: - Indicate

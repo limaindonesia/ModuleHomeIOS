@@ -8,12 +8,13 @@
 import Foundation
 import AprodhitKit
 import GnDKit
+import SwiftUI
 
-public class DocumentActiveViewModel: DocumentBaseViewModel {
+public class DocumentActiveViewModel: DocumentBaseViewModel, ObservableObject {
   
+  @Published public var timeRemaining: TimeInterval
   public let price: String
   public let status: DocumentStatus
-  public let timeRemaining: TimeInterval
   public let onPayment: () -> Void
   
   public override init() {

@@ -46,9 +46,10 @@ public struct HistoryConsultationRowView: View {
         KFImage
           .url(viewModel.imageURL)
           .placeholder {
-            Image(systemName: "person.fill")
+            Image("img_placeholder_lawyer", bundle: .module)
               .resizable()
-              .aspectRatio(contentMode: .fill)
+              .aspectRatio(contentMode: .fit)
+              .frame(width: 56, height: 84)
           }
           .resizable()
           .aspectRatio(contentMode: .fit)
@@ -107,6 +108,9 @@ public struct HistoryConsultationRowView: View {
     .clipShape(RoundedRectangle(cornerRadius: 8))
     .shadow(color: Color.gray200, radius: 8)
     .padding(.horizontal, 16)
+    .onTapGesture {
+      viewModel.onTap()
+    }
     
   }
 }
@@ -123,6 +127,8 @@ public struct HistoryConsultationRowView: View {
       issues: "Pidana",
       price: "Rp190.000",
       readSummaries: {
+        
+      }, onTap: {
         
       }
     )

@@ -9,17 +9,6 @@ import Foundation
 import AprodhitKit
 import GnDKit
 
-public enum ConsultationRowType {
-  case INCOMING
-  case HISTORY
-}
-
-public enum ConsultationStatus: String {
-  case REJECTED = "Dibatalkan"
-  case DONE = "Selesai"
-  case ONGOING = "Berlangsung"
-}
-
 open class ConsultationBaseModel: Identifiable, Hashable {
   
   public var id: UUID = UUID()

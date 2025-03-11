@@ -9,7 +9,7 @@ import Foundation
 import AprodhitKit
 import GnDKit
 
-public struct FakePaymentRemoteDataSource: PaymentRemoteDataSourceLogic,
+/*public struct FakePaymentRemoteDataSource: PaymentRemoteDataSourceLogic,
                                            OngoingUserCaseRemoteDataSourceLogic,
                                            PaymentCancelationRemoteDataSourceLogic {
   public init() {}
@@ -218,4 +218,4 @@ public struct FakePaymentRemoteDataSource: PaymentRemoteDataSourceLogic,
     }
   }
   
-}
+}*/

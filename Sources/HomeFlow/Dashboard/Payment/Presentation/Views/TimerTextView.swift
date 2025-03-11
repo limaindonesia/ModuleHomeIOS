@@ -6,10 +6,11 @@
 //
 
 import SwiftUI
+import AprodhitKit
 
 struct TimerTextView: View {
   
-  @State var paymentTimeRemaining: TimeInterval = 0
+  @Binding var paymentTimeRemaining: TimeInterval
   let textColor: Color
   var onUpdateTimer: (TimeInterval) -> Void
   var onTimerTimeUp: () -> Void
@@ -22,12 +23,12 @@ struct TimerTextView: View {
   
   
   init(
-    paymentTimeRemaining: TimeInterval,
+    paymentTimeRemaining: Binding<TimeInterval>,
     textColor: Color = .white,
     onUpdateTimer: @escaping (TimeInterval) -> Void,
     onTimerTimeUp: @escaping () -> Void
   ) {
-    self.paymentTimeRemaining = paymentTimeRemaining
+    self._paymentTimeRemaining = paymentTimeRemaining
     self.textColor = textColor
     self.onUpdateTimer = onUpdateTimer
     self.onTimerTimeUp = onTimerTimeUp
@@ -57,7 +58,7 @@ struct TimerTextView: View {
 
 #Preview {
   TimerTextView(
-    paymentTimeRemaining: 300,
+    paymentTimeRemaining: .constant(300),
     onUpdateTimer: { _ in },
     onTimerTimeUp: { }
   )

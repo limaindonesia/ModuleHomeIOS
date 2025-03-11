@@ -13,7 +13,10 @@ public class MockPaymentCancelationRepository: PaymentCancelationRepositoryLogic
   
   public init() {}
   
-  public func requestReasons(headers: HeaderRequest) async throws -> [ReasonEntity] {
+  public func requestReasons(
+    headers: HeaderRequest,
+    parameters: CancelReasonRequestParams
+  ) async throws -> [ReasonEntity] {
     return [
       ReasonEntity(id: 1, title: "Ingin melihat advokat lain"),
       ReasonEntity(id: 2, title: "Bidang keahlian advokat tidak sesuai dengan permasalahan saya"),
@@ -45,5 +48,5 @@ public class MockPaymentCancelationRepository: PaymentCancelationRepositoryLogic
   ) async throws -> Bool {
     return true
   }
- 
+  
 }

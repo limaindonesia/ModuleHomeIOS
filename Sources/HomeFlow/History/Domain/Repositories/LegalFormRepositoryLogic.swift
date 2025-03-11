@@ -11,6 +11,14 @@ import AprodhitKit
 
 public protocol LegalFormRepositoryLogic {
   
-  func fetchLegalFormDocuments() async throws -> [LegalFormDocumentEntity]
+  func fetchLegalFormDocuments(
+    headers: HeaderRequest,
+    parameters: UserCasesParamRequest
+  ) async throws -> [LegalFormEntity]
+  
+  func fetchDocumentByID(
+    headers: HeaderRequest,
+    id: String
+  ) async throws -> DocumentByIDEntity
   
 }
