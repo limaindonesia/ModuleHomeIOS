@@ -32,7 +32,7 @@ public struct DocumentHistoryRowView: View {
         
         Spacer()
         
-        Text(viewModel.dateStr())
+        Text(viewModel.date)
           .foregroundStyle(Color.gray900)
           .captionLexend(size: 12)
       }
@@ -59,7 +59,7 @@ public struct DocumentHistoryRowView: View {
             Spacer()
             
             Button {
-              viewModel.onNext()
+              viewModel.onTapButton()
             } label: {
               Text("Lihat Dokumen")
                 .foregroundStyle(Color.primaryInfo700)
@@ -76,6 +76,9 @@ public struct DocumentHistoryRowView: View {
     .clipShape(RoundedRectangle(cornerRadius: 8))
     .shadow(color: Color.gray200, radius: 8)
     .padding(.horizontal, 16)
+    .onTapGesture {
+      viewModel.onNext()
+    }
   }
 }
 
@@ -88,6 +91,9 @@ public struct DocumentHistoryRowView: View {
       date: "",
       price: "Rp60.000",
       onNext: {
+        
+      },
+      onTapButton: {
         
       }
     )

@@ -13,6 +13,7 @@ struct SubmitRatingBottomContentView: View {
   
   var body: some View {
     VStack(alignment: .leading) {
+      
       Text("Nilai Pengalaman Anda")
         .titleLexend(size: 20)
         .padding(.bottom, 16)
@@ -73,10 +74,8 @@ struct SubmitRatingBottomContentView: View {
             )
           }
           .background(Color.gray050)
-          .frame(maxWidth: .infinity, idealHeight: 100)
+          .frame(height: 100)
           .cornerRadius(6)
-          
-          
           
         }
         
@@ -105,6 +104,7 @@ struct SubmitRatingBottomContentView: View {
         
       }
       
+      Spacer()
     }
     .padding(.bottom, 24)
     .padding(.horizontal, 16)

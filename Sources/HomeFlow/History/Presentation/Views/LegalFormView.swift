@@ -51,18 +51,7 @@ public struct LegalFormView: View {
             } else {
               ForEach(store.historyViewModels, id: \.id) { model in
                 if let historyModel = model as? DocumentHistoryViewModel {
-                  DocumentHistoryRowView(
-                    viewModel: .init(
-                      type: model.type,
-                      title: historyModel.title,
-                      status: historyModel.status,
-                      date: historyModel.dateStr(),
-                      price: historyModel.price,
-                      onNext: {
-                        historyModel.onNext()
-                      }
-                    )
-                  )
+                  DocumentHistoryRowView(viewModel: historyModel)
                 }
               }
               
@@ -72,23 +61,20 @@ public struct LegalFormView: View {
           .padding(.vertical, 16)
           
         }
-        .padding(.bottom, 24)
+        .padding(.bottom, 80)
         .onAppear {
           Task {
-            await store.fetchDocuments()
+            await store.fetchUserSessionData()
+            await store.fetchActiveDocuments()
+            await store.fetchHistoryDocuments()
           }
         }
         
       }
       
-      BottomSheetView(isPresented: $store.isPresentBottomSheet) {
-        LegalFormBottomSheetContentView()
-      }
-      
     }
     .ignoresSafeArea(edges: .all)
     .background(Color.gray050)
-    
   }
   
   @ViewBuilder
@@ -125,7 +111,7 @@ public struct LegalFormView: View {
       .padding(.all, 16)
       .padding(.top, 65)
       .onTapGesture {
-        store.isPresentBottomSheet = true
+        store.showBottomSheet()
       }
     } else {
       VStack(alignment: .leading, spacing: 8) {
@@ -151,33 +137,11 @@ public struct LegalFormView: View {
   func activeDocument(_ model: DocumentBaseViewModel) -> some View {
     
     if let waitingForPaymentModel = model as? DocumentActiveViewModel {
-      DocumentActiveRowView(
-        viewModel: .init(
-          type: model.type,
-          title: waitingForPaymentModel.title,
-          status: waitingForPaymentModel.status,
-          timeRemaining: waitingForPaymentModel.timeRemaining,
-          price: waitingForPaymentModel.price,
-          onPayment: {
-            waitingForPaymentModel.onPayment()
-          }
-        )
-      )
+      DocumentActiveRowView(viewModel: waitingForPaymentModel)
     }
     
     if let processModel = model as? DocumentOnProcessViewModel {
-      DocumentOnProcessRowView(
-        viewModel: .init(
-          type: model.type,
-          title: processModel.title,
-          status: processModel.status,
-          date: processModel.dateStr(),
-          price: processModel.price,
-          onNext: {
-            processModel.onNext()
-          }
-        )
-      )
+      DocumentOnProcessRowView(viewModel: processModel)
     }
     
   }
@@ -187,7 +151,11 @@ public struct LegalFormView: View {
 #Preview {
   LegalFormView(
     store: LegalFormStore(
-      legalFormRepository: MockLegalFormRepository()
+      userSessionDataSource: MockUserSessionDataSource(),
+      legalFormRepository: MockLegalFormRepository(),
+      legalFormNavigator: MockLegalFormNavigator(),
+      paymentNavigator: MockNavigator(),
+      bottomSheetResponder: MockNavigator()
     )
   )
 }

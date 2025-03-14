@@ -31,7 +31,9 @@ final class HomeStoreTests: XCTestCase {
       homeRepository: repository,
       ongoingRepository: repository,
       sktmRepository: repository,
+      idCardRepository: MockGetKTPRepository(),
       cancelationRepository: MockPaymentCancelationRepository(),
+      meRepository: MockMeRepository(),
       onlineAdvocateNavigator: navigator,
       topAdvocateNavigator: navigator,
       articleNavigator: navigator,
@@ -41,7 +43,9 @@ final class HomeStoreTests: XCTestCase {
       sktmNavigator: navigator,
       mainTabBarResponder: navigator,
       ongoingNavigator: navigator,
-      loginResponder: navigator
+      loginResponder: navigator,
+      refundNavigator: navigator,
+      probonoNavigator: navigator
     )
   }
   

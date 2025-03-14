@@ -203,7 +203,10 @@ public struct PaymentRemoteDataSource: PaymentRemoteDataSourceLogic,
     
   }
   
-  public func requestCancelationReason(headers: [String : String]) async throws -> ReasonResponseModel {
+  public func requestCancelationReason(
+    headers: [String : String],
+    parameters: [String : Any]
+  ) async throws -> ReasonResponseModel {
     do {
       let data = try await service.request(
         with: Endpoint.CANCELLATION_REASON,
@@ -309,7 +312,9 @@ public struct PaymentRemoteDataSource: PaymentRemoteDataSourceLogic,
     }
   }
   
-  public func requestPaymentMethods(headers: [String : String]) async throws -> PaymentMethodResponseModel {
+  public func requestPaymentMethods(
+    headers: [String : String]
+  ) async throws -> PaymentMethodResponseModel {
     do {
       let data = try await service.request(
         with: Endpoint.PAYMENT_METHOD,

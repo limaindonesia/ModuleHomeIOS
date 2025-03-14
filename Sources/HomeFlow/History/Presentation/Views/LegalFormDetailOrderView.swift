@@ -11,227 +11,235 @@ import GnDKit
 
 public struct LegalFormDetailOrderView: View {
   
-  @State var isPresentRatingBottomSheet: Bool = false
+  @ObservedObject var store: LegalFormDetailOrderStore
   
-  public init() {
-    
+  public init(store: LegalFormDetailOrderStore) {
+    self.store = store
   }
   
   public var body: some View {
     
-    ZStack {
+    GeometryReader { geometry in
       
-      ScrollView {
+      ZStack(alignment: .top) {
         
-        VStack(alignment: .leading) {
+        Color.white.ignoresSafeArea()
+        
+        VStack(spacing: 0) {
           
-          HStack(alignment: .center) {
-            VStack(alignment: .leading) {
-              Text("Penilaian Anda")
-                .titleLexend(size: 14)
-              
-              Text("Dinilai pada 30 Februari 2023, 14.17")
-                .foregroundStyle(Color.gray400)
-                .captionLexend(size: 10)
-            }
-            
-            Spacer()
-            
-            StarRatingView(rating: 3)
+          StandardHeaderView(title: "Detail Pesanan") {
+            store.didBack()
           }
-          .padding(.vertical, 12)
-          .padding(.horizontal, 16)
-          .clipShape(RoundedRectangle(cornerRadius: 8))
-          .overlay {
-            RoundedRectangle(cornerRadius: 8).stroke(Color.gray100, lineWidth: 1)
-          }
+          .frame(height: 60)
+          .background(Color.white)
+          .zIndex(1)
           
-          VStack(alignment: .leading, spacing: 12) {
-            
-            HStack {
+          ScrollView {
+            VStack {
               
-              Image("ic_legal_form", bundle: .module)
-              
-              VStack(alignment: .leading, spacing: 4) {
-                HStack {
-                  Text("#1234567891")
-                    .captionLexend(size: 12)
-                  
-                  Spacer()
-                  
-                  Text("Dalam Proses")
-                    .foregroundStyle(Color.warning600)
-                    .titleLexend(size: 10)
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 4)
-                    .background(Color.warning100)
-                    .cornerRadius(10)
-                }
-                
-                Text("Surat Pernyataan Ahli Waris")
-                  .titleLexend(size: 14)
-                
-                Text("30 Feb 2023, 14:00")
-                  .captionLexend(size: 12)
+              if store.showRating {
+                ratingView()
               }
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal, 16)
-            
-            Divider()
-              .background(Color.gray100)
-              .frame(maxWidth: .infinity, maxHeight: 1)
-            
-            ButtonPrimary(
-              title: "Lanjutkan",
-              color: .buttonActiveColor,
-              width: .infinity,
-              height: 40
-            ) {
               
+              orderDetailView()
+              
+              if store.showSummary {
+                summaryView()
+              }
+              
+              paymentDetailsView()
+              
+              Spacer()
             }
             .padding(.horizontal, 16)
+            .padding(.top, 16)
+            .frame(minHeight: geometry.size.height - 70)
           }
-          .padding(.vertical, 12)
-          .clipShape(RoundedRectangle(cornerRadius: 8))
-          .overlay {
-            RoundedRectangle(cornerRadius: 8).stroke(Color.gray100, lineWidth: 1)
-          }
-          
-          VStack(alignment: .leading, spacing: 12) {
-            Text("Nilai Pengalaman Anda")
-              .titleLexend(size: 14)
-            
-            VStack(alignment: .leading) {
-              HStack(alignment: .top){
-                Image("info", bundle: .module)
-                Text("Ulasan Anda membantu Perqara meningkatkan layanan pembuatan dokumen.")
-                  .foregroundStyle(Color.warning900)
-                  .captionLexend(size: 14)
-              }
-              
-              ButtonSecondary(
-                title: "Beri Ulasan",
-                backgroundColor: .clear,
-                tintColor: .buttonActiveColor,
-                width: .infinity,
-                height: 32
-              ) {
-                isPresentRatingBottomSheet = true
-              }
-            }
-            .padding(.all, 8)
-            .background(Color.warning050)
-            .clipShape(RoundedRectangle(cornerRadius: 8))
-            
-          }
-          .padding(.vertical, 12)
-          .padding(.horizontal, 16)
-          .clipShape(RoundedRectangle(cornerRadius: 8))
-          .overlay {
-            RoundedRectangle(cornerRadius: 8).stroke(Color.gray100, lineWidth: 1)
-          }
-          
-          VStack(spacing: 12) {
-            
-            HStack {
-              
-              Text("Rincian Pembayaran")
-                .foregroundStyle(Color.darkTextColor)
-                .titleLexend(size: 14)
-              
-              Spacer()
-              
-              Button {
-                
-              } label: {
-                Text("Lihat Invoice")
-                  .foregroundStyle(Color.buttonActiveColor)
-                  .titleLexend(size: 14)
-              }
-              
-            }
-            
-            FeeRowView(name: "Biaya Dokumen Hukum", amount: "Rp5.000") {
-              
-            }
-            
-            FeeRowView(name: "Biaya Layanan", amount: "Rp5.000", showInfo: true) {
-              
-            }
-            
-            FeeRowView(name: "Diskon Perqara", amount: "Rp5.000") {
-              
-            }
-            
-            Divider()
-              .background(Color.gray100)
-              .frame(maxWidth: .infinity, maxHeight: 1)
-              .padding(.horizontal, 8)
-            
-            HStack {
-              
-              Text("Total Pembayaran")
-                .foregroundStyle(Color.darkTextColor)
-                .titleLexend(size: 14)
-              
-              Spacer()
-              
-              Text("Rp1.000.000")
-                .foregroundStyle(Color.darkTextColor)
-                .titleLexend(size: 14)
-              
-            }
-            
-            HStack {
-              
-              Text("Metode Pembayaran")
-                .foregroundStyle(Color.darkTextColor)
-                .bodyLexend(size: 14)
-              
-              Spacer()
-              
-              Text("BCA Virtual Account")
-                .foregroundStyle(Color.darkTextColor)
-                .captionLexend(size: 14)
-              
-            }
-            
-            HStack {
-              
-              Text("Status Pembayaran")
-                .foregroundStyle(Color.darkTextColor)
-                .bodyLexend(size: 14)
-              
-              Spacer()
-              
-              Text("Berhasil")
-                .foregroundStyle(Color.darkTextColor)
-                .captionLexend(size: 14)
-            }
-            
-          }
-          .padding(.vertical, 12)
-          .padding(.horizontal, 16)
-          .clipShape(RoundedRectangle(cornerRadius: 8))
-          .overlay {
-            RoundedRectangle(cornerRadius: 8).stroke(Color.gray100, lineWidth: 1)
-          }
-          
+          .frame(width: screen.width, height: screen.height)
         }
-        .padding(.horizontal, 16)
+        .background(Color.gray050)
         
+        BottomSheetView(isPresented: $store.isPresentRatingBottomSheet) {
+          SubmitRatingBottomContentView()
+            .padding(.bottom, 80)
+        }
+      }
+      .onAppear {
+        Task {
+          await store.fetchUserSessionData()
+          await store.fetchDocumentBy(id: store.entity.legalFormID)
+          store.readStatus()
+        }
       }
       
-      BottomSheetView(isPresented: $isPresentRatingBottomSheet) {
-        SubmitRatingBottomContentView()
-      }
     }
-    
+    .background(Color.white)
   }
   
+  @ViewBuilder
+  private func ratingView() -> some View {
+    VStack(alignment: .leading) {
+      HStack {
+        VStack(alignment: .leading) {
+          Text("Penilaian Anda").titleLexend(size: 14)
+          Text("Dinilai pada 30 Februari 2023, 14.17").foregroundStyle(Color.gray400).captionLexend(size: 10)
+        }
+        Spacer()
+        StarRatingView(rating: store.entity.rating)
+      }
+      .padding()
+      .background(Color.white)
+      .overlay{
+        RoundedRectangle(cornerRadius: 8).stroke(Color.gray100, lineWidth: 1)
+      }
+    }
+  }
+  
+  @ViewBuilder
+  private func orderDetailView() -> some View {
+    VStack(alignment: .leading, spacing: 12) {
+      HStack {
+        Image("ic_legal_form", bundle: .module)
+        VStack(alignment: .leading, spacing: 4) {
+          HStack {
+            Text(store.entity.orderNumber).captionLexend(size: 12)
+            Spacer()
+            Text(store.entity.status.rawValue)
+              .foregroundStyle(Color.warning600)
+              .titleLexend(size: 10)
+              .padding(.horizontal, 6)
+              .padding(.vertical, 4)
+              .background(Color.warning100)
+              .cornerRadius(10)
+          }
+          Text(store.entity.title).titleLexend(size: 14)
+          Text(store.entity.getDateString()).captionLexend(size: 12)
+        }
+      }
+      
+      Divider().background(Color.gray100)
+      
+      ButtonPrimary(
+        title: "Lanjutkan",
+        color: .buttonActiveColor,
+        width: .infinity,
+        height: 40
+      ) { }
+    }
+    .padding()
+    .background(Color.white)
+    .overlay{
+      RoundedRectangle(cornerRadius: 8).stroke(Color.gray100, lineWidth: 1)
+    }
+  }
+  
+  @ViewBuilder
+  private func summaryView() -> some View {
+    VStack(alignment: .leading, spacing: 12) {
+      Text("Nilai Pengalaman Anda")
+        .titleLexend(size: 14)
+      
+      VStack(alignment: .leading) {
+        HStack {
+          Image("info", bundle: .module)
+          Text("Ulasan Anda membantu Perqara meningkatkan layanan pembuatan dokumen.")
+            .foregroundStyle(Color.warning900)
+            .captionLexend(size: 14)
+        }
+        
+        ButtonSecondary(
+          title: "Beri Ulasan",
+          backgroundColor: .clear,
+          tintColor: .buttonActiveColor,
+          width: .infinity,
+          height: 32
+        ) {
+          store.isPresentRatingBottomSheet = true
+        }
+      }
+      .padding()
+      .background(Color.warning050)
+      .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+    .padding()
+    .background(Color.white)
+    .overlay{
+      RoundedRectangle(cornerRadius: 8).stroke(Color.gray100, lineWidth: 1)
+    }
+  }
+  
+  @ViewBuilder
+  private func paymentDetailsView() -> some View {
+    VStack(spacing: 12) {
+      HStack {
+        Text("Rincian Pembayaran")
+          .titleLexend(size: 14)
+        Spacer()
+        Button {
+          
+        } label: {
+          Text("Lihat Invoice")
+          .titleLexend(size: 14)
+          .foregroundStyle(Color.buttonActiveColor)
+        }
+      }
+      
+      FeeRowView(
+        name: store.entity.legalFormFee.name,
+        amount: store.entity.legalFormFee.amount
+      ) { }
+      
+      FeeRowView(
+        name: store.entity.adminFee.name,
+        amount: store.entity.adminFee.amount
+      ) { }
+      
+      FeeRowView(
+        name: store.entity.discount.name,
+        amount: store.entity.adminFee.amount
+      ) { }
+      
+      Divider().background(Color.gray100).padding(.horizontal, 8)
+      
+      HStack {
+        Text("Total Pembayaran")
+          .titleLexend(size: 14)
+        Spacer()
+        Text(store.entity.totalAmount)
+          .titleLexend(size: 14)
+      }
+      
+      HStack {
+        Text("Metode Pembayaran")
+          .bodyLexend(size: 14)
+        Spacer()
+        Text(store.entity.paymentMethod)
+          .captionLexend(size: 14)
+      }
+      
+      HStack {
+        Text("Status Pembayaran")
+          .bodyLexend(size: 14)
+        Spacer()
+        Text(store.entity.paymentStatus)
+          .captionLexend(size: 14)
+      }
+    }
+    .padding()
+    .background(Color.white)
+    .overlay{
+      RoundedRectangle(cornerRadius: 8).stroke(Color.gray100, lineWidth: 1)
+    }
+  }
 }
 
 #Preview {
-  LegalFormDetailOrderView()
+  LegalFormDetailOrderView(
+    store: LegalFormDetailOrderStore(
+      entity: .init(),
+      userSessionDataSource: MockUserSessionDataSource(),
+      legalFormRepository: MockLegalFormRepository(),
+      legalFormNavigator: MockLegalFormNavigator()
+    )
+  )
 }

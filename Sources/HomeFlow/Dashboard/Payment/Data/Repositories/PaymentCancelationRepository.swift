@@ -17,9 +17,15 @@ public class PaymentCancelationRepository: PaymentCancelationRepositoryLogic {
     self.remote = remote
   }
   
-  public func requestReasons(headers: HeaderRequest) async throws -> [ReasonEntity] {
+  public func requestReasons(
+    headers: HeaderRequest,
+    parameters: CancelReasonRequestParams
+  ) async throws -> [ReasonEntity] {
     do {
-      let response = try await remote.requestCancelationReason(headers: headers.toHeaders())
+      let response = try await remote.requestCancelationReason(
+        headers: headers.toHeaders(),
+        parameters: parameters.toParam()
+      )
       return response.data?.map(ReasonEntity.map(from:)) ?? []
       
     } catch {

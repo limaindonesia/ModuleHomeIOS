@@ -50,8 +50,8 @@ public class PaymentStore: ObservableObject {
   @Published var voucherCount: Int = 0
   @Published public var elligibleVoucherEntities: [EligibleVoucherEntity] = []
   @Published public var showSnackBar: Bool = false
+  @Published public var paymentTimeRemaining: TimeInterval = 0
   
-  public var paymentTimeRemaining: CurrentValueSubject<TimeInterval, Never> = .init(0)
   public var message = CurrentValueSubject<String, Never>("")
   private var treatmentEntities: [TreatmentEntity] = []
   private var userSessionData: UserSessionData?
@@ -181,7 +181,7 @@ public class PaymentStore: ObservableObject {
   public func requestCancelation() async {
     var success: Bool = false
     
-    if paymentTimeRemaining.value <= 0 {
+    if paymentTimeRemaining <= 0 {
       success = await sendCancelationReason()
     } else {
       success = await requestCancelationPayment()
@@ -272,7 +272,8 @@ public class PaymentStore: ObservableObject {
     
     do {
       reasons = try await cancelationRepository.requestReasons(
-        headers: HeaderRequest(token: token)
+        headers: HeaderRequest(token: token),
+        parameters: CancelReasonRequestParams(type: nil)
       )
       
       GLogger(
@@ -443,7 +444,7 @@ public class PaymentStore: ObservableObject {
       
       let entities = try await ongoingRepository.fetchOngoingUserCases(
         headers: HeaderRequest(token: token).toHeaders(),
-        parameters: UserCasesParamRequest(type: "ongoing")
+        parameters: UserCasesParamRequest(type: .ONGOING)
       )
       if entities.count > 0 {
         userCase = entities[0]
@@ -609,13 +610,14 @@ public class PaymentStore: ObservableObject {
   
   @MainActor
   public func onDismissedReasonBottomSheet() async {
-    if paymentTimeRemaining.value <= 0 {
+    if paymentTimeRemaining <= 0 {
       let success = await dismissReason()
       if success {
         isPresentReasonBottomSheet = false
         try? await Task.sleep(nanoseconds: 1 * 1_000_000_000)
         backToHome()
       }
+      return
     }
     
     hideReasonBottomSheet()
@@ -750,7 +752,7 @@ public class PaymentStore: ObservableObject {
   }
   
   public func calculateTimeRemainig() {
-    paymentTimeRemaining.value = orderViewModel.getRemainingMinutes()
+    paymentTimeRemaining = orderViewModel.getRemainingMinutes()
     showTimeRemainig = true
   }
   
@@ -876,7 +878,7 @@ public class PaymentStore: ObservableObject {
   public func hideReasonBottomSheet() {
     isPresentReasonBottomSheet = false
     Task {
-      if paymentTimeRemaining.value <= 0 {
+      if paymentTimeRemaining <= 0 {
         _ = await sendCancelationReason()
       }
     }
@@ -930,14 +932,14 @@ public class PaymentStore: ObservableObject {
         
       }.store(in: &subscriptions)
     
-    paymentTimeRemaining
+    $paymentTimeRemaining
       .dropFirst()
       .removeDuplicates()
       .receive(on: RunLoop.main)
       .subscribe(on: RunLoop.main)
       .sink { value in
         if value <= 0 {
-//          self.showReasonBottomSheet()
+          self.showReasonBottomSheet()
         }
       }
       .store(in: &subscriptions)

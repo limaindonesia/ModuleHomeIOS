@@ -11,7 +11,10 @@ import AprodhitKit
 
 public protocol PaymentCancelationRemoteDataSourceLogic {
   
-  func requestCancelationReason(headers: [String : String]) async throws -> ReasonResponseModel
+  func requestCancelationReason(
+    headers: [String : String],
+    parameters: [String : Any]
+  ) async throws -> ReasonResponseModel
   
   func requestCancelReason(
     headers: [String : String],
@@ -38,13 +41,16 @@ public class PaymentCancelationRemoteDataSource: PaymentCancelationRemoteDataSou
     self.service = service
   }
   
-  public func requestCancelationReason(headers: [String : String]) async throws -> ReasonResponseModel {
+  public func requestCancelationReason(
+    headers: [String : String],
+    parameters: [String : Any]
+  ) async throws -> ReasonResponseModel {
     do {
       let data = try await service.request(
         with: Endpoint.CANCELLATION_REASON,
         withMethod: .get,
         withHeaders: headers,
-        withParameter: [:],
+        withParameter: parameters,
         withEncoding: .url
       )
       let model = try JSONDecoder().decode(ReasonResponseModel.self, from: data)

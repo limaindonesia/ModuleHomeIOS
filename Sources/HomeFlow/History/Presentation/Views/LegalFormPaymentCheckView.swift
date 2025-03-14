@@ -11,51 +11,61 @@ import AprodhitKit
 
 struct LegalFormPaymentCheckView: View {
   
-  @ObservedObject var store: PaymentCheckStore
+  @ObservedObject var store: LegalFormPaymentCheckStore
   
   var body: some View {
-    ZStack {
-      VStack(spacing: 12) {
-        infoDetailView()
-          .padding(.top, 16)
-        
-        actionView()
-        
-        Spacer()
-      }
+    VStack {
       
-      BottomSheetView(
-        isPresented: $store.isPresentReasonBottomSheet,
-        dismissable: true
-      ) {
-        CancelationReasonContentView(
-          store: CancelationReasonStore(
-            arrayReasons: store.reasons
-          ),
-          imageURL: store.lawyerInfo.imageURL,
-          lawyerName: store.lawyerInfo.name,
-          onSendReason: { (entity, reason) in
-            store.selectedReason = entity
-            store.reason = reason
-            Task {
-              await store.requestCancelation()
-            }
-            
-            GLogger(
-              .info,
-              layer: "Presentation",
-              message: "send reason \(entity.id) : \( entity.title) : \(reason)"
-            )
-          }
-        )
+      StandardHeaderView(title: "Pembayaran") {}
+      
+      ZStack {
+        VStack(spacing: 12) {
+          infoDetailView()
+            .padding(.top, 16)
+          
+          actionView()
+          
+          Spacer()
+        }
         
-      } onDismissed: {
-        Task {
-          await store.onDismissedReasonBottomSheet()
+        BottomSheetView(
+          isPresented: $store.isPresentReasonBottomSheet,
+          dismissable: true
+        ) {
+          CancelationReasonContentView(
+            store: CancelationReasonStore(
+              arrayReasons: store.reasons
+            ),
+            imageURL: URL(string: ""),
+            lawyerName: store.entity.title,
+            onSendReason: { (entity, reason) in
+              store.selectedReason = entity
+              store.reason = reason
+              Task {
+                await store.requestCancelation()
+              }
+              
+              GLogger(
+                .info,
+                layer: "Presentation",
+                message: "send reason \(entity.id) : \( entity.title) : \(reason)"
+              )
+            }
+          )
+          
+        } onDismissed: {
+          Task {
+            await store.onDismissedReasonBottomSheet()
+          }
         }
       }
+      .background(Color.gray100)
     }
-    .background(Color.gray100)
+    .onAppear {
+      Task {
+        await store.fetchFirst()
+      }
+    }
   }
   
   @ViewBuilder
@@ -73,18 +83,14 @@ struct LegalFormPaymentCheckView: View {
             .renderingMode(.template)
             .foregroundStyle(.white)
           
-          if store.showTimeRemainig {
-            TimerTextView(paymentTimeRemaining: store.paymentTimeRemaining.value) { newValue in
-              store.paymentTimeRemaining.value = newValue
-            } onTimerTimeUp: {
-              Task {
-                await store.requestConsultationById()
-              }
-            }
+          TimerTextView(paymentTimeRemaining: $store.expiredTime) { newValue in
+            store.expiredTime = newValue
+          } onTimerTimeUp: {
+            
           }
         }
         .padding(.horizontal, 8)
-        .frame(height: 24)
+        .frame(width: 65, height: 24)
         .background(Color.warning500)
         .clipShape(RoundedRectangle(cornerRadius: 6))
       }
@@ -95,40 +101,41 @@ struct LegalFormPaymentCheckView: View {
       .clipShape(RoundedRectangle(cornerRadius: 8))
       
       HStack(alignment: .center) {
-        Text("OVO")
+        Text(store.documentByIDEntity.paymentMethod)
           .titleLexend(size: 14)
         
         Spacer()
         
-        Image("ic_payment_ovo", bundle: .module)
+        Image(
+          store.documentByIDEntity.getPaymentIcon(),
+          bundle: .module
+        )
       }
       
       Divider()
         .frame(maxWidth: .infinity, maxHeight: 1)
       
-      HStack(alignment: .center) {
-        VStack(alignment: .leading) {
+      HStack {
+        VStack(alignment: .leading, spacing: 2) {
           Text("Total Pembayaran")
             .foregroundStyle(Color.gray500)
-            .captionLexend(size: 14)
+            .bodyLexend(size: 14)
           
-          Text("Rp50.000")
+          Text(store.documentByIDEntity.totalAmount)
             .titleLexend(size: 16)
         }
-        
         Spacer()
         
-        HStack {
-          Image("", bundle: .module)
-          Button {
-            
-          } label: {
-            Text("Salin")
-              .foregroundStyle(Color.primaryInfo700)
-              .titleLexend(size: 14)
+        ButtonSecondary(
+          title: "Cek Status",
+          backgroundColor: Color.white,
+          tintColor: Color.black,
+          width: 100,
+          height: 32,
+          action: {
+            Task { await store.requestPaymentStatus() }
           }
-
-        }
+        )
       }
       
     }
@@ -176,5 +183,13 @@ struct LegalFormPaymentCheckView: View {
 }
 
 #Preview {
-  LegalFormPaymentCheckView(store: PaymentCheckStore())
+  LegalFormPaymentCheckView(
+    store: LegalFormPaymentCheckStore(
+      entity: .init(),
+      userSessionDataSource: MockUserSessionDataSource(),
+      cancelationRepository: MockPaymentCancelationRepository(),
+      legalFormRepository: MockLegalFormRepository(),
+      paymentCheckRepository: MockPaymentCheckRepository()
+    )
+  )
 }

@@ -32,9 +32,16 @@ public struct DocumentOnProcessRowView: View {
         
         Spacer()
         
-        Text(viewModel.dateStr())
+        Text(viewModel.date)
           .foregroundStyle(Color.gray900)
           .captionLexend(size: 12)
+        
+        Image("ic_right_arrow", bundle: .module)
+          .resizable()
+          .renderingMode(.template)
+          .aspectRatio(contentMode: .fit)
+          .frame(width: 15, height: 15)
+          .foregroundStyle(Color.black)
       }
       .padding(.top, 8)
       
@@ -64,7 +71,7 @@ public struct DocumentOnProcessRowView: View {
               width: 85,
               height: 30
             ) {
-              viewModel.onNext()
+              viewModel.onTapButton()
             }
           }
           .padding(.vertical, 8)
@@ -77,6 +84,9 @@ public struct DocumentOnProcessRowView: View {
     .clipShape(RoundedRectangle(cornerRadius: 8))
     .shadow(color: Color.gray200, radius: 8)
     .padding(.horizontal, 16)
+    .onTapGesture {
+      viewModel.onNext()
+    }
   }
   
 }
@@ -87,9 +97,12 @@ public struct DocumentOnProcessRowView: View {
       type: .ACTIVE,
       title: "Surat Pernyataan Ahli Waris",
       status: .ON_PROCESS,
-      date: "",
+      date: "2025-03-10T10:00:00.000000Z",
       price: "Rp60.000",
       onNext: {
+        
+      },
+      onTapButton: {
         
       }
     )

@@ -6,11 +6,13 @@
 //
 
 import Foundation
+import SwiftUI
+import AprodhitKit
 
-public class OngoingConsultationViewModel: ConsultationBaseModel {
+public class OngoingConsultationViewModel: ConsultationBaseModel, ObservableObject {
   
+  @Published public var timeRemaining: TimeInterval
   public var status: ConsultationStatus
-  public var timeRemaining: TimeInterval
   public var issues: String
   public var serviceName: String
   public var price: String

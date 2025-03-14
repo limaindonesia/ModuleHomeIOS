@@ -16,6 +16,7 @@ public class OrderViewModel {
   public let adminFee: FeeViewModel
   public let discount: FeeViewModel?
   public let voucher: FeeViewModel?
+  public let documentFee: FeeViewModel?
   public let totalAmount: String
   public let totalAdjustment: Int
 
@@ -28,6 +29,7 @@ public class OrderViewModel {
     self.voucher = nil
     self.totalAmount = ""
     self.totalAdjustment = 0
+    self.documentFee = .init()
   }
 
   public init(
@@ -37,6 +39,7 @@ public class OrderViewModel {
     adminFee: FeeViewModel,
     discount: FeeViewModel?,
     voucher: FeeViewModel?,
+    documentFee: FeeViewModel?,
     totalAmount: String,
     totalAdjustment: Int
   ) {
@@ -44,6 +47,7 @@ public class OrderViewModel {
     self.expiredAt = expiredAt
     self.lawyerFee = lawyerFee
     self.adminFee = adminFee
+    self.documentFee = documentFee
     self.discount = discount
     self.voucher = voucher
     self.totalAmount = totalAmount

@@ -106,7 +106,7 @@ public struct FakePaymentRepository: PaymentRepositoryLogic {
   }
   
   public func requestPaymentMethod(headers: HeaderRequest) async throws -> [PaymentMethodEntity] {
-    return .init()
+    return [.init()]
   }
   
   public func requestEligibleVoucher(

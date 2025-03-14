@@ -56,6 +56,14 @@ struct PaymentCheckView: View {
       }
     }
     .background(Color.gray100)
+    .onAppear {
+      Task {
+        await store.fetchUserSession()
+        await store.requestReasons()
+        await store.requestUserCases()
+        store.calculateTimeRemaining()
+      }
+    }
   }
   
   @ViewBuilder
@@ -74,8 +82,8 @@ struct PaymentCheckView: View {
             .foregroundStyle(.white)
           
           if store.showTimeRemainig {
-            TimerTextView(paymentTimeRemaining: store.paymentTimeRemaining.value) { newValue in
-              store.paymentTimeRemaining.value = newValue
+            TimerTextView(paymentTimeRemaining: $store.paymentTimeRemaining) { newValue in
+              store.paymentTimeRemaining = newValue
             } onTimerTimeUp: {
               Task {
                 await store.requestConsultationById()

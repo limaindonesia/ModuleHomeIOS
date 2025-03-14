@@ -77,7 +77,7 @@ final class HomeRemoteDataSourceTests: XCTestCase {
     sut = HomeRemoteDataSourceImpl(service: service)
 
     //when
-    let model = try await sut.fetchSkills(params: ["": ""])
+    let model = try await sut.fetchSkills(params: [:])
 
     //then
     let success = try XCTUnwrap(model.success)
@@ -226,8 +226,13 @@ struct MockHomeRemoteDataSource: HomeRemoteDataSourceLogic,
     self.service = service
   }
   
-  func requestMe(headers: [String : String]) async throws -> HomeFlow.MeResponseModel {
+  func requestMe(headers: [String : String]) async throws -> MeResponseModel {
     fatalError()
+  }
+  
+  func requestConsultationsByID(headers: [String : String], consultationID: String) async throws -> AprodhitKit.UserCases {
+    
+    return .init()
   }
   
   func fetchPromotionBanner() async throws -> BannerResponseModel {
@@ -263,7 +268,7 @@ struct MockHomeRemoteDataSource: HomeRemoteDataSourceLogic,
 
   }
 
-  func fetchTopAdvocates() async throws -> HomeFlow.TopLawyerAgencyModel {
+  func fetchTopAdvocates() async throws -> TopLawyerAgencyModel {
     fatalError()
   }
 
