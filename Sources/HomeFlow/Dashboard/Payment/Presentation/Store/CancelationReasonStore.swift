@@ -22,7 +22,7 @@ class CancelationReasonStore: ObservableObject {
   @Published var reasonTextErrorMessage: String = ""
   @Published var selectedID: Int = 0
   @Published var selectedIndex: Int? = nil
-  @Published var isTextValid: Bool = false
+  @Published var isTextValid: Bool = true
   
   public var subscriptions = Set<AnyCancellable>()
 
