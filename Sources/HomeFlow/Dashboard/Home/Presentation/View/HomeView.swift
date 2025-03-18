@@ -112,7 +112,7 @@ public struct HomeView: View {
     .ignoresSafeArea(edges: .all)
     .onAppear {
       Task {
-        await store.fetchActiveDocuments()
+//        await store.fetchActiveDocuments()
         await store.fetchOngoingUserCases()
         await store.requestMe()
         await store.checkBottomSheet()
@@ -176,7 +176,7 @@ public struct HomeView: View {
       ScrollView(.vertical, showsIndicators: false) {
         VStack(spacing: 32) {
           
-          if store.activeViewModels.isEmpty {
+          /*if store.activeViewModels.isEmpty {
             activeConsultationView()
           } else {
             headerWithDocumentActiveView(name: store.name)
@@ -190,7 +190,9 @@ public struct HomeView: View {
             }.padding(.top, 250)
             
             activeAdvocates(store.onlinedAdvocates)
-          }
+          }*/
+          
+          activeConsultationView()
           
           topAdvocatesNew(
             store.getFourTopAdvocates(),
