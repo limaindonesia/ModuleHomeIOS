@@ -5,9 +5,19 @@
 //  Created by Ilham Prabawa on 07/03/25.
 //
 
+import Foundation
 import AprodhitKit
 
-public class MockLegalFormNavigator: LegalFormNavigator {
+public class MockLegalFormNavigator: LegalFormNavigator,
+                                     LegalFormPaymentNavigator{
+  
+  public func navigateToDocumentDetail(url: URL?) {
+    
+  }
+  
+  public func navigateToWeb() {
+    
+  }
   
   public func navigateToDetailOrder(entity: LegalFormEntity) {
     
@@ -24,7 +34,6 @@ public class MockLegalFormNavigator: LegalFormNavigator {
   public func navigateToDocumentDetail() {
     
   }
-  
   
   public func navigateBack() {
     

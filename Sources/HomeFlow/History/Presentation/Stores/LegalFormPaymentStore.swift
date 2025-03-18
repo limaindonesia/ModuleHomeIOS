@@ -378,8 +378,12 @@ public class LegalFormPaymentStore: ObservableObject {
           paymentChannelCategory: selectedPaymentCategory.rawValue
         )
       )
+      
       UserDefaults.standard.set(selectedPaymentCategory.rawValue, forKey: "latestSelectedPayment")
       UserDefaults.standard.synchronize()
+      
+      navigateToPaymentCheck()
+      
       indicateSuccess()
     } catch {
       guard let error = error as? ErrorMessage else { return }

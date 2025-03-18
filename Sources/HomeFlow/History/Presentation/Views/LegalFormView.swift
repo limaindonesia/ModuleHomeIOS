@@ -154,6 +154,7 @@ public struct LegalFormView: View {
       userSessionDataSource: MockUserSessionDataSource(),
       legalFormRepository: MockLegalFormRepository(),
       legalFormNavigator: MockLegalFormNavigator(),
+      legalFormPaymentNavigator: MockLegalFormNavigator(),
       paymentNavigator: MockNavigator(),
       bottomSheetResponder: MockNavigator()
     )

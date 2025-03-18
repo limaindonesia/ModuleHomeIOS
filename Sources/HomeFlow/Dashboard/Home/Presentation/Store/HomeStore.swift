@@ -25,6 +25,7 @@ public class HomeStore: ObservableObject {
   private let userSessionDataSource: UserSessionDataSourceLogic
   private let cancelationRepository: PaymentCancelationRepositoryLogic
   private let meRepository: MeRepositoryLogic
+  private let legalFormRepository: LegalFormRepositoryLogic
   private let onlineAdvocateNavigator: OnlineAdvocateNavigator
   private let topAdvocateNavigator: TopAdvocateNavigator
   private let articleNavigator: ArticleNavigator
@@ -32,6 +33,7 @@ public class HomeStore: ObservableObject {
   private let categoryNavigator: CategoryNavigator
   private let advocateListNavigator: AdvocateListNavigator
   private let sktmNavigator: SKTMNavigator
+  private let legalFormPaymentNavigator: LegalFormPaymentNavigator
   private let mainTabBarResponder: MainTabBarResponder
   private let ongoingNavigator: OngoingNavigator
   private let loginResponder: LoginResponder
@@ -79,6 +81,7 @@ public class HomeStore: ObservableObject {
   @Published public var isPresentRefundBottomSheet: Bool = false
   @Published public var price: String = ""
   @Published public var meViewModel: MeViewModel = .init()
+  @Published public var activeViewModels: [DocumentBaseViewModel] = []
   
   //Variables
   
@@ -91,6 +94,7 @@ public class HomeStore: ObservableObject {
   public var selectedReason: ReasonEntity? = nil
   public var reason: String? = nil
   public var idCardEntity: IDCardEntity = .init()
+  private var legalFormEntities: [LegalFormEntity] = []
   
   public init(
     userSessionDataSource: UserSessionDataSourceLogic,
@@ -100,6 +104,7 @@ public class HomeStore: ObservableObject {
     idCardRepository: GetKTPDataRepositoryLogic,
     cancelationRepository: PaymentCancelationRepositoryLogic,
     meRepository: MeRepositoryLogic,
+    legalFormRepository: LegalFormRepositoryLogic,
     onlineAdvocateNavigator: OnlineAdvocateNavigator,
     topAdvocateNavigator: TopAdvocateNavigator,
     articleNavigator: ArticleNavigator,
@@ -107,6 +112,7 @@ public class HomeStore: ObservableObject {
     categoryNavigator: CategoryNavigator,
     advocateListNavigator: AdvocateListNavigator,
     sktmNavigator: SKTMNavigator,
+    legalFormPaymentNavigator: LegalFormPaymentNavigator,
     mainTabBarResponder: MainTabBarResponder,
     ongoingNavigator: OngoingNavigator,
     loginResponder: LoginResponder,
@@ -120,6 +126,7 @@ public class HomeStore: ObservableObject {
     self.idCardRepository = idCardRepository
     self.cancelationRepository = cancelationRepository
     self.meRepository = meRepository
+    self.legalFormRepository = legalFormRepository
     self.onlineAdvocateNavigator = onlineAdvocateNavigator
     self.topAdvocateNavigator = topAdvocateNavigator
     self.articleNavigator = articleNavigator
@@ -132,6 +139,7 @@ public class HomeStore: ObservableObject {
     self.loginResponder = loginResponder
     self.refundNavigator = refundNavigator
     self.probonoNavigator = probonoNavigator
+    self.legalFormPaymentNavigator = legalFormPaymentNavigator
     
     Task {
       await requestPromotionBanner()
@@ -471,6 +479,33 @@ public class HomeStore: ObservableObject {
   }
   
   @MainActor
+  public func fetchActiveDocuments() async {
+    activeViewModels.removeAll()
+    
+    do {
+      legalFormEntities = try await legalFormRepository.fetchLegalFormDocuments(
+        headers: HeaderRequest(token: userSessionData?.remoteSession.remoteToken),
+        parameters: UserCasesParamRequest(
+          type: .ONGOING
+        )
+      )
+      
+      let viewModels = legalFormEntities.map(mapEntityToViewModel(entity:))
+      for viewModel in viewModels {
+        if viewModel.type == .ACTIVE {
+          activeViewModels.append(viewModel)
+        }
+      }
+      
+    } catch {
+      guard let error = error as? ErrorMessage
+      else { return }
+      
+      indicateError(error: error)
+    }
+  }
+  
+  @MainActor
   public func requestReasons() async {
     do {
       guard let token = userSessionData?.remoteSession.remoteToken else {
@@ -576,6 +611,40 @@ public class HomeStore: ObservableObject {
   
   //MARK: - Other function
   
+  private func mapEntityToViewModel(entity: LegalFormEntity) -> DocumentBaseViewModel {
+    if entity.type == .BOOKED {
+      return DocumentActiveViewModel(
+        type: .ACTIVE,
+        title: entity.title,
+        status: .WAITING_FOR_PAYMENT,
+        timeRemaining: entity.timeRemaining,
+        price: entity.price,
+        onPayment: {
+          self.navigateToPayment()
+        },
+        onTimerTimesUp: {
+          
+        }
+      )
+    }
+    
+    if entity.type == .ON_PROGRESS {
+      return DocumentOnProcessViewModel(
+        type: .ACTIVE,
+        title: entity.title,
+        status: .ON_PROCESS,
+        date: entity.getDateString(),
+        price: entity.price
+      ) {
+//        self.navigateToDetailOrder(entity)
+      } onTapButton: {
+//        self.showBottomSheet()
+      }
+    }
+    
+    return .init()
+  }
+  
   @MainActor
   public func requestCancelReason() async {
     if await sendCancelationReason() {
@@ -595,7 +664,7 @@ public class HomeStore: ObservableObject {
   
   @MainActor
   public func requestDismissRefundPopup() async {
-    await dismissRefundPopup()
+    _ = await dismissRefundPopup()
   }
   
   public func getFourTopAdvocates() -> [TopAdvocateViewModel] {
@@ -665,9 +734,9 @@ public class HomeStore: ObservableObject {
     
   }
   
-  private func processSKTMAndReplaceOnlineLawyerState(_ status: String) {
+  /*private func processSKTMAndReplaceOnlineLawyerState(_ status: String) {
     
-    var arrayOfAdvocates: [Advocate] = onlinedAdvocates
+    let arrayOfAdvocates: [Advocate] = onlinedAdvocates
     
     if status == Constant.Home.Text.ACTIVE {
       for i in 0 ..< arrayOfAdvocates.count {
@@ -677,7 +746,7 @@ public class HomeStore: ObservableObject {
       
       onlinedAdvocates = arrayOfAdvocates
     }
-  }
+  }*/
   
   public func getImageURL() -> URL? {
     return userCases.lawyer?.getImageName()
@@ -1023,6 +1092,14 @@ public class HomeStore: ObservableObject {
     mainTabBarResponder.gotoHistory()
   }
   
+  public func navigateToLegalFormPayment() {
+    legalFormPaymentNavigator.navigateToPayment(entity: .init())
+  }
+  
+  public func navigateToLegalFormCheckStatus() {
+    
+  }
+  
   //MARK: - BottomSheet
   
   func showCategoryBottomSheet() {
@@ -1069,14 +1146,14 @@ public class HomeStore: ObservableObject {
         endUserSession()
       }.store(in: &subscriptions)
     
-    $sktmModel
-      .receive(on: RunLoop.main)
-      .subscribe(on: RunLoop.main)
-      .sink { model in
-        if let status = model?.data?.status {
-          self.processSKTMAndReplaceOnlineLawyerState(status)
-        }
-      }.store(in: &subscriptions)
+//    $sktmModel
+//      .receive(on: RunLoop.main)
+//      .subscribe(on: RunLoop.main)
+//      .sink { model in
+//        if let status = model?.data?.status {
+//          self.processSKTMAndReplaceOnlineLawyerState(status)
+//        }
+//      }.store(in: &subscriptions)
   }
   
 }

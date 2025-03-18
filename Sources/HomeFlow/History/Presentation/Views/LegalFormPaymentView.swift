@@ -62,6 +62,9 @@ struct LegalFormPaymentView: View {
             isVoucherApplied: store.voucherFilled,
             isButtonActive: store.isPayButtonActive,
             onTap: {
+              Task {
+                await store.requestCreatePayment()
+              }
               store.navigateToPaymentCheck()
             }
           )

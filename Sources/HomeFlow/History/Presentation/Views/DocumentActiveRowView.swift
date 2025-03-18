@@ -117,6 +117,9 @@ public struct DocumentActiveRowView: View {
       price: "Rp60.000",
       onPayment: {
         
+      },
+      onTimerTimesUp: {
+        
       }
     )
   )

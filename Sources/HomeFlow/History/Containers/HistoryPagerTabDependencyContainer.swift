@@ -49,13 +49,18 @@ public class HistoryPagerTabDependencyContainer {
       return self.makeLegalFormPaymentCheckViewController(entity: entity)
     }
     
+    let documentDetailFactory = { url in
+      return self.makeLegalFormDocumentViewerViewController(url: url)
+    }
+    
     return HistoryPagerTabViewController(
       sharedViewModel: sharedViewModel,
       consultationHistoryViewControllerFactory: consultationHistoryFactory,
       legalFormViewControllerFactory: legalFormFactory,
       legalFormDetailOrderViewControllerFactory: legalFormDetailOrderFactory,
       legalFormPaymentViewControllerFactory: legalFormPaymentFactory,
-      legalFormPaymentCheckViewControllerFactory: legalFormPaymentCheckFactory
+      legalFormPaymentCheckViewControllerFactory: legalFormPaymentCheckFactory,
+      legalFormDocumentViewerViewControllerFactory: documentDetailFactory
     )
     
   }
@@ -83,6 +88,10 @@ public class HistoryPagerTabDependencyContainer {
     return LegalFormPaymentCheckViewController(entity: entity, storeFactory: self)
   }
   
+  private func makeLegalFormDocumentViewerViewController(url: URL?) -> LegalFormDocumentViewerViewController {
+    return LegalFormDocumentViewerViewController(pdfURL: url)
+  }
+  
   //MARK: - Make Store
   
   public func makeLegalFormDetailOrderStore(entity: LegalFormEntity) -> LegalFormDetailOrderStore {
@@ -102,8 +111,9 @@ public class HistoryPagerTabDependencyContainer {
     let repository = LegalFormRepositoryImpl(remote: remote)
     return LegalFormStore(
       userSessionDataSource: userSessionDataSource,
-      legalFormRepository: repository,
+      legalFormRepository: MockLegalFormRepository(),
       legalFormNavigator: sharedViewModel,
+      legalFormPaymentNavigator: sharedViewModel,
       paymentNavigator: sharedViewModel,
       bottomSheetResponder: sharedViewModel
     )
@@ -156,7 +166,7 @@ public class HistoryPagerTabDependencyContainer {
     let consultationRepository = ConsultationHistoryRepositoryImpl(remoteDataSource: consultationRemote)
     return ConsultationHistoryStore(
       userSessionDataSource: userSessionDataSource,
-      consultationRepository: consultationRepository,
+      consultationRepository: MockConsultationHistoryRepository(),
       advocateNavigator: mainViewModel,
       loginNavigator: mainViewModel,
       consultationNavigator: mainViewModel

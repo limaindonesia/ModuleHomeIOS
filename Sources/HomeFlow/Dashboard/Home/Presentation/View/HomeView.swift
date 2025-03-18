@@ -112,6 +112,7 @@ public struct HomeView: View {
     .ignoresSafeArea(edges: .all)
     .onAppear {
       Task {
+        await store.fetchActiveDocuments()
         await store.fetchOngoingUserCases()
         await store.requestMe()
         await store.checkBottomSheet()
@@ -135,6 +136,38 @@ public struct HomeView: View {
   }
   
   @ViewBuilder
+  func activeConsultationView() -> some View {
+    if store.ongoingConsultation {
+      headerWithOngoingView(
+        store.arrayOfuserCases,
+        name: store.name
+      )
+      
+      ongoingView(store.userCases)
+        .padding(.top, 100)
+      
+    } else {
+      headerView(
+        store.isLoggedIn,
+        name: store.name,
+        onTapLogIn: {
+          store.navigateToLogin()
+        }
+      )
+      
+      probonoServiceView {
+        store.navigateToDecisionTree()
+      } onTapConsultation: {
+        store.navigateToAdvocateList()
+      } onTapProbonoService: {
+        store.navigateToProbonoService()
+      }.padding(.top, 330)
+      
+      activeAdvocates(store.onlinedAdvocates)
+    }
+  }
+  
+  @ViewBuilder
   func homeContentView() -> some View {
     VStack {
       navigationBarView()
@@ -143,25 +176,10 @@ public struct HomeView: View {
       ScrollView(.vertical, showsIndicators: false) {
         VStack(spacing: 32) {
           
-          if store.ongoingConsultation {
-            
-            headerWithOngoingView(
-              store.arrayOfuserCases,
-              name: store.name
-            )
-            
-            ongoingView(store.userCases)
-              .padding(.top, 100)
-            
+          if store.activeViewModels.isEmpty {
+            activeConsultationView()
           } else {
-            
-            headerView(
-              store.isLoggedIn,
-              name: store.name,
-              onTapLogIn: {
-                store.navigateToLogin()
-              }
-            )
+            headerWithDocumentActiveView(name: store.name)
             
             probonoServiceView {
               store.navigateToDecisionTree()
@@ -169,7 +187,7 @@ public struct HomeView: View {
               store.navigateToAdvocateList()
             } onTapProbonoService: {
               store.navigateToProbonoService()
-            }.padding(.top, 330)
+            }.padding(.top, 250)
             
             activeAdvocates(store.onlinedAdvocates)
           }
@@ -407,6 +425,84 @@ public struct HomeView: View {
   }
   
   @ViewBuilder
+  func headerWithDocumentActiveView(name: String) -> some View {
+    ZStack {
+      
+      GeometryReader { geometry in
+        
+        let frame = geometry.frame(in: .global)
+        
+        VStack(alignment: .leading) {
+          
+          HStack(alignment: .center) {
+            
+            Image("perqara_logo", bundle: .module)
+            
+            VStack(alignment: .leading) {
+              Text("Selamat datang,")
+                .foregroundColor(.white)
+                .captionStyle(size: 10)
+              
+              Text(name)
+                .foregroundColor(.white)
+                .titleStyle(size: 12)
+            }
+            
+            Spacer()
+          }
+          .padding(.top, 16)
+          .padding(.horizontal, 16)
+          .padding(.bottom, 8)
+        }
+        .frame(maxWidth: .infinity, maxHeight: 100)
+        .padding(.top, 16)
+        .padding(.bottom, 12)
+        .background(Color.buttonActiveColor)
+        
+        VStack {
+          SearchView(onTap: {
+            store.navigateToSearch(with: "")
+          })
+        }
+        .padding(.horizontal, 16)
+        .padding(.bottom, 20)
+        .background(
+          LinearGradient(
+            stops: [
+              Gradient.Stop(color: Color(red: 0.04, green: 0.31, blue: 0.64), location: 0.00),
+              Gradient.Stop(color: Color(red: 0.32, green: 0.51, blue: 0.74).opacity(0.71), location: 0.45),
+              Gradient.Stop(color: .white.opacity(0), location: 1.00),
+            ],
+            startPoint: UnitPoint(x: 0.48, y: 0.55),
+            endPoint: UnitPoint(x: 0.48, y: 1)
+          )
+        )
+        .position(x: frame.midX, y: 100)
+        .zIndex(1)
+        
+        LinearGradient(
+          colors: [Color.white, Color.gradientBlue],
+          startPoint: .top,
+          endPoint: .bottom
+        )
+        .frame(height: 240)
+        .position(x: frame.midX, y: 240)
+        .zIndex(0)
+        
+        LazyVStack {
+          ForEach(store.activeViewModels, id: \.id) { model in
+            activeDocument(model)
+          }
+        }
+        .position(x: frame.midX, y: 210)
+        .zIndex(0)
+      }
+      
+    }
+    
+  }
+  
+  @ViewBuilder
   func headerWithOngoingView(
     _ items: [UserCases],
     name: String
@@ -475,6 +571,17 @@ public struct HomeView: View {
         
       }
       
+    }
+  }
+  
+  @ViewBuilder
+  func activeDocument(_ model: DocumentBaseViewModel) -> some View {
+    if let waitingForPaymentModel = model as? DocumentActiveViewModel {
+      HomeDocumentActiveRowView(viewModel: waitingForPaymentModel)
+    }
+    
+    if let processModel = model as? DocumentOnProcessViewModel {
+      DocumentOnProcessRowView(viewModel: processModel)
     }
   }
   
@@ -1502,6 +1609,7 @@ public struct HomeView: View {
       idCardRepository: MockGetKTPRepository(),
       cancelationRepository: MockPaymentRepository(),
       meRepository: MockHomeRepository(),
+      legalFormRepository: MockLegalFormRepository(),
       onlineAdvocateNavigator: MockNavigator(),
       topAdvocateNavigator: MockNavigator(),
       articleNavigator: MockNavigator(),
@@ -1509,6 +1617,7 @@ public struct HomeView: View {
       categoryNavigator: MockNavigator(),
       advocateListNavigator: MockNavigator(),
       sktmNavigator: MockNavigator(),
+      legalFormPaymentNavigator: MockLegalFormNavigator(),
       mainTabBarResponder: MockNavigator(),
       ongoingNavigator: MockNavigator(),
       loginResponder: MockNavigator(),

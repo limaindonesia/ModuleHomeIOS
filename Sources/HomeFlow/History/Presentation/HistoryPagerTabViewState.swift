@@ -13,7 +13,7 @@ public enum HistoryPagerTabViewState {
   case detail(LegalFormEntity)
   case payment(LegalFormEntity)
   case checkStatus(LegalFormEntity)
-  case documentDetail
+  case documentDetail(URL?)
   case paymentGateway(URL?)
   case consultationHistory
   case consultationDetail
@@ -36,7 +36,7 @@ extension HistoryPagerTabViewState: Equatable {
     case (.main, .main),
       (.payment(_), .payment(_)),
       (.checkStatus, .checkStatus),
-      (.documentDetail, .documentDetail),
+      (.documentDetail(_), .documentDetail(_)),
       (.detail(_), .detail(_)),
       (.paymentGateway(_), .paymentGateway(_)),
       (.consultationHistory, .consultationHistory),

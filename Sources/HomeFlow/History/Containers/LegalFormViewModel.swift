@@ -9,7 +9,7 @@ import Foundation
 import GnDKit
 import AprodhitKit
 
-public typealias LegalFormNavigation = NavigationAction<HistoryPagerTabViewState>
+/*public typealias LegalFormNavigation = NavigationAction<HistoryPagerTabViewState>
 
 public class LegalFormViewModel: LegalFormNavigator,
                                  BottomSheetResponder {
@@ -42,4 +42,8 @@ public class LegalFormViewModel: LegalFormNavigator,
     navigationAction = .present(view: .main)
   }
   
+  public func navigateToWeb() {
+    
+  }
 }
+*/

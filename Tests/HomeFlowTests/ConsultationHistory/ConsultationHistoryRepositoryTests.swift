@@ -24,7 +24,7 @@ final class ConsultationHistoryRepositoryTests: XCTestCase {
     sut = ConsultationHistoryRepositoryImpl(remoteDataSource: remote)
     
     //when
-    let consultations = try await sut.getConsultations(
+    let (consultations, _) = try await sut.getConsultations(
       headers: HeaderRequest(token: ""),
       parameters: UserCasesParamRequest(type: .HISTORY)
     )
@@ -69,7 +69,7 @@ final class ConsultationHistoryRepositoryTests: XCTestCase {
     sut = ConsultationHistoryRepositoryImpl(remoteDataSource: remote)
     
     //when
-    let consultations = try await sut.getConsultations(
+    let (consultations, _) = try await sut.getConsultations(
       headers: HeaderRequest(token: ""),
       parameters: UserCasesParamRequest(type: .HISTORY)
     )
@@ -88,7 +88,7 @@ final class ConsultationHistoryRepositoryTests: XCTestCase {
     sut = ConsultationHistoryRepositoryImpl(remoteDataSource: remote)
     
     //when
-    let consultations = try await sut.getConsultations(
+    let (consultations, _) = try await sut.getConsultations(
       headers: HeaderRequest(token: ""),
       parameters: UserCasesParamRequest(type: .ONGOING)
     )

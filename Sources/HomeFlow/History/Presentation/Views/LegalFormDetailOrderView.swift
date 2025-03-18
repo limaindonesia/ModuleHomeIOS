@@ -100,6 +100,7 @@ public struct LegalFormDetailOrderView: View {
     VStack(alignment: .leading, spacing: 12) {
       HStack {
         Image("ic_legal_form", bundle: .module)
+        
         VStack(alignment: .leading, spacing: 4) {
           HStack {
             Text(store.entity.orderNumber).captionLexend(size: 12)
@@ -112,19 +113,25 @@ public struct LegalFormDetailOrderView: View {
               .background(Color.warning100)
               .cornerRadius(10)
           }
-          Text(store.entity.title).titleLexend(size: 14)
-          Text(store.entity.getDateString()).captionLexend(size: 12)
+          
+          Text(store.entity.title)
+            .titleLexend(size: 14)
+          
+          Text(store.entity.getDateString())
+            .captionLexend(size: 12)
         }
       }
       
       Divider().background(Color.gray100)
       
       ButtonPrimary(
-        title: "Lanjutkan",
+        title: store.buttonViewModel.title,
         color: .buttonActiveColor,
         width: .infinity,
         height: 40
-      ) { }
+      ) {
+        store.buttonViewModel.onTap()
+      }
     }
     .padding()
     .background(Color.white)

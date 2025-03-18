@@ -25,32 +25,50 @@ public class MockLegalFormRepository: LegalFormRepositoryLogic {
         title: "Perjanjian Pinjam Meminjam",
         timeRemaining: 190,
         date: "2025-03-10T10:00:00.000000Z",
-        price: "Rp 140.000",
+        price: "Rp140.000",
         rating: 5,
         legalFormID: "67b6a8adcfb7ef57cba5eb77",
         orderNumber: "LF-240702061",
         paymentURL: "",
-        adminFee: .init(name: "Biaya Layanan", amount: "Rp30.000"),
-        legalFormFee: .init(name: "Biaya Dokumen Hukum ", amount: "Rp50.000"),
-        discount: .init(name: "Diskon Perqara", amount: "-Rp25.000"),
+        adminFee: .init(
+          name: "Biaya Layanan",
+          amount: "Rp30.000"
+        ),
+        legalFormFee: .init(
+          name: "Biaya Dokumen Hukum ",
+          amount: "Rp50.000"
+        ),
+        discount: .init(
+          name: "Diskon Perqara",
+          amount: "-Rp25.000"
+        ),
         totalAmount: "Rp25.000",
         paymentMethod: "BCA Virtual Account",
         paymentStatus: "Berhasil"
       ),
       LegalFormEntity(
         type: .COMPLETED,
-        status: .REJECTED,
+        status: .DONE,
         title: "Perjanjian Pinjam Meminjam",
         timeRemaining: 190,
         date: "2025-03-10T10:00:00.000000Z",
-        price: "Rp 140.000",
+        price: "Rp140.000",
         rating: 2,
         legalFormID: "67b6a8adcfb7ef57cba5eb77",
         orderNumber: "LF-240702061",
         paymentURL: "",
-        adminFee: .init(name: "Biaya Layanan", amount: "Rp30.000"),
-        legalFormFee: .init(name: "Biaya Dokumen Hukum ", amount: "Rp50.000"),
-        discount: .init(name: "Diskon Perqara", amount: "-Rp25.000"),
+        adminFee: .init(
+          name: "Biaya Layanan",
+          amount: "Rp30.000"
+        ),
+        legalFormFee: .init(
+          name: "Biaya Dokumen Hukum ",
+          amount: "Rp50.000"
+        ),
+        discount: .init(
+          name: "Diskon Perqara",
+          amount: "-Rp25.000"
+        ),
         totalAmount: "Rp25.000",
         paymentMethod: "BCA Virtual Account",
         paymentStatus: "Berhasil"

@@ -9,9 +9,10 @@ import Foundation
 import AprodhitKit
 import GnDKit
 
-/*public struct FakePaymentRemoteDataSource: PaymentRemoteDataSourceLogic,
+public struct FakePaymentRemoteDataSource: PaymentRemoteDataSourceLogic,
                                            OngoingUserCaseRemoteDataSourceLogic,
                                            PaymentCancelationRemoteDataSourceLogic {
+  
   public init() {}
   
   public func requestOrderByNumber(
@@ -158,7 +159,10 @@ import GnDKit
     return true
   }
   
-  public func requestCancelationReason(headers: [String : String]) async throws -> ReasonResponseModel {
+  public func requestCancelationReason(
+    headers: [String : String],
+    parameters: [String : Any]
+  ) async throws -> ReasonResponseModel {
     return .init()
   }
   
@@ -218,4 +222,4 @@ import GnDKit
     }
   }
   
-}*/
+}

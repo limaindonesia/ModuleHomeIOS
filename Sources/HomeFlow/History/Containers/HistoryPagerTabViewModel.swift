@@ -14,9 +14,10 @@ public typealias HistoryPagerTabNavigation = NavigationAction<HistoryPagerTabVie
 public class HistoryPagerTabViewModel: LegalFormNavigator,
                                        BottomSheetResponder,
                                        PaymentNavigator,
-                                       ConsultationHistoryNavigator {
+                                       ConsultationHistoryNavigator,
+                                       LegalFormPaymentNavigator {
   
-  @Published public var navigationAction: LegalFormNavigation = .present(view: .main)
+  @Published public var navigationAction: HistoryPagerTabNavigation = .present(view: .main)
   @Published public var presentBottomSheet: Bool = false
   
   public func navigateToPayment(entity: LegalFormEntity) {
@@ -27,8 +28,8 @@ public class HistoryPagerTabViewModel: LegalFormNavigator,
     navigationAction = .present(view: .detail(entity))
   }
   
-  public func navigateToDocumentDetail() {
-    navigationAction = .present(view: .documentDetail)
+  public func navigateToDocumentDetail(url: URL?) {
+    navigationAction = .present(view: .documentDetail(url))
   }
   
   public func navigateToCheckStatus(entity: LegalFormEntity) {
@@ -42,12 +43,8 @@ public class HistoryPagerTabViewModel: LegalFormNavigator,
     navigationAction = .present(view: .checkStatus(entity))
   }
   
-  public func uiPresented(legalView: HistoryPagerTabViewState) {
-    navigationAction = .presented(view: legalView)
-  }
-  
-  public func showBottomSheet(_ show: Bool) {
-    presentBottomSheet = show
+  public func navigateToWeb() {
+    navigationAction = .present(view: .documentDetail(nil))
   }
   
   public func navigateBack() {
@@ -82,6 +79,14 @@ public class HistoryPagerTabViewModel: LegalFormNavigator,
     if let url = URL(string: "https://dev1.perqara.com/legal-form") {
       navigationAction = .present(view: .openURL(url))
     }
+  }
+  
+  public func uiPresented(legalView: HistoryPagerTabViewState) {
+    navigationAction = .presented(view: legalView)
+  }
+  
+  public func showBottomSheet(_ show: Bool) {
+    presentBottomSheet = show
   }
   
 }

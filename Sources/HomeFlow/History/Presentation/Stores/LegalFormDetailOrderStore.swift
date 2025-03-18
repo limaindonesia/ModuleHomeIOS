@@ -23,6 +23,7 @@ public class LegalFormDetailOrderStore: ObservableObject {
   @Published public var showErrorMessage: Bool = false
   @Published public var errorMessage: ErrorMessage = .init()
   @Published public var isPresentRatingBottomSheet: Bool = false
+  @Published public var buttonViewModel: ButtonViewModel = .init()
   
   public var backAction = PassthroughSubject<Bool, Never>()
   public var documentByIDEntity: DocumentByIDEntity = .init()
@@ -88,6 +89,20 @@ public class LegalFormDetailOrderStore: ObservableObject {
     
     showSummary = entity.status == .DONE && !documentByIDEntity.isClientRated
     showRating = entity.status == .DONE && documentByIDEntity.isClientRated
+    
+    if entity.status == .ON_PROCESS {
+      buttonViewModel = .init(
+        title: "Lanjutkan",
+        onTap: {
+          self.legalFormNavigator.navigateToWeb()
+      })
+    } else if entity.status == .DONE {
+      buttonViewModel = .init(
+        title: "Lihat Dokumen",
+        onTap: {
+          self.legalFormNavigator.navigateToDocumentDetail(url: nil)
+      })
+    }
   }
   
   
@@ -131,4 +146,19 @@ public class LegalFormDetailOrderStore: ObservableObject {
 
 public protocol LegalFormDetailOrderStoreFactory {
   func makeLegalFormDetailOrderStore(entity: LegalFormEntity) -> LegalFormDetailOrderStore
+}
+
+public struct ButtonViewModel {
+  public let title: String
+  public var onTap: () -> Void
+  
+  public init() {
+    self.title = ""
+    self.onTap = {}
+  }
+  
+  public init(title: String, onTap: @escaping () -> Void) {
+    self.title = title
+    self.onTap = onTap
+  }
 }

@@ -10,8 +10,8 @@ import AprodhitKit
 
 public protocol LegalFormNavigator {
   func navigateToDetailOrder(entity: LegalFormEntity)
-  func navigateToPayment(entity: LegalFormEntity)
   func navigateToCheckStatus(entity: LegalFormEntity)
-  func navigateToDocumentDetail()
+  func navigateToDocumentDetail(url: URL?)
   func navigateBack()
+  func navigateToWeb()
 }

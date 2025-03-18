@@ -15,6 +15,7 @@ public class LegalFormStore: ObservableObject {
   private let userSessionDataSource: UserSessionDataSourceLogic
   private let legalFormRepository: LegalFormRepositoryLogic
   private let legalFormNavigator: LegalFormNavigator
+  private let legalFormPaymentNavigator: LegalFormPaymentNavigator
   private let paymentNavigator: PaymentNavigator
   private let bottomSheetResponder: BottomSheetResponder
   
@@ -34,12 +35,14 @@ public class LegalFormStore: ObservableObject {
     userSessionDataSource: UserSessionDataSourceLogic,
     legalFormRepository: LegalFormRepositoryLogic,
     legalFormNavigator: LegalFormNavigator,
+    legalFormPaymentNavigator: LegalFormPaymentNavigator,
     paymentNavigator: PaymentNavigator,
     bottomSheetResponder: BottomSheetResponder
   ) {
     self.userSessionDataSource = userSessionDataSource
     self.legalFormRepository = legalFormRepository
     self.legalFormNavigator = legalFormNavigator
+    self.legalFormPaymentNavigator = legalFormPaymentNavigator
     self.paymentNavigator = paymentNavigator
     self.bottomSheetResponder = bottomSheetResponder
   }
@@ -78,8 +81,6 @@ public class LegalFormStore: ObservableObject {
           page: page
         )
       )
-      
-      GLogger(.info, layer: "Presentation", message: "histories : \(entities)")
       
       await mapDocumentEntities()
     } catch {
@@ -161,6 +162,9 @@ public class LegalFormStore: ObservableObject {
         price: entity.price,
         onPayment: {
           self.navigateToPayment(entity)
+        },
+        onTimerTimesUp: {
+          
         }
       )
     }
@@ -229,7 +233,7 @@ public class LegalFormStore: ObservableObject {
   
   public func navigateToPayment(_ entity: LegalFormEntity) {
     if entity.paymentURL.isEmpty {
-      legalFormNavigator.navigateToPayment(entity: entity)
+      legalFormPaymentNavigator.navigateToPayment(entity: entity)
     } else {
       legalFormNavigator.navigateToCheckStatus(entity: entity)
       paymentNavigator.navigateToPaymentGateway(URL(string: entity.paymentURL))

@@ -15,13 +15,15 @@ public class DocumentActiveViewModel: DocumentBaseViewModel, ObservableObject {
   @Published public var timeRemaining: TimeInterval
   public let price: String
   public let status: DocumentStatus
-  public let onPayment: () -> Void
+  public var onPayment: () -> Void
+  public var onTimerTimesUp: () -> Void
   
   public override init() {
     self.price = ""
-    self.onPayment = {}
     self.status = .ON_PROCESS
     self.timeRemaining = 0
+    self.onPayment = {}
+    self.onTimerTimesUp = {}
     
     super.init(
       type: .HISTORY,
@@ -35,13 +37,15 @@ public class DocumentActiveViewModel: DocumentBaseViewModel, ObservableObject {
     status: DocumentStatus,
     timeRemaining: TimeInterval,
     price: String,
-    onPayment: @escaping () -> Void
+    onPayment: @escaping () -> Void,
+    onTimerTimesUp: @escaping () -> Void
   ) {
     
     self.price = price
     self.onPayment = onPayment
     self.status = status
     self.timeRemaining = timeRemaining
+    self.onTimerTimesUp = onTimerTimesUp
     
     super.init(
       type: type,
