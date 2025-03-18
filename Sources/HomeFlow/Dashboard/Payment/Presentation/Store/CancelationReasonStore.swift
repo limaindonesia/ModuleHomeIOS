@@ -57,6 +57,10 @@ class CancelationReasonStore: ObservableObject {
   public required init() {
     fatalError()
   }
+  
+  public func resetReasonText() {
+    isTextValid = true
+  }
 
   public func getReason() -> String {
     guard let reason = selectedReason else { return "" }

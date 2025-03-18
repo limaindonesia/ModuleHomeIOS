@@ -133,6 +133,11 @@ struct CancelationReasonContentView: View {
     ) {
       store.selectedIndex = index
       store.selectedReason = store.arrayReasons[index]
+      
+      if index == store.arrayReasons.count - 1 {
+        store.resetReasonText()
+      }
+     
     }
     
   }
