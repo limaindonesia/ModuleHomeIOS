@@ -486,7 +486,7 @@ public class HomeStore: ObservableObject {
     activeViewModels.removeAll()
     
     do {
-      legalFormEntities = try await legalFormRepository.fetchLegalFormDocuments(
+      let legalFormEntities = try await legalFormRepository.fetchLegalFormDocuments(
         headers: HeaderRequest(token: userSessionData?.remoteSession.remoteToken),
         parameters: UserCasesParamRequest(
           type: .ONGOING
