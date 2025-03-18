@@ -30,8 +30,8 @@ public class PaymentCheckStore: ObservableObject {
   private let waitingRoomNavigator: WaitingRoomNavigator
   private let refundNavigator: RefundNavigator
   private let mainTabBarResponder: MainTabBarResponder
+  public var paymentTimeRemaining: CurrentValueSubject<TimeInterval, Never> = .init(0)
   
-  @Published public var paymentTimeRemaining: TimeInterval = 0
   @Published public var showTimeRemainig: Bool = false
   @Published public var isLoading: Bool = false
   @Published public var isPresentReasonBottomSheet: Bool = false
@@ -168,7 +168,7 @@ public class PaymentCheckStore: ObservableObject {
   
   @MainActor
   public func requestCancelation() async {
-    if paymentTimeRemaining <= 0 {
+    if paymentTimeRemaining.value <= 0 {
       let success = await sendCancelationReason()
       if success {
         isPresentReasonBottomSheet = false
@@ -342,12 +342,12 @@ public class PaymentCheckStore: ObservableObject {
     if meViewModel.consultationID != 0 {
       showRefundBottomSheet()
     }
-  
+    
   }
   
   @MainActor
   public func onDismissedReasonBottomSheet() async {
-    if paymentTimeRemaining <= 0 {
+    if paymentTimeRemaining.value <= 0 {
       let success = await dismissReason()
       if success {
         isPresentReasonBottomSheet = false
@@ -375,16 +375,16 @@ public class PaymentCheckStore: ObservableObject {
     guard let expired = userCase?.payment_expired_at else { return }
     guard let expDate = expired.toDate() else { return }
     let timeRemaining = Date().findMinutesDiff(with: expDate)
-    paymentTimeRemaining = timeRemaining
+    paymentTimeRemaining.value = timeRemaining
     showTimeRemainig = true
   }
   
   public func getTimeRemaining() -> String {
-    if paymentTimeRemaining == 0 {
+    if paymentTimeRemaining.value == 0 {
       return "00:00"
     }
     
-    return paymentTimeRemaining.timeString()
+    return paymentTimeRemaining.value.timeString()
   }
   
   private func checkStatus(from viewModel: PaymentStatusViewModel) {
@@ -413,7 +413,7 @@ public class PaymentCheckStore: ObservableObject {
   }
   
   private func observer() {
-    $paymentTimeRemaining
+    paymentTimeRemaining
       .dropFirst()
       .removeDuplicates()
       .receive(on: RunLoop.main)

@@ -278,8 +278,8 @@ struct PaymentView: View {
             .foregroundColor(Color.white)
           
           if store.showTimeRemainig {
-            TimerTextView(paymentTimeRemaining: $store.paymentTimeRemaining) { newValue in
-              store.paymentTimeRemaining = newValue
+            TimerTextView(paymentTimeRemaining: store.paymentTimeRemaining.value) { newValue in
+              store.paymentTimeRemaining.value = newValue
             } onTimerTimeUp: {
               
             }
