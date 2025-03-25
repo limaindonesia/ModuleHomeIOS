@@ -952,7 +952,7 @@ public class HomeStore: ObservableObject {
   }
   
   public func navigateToAdvocatesFromPopupBanner() {
-    let filteredSkills = skills.filter{ $0.id == 7 || $0.id == 70 }
+    let filteredSkills = skills.filter{ $0.id == 39 || $0.id == 70 }
     
     if filteredSkills.count > 0 {
       advocateListNavigator.navigateToAdvocateListWithSkill(
