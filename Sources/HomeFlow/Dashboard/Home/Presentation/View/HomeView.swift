@@ -926,7 +926,7 @@ public struct HomeView: View {
         }
         
         Button {
-          
+          store.navigateToSeeAllAdvocate()
         } label: {
           HStack {
             Text("Lihat Semua")
