@@ -770,7 +770,7 @@ public struct HomeView: View {
       HStack(spacing: 8) {
         
         Button {
-          
+          store.showConsultationNowBottomSheet()
         } label: {
           HStack {
             Image("ic_online_consultation", bundle: .module)
