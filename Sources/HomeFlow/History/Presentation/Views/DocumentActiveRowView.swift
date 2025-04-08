@@ -92,7 +92,7 @@ public struct DocumentActiveRowView: View {
         .foregroundStyle(Color.white)
       
       if showTimeRemainig {
-        TimerTextView(paymentTimeRemaining: paymentTimeRemaining) { newValue in
+        TimerNewTextView(paymentTimeRemaining: paymentTimeRemaining) { newValue in
           
         } onTimerTimeUp: {
           

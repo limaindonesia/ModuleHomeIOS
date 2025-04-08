@@ -50,8 +50,8 @@ public class PaymentStore: ObservableObject {
   @Published var voucherCount: Int = 0
   @Published public var elligibleVoucherEntities: [EligibleVoucherEntity] = []
   @Published public var showSnackBar: Bool = false
-  @Published public var paymentTimeRemaining: TimeInterval = 0
-  
+ 
+  public var paymentTimeRemaining: CurrentValueSubject<TimeInterval, Never> = .init(0)
   public var message = CurrentValueSubject<String, Never>("")
   private var treatmentEntities: [TreatmentEntity] = []
   private var userSessionData: UserSessionData?
@@ -181,7 +181,7 @@ public class PaymentStore: ObservableObject {
   public func requestCancelation() async {
     var success: Bool = false
     
-    if paymentTimeRemaining <= 0 {
+    if paymentTimeRemaining.value <= 0 {
       success = await sendCancelationReason()
     } else {
       success = await requestCancelationPayment()
@@ -610,7 +610,7 @@ public class PaymentStore: ObservableObject {
   
   @MainActor
   public func onDismissedReasonBottomSheet() async {
-    if paymentTimeRemaining <= 0 {
+    if paymentTimeRemaining.value <= 0 {
       let success = await dismissReason()
       if success {
         isPresentReasonBottomSheet = false
@@ -752,7 +752,7 @@ public class PaymentStore: ObservableObject {
   }
   
   public func calculateTimeRemainig() {
-    paymentTimeRemaining = orderViewModel.getRemainingMinutes()
+    paymentTimeRemaining.value = orderViewModel.getRemainingMinutes()
     showTimeRemainig = true
   }
   
@@ -878,7 +878,7 @@ public class PaymentStore: ObservableObject {
   public func hideReasonBottomSheet() {
     isPresentReasonBottomSheet = false
     Task {
-      if paymentTimeRemaining <= 0 {
+      if paymentTimeRemaining.value <= 0 {
         _ = await sendCancelationReason()
       }
     }
@@ -932,7 +932,7 @@ public class PaymentStore: ObservableObject {
         
       }.store(in: &subscriptions)
     
-    $paymentTimeRemaining
+    paymentTimeRemaining
       .dropFirst()
       .removeDuplicates()
       .receive(on: RunLoop.main)

@@ -1,16 +1,16 @@
 //
-//  TimerTextView.swift
+//  TimerNewTextView.swift
 //  HomeFlow
 //
-//  Created by Ilham Prabawa on 30/11/24.
+//  Created by Ilham Prabawa on 18/03/25.
 //
 
 import SwiftUI
 import AprodhitKit
 
-struct TimerTextView: View {
+struct TimerNewTextView: View {
   
-  @State var paymentTimeRemaining: TimeInterval
+  @Binding var paymentTimeRemaining: TimeInterval
   let textColor: Color
   var onUpdateTimer: (TimeInterval) -> Void
   var onTimerTimeUp: () -> Void
@@ -23,12 +23,12 @@ struct TimerTextView: View {
   
   
   init(
-    paymentTimeRemaining: TimeInterval,
+    paymentTimeRemaining: Binding<TimeInterval>,
     textColor: Color = .white,
     onUpdateTimer: @escaping (TimeInterval) -> Void,
     onTimerTimeUp: @escaping () -> Void
   ) {
-    self.paymentTimeRemaining = paymentTimeRemaining
+    self._paymentTimeRemaining = paymentTimeRemaining
     self.textColor = textColor
     self.onUpdateTimer = onUpdateTimer
     self.onTimerTimeUp = onTimerTimeUp
@@ -57,8 +57,8 @@ struct TimerTextView: View {
 }
 
 #Preview {
-  TimerTextView(
-    paymentTimeRemaining: 300,
+  TimerNewTextView(
+    paymentTimeRemaining: .constant(300),
     onUpdateTimer: { _ in },
     onTimerTimeUp: { }
   )

@@ -82,8 +82,8 @@ struct PaymentCheckView: View {
             .foregroundStyle(.white)
           
           if store.showTimeRemainig {
-            TimerTextView(paymentTimeRemaining: $store.paymentTimeRemaining) { newValue in
-              store.paymentTimeRemaining = newValue
+            TimerTextView(paymentTimeRemaining: store.paymentTimeRemaining.value) { newValue in
+              store.paymentTimeRemaining.value = newValue
             } onTimerTimeUp: {
               Task {
                 await store.requestConsultationById()

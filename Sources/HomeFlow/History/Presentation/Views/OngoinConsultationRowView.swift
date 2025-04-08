@@ -44,7 +44,7 @@ public struct OngoinConsultationRowView: View {
             .foregroundStyle(Color.gray600)
             .padding(.trailing, 4)
           
-          TimerTextView(
+          TimerNewTextView(
             paymentTimeRemaining: $viewModel.timeRemaining,
             textColor: Color.gray900
           ) { time in

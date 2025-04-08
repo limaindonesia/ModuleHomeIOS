@@ -83,7 +83,7 @@ struct LegalFormPaymentCheckView: View {
             .renderingMode(.template)
             .foregroundStyle(.white)
           
-          TimerTextView(paymentTimeRemaining: $store.expiredTime) { newValue in
+          TimerNewTextView(paymentTimeRemaining: $store.expiredTime) { newValue in
             store.expiredTime = newValue
           } onTimerTimeUp: {
             

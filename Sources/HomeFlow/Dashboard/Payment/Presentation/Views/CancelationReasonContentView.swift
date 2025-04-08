@@ -15,7 +15,7 @@ struct CancelationReasonContentView: View {
   private var imageURL: URL?
   private var lawyerName: String
   private var onSendReason: (ReasonEntity, String) -> Void
-
+  
   init(
     store: CancelationReasonStore,
     imageURL: URL?,
@@ -115,10 +115,13 @@ struct CancelationReasonContentView: View {
       .background(Color.gray050)
       .cornerRadius(6)
       
-      Text("*Minimal 10 Karakter")
-        .foregroundColor(store.isTextValid ? Color.gray500 : Color.danger500)
-        .bodyLexend(size: 12)
-        .padding(.bottom, 16)
+      if !store.isTextValid {
+        Text("*Minimal 10 Karakter")
+          .foregroundColor(Color.danger500)
+          .bodyLexend(size: 12)
+          .padding(.bottom, 16)
+      }
+      
     }
   }
   
@@ -130,6 +133,11 @@ struct CancelationReasonContentView: View {
     ) {
       store.selectedIndex = index
       store.selectedReason = store.arrayReasons[index]
+      
+      if index == store.arrayReasons.count - 1 {
+        store.resetReasonText()
+      }
+     
     }
     
   }

@@ -12,7 +12,8 @@ public class DetailAdvocateViewController: NiblessViewController {
 
   public override func viewDidLoad() {
     super.viewDidLoad()
-
+    
+    
   }
 
 }

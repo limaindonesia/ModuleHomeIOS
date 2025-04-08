@@ -262,7 +262,7 @@ struct LegalFormPaymentView: View {
             .renderingMode(.template)
             .foregroundColor(Color.white)
           
-          TimerTextView(paymentTimeRemaining: $store.paymentTimeRemaining) { newValue in
+          TimerNewTextView(paymentTimeRemaining: $store.paymentTimeRemaining) { newValue in
             store.paymentTimeRemaining = newValue
           } onTimerTimeUp: {
             

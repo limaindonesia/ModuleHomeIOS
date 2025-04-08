@@ -37,7 +37,7 @@ public struct HomeDocumentActiveRowView: View {
             .foregroundColor(Color.warning600)
             .bodyLexend(size: 12)
           
-          TimerTextView(paymentTimeRemaining: $viewModel.timeRemaining) { newValue in
+          TimerNewTextView(paymentTimeRemaining: $viewModel.timeRemaining) { newValue in
             viewModel.timeRemaining = newValue
           } onTimerTimeUp: {
             

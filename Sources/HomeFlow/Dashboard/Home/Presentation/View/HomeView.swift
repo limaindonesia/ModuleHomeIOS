@@ -97,22 +97,22 @@ public struct HomeView: View {
         imageURL: store.promotionBannerViewModel.popupImageURL
       )
       
-//      if store.isLoading {
-//        BlurView(style: .dark)
-//        
-//        LottieView {
-//          LottieAnimation.named("perqara-loading", bundle: .module)
-//        }
-//        .looping()
-//        .frame(width: 72, height: 72)
-//        .padding(.bottom, 50)
-//      }
+      //      if store.isLoading {
+      //        BlurView(style: .dark)
+      //
+      //        LottieView {
+      //          LottieAnimation.named("perqara-loading", bundle: .module)
+      //        }
+      //        .looping()
+      //        .frame(width: 72, height: 72)
+      //        .padding(.bottom, 50)
+      //      }
       
     }
     .ignoresSafeArea(edges: .all)
     .onAppear {
       Task {
-//        await store.fetchActiveDocuments()
+        //        await store.fetchActiveDocuments()
         await store.fetchOngoingUserCases()
         await store.requestMe()
         await store.checkBottomSheet()
@@ -155,15 +155,16 @@ public struct HomeView: View {
         }
       )
       
-      probonoServiceView {
+      probonoServiceNewView {
         store.navigateToDecisionTree()
       } onTapConsultation: {
         store.navigateToAdvocateList()
       } onTapProbonoService: {
         store.navigateToProbonoService()
-      }.padding(.top, 330)
+      }.padding(.top, 355)
       
       activeAdvocates(store.onlinedAdvocates)
+        .padding(.top, 32)
     }
   }
   
@@ -174,23 +175,23 @@ public struct HomeView: View {
         .zIndex(1)
       
       ScrollView(.vertical, showsIndicators: false) {
-        VStack(spacing: 32) {
+        VStack {
           
           /*if store.activeViewModels.isEmpty {
-            activeConsultationView()
-          } else {
-            headerWithDocumentActiveView(name: store.name)
-            
-            probonoServiceView {
-              store.navigateToDecisionTree()
-            } onTapConsultation: {
-              store.navigateToAdvocateList()
-            } onTapProbonoService: {
-              store.navigateToProbonoService()
-            }.padding(.top, 250)
-            
-            activeAdvocates(store.onlinedAdvocates)
-          }*/
+           activeConsultationView()
+           } else {
+           headerWithDocumentActiveView(name: store.name)
+           
+           probonoServiceView {
+           store.navigateToDecisionTree()
+           } onTapConsultation: {
+           store.navigateToAdvocateList()
+           } onTapProbonoService: {
+           store.navigateToProbonoService()
+           }.padding(.top, 250)
+           
+           activeAdvocates(store.onlinedAdvocates)
+           }*/
           
           activeConsultationView()
           
@@ -200,6 +201,7 @@ public struct HomeView: View {
             onTap: { store.navigateToDetailTopAdvocate() }
           )
           .frame(height: 230)
+          .padding(.top, 16)
           
           gridCategory(
             store.showCategories,
@@ -231,97 +233,6 @@ public struct HomeView: View {
       }
     }
     
-  }
-  
-  @ViewBuilder
-  func homeContentWithCustomScrollView() -> some View {
-    VStack {
-      navigationBarView()
-        .zIndex(1)
-      
-      CustomScrollView(
-        isRefreshing: $isRefreshing,
-        refreshState: $refresh
-      ) {
-        
-        VStack(spacing: 32) {
-          
-          if store.ongoingConsultation {
-            
-            headerWithOngoingView(
-              store.arrayOfuserCases,
-              name: store.name
-            )
-            
-            ongoingView(store.userCases)
-              .padding(.top, 100)
-            
-          } else {
-            
-            headerView(
-              store.isLoggedIn,
-              name: store.name,
-              onTapLogIn: {
-                store.navigateToLogin()
-              }
-            )
-            
-            sktmNewView(
-              onTapDecisionTree: {
-                store.navigateToDecisionTree()
-              }, onTapConsultation: {
-                store.navigateToAdvocateList()
-              }, onTapSKTM: {
-                store.navigateToDetailSKTM()
-              }
-            ).padding(.top, 340)
-            
-            activeAdvocates(store.onlinedAdvocates)
-          }
-          
-          gridCategory(
-            store.showCategories,
-            onTap: { skill in
-              store.selectedSkill = skill
-              store.showCategoryBottomSheet()
-            }
-          )
-          
-          topAdvocatesNew(
-            store.getFourTopAdvocates(),
-            month: store.topAdvocateMonth,
-            onTap: { store.navigateToDetailTopAdvocate() }
-          )
-          .frame(height: 230)
-          
-          lawArticles(
-            categories: store.categories,
-            articles: store.articles,
-            selectedID: store.articleSelectedID
-          )
-          .padding(.bottom, 80)
-          
-        }
-        .frame(maxWidth: .infinity)
-        
-      } onRefresh: {
-        Task {
-          await store.onRefresh()
-          isRefreshing = false
-          refresh.started = false
-          refresh.released = false
-        }
-      }
-      .background(Color.gray050)
-      .padding(.top, -20)
-      .padding(.bottom, 80)
-      
-    }
-    .onAppear {
-      Task {
-        await store.fetchOngoingUserCases()
-      }
-    }
   }
   
   @ViewBuilder
@@ -403,11 +314,17 @@ public struct HomeView: View {
         
         ZStack {
           ForEach(0 ..< store.systemImages.count, id:\.self) { indexDot in
-            Image(store.getImageDot(indexSelectedImage: photosIndex, indexSelectedDot: indexDot), bundle: .module)
-              .resizable()
-              .aspectRatio(contentMode: .fit)
-              .frame(width: 10,height: 10)
-              .position(x: CGFloat(store.systemImagesX[indexDot]), y: 355)
+            Image(
+              store.getImageDot(
+                indexSelectedImage: photosIndex,
+                indexSelectedDot: indexDot
+              ),
+              bundle: .module
+            )
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .frame(width: 10,height: 10)
+            .position(x: CGFloat(store.systemImagesX[indexDot]), y: 355)
           }
           .zIndex(1)
           
@@ -840,157 +757,72 @@ public struct HomeView: View {
   }
   
   @ViewBuilder
-  func sktmNewView(
+  func probonoServiceNewView(
     onTapDecisionTree: @escaping () -> Void,
     onTapConsultation: @escaping () -> Void,
-    onTapSKTM: @escaping () -> Void
+    onTapProbonoService: @escaping () -> Void
   ) -> some View {
-    VStack(alignment: .center, spacing: 12) {
+    VStack(spacing: 8) {
       
-      HStack(alignment: .center, spacing: 8) {
-        
-        Image("ic_moto_2", bundle: .module)
-          .resizable()
-          .frame(width: 38, height: 38)
-          .aspectRatio(contentMode: .fill)
-          .padding(.trailing, 12)
-          .padding(.top, 5)
-        
-        VStack(alignment: .leading, spacing: 4) {
-          Text("Konsultasi Hukum Online")
-            .titleLexend(size: 16)
-          Text("Rasakan BEBASnya konsultasi hukum via chat, voice call atau video call.")
-            .captionLexend(size: 12)
-            .padding(.trailing, 12)
-        }
-      }
-      .padding(.horizontal, 10)
+      Text("Layanan Hukum Perqara")
+        .titleLexend(size: 16)
       
-      ZStack {
-        Image("ic_disc_60_home", bundle: .module)
-          .resizable()
-          .frame(width: 55, height: 17)
-          .aspectRatio(contentMode: .fit)
-          .padding(.top, -28)
-          .padding(.leading, 200)
-          .zIndex(1)
+      HStack(spacing: 8) {
         
         Button {
           store.showConsultationNowBottomSheet()
         } label: {
           HStack {
-            Text("Konsultasi Sekarang")
-              .foregroundColor(Color.white)
-              .titleLexend(size: 12)
+            Image("ic_online_consultation", bundle: .module)
             
-            Image(systemName: "arrow.forward")
-              .resizable()
-              .frame(width: 10.67, height: 10.67)
-              .foregroundColor(.white)
+            Text("Konsultasi Hukum Online")
+              .titleLexend(size: 12)
+              .multilineTextAlignment(.leading)
           }
-          .padding(.horizontal, 8)
+          .padding(.all, 8)
+          .frame(maxWidth: .infinity, maxHeight: 48, alignment: .leading)
+          .background(.white)
+          .clipShape(RoundedRectangle(cornerRadius: 8))
         }
-        .frame(maxWidth: .infinity, maxHeight: 40)
-        .background(Color.buttonActiveColor)
-        .clipShape(RoundedRectangle(cornerRadius: 8))
-        .overlay(
-          RoundedRectangle(cornerRadius: 8)
-            .stroke(
-              Color.white,
-              lineWidth: 1
-            )
-        )
-        .padding(.horizontal, 10)
-        .padding(.top, 0)
-        .zIndex(0)
-        
+
+        Button {
+          
+        } label: {
+          HStack {
+            Image("ic_notary", bundle: .module)
+            
+            Text("Pendirian Badan Usaha")
+              .titleLexend(size: 12)
+              .multilineTextAlignment(.leading)
+          }
+          .padding(.all, 8)
+          .frame(maxWidth: .infinity, maxHeight: 48, alignment: .leading)
+          .background(.white)
+          .clipShape(RoundedRectangle(cornerRadius: 8))
+        }
+       
       }
       
-      
-      //      HStack {
-      //        PositiveButton(
-      //          title: "Panduan Pilih Advokat",
-      //          action: {
-      //            onTapDecisionTree()
-      //          }
-      //        )
-      //
-      //        NegativeButton(
-      //          title: "Konsultasi Langsung",
-      //          action: {
-      //            onTapConsultation()
-      //          }
-      //        )
-      //      }
-      //      .padding(.horizontal, 10)
-      //      .padding(.top, 12)
-      
-      /*VStack {
-       
-       }
-       .frame(maxWidth: .infinity, maxHeight: 40)
-       .background(
-       LinearGradient(
-       stops: [
-       Gradient.Stop(color: Color.danger200, location: 0.1),
-       Gradient.Stop(color: Color.danger100, location: 0.2),
-       Gradient.Stop(color: Color.danger100, location: 0.3),
-       Gradient.Stop(color: Color.danger100, location: 0.4),
-       Gradient.Stop(color: Color.danger100, location: 0.5),
-       ],
-       startPoint: .leading,
-       endPoint: .trailing
-       )
-       )
-       .clipShape(RoundedRectangle(cornerRadius: 8))
-       .overlay(
-       RoundedRectangle(cornerRadius: 8)
-       .stroke(
-       Color.danger200,
-       lineWidth: 1
-       )
-       )
-       .padding(.horizontal, 10)
-       .onTapGesture {
-       onTapSKTM()
-       }*/
-      
-      /*Image("ic_gradient_home", bundle: .module)
-       .resizable()
-       .aspectRatio(contentMode: .fill)
-       .frame(
-       maxWidth: .infinity,
-       maxHeight: 40
-       )
-       .clipped()
-       .contentShape(Rectangle())
-       .padding(.horizontal, 10)
-       .onTapGesture {
-       onTapSKTM()
-       }*/
-      
       HStack {
-        Image("ic_probono", bundle: .module)
+        Image("ic_probono_2", bundle: .module)
           .resizable()
           .frame(width: 24, height: 24)
         
-        Text(store.probonoTitle())
-          .padding(.bottom, 5)
+        Text("Konsultasi Gratis dengan Pro bono")
+          .titleLexend(size: 10)
         
         Spacer()
         
         Text(store.actionTitle())
       }
       .padding(.horizontal, 12)
-      .frame(maxWidth: .infinity, maxHeight: 40, alignment: .center)
+      .frame(maxWidth: .infinity, idealHeight: 40, alignment: .center)
       .background(
         LinearGradient(
-          stops: [
-            Gradient.Stop(color: Color.danger200, location: 0.05),
-            Gradient.Stop(color: Color.danger100, location: 0.2),
-            Gradient.Stop(color: Color.danger100, location: 0.3),
-            Gradient.Stop(color: Color.danger100, location: 0.4),
-            Gradient.Stop(color: Color.danger100, location: 0.5),
+          colors: [
+            Color.gradientBlue,
+            Color.gradientBlue2,
+            Color.gradientBlue2
           ],
           startPoint: .leading,
           endPoint: .trailing
@@ -1000,18 +832,22 @@ public struct HomeView: View {
       .overlay(
         RoundedRectangle(cornerRadius: 6)
           .stroke(
-            Color.danger200,
+            Color.primaryInfo200,
             lineWidth: 1
           )
       )
-      .padding(.horizontal, 10)
       .onTapGesture {
-        onTapSKTM()
+        onTapProbonoService()
       }
-      
     }
-    .frame(maxWidth: .infinity, minHeight: 166)
-    .background(Color.white)
+    .padding(.all, 16)
+    .background(
+      LinearGradient(
+        colors: [Color.white, Color.primary200],
+        startPoint: .top,
+        endPoint: .bottom
+      )
+    )
     .clipShape(RoundedRectangle(cornerRadius: 8))
     .shadow(color: .gray200, radius: 10, x: 0, y: 15)
     .padding(.horizontal, 16)
@@ -1019,7 +855,6 @@ public struct HomeView: View {
   
   @ViewBuilder
   func activeAdvocates(_ items: [Advocate]) -> some View {
-    
     if store.showOnlineAdvocates {
       VStack(alignment: .leading, spacing: 8) {
         
@@ -1072,6 +907,7 @@ public struct HomeView: View {
               AdvocateOnlineRow(
                 name: advocate.getName(),
                 imageName: advocate.getImageName(),
+                location: advocate.getLocation(),
                 experience: advocate.getExperience(),
                 rating: advocate.getRating(),
                 totalConsultation: advocate.getTotalConsultation(),
@@ -1090,10 +926,22 @@ public struct HomeView: View {
           .padding(.horizontal, 16)
         }
         
+        Button {
+          store.navigateToSeeAllAdvocate()
+        } label: {
+          HStack {
+            Text("Lihat Semua")
+              .foregroundStyle(Color.primaryInfo700)
+              .titleLexend(size: 14)
+            
+            Image("arrow-right", bundle: .module)
+          }
+          .frame(maxWidth: .infinity, maxHeight: 50, alignment: .center)
+          .padding(.top, 16)
+        }
+        
       }
-      
     }
-    
   }
   
   @ViewBuilder
