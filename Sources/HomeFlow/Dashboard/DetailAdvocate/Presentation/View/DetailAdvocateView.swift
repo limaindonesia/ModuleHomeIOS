@@ -22,36 +22,107 @@ struct DetailAdvocateView: View {
     ChipData(text: "Perpajakan", color: .gray050)
   ]
   
+  var peradiLists = [
+    "Solusi hukum terbaik",
+    "Berpengalaman di bidang keahlian",
+    "Keamanan dan kenyamanan",
+    "Garansi kepuasan klien"
+  ]
+  
   var body: some View {
     
     ScrollView {
       
-      VStack(spacing: 16) {
-        lawyerInfoView()
+      VStack(alignment: .leading, spacing: 16) {
+//        lawyerInfoView()
+//          .padding(.horizontal, 16)
+//        
+//        Divider()
+//          .background(Color.gray100)
+//          .frame(height: 1)
+//        
+//        VStack(alignment: .leading, spacing: 16) {
+//          Text("Keahlian Advokat Ini")
+//            .titleLexend(size: 14)
+//          
+//          skillsTagView(chipsData, height: $heightContainer)
+//          
+//          VStack(alignment: .leading) {
+//            HStack {
+//              Image("ic_peradi", bundle: .module)
+//                .resizable()
+//                .aspectRatio(contentMode: .fill)
+//                .frame(width: 112, height: 48)
+//              
+//              Spacer()
+//              
+//              Button {
+//                
+//              } label: {
+//                Text("Apa itu peradi")
+//                  .foregroundStyle(Color.primaryInfo700)
+//                  .titleLexend(size: 14)
+//              }
+//            }
+//            
+//            HStack {
+//              Image("medal-star", bundle: .module)
+//              Text("Terverifikasi Oleh PERADI Indonesia")
+//                .titleLexend(size: 14)
+//            }
+//            
+//            ForEach(peradiLists, id: \.self) { item in
+//              HStack {
+//                Image("ic_order_service_selected", bundle: .module)
+//                Text(item)
+//                  .captionLexend(size: 14)
+//              }
+//            }
+//            
+//            Spacer()
+//          }
+//          .padding(.vertical, 8)
+//          .padding(.horizontal, 16)
+//          .frame(maxWidth: .infinity, maxHeight: 300)
+//          .background(Color.primaryInfo050)
+//          .clipShape(RoundedRectangle(cornerRadius: 8))
+//          .overlay {
+//            RoundedRectangle(cornerRadius: 8)
+//              .stroke(Color.primary200, lineWidth: 1)
+//          }
+//        }
+//        .padding(.horizontal, 16)
+//        
+//        Divider()
+//          .background(Color.gray100)
+//          .frame(height: 1)
+//        
+//        Text("Pendidikan Terakhir")
+//          .titleLexend(size: 14)
+//          .padding(.horizontal, 16)
+//        
+//        Text("Fakultas Hukum Universitas Pelita Harapan")
+//          .captionLexend(size: 14)
+//          .padding(.horizontal, 16)
+//        
+//        Divider()
+//          .background(Color.gray100)
+//          .frame(height: 1)
+//        
+//        Text("Tentang Advokat")
+//          .titleLexend(size: 14)
+//          .padding(.horizontal, 16)
+//        
+//        Text("Suhendra Asido Hutabarat, S.H., S.E., M.H., M.M merupakan Ketua Pusat Bantuan Hukum (PBH) PERADI Manado, Ketua Yayasan Cahaya Mercusuar Indonesia, serta Direktur Kantor Hukum MGD.")
+//          .captionLexend(size: 14)
+//          .padding(.horizontal, 16)
+//        
+//        Divider()
+//          .background(Color.gray100)
+//          .frame(height: 1)
+        
+        reviewView()
           .padding(.horizontal, 16)
-        
-        Divider()
-          .background(Color.gray100)
-          .frame(height: 1)
-        
-        VStack(alignment: .leading, spacing: 16) {
-          Text("Keahlian Advokat Ini")
-            .titleLexend(size: 14)
-          
-          skillsTagView(chipsData, height: $heightContainer)
-          
-          VStack(alignment: .leading) {
-            Image("ic_peradi", bundle: .module)
-          }
-          .frame(maxWidth: .infinity, minHeight: 300)
-          .background(Color.primaryInfo050)
-          .clipShape(RoundedRectangle(cornerRadius: 8))
-          .overlay {
-            RoundedRectangle(cornerRadius: 8)
-              .stroke(Color.primary200, lineWidth: 1)
-          }
-        }
-        .padding(.horizontal, 16)
       }
       
     }
@@ -169,6 +240,51 @@ struct DetailAdvocateView: View {
         paddingHorizontal: 8
       )
     }
+  }
+  
+  @ViewBuilder
+  func reviewView() -> some View {
+    VStack(alignment: .leading, spacing: 8) {
+      HStack(spacing: 0){
+        Image("ic_star", bundle: .module)
+          .padding(.trailing, 5)
+        
+        Text("4.0")
+          .titleLexend(size: 16)
+        
+        Text("/5")
+          .captionLexend(size: 12)
+          .padding(.trailing, 12)
+          .padding(.top, 4)
+        
+        Spacer()
+        
+        Text("1 April 2023")
+          .captionLexend(size: 10)
+      }
+      
+      TagView(
+        text: "Pidana",
+        color: .gray100,
+        textColor: .gray600
+      )
+      
+      Text("G*****")
+        .bodyLexend(size: 12)
+      
+      Text("Konsultasi dengan Advokat ini sangat informatif dan membantu. Dia dengan cepat memahami situasi saya dan ...")
+        .captionLexend(size: 12)
+    }
+    .padding(.vertical, 8)
+    .padding(.horizontal, 16)
+    
+    .background(Color.gray050)
+    .clipShape(RoundedRectangle(cornerRadius: 8))
+    .overlay {
+      RoundedRectangle(cornerRadius: 8)
+        .stroke(Color.gray100, lineWidth: 1)
+    }
+    
   }
   
 }

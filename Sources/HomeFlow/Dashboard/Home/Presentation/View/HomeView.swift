@@ -907,6 +907,7 @@ public struct HomeView: View {
               AdvocateOnlineRow(
                 name: advocate.getName(),
                 imageName: advocate.getImageName(),
+                location: advocate.getLocation(),
                 experience: advocate.getExperience(),
                 rating: advocate.getRating(),
                 totalConsultation: advocate.getTotalConsultation(),
