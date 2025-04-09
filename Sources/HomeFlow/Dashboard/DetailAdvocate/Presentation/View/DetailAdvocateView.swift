@@ -34,92 +34,92 @@ struct DetailAdvocateView: View {
     ScrollView {
       
       VStack(alignment: .leading, spacing: 16) {
-//        lawyerInfoView()
-//          .padding(.horizontal, 16)
-//        
-//        Divider()
-//          .background(Color.gray100)
-//          .frame(height: 1)
-//        
-//        VStack(alignment: .leading, spacing: 16) {
-//          Text("Keahlian Advokat Ini")
-//            .titleLexend(size: 14)
-//          
-//          skillsTagView(chipsData, height: $heightContainer)
-//          
-//          VStack(alignment: .leading) {
-//            HStack {
-//              Image("ic_peradi", bundle: .module)
-//                .resizable()
-//                .aspectRatio(contentMode: .fill)
-//                .frame(width: 112, height: 48)
-//              
-//              Spacer()
-//              
-//              Button {
-//                
-//              } label: {
-//                Text("Apa itu peradi")
-//                  .foregroundStyle(Color.primaryInfo700)
-//                  .titleLexend(size: 14)
-//              }
-//            }
-//            
-//            HStack {
-//              Image("medal-star", bundle: .module)
-//              Text("Terverifikasi Oleh PERADI Indonesia")
-//                .titleLexend(size: 14)
-//            }
-//            
-//            ForEach(peradiLists, id: \.self) { item in
-//              HStack {
-//                Image("ic_order_service_selected", bundle: .module)
-//                Text(item)
-//                  .captionLexend(size: 14)
-//              }
-//            }
-//            
-//            Spacer()
-//          }
-//          .padding(.vertical, 8)
-//          .padding(.horizontal, 16)
-//          .frame(maxWidth: .infinity, maxHeight: 300)
-//          .background(Color.primaryInfo050)
-//          .clipShape(RoundedRectangle(cornerRadius: 8))
-//          .overlay {
-//            RoundedRectangle(cornerRadius: 8)
-//              .stroke(Color.primary200, lineWidth: 1)
-//          }
-//        }
-//        .padding(.horizontal, 16)
-//        
-//        Divider()
-//          .background(Color.gray100)
-//          .frame(height: 1)
-//        
-//        Text("Pendidikan Terakhir")
-//          .titleLexend(size: 14)
-//          .padding(.horizontal, 16)
-//        
-//        Text("Fakultas Hukum Universitas Pelita Harapan")
-//          .captionLexend(size: 14)
-//          .padding(.horizontal, 16)
-//        
-//        Divider()
-//          .background(Color.gray100)
-//          .frame(height: 1)
-//        
-//        Text("Tentang Advokat")
-//          .titleLexend(size: 14)
-//          .padding(.horizontal, 16)
-//        
-//        Text("Suhendra Asido Hutabarat, S.H., S.E., M.H., M.M merupakan Ketua Pusat Bantuan Hukum (PBH) PERADI Manado, Ketua Yayasan Cahaya Mercusuar Indonesia, serta Direktur Kantor Hukum MGD.")
-//          .captionLexend(size: 14)
-//          .padding(.horizontal, 16)
-//        
-//        Divider()
-//          .background(Color.gray100)
-//          .frame(height: 1)
+        lawyerInfoView()
+          .padding(.horizontal, 16)
+        
+        Divider()
+          .background(Color.gray100)
+          .frame(height: 1)
+        
+        VStack(alignment: .leading, spacing: 16) {
+          Text("Keahlian Advokat Ini")
+            .titleLexend(size: 14)
+          
+          skillsTagView(chipsData, height: $heightContainer)
+          
+          VStack(alignment: .leading) {
+            HStack {
+              Image("ic_peradi", bundle: .module)
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(width: 112, height: 48)
+              
+              Spacer()
+              
+              Button {
+                
+              } label: {
+                Text("Apa itu peradi")
+                  .foregroundStyle(Color.primaryInfo700)
+                  .titleLexend(size: 14)
+              }
+            }
+            
+            HStack {
+              Image("medal-star", bundle: .module)
+              Text("Terverifikasi Oleh PERADI Indonesia")
+                .titleLexend(size: 14)
+            }
+            
+            ForEach(peradiLists, id: \.self) { item in
+              HStack {
+                Image("ic_order_service_selected", bundle: .module)
+                Text(item)
+                  .captionLexend(size: 14)
+              }
+            }
+            
+            Spacer()
+          }
+          .padding(.vertical, 8)
+          .padding(.horizontal, 16)
+          .frame(maxWidth: .infinity, maxHeight: 300)
+          .background(Color.primaryInfo050)
+          .clipShape(RoundedRectangle(cornerRadius: 8))
+          .overlay {
+            RoundedRectangle(cornerRadius: 8)
+              .stroke(Color.primary200, lineWidth: 1)
+          }
+        }
+        .padding(.horizontal, 16)
+        
+        Divider()
+          .background(Color.gray100)
+          .frame(height: 1)
+        
+        Text("Pendidikan Terakhir")
+          .titleLexend(size: 14)
+          .padding(.horizontal, 16)
+        
+        Text("Fakultas Hukum Universitas Pelita Harapan")
+          .captionLexend(size: 14)
+          .padding(.horizontal, 16)
+        
+        Divider()
+          .background(Color.gray100)
+          .frame(height: 1)
+        
+        Text("Tentang Advokat")
+          .titleLexend(size: 14)
+          .padding(.horizontal, 16)
+        
+        Text("Suhendra Asido Hutabarat, S.H., S.E., M.H., M.M merupakan Ketua Pusat Bantuan Hukum (PBH) PERADI Manado, Ketua Yayasan Cahaya Mercusuar Indonesia, serta Direktur Kantor Hukum MGD.")
+          .captionLexend(size: 14)
+          .padding(.horizontal, 16)
+        
+        Divider()
+          .background(Color.gray100)
+          .frame(height: 1)
         
         reviewView()
           .padding(.horizontal, 16)
@@ -152,22 +152,7 @@ struct DetailAdvocateView: View {
             .background(Color.success050)
             .clipShape(RoundedRectangle(cornerRadius: 12))
             
-            HStack(spacing: 3) {
-              Image("ic_video", bundle: .module)
-              Text("Tersedia")
-                .foregroundStyle(Color.white)
-                .captionLexend(size: 10)
-            }
-            .padding(.horizontal, 6)
-            .padding(.vertical, 4)
-            .background(
-              LinearGradient(
-                colors: [Color.gradient4, Color.gradient3],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-              )
-            )
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+            AdvocateAvailableView()
             
           }
           .padding(.bottom, 8)

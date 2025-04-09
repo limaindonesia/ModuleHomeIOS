@@ -910,7 +910,7 @@ public struct HomeView: View {
                 location: advocate.getLocation(),
                 experience: advocate.getExperience(),
                 rating: advocate.getRating(),
-                totalConsultation: advocate.getTotalConsultation(),
+                totalConsultation: advocate.total_consultations ?? 0,
                 price: advocate.createPrice(),
                 originalPrice: advocate.getOriginalPrice(),
                 isDiscount: advocate.isDiscount,
