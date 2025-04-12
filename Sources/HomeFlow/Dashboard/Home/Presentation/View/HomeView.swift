@@ -786,7 +786,7 @@ public struct HomeView: View {
         }
 
         Button {
-          
+          store.navigateToNotary()
         } label: {
           HStack {
             Image("ic_notary", bundle: .module)
@@ -1480,7 +1480,8 @@ public struct HomeView: View {
       ongoingNavigator: MockNavigator(),
       loginResponder: MockNavigator(),
       refundNavigator: MockNavigator(),
-      probonoNavigator: MockNavigator()
+      probonoNavigator: MockNavigator(),
+      notaryResponder: MockNavigator()
     )
   )
 }
