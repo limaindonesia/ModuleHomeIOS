@@ -56,7 +56,11 @@ public struct TopAdvocateContentView: View {
             HStack(alignment: .center) {
               ZStack {
                 ForEachWithIndex(items, id: \.id) { (index, item)  in
-                  renderCircleImageView(index: index, item: item)
+                  renderCircleImageView(
+                    index: index,
+                    item: item,
+                    onTap: onTapAction
+                  )
                 }
               }
               .frame(maxWidth: .infinity, minHeight: 80)
@@ -97,13 +101,16 @@ public struct TopAdvocateContentView: View {
   @ViewBuilder
   func renderCircleImageView(
     index: Int,
-    item: TopAdvocateViewModel
+    item: TopAdvocateViewModel,
+    onTap: @escaping () -> Void
   ) -> some View {
     if item.name.isEmpty {
       VStack{
         Text("+10")
           .foregroundColor(Color.primary500)
           .titleStyle(size: 20)
+      }.onTapGesture {
+        onTap()
       }
       .frame(width: 64, height: 64)
       .background(Color.white)

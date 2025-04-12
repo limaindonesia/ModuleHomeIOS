@@ -594,6 +594,12 @@ struct PaymentView: View {
       )
     }
     .shadow(color: Color.gray100, radius: 5)
+    .onTapGesture {
+      withAnimation(.smooth) {
+        store.checkVirtualAccount()
+        store.selectedPaymentCategory = .VA
+      }
+    }
   }
   
   @ViewBuilder
@@ -652,6 +658,12 @@ struct PaymentView: View {
       )
     }
     .shadow(color: Color.gray100, radius: 5)
+    .onTapGesture {
+      withAnimation(.smooth) {
+        store.checkEWallet()
+        store.selectedPaymentCategory = .EWALLET
+      }
+    }
   }
   
 }
