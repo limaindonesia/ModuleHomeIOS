@@ -102,9 +102,7 @@ public struct MockHomeRepository: HomeRepositoryLogic,
   public func fetchArticles(params: ArticleParamRequest) async throws -> [ArticleEntity] {
     var entities: [ArticleEntity] = []
     for _ in 0 ..< 20 {
-      entities.append(
-        ArticleEntity()
-      )
+      entities.append(ArticleEntity())
     }
     
     return entities

@@ -766,6 +766,7 @@ public struct HomeView: View {
       
       Text("Layanan Hukum Perqara")
         .titleLexend(size: 16)
+        .padding(.top, 16)
       
       HStack(spacing: 8) {
         
@@ -802,8 +803,9 @@ public struct HomeView: View {
         }
        
       }
+      .padding(.horizontal, 16)
       
-      HStack {
+      /*HStack {
         Image("ic_probono_2", bundle: .module)
           .resizable()
           .frame(width: 24, height: 24)
@@ -836,11 +838,76 @@ public struct HomeView: View {
             lineWidth: 1
           )
       )
+      .padding(.horizontal, 16)
       .onTapGesture {
         onTapProbonoService()
+      }*/
+      
+      HStack {
+        Image("ic_promo", bundle: .module)
+          .resizable()
+          .frame(width: 24, height: 24)
+        
+        Text("Promo yang tersedia")
+          .captionLexend(size: 12)
+        
+        Spacer()
+        
+        Image(systemName: "arrow.right")
+          .foregroundStyle(Color.primaryInfo700)
       }
+      .padding(.horizontal, 12)
+      .frame(maxWidth: .infinity, idealHeight: 40, alignment: .center)
+      .background(
+        LinearGradient(
+          colors: [
+            Color.gradientBlue,
+            Color.gradientBlue2,
+            Color.gradientBlue2
+          ],
+          startPoint: .leading,
+          endPoint: .trailing
+        )
+      )
+      .clipShape(RoundedRectangle(cornerRadius: 6))
+      .overlay(
+        RoundedRectangle(cornerRadius: 6)
+          .stroke(
+            Color.primaryInfo200,
+            lineWidth: 1
+          )
+      )
+      .padding(.horizontal, 16)
+      .onTapGesture {
+        
+      }
+      
+      
+      HStack {
+        Image("ic_libra", bundle: .module)
+          .resizable()
+          .aspectRatio(contentMode: .fill)
+          .frame(width: 12, height: 8)
+        
+        HStack(spacing: 1) {
+          Text("Dapatkan konsultasi gratis, pelajari")
+            .foregroundStyle(Color.white)
+            .captionLexend(size: 12)
+          Text(createDottedText("di sini", underline: true))
+            .foregroundStyle(Color.white)
+            .captionLexend(size: 12)
+            .onTapGesture {
+              onTapProbonoService()
+            }
+        }
+      }
+      .padding(.horizontal, 16)
+      .frame(maxWidth: .infinity, idealHeight: 26, alignment: .leading)
+      .background(Color.primaryInfo700)
+      .clipShape(CustomCorner(corners: [.bottomLeft, .bottomRight], radius: 12))
+      
+     
     }
-    .padding(.all, 16)
     .background(
       LinearGradient(
         colors: [Color.white, Color.primary200],
@@ -848,7 +915,7 @@ public struct HomeView: View {
         endPoint: .bottom
       )
     )
-    .clipShape(RoundedRectangle(cornerRadius: 8))
+    .clipShape(RoundedRectangle(cornerRadius: 12))
     .shadow(color: .gray200, radius: 10, x: 0, y: 15)
     .padding(.horizontal, 16)
   }
@@ -1447,6 +1514,26 @@ public struct HomeView: View {
       .ignoresSafeArea()
     }
     
+  }
+  
+  private func createDottedText(
+    _ string: String,
+    underline: Bool = false,
+    strikethrough: Bool = false
+  ) -> AttributedString {
+    var attributedString = AttributedString(string)
+    
+    _ = NSNumber(value: NSUnderlineStyle.patternDot.rawValue | NSUnderlineStyle.single.rawValue)
+    
+    if underline {
+      attributedString.underlineStyle = Text.LineStyle(pattern: .solid, color: .white)
+    }
+    
+    if strikethrough {
+      attributedString.strikethroughStyle = Text.LineStyle(pattern: .solid, color: .white)
+    }
+    
+    return attributedString
   }
   
 }
