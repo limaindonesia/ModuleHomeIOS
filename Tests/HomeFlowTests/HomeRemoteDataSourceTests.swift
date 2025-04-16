@@ -306,7 +306,7 @@ struct MockHomeRemoteDataSource: HomeRemoteDataSourceLogic,
     fatalError()
   }
 
-  func fetchNewestArticle() async throws -> [HomeFlow.NewestArticleResponseModel] {
+  func fetchNewestArticle() async throws -> [NewestArticleResponseModel] {
     fatalError()
   }
 

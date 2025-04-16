@@ -805,44 +805,6 @@ public struct HomeView: View {
       }
       .padding(.horizontal, 16)
       
-      /*HStack {
-        Image("ic_probono_2", bundle: .module)
-          .resizable()
-          .frame(width: 24, height: 24)
-        
-        Text("Konsultasi Gratis dengan Pro bono")
-          .titleLexend(size: 10)
-        
-        Spacer()
-        
-        Text(store.actionTitle())
-      }
-      .padding(.horizontal, 12)
-      .frame(maxWidth: .infinity, idealHeight: 40, alignment: .center)
-      .background(
-        LinearGradient(
-          colors: [
-            Color.gradientBlue,
-            Color.gradientBlue2,
-            Color.gradientBlue2
-          ],
-          startPoint: .leading,
-          endPoint: .trailing
-        )
-      )
-      .clipShape(RoundedRectangle(cornerRadius: 6))
-      .overlay(
-        RoundedRectangle(cornerRadius: 6)
-          .stroke(
-            Color.primaryInfo200,
-            lineWidth: 1
-          )
-      )
-      .padding(.horizontal, 16)
-      .onTapGesture {
-        onTapProbonoService()
-      }*/
-      
       HStack {
         Image("ic_promo", bundle: .module)
           .resizable()
@@ -879,9 +841,8 @@ public struct HomeView: View {
       )
       .padding(.horizontal, 16)
       .onTapGesture {
-        
+        store.navigateToListPromotion()
       }
-      
       
       HStack {
         Image("ic_libra", bundle: .module)

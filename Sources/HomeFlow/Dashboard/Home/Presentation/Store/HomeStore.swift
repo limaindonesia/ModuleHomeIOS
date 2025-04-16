@@ -1138,6 +1138,10 @@ public class HomeStore: ObservableObject {
     notaryResponder.navigateToNotary()
   }
   
+  public func navigateToListPromotion() {
+    
+  }
+  
   //MARK: - BottomSheet
   
   func showCategoryBottomSheet() {
