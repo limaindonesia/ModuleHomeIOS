@@ -40,6 +40,7 @@ public class HomeStore: ObservableObject {
   private let refundNavigator: RefundNavigator
   private let probonoNavigator: ProbonoNavigator
   private let notaryResponder: NotaryResponder
+  private let promotionListNavigator: PromotionListNavigator
   
   public let monitor = NWPathMonitor()
   let dispatchQueue = DispatchQueue(label: "Monitor")
@@ -122,7 +123,8 @@ public class HomeStore: ObservableObject {
     loginResponder: LoginResponder,
     refundNavigator: RefundNavigator,
     probonoNavigator: ProbonoNavigator,
-    notaryResponder: NotaryResponder
+    notaryResponder: NotaryResponder,
+    promotionListNavigator: PromotionListNavigator
   ) {
     self.userSessionDataSource = userSessionDataSource
     self.homeRepository = homeRepository
@@ -146,6 +148,7 @@ public class HomeStore: ObservableObject {
     self.probonoNavigator = probonoNavigator
     self.legalFormPaymentNavigator = legalFormPaymentNavigator
     self.notaryResponder = notaryResponder
+    self.promotionListNavigator = promotionListNavigator
     
     Task {
       await requestPromotionBanner()
@@ -1139,7 +1142,7 @@ public class HomeStore: ObservableObject {
   }
   
   public func navigateToListPromotion() {
-    
+    promotionListNavigator.navigateToPromotioLists()
   }
   
   //MARK: - BottomSheet

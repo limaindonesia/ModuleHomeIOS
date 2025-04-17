@@ -1529,7 +1529,8 @@ public struct HomeView: View {
       loginResponder: MockNavigator(),
       refundNavigator: MockNavigator(),
       probonoNavigator: MockNavigator(),
-      notaryResponder: MockNavigator()
+      notaryResponder: MockNavigator(),
+      promotionListNavigator: MockNavigator()
     )
   )
 }
