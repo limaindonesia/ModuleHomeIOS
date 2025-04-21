@@ -11,6 +11,7 @@ import AprodhitKit
 import Lottie
 import Combine
 import Kingfisher
+import PromotionModule
 
 public struct HomeView: View {
   @ObservedObject var store: HomeStore
@@ -116,6 +117,7 @@ public struct HomeView: View {
         await store.fetchOngoingUserCases()
         await store.requestMe()
         await store.checkBottomSheet()
+        await store.fetchPromotionLists()
       }
     }
     
@@ -805,43 +807,45 @@ public struct HomeView: View {
       }
       .padding(.horizontal, 16)
       
-      HStack {
-        Image("ic_promo", bundle: .module)
-          .resizable()
-          .frame(width: 24, height: 24)
-        
-        Text("Promo yang tersedia")
-          .captionLexend(size: 12)
-        
-        Spacer()
-        
-        Image(systemName: "arrow.right")
-          .foregroundStyle(Color.primaryInfo700)
-      }
-      .padding(.horizontal, 12)
-      .frame(maxWidth: .infinity, idealHeight: 40, alignment: .center)
-      .background(
-        LinearGradient(
-          colors: [
-            Color.gradientBlue,
-            Color.gradientBlue2,
-            Color.gradientBlue2
-          ],
-          startPoint: .leading,
-          endPoint: .trailing
-        )
-      )
-      .clipShape(RoundedRectangle(cornerRadius: 6))
-      .overlay(
-        RoundedRectangle(cornerRadius: 6)
-          .stroke(
-            Color.primaryInfo200,
-            lineWidth: 1
+      if store.hasPromotion() {
+        HStack {
+          Image("ic_promo", bundle: .module)
+            .resizable()
+            .frame(width: 24, height: 24)
+          
+          Text("Promo yang tersedia")
+            .captionLexend(size: 12)
+          
+          Spacer()
+          
+          Image(systemName: "arrow.right")
+            .foregroundStyle(Color.primaryInfo700)
+        }
+        .padding(.horizontal, 12)
+        .frame(maxWidth: .infinity, idealHeight: 40, alignment: .center)
+        .background(
+          LinearGradient(
+            colors: [
+              Color.gradientBlue,
+              Color.gradientBlue2,
+              Color.gradientBlue2
+            ],
+            startPoint: .leading,
+            endPoint: .trailing
           )
-      )
-      .padding(.horizontal, 16)
-      .onTapGesture {
-        store.navigateToListPromotion()
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 6))
+        .overlay(
+          RoundedRectangle(cornerRadius: 6)
+            .stroke(
+              Color.primaryInfo200,
+              lineWidth: 1
+            )
+        )
+        .padding(.horizontal, 16)
+        .onTapGesture {
+          store.navigateToListPromotion()
+        }
       }
       
       HStack {
@@ -1516,6 +1520,7 @@ public struct HomeView: View {
       cancelationRepository: MockPaymentRepository(),
       meRepository: MockHomeRepository(),
       legalFormRepository: MockLegalFormRepository(),
+      promotionRepository: MockPromotionRepository(),
       onlineAdvocateNavigator: MockNavigator(),
       topAdvocateNavigator: MockNavigator(),
       articleNavigator: MockNavigator(),

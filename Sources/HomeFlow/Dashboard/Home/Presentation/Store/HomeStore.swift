@@ -12,6 +12,7 @@ import Network
 import Combine
 import Environment
 import AppsFlyerLib
+import PromotionModule
 
 @MainActor
 public class HomeStore: ObservableObject {
@@ -26,6 +27,7 @@ public class HomeStore: ObservableObject {
   private let cancelationRepository: PaymentCancelationRepositoryLogic
   private let meRepository: MeRepositoryLogic
   private let legalFormRepository: LegalFormRepositoryLogic
+  private let promotionRepository: PromotionRepositoryLogic
   private let onlineAdvocateNavigator: OnlineAdvocateNavigator
   private let topAdvocateNavigator: TopAdvocateNavigator
   private let articleNavigator: ArticleNavigator
@@ -99,6 +101,7 @@ public class HomeStore: ObservableObject {
   public var isFromDeeplink: Bool = false
   public var systemImages: [String] = ["bg_home1","bg_home2","bg_home3","bg_home4"]
   public var systemImagesX: [Int] = [24,39,54,69]
+  public var promotionListEntites: [PromotionEntity] = []
   
   
   public init(
@@ -110,6 +113,7 @@ public class HomeStore: ObservableObject {
     cancelationRepository: PaymentCancelationRepositoryLogic,
     meRepository: MeRepositoryLogic,
     legalFormRepository: LegalFormRepositoryLogic,
+    promotionRepository: PromotionRepositoryLogic,
     onlineAdvocateNavigator: OnlineAdvocateNavigator,
     topAdvocateNavigator: TopAdvocateNavigator,
     articleNavigator: ArticleNavigator,
@@ -149,6 +153,7 @@ public class HomeStore: ObservableObject {
     self.legalFormPaymentNavigator = legalFormPaymentNavigator
     self.notaryResponder = notaryResponder
     self.promotionListNavigator = promotionListNavigator
+    self.promotionRepository = promotionRepository
     
     Task {
       await requestPromotionBanner()
@@ -219,6 +224,17 @@ public class HomeStore: ObservableObject {
   }
   
   //MARK: - Fetch Data from API
+  
+  public func fetchPromotionLists() async {
+    do {
+      promotionListEntites = try await promotionRepository.fetchPromotionLists(
+        headers: HeaderRequest(token: ""),
+        parameters: PromotionListRequestParams()
+      )
+    } catch {
+      
+    }
+  }
   
   @MainActor
   public func requestMe() async {
@@ -619,6 +635,10 @@ public class HomeStore: ObservableObject {
   }
   
   //MARK: - Other function
+  
+  public func hasPromotion() -> Bool {
+    return !promotionListEntites.isEmpty
+  }
   
   private func mapEntityToViewModel(entity: LegalFormEntity) -> DocumentBaseViewModel {
     if entity.type == .BOOKED {
