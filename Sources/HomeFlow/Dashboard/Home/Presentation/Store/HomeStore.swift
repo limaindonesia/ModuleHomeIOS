@@ -1162,7 +1162,7 @@ public class HomeStore: ObservableObject {
   }
   
   public func navigateToListPromotion() {
-    promotionListNavigator.navigateToPromotioLists()
+    promotionListNavigator.navigateToPromotion()
   }
   
   //MARK: - BottomSheet
