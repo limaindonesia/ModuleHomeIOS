@@ -36,16 +36,10 @@ public struct HomeView: View {
       BottomSheetView(isPresented: $store.isConsultationNowSheetPresented) {
         consultationAIBottomSheetContent {
           store.hideConsultationNowBottomSheet()
-          store.navigateToDetailSKTM()
-        } onTapConsultation: {
-          store.hideConsultationNowBottomSheet()
           store.navigateToAdvocateListWithSkill()
         } onTapDecisionTree: {
           store.hideConsultationNowBottomSheet()
           store.navigateToDecisionTree()
-        } onTapProbono: {
-          store.hideConsultationNowBottomSheet()
-          store.navigateToProbonoService()
         }
       } onDismissed: {
         store.hideConsultationNowBottomSheet()
@@ -1410,10 +1404,8 @@ public struct HomeView: View {
   
   @ViewBuilder
   func consultationAIBottomSheetContent(
-    onTap: @escaping () -> Void,
     onTapConsultation: @escaping () -> Void,
-    onTapDecisionTree: @escaping () -> Void,
-    onTapProbono: @escaping() -> Void
+    onTapDecisionTree: @escaping () -> Void
   ) -> some View {
     
     VStack(alignment: .leading, spacing: 16) {
@@ -1466,9 +1458,7 @@ public struct HomeView: View {
             .position(x: frame.maxX - 72)
             .zIndex(1)
             
-            
             HStack(alignment: .center, spacing: 8) {
-              
               Image("AI", bundle: .module)
                 .resizable()
                 .frame(width: 48, height: 48)
