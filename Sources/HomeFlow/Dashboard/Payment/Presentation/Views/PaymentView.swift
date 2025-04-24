@@ -101,7 +101,7 @@ struct PaymentView: View {
         }
       }
       
-      BottomSheetView(isPresented: $store.isPresentVoucherBottomSheet) {
+      BottomSheetNewView(isPresented: $store.isPresentVoucherBottomSheet) {
         VoucherBottomSheetView(
           activateButton: $store.activateButton,
           voucher: $store.voucherCode,
