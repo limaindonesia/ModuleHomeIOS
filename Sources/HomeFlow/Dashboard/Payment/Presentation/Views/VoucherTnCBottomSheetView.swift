@@ -16,15 +16,18 @@ struct VoucherTnCBottomSheetView: View {
   
   public let voucher: EligibleVoucherEntity
   public var onTapUsed: (EligibleVoucherEntity) -> Void
+  public var onTapCancelled: (EligibleVoucherEntity) -> Void
   
   init(
     voucher: EligibleVoucherEntity,
     constantHeight: CGFloat? = nil,
-    onTapUsed: @escaping (EligibleVoucherEntity) -> Void
+    onTapUsed: @escaping (EligibleVoucherEntity) -> Void,
+    onTapCancelled: @escaping (EligibleVoucherEntity) -> Void
   ) {
     self.voucher = voucher
-    self.onTapUsed = onTapUsed
     self.constantHeight = constantHeight
+    self.onTapUsed = onTapUsed
+    self.onTapCancelled = onTapCancelled
   }
   
   var body: some View {
@@ -56,9 +59,9 @@ struct VoucherTnCBottomSheetView: View {
         Spacer()
         
         Button {
-          onTapUsed(voucher)
+          voucher.isUsed ? onTapCancelled(voucher) : onTapUsed(voucher)
         } label: {
-          Text("Pakai")
+          Text(voucher.isUsed ? "Batal" : "Pakai")
             .foregroundStyle(Color.buttonActiveColor)
             .titleLexend(size: 14)
         }
@@ -82,6 +85,10 @@ struct VoucherTnCBottomSheetView: View {
   VoucherTnCBottomSheetView(
     voucher: .init(),
     onTapUsed: { code in
+      
+    },
+    onTapCancelled: { code in
+      
     }
   )
 }

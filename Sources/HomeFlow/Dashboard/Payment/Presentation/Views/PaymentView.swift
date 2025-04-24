@@ -92,6 +92,12 @@ struct PaymentView: View {
             store.showVoucherBottomSheet()
             await store.applyVoucher(voucher.code)
           }
+        } onTapCancelled: { voucher in
+          Task {
+            store.hideVoucherTncBottomSheet()
+            store.showVoucherBottomSheet()
+            await store.removeVoucher()
+          }
         }
       }
       

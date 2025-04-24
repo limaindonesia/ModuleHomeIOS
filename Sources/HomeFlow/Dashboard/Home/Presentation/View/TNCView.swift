@@ -52,8 +52,8 @@ struct TNCView: View {
 #Preview {
   VoucherTnCBottomSheetView(
     voucher: .init(),
-    onTapUsed: { code in
-    }
+    onTapUsed: { code in },
+    onTapCancelled: { code in }
   )
 }
 

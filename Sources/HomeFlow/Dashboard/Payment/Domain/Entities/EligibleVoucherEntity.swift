@@ -20,6 +20,7 @@ public final class EligibleVoucherEntity: TransformableWithoutViewModel, Identif
   public let tnc: String
   public let expiredDate: Date
   public var isUsed: Bool
+  public let quota: Int
   
   public init() {
     self.name = ""
@@ -27,6 +28,7 @@ public final class EligibleVoucherEntity: TransformableWithoutViewModel, Identif
     self.tnc = ""
     self.expiredDate = Date()
     self.isUsed = false
+    self.quota = 0
   }
   
   public init(
@@ -34,13 +36,15 @@ public final class EligibleVoucherEntity: TransformableWithoutViewModel, Identif
     code: String,
     tnc: String,
     expiredDate: Date,
-    isUsed: Bool
+    isUsed: Bool,
+    quota: Int
   ) {
     self.name = name
     self.code = code
     self.tnc = tnc
     self.expiredDate = expiredDate
     self.isUsed = isUsed
+    self.quota = quota
   }
   
   public static func map(from data: EligibleVoucherResponseModel.Datum) -> EligibleVoucherEntity {
@@ -49,7 +53,8 @@ public final class EligibleVoucherEntity: TransformableWithoutViewModel, Identif
       code: data.code ?? "",
       tnc: data.tnc ?? "",
       expiredDate: (data.endDate ?? "").toDate() ?? Date(),
-      isUsed: false
+      isUsed: false,
+      quota: data.quota ?? 0
     )
   }
   

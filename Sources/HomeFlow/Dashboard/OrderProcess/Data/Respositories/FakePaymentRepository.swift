@@ -58,7 +58,8 @@ public struct FakePaymentRepository: PaymentRepositoryLogic {
       amount: "",
       tnc: "",
       descriptions: "",
-      duration: 0
+      duration: 0,
+      quota: 1
     )
   }
   
@@ -119,14 +120,16 @@ public struct FakePaymentRepository: PaymentRepositoryLogic {
         code: "BRONZE12",
         tnc: "",
         expiredDate: Date(),
-        isUsed: false
+        isUsed: false,
+        quota: 1
       ),
       .init(
         name: "Bronze Shell",
         code: "BRONZE99",
         tnc: "",
         expiredDate: Date(),
-        isUsed: false
+        isUsed: false,
+        quota: 10
       )
     ]
   }
