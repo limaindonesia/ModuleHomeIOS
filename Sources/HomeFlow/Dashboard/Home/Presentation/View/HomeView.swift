@@ -1505,7 +1505,7 @@ public struct HomeView: View {
                 )
             )
             .onTapGesture {
-              onTapConsultation()
+              onTapDecisionTree()
             }
           }
           
