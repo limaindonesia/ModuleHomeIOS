@@ -78,12 +78,10 @@ struct PaymentView: View {
       }
       
       BottomSheetNewView(
-        isPresented: $store.isPresentVoucherTnCBottomSheet,
-        constantHeight: 400
+        isPresented: $store.isPresentVoucherTnCBottomSheet
       ) {
         VoucherTnCBottomSheetView(
-          voucher: store.eligibleVoucherEntity,
-          constantHeight: 250
+          voucher: store.eligibleVoucherEntity
         ) { voucher in
           Task {
             store.eligibleVoucherEntity = voucher
