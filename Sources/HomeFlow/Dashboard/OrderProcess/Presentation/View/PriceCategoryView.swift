@@ -191,7 +191,10 @@ struct PriceCategoryView: View {
       isDiscount: false,
       isProbono: false,
       orderNumber: "",
-      detailIssues: ""),
+      detailIssues: "",
+      yearExp: "",
+      avgRating: "",
+      totalConsultations: ""),
     onSelectCategory: { _ in }
   )
 }

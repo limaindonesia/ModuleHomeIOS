@@ -530,7 +530,10 @@ public class OrderProcessStore: ObservableObject {
       isDiscount: advocate.isDiscount,
       isProbono: sktmQuota > 0,
       orderNumber: "",
-      detailIssues: issueText
+      detailIssues: issueText,
+      yearExp: advocate.getExperience(),
+      avgRating: advocate.getRating(),
+      totalConsultations: advocate.getTotalConsultation()
     )
   }
   
@@ -657,7 +660,11 @@ public class OrderProcessStore: ObservableObject {
         detailIssues: issueText,
         category: getCategoryPagePayment(),
         type: getTypePagePayment(),
-        duration: getDurationPagePayment()
+        duration: getDurationPagePayment(),
+        yearExp: "\(lawyerInfoViewModel.yearExp ?? "")",
+        avgRating: "\(lawyerInfoViewModel.avgRating ?? "")",
+        totalConsultations: "\(lawyerInfoViewModel.totalConsultations ?? "")"
+        
       )
       
       paymentNavigator.navigateToPayment(lawyerInfo)

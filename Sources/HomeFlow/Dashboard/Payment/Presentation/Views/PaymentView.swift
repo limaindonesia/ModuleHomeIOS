@@ -28,7 +28,9 @@ struct PaymentView: View {
               orderID: store.getOrderNumber(),
               imageURL: store.getAvatarImage(),
               name: store.getLawyersName(),
-              agency: store.getAgency(),
+              experience: store.getExperience(),
+              rating: store.getRating(),
+              totalConsultation: store.getTotalConsultation(),
               consultationTime: store.timeConsultation,
               showDetailIssues: store.showDetailIssues,
               detailIssues: store.getDetailIssue()
@@ -253,7 +255,9 @@ struct PaymentView: View {
     orderID: String,
     imageURL: URL?,
     name: String,
-    agency: String,
+    experience: String,
+    rating: String,
+    totalConsultation: String,
     consultationTime: String,
     showDetailIssues: Bool,
     detailIssues: String
@@ -309,9 +313,26 @@ struct PaymentView: View {
           Text(name)
             .titleLexend(size: 14)
           
-          Text(agency)
-            .foregroundColor(.darkGray400)
-            .bodyLexend(size: 14)
+          HStack {
+            Image("briefcase", bundle: .module)
+            
+            Text(experience)
+              .foregroundColor(.darkGray400)
+              .bodyLexend(size: 12)
+            
+            Image("ic_vector", bundle: .module)
+            
+            Image("ic_star", bundle: .module)
+            
+            Text(rating)
+              .foregroundColor(.darkGray400)
+              .bodyLexend(size: 12)
+            
+            Text(totalConsultation)
+              .foregroundColor(.darkGray300)
+              .bodyLexend(size: 10)
+            
+          }
         }
         
       }
@@ -322,7 +343,6 @@ struct PaymentView: View {
           Text("Detail Konsultasi")
             .foregroundColor(.darkTextColor)
             .captionLexend(size: 14)
-          
           Spacer()
           
           Button {

@@ -685,6 +685,18 @@ public class PaymentStore: ObservableObject {
     return lawyerInfoViewModel.name
   }
   
+  public func getExperience() -> String {
+    return "\(lawyerInfoViewModel.yearExp ?? "")"
+  }
+  
+  public func getRating() -> String {
+    return lawyerInfoViewModel.avgRating ?? ""
+  }
+  
+  public func getTotalConsultation() -> String {
+    return "(\(lawyerInfoViewModel.totalConsultations ?? ""))"
+  }
+  
   public func getAgency() -> String {
     return lawyerInfoViewModel.agency
   }
