@@ -10,7 +10,7 @@ import GnDKit
 import AprodhitKit
 
 struct VoucherTnCBottomSheetView: View {
-  
+  @Environment(\.dismiss) var dismiss
   @State var contentHeight: CGFloat = 0
   let constantHeight: CGFloat?
   
@@ -31,51 +31,70 @@ struct VoucherTnCBottomSheetView: View {
   }
   
   var body: some View {
-    ScrollView {
-      VStack(alignment: .leading, spacing: 8) {
-        Text("Syarat & Ketentuan")
-          .titleLexend(size: 16)
-          .padding(.top, 16)
+    VStack {
+      HStack {
+        Spacer()
         
-        if let constantHeight = constantHeight {
-          HTMLWebView(
-            htmlContent: voucher.getHTMLText(),
-            contentHeight: .constant(constantHeight)
-          )
-          .frame(height: constantHeight)
-        } else {
-          HTMLWebView(
-            htmlContent: voucher.getHTMLText(),
-            contentHeight: $contentHeight
-          )
-          .frame(height: contentHeight)
+        Button {
+          dismiss()
+        } label: {
+          Image(systemName: "xmark")
+            .foregroundStyle(Color.black)
+            .titleStyle(size: 14)
         }
-        
-        HStack {
-          Image("ticket-discount", bundle: .module)
+        .padding(.top, 16)
+        .padding(.horizontal, 16)
+      }
+
+      ScrollView {
+        VStack(alignment: .leading, spacing: 8) {
+          Text("Syarat & Ketentuan")
+            .titleLexend(size: 16)
+            .padding(.top, 16)
           
-          Text(voucher.name)
-            .titleLexend(size: 14)
-          
-          Spacer()
-          
-          Button {
-            voucher.isUsed ? onTapCancelled(voucher) : onTapUsed(voucher)
-          } label: {
-            Text(voucher.isUsed ? "Batal" : "Pakai")
-              .foregroundStyle(Color.buttonActiveColor)
-              .titleLexend(size: 14)
+          if let constantHeight = constantHeight {
+            HTMLWebView(
+              htmlContent: voucher.getHTMLText(),
+              contentHeight: .constant(constantHeight)
+            )
+            .frame(height: constantHeight)
+          } else {
+            HTMLWebView(
+              htmlContent: voucher.getHTMLText(),
+              contentHeight: $contentHeight
+            )
+            .frame(height: contentHeight)
           }
-          
         }
         .padding(.horizontal, 16)
-        .frame(maxWidth: .infinity, idealHeight: 44)
-        .background(Color.primaryInfo100)
-        .clipShape(RoundedRectangle(cornerRadius: 8))
-        .overlay {
-          RoundedRectangle(cornerRadius: 8)
-            .stroke(Color.primaryInfo050, lineWidth: 1)
+      }
+      
+      Spacer()
+      
+      HStack {
+        Image("ticket-discount", bundle: .module)
+        
+        Text(voucher.name)
+          .titleLexend(size: 14)
+        
+        Spacer()
+        
+        Button {
+          voucher.isUsed ? onTapCancelled(voucher) : onTapUsed(voucher)
+        } label: {
+          Text(voucher.isUsed ? "Batal" : "Pakai")
+            .foregroundStyle(Color.buttonActiveColor)
+            .titleLexend(size: 14)
         }
+        
+      }
+      .padding(.horizontal, 16)
+      .frame(maxWidth: .infinity, minHeight: 50)
+      .background(Color.primaryInfo100)
+      .clipShape(RoundedRectangle(cornerRadius: 8))
+      .overlay {
+        RoundedRectangle(cornerRadius: 8)
+          .stroke(Color.primaryInfo050, lineWidth: 1)
       }
       .padding(.horizontal, 16)
     }
