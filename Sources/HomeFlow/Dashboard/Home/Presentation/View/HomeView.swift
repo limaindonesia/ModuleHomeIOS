@@ -1493,6 +1493,7 @@ public struct HomeView: View {
             .padding(.vertical, 4)
             .frame(
               maxWidth: .infinity,
+              minHeight: 100,
               alignment: .leading
             )
             .padding(.horizontal, 12)
@@ -1558,7 +1559,7 @@ public struct HomeView: View {
         .padding(.vertical, 4)
         .frame(
           maxWidth: .infinity,
-          maxHeight: 150,
+          minHeight: 80,
           alignment: .leading
         )
         .padding(.horizontal, 12)
@@ -1579,7 +1580,7 @@ public struct HomeView: View {
       .frame(minHeight: 80)
     }
     .padding(.horizontal, 16)
-    .padding(.bottom, 80)
+    .padding(.bottom, 120)
   }
   
   @ViewBuilder
