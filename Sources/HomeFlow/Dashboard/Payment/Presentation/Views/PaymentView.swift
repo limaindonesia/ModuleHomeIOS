@@ -20,232 +20,232 @@ struct PaymentView: View {
   }
   
   var body: some View {
-      ZStack {
-        VStack {
-          ScrollView(showsIndicators: false) {
-            VStack(spacing: 12) {
-              lawyerInfoView(
-                orderID: store.getOrderNumber(),
-                imageURL: store.getAvatarImage(),
-                name: store.getLawyersName(),
-                agency: store.getAgency(),
-                consultationTime: store.timeConsultation,
-                showDetailIssues: store.showDetailIssues,
-                detailIssues: store.getDetailIssue()
-              )
-              
-              if !store.isProbono() {
-                showVoucherView {
-                  store.showVoucherBottomSheet()
-                } onTapTNC: {
-                  store.showTNCBottomSheet()
-                }
-                paymentOptions()
+    ZStack {
+      VStack {
+        ScrollView(showsIndicators: false) {
+          VStack(spacing: 12) {
+            lawyerInfoView(
+              orderID: store.getOrderNumber(),
+              imageURL: store.getAvatarImage(),
+              name: store.getLawyersName(),
+              agency: store.getAgency(),
+              consultationTime: store.timeConsultation,
+              showDetailIssues: store.showDetailIssues,
+              detailIssues: store.getDetailIssue()
+            )
+            
+            if !store.isProbono() {
+              showVoucherView {
+                store.showVoucherBottomSheet()
+              } onTapTNC: {
+                store.showTNCBottomSheet()
               }
-              
-              paymentDetail()
-              
+              paymentOptions()
             }
-            .background(Color.gray050)
-            .padding(.top, 8)
-            .padding(.horizontal, 16)
-            .padding(.bottom, 16)
+            
+            paymentDetail()
+            
           }
-          
-          PaymentBottomView(
-            title: "Total Pembayaran",
-            price: store.getPriceBottom(),
-            totalAdjustment: store.getTotalAdjustment(),
-            buttonText: "Bayar",
-            isVoucherApplied: store.voucherFilled,
-            isButtonActive: store.isPayButtonActive,
-            onTap: {
-              store.navigateToNextDestination()
-            }
-          )
+          .background(Color.gray050)
+          .padding(.top, 8)
           .padding(.horizontal, 16)
+          .padding(.bottom, 16)
         }
-        .padding(.top, 8)
-        .fullScreenCover(isPresented: $store.isPresentVoucherTnCBottomSheet, content: {
-          VoucherTnCBottomSheetView(
-            voucher: store.eligibleVoucherEntity
-          ) { voucher in
+        
+        PaymentBottomView(
+          title: "Total Pembayaran",
+          price: store.getPriceBottom(),
+          totalAdjustment: store.getTotalAdjustment(),
+          buttonText: "Bayar",
+          isVoucherApplied: store.voucherFilled,
+          isButtonActive: store.isPayButtonActive,
+          onTap: {
+            store.navigateToNextDestination()
+          }
+        )
+        .padding(.horizontal, 16)
+      }
+      .padding(.top, 8)
+      .fullScreenCover(isPresented: $store.isPresentVoucherTnCBottomSheet, content: {
+        VoucherTnCBottomSheetView(
+          voucher: store.eligibleVoucherEntity
+        ) { voucher in
+          Task {
+            store.eligibleVoucherEntity = voucher
+            store.updateVoucherArrays()
+            store.hideVoucherTncBottomSheet()
+            await store.applyVoucher(voucher.code)
+          }
+        } onTapCancelled: { voucher in
+          Task {
+            store.hideVoucherTncBottomSheet()
+            await store.removeVoucher()
+          }
+        }
+      })
+      .fullScreenCover(isPresented: $store.isPresentTncBottomSheet, content: {
+        TNCView(htmlText: store.eligibleVoucherEntity.getHTMLText())
+      })
+      .onAppear {
+        Task {
+          await store.fetchUserSession()
+          await store.fetchProbonoStatus()
+          await store.requestElligibleVoucher()
+          await store.requestPaymentMethods()
+          await store.fetchCancelationReasons()
+          await store.fetchTreatment()
+          await store.requestOrderByNumber()
+        }
+      }
+      
+      BottomSheetNewView(isPresented: $store.isPresentVoucherBottomSheet) {
+        VoucherBottomSheetView(
+          activateButton: $store.activateButton,
+          voucher: $store.voucherCode,
+          showXMark: $store.showXMark,
+          voucherErrorText: $store.voucherErrorText,
+          vouchers: $store.elligibleVoucherEntities,
+          onTap: { code in
+            Task {
+              await store.applyVoucher(code)
+            }
+          }, onUseVoucher: { voucher in
             Task {
               store.eligibleVoucherEntity = voucher
-              store.updateVoucherArrays()
-              store.hideVoucherTncBottomSheet()
               await store.applyVoucher(voucher.code)
             }
-          } onTapCancelled: { voucher in
+          }, onCancelVoucher: { _ in
             Task {
-              store.hideVoucherTncBottomSheet()
               await store.removeVoucher()
             }
-          }
-        })
-        .onAppear {
-          Task {
-            await store.fetchUserSession()
-            await store.fetchProbonoStatus()
-            await store.requestElligibleVoucher()
-            await store.requestPaymentMethods()
-            await store.fetchCancelationReasons()
-            await store.fetchTreatment()
-            await store.requestOrderByNumber()
-          }
-        }
-        
-        BottomSheetNewView(isPresented: $store.isPresentVoucherBottomSheet) {
-          VoucherBottomSheetView(
-            activateButton: $store.activateButton,
-            voucher: $store.voucherCode,
-            showXMark: $store.showXMark,
-            voucherErrorText: $store.voucherErrorText,
-            vouchers: $store.elligibleVoucherEntities,
-            onTap: { code in
-              Task {
-                await store.applyVoucher(code)
-              }
-            }, onUseVoucher: { voucher in
-              Task {
-                store.eligibleVoucherEntity = voucher
-                await store.applyVoucher(voucher.code)
-              }
-            }, onCancelVoucher: { _ in
-              Task {
-                await store.removeVoucher()
-              }
-            },
-            onClear: {
-              Task {
-                await store.removeVoucher()
-              }
-            },
-            onTapTnC: { voucher in
-              store.eligibleVoucherEntity = voucher
-              store.showVoucherTnCBottomSheet()
-              store.hideVoucherBottomSheet()
+          },
+          onClear: {
+            Task {
+              await store.removeVoucher()
             }
-          )
-        }
-        
-        BottomSheetView(
-          isPresented: $store.isPresentMakeSureBottomSheet,
-          dismissable: true
-        ) {
-          WarningBottomSheetView {
-            store.dismissWaningBottomSheet()
-          } onTapQuit: {
-            store.dismissWaningBottomSheet()
-            store.backToHome()
+          },
+          onTapTnC: { voucher in
+            store.eligibleVoucherEntity = voucher
+            store.showVoucherTnCBottomSheet()
+            store.hideVoucherBottomSheet()
           }
+        )
+      }
+      
+      BottomSheetView(
+        isPresented: $store.isPresentMakeSureBottomSheet,
+        dismissable: true
+      ) {
+        WarningBottomSheetView {
+          store.dismissWaningBottomSheet()
+        } onTapQuit: {
+          store.dismissWaningBottomSheet()
+          store.backToHome()
         }
-        
-        BottomSheetNewView(
-          isPresented: $store.isPresentTncBottomSheet,
-          constantHeight: 400
-        ) {
-          TNCView(
-            htmlText: store.eligibleVoucherEntity.getHTMLText(),
-            constantHeight: 250
-          )
-        }
-        
-        BottomSheetView(isPresented: $store.isPresentWarningPaymentBottomSheet) {
-          WarningPaymentContentView(
-            totalAdjustment: store.getTotalAdjustment(),
-            onCancelled: {
-              store.showReasonBottomSheet()
-              store.hideWarningPaymentBottomSheet()
-            },
-            onPayment: {
-              store.hideWarningPaymentBottomSheet()
-            }
-          )
-        }
-        
-        BottomSheetView(
-          isPresented: $store.isPresentReasonBottomSheet,
-          dismissable: true
-        ) {
-          CancelationReasonContentView(
-            store: CancelationReasonStore(
-              arrayReasons: store.reasons
-            ),
-            imageURL: store.getAvatarImage(),
-            lawyerName: store.getLawyersName(),
-            onSendReason: { (entity, reason) in
-              store.selectedReason = entity
-              store.reason = reason
-              Task {
-                await store.requestCancelation()
-              }
-              
-              GLogger(
-                .info,
-                layer: "Presentation",
-                message: "send reason \(entity.id) : \( entity.title) : \(reason)"
-              )
-            }
-          )
-          
-        } onDismissed: {
-          Task {
-            await store.onDismissedReasonBottomSheet()
+      }
+      
+//      BottomSheetNewView(
+//        isPresented: $store.isPresentTncBottomSheet,
+//        constantHeight: 400
+//      ) {
+//
+//      }
+      
+      BottomSheetView(isPresented: $store.isPresentWarningPaymentBottomSheet) {
+        WarningPaymentContentView(
+          totalAdjustment: store.getTotalAdjustment(),
+          onCancelled: {
+            store.showReasonBottomSheet()
+            store.hideWarningPaymentBottomSheet()
+          },
+          onPayment: {
+            store.hideWarningPaymentBottomSheet()
           }
-        }
-        
-        BottomSheetView(
-          isPresented: $store.isPresentDetailConsultationBottomSheet,
-          dismissable: true
-        ) {
-          DetailConsultationContentView(
-            category: store.getCategoryBottomSheet(),
-            duration: store.getDurationBottomSheet(),
-            type: store.getTypeBottomSheet(),
-            desc: store.getDetailIssueName()
-          )
-        } onDismissed: {
-          
-        }
-        
-        if store.showSnackBar {
-          GeometryReader { proxy in
-            let frame = proxy.frame(in: .local)
+        )
+      }
+      
+      BottomSheetView(
+        isPresented: $store.isPresentReasonBottomSheet,
+        dismissable: true
+      ) {
+        CancelationReasonContentView(
+          store: CancelationReasonStore(
+            arrayReasons: store.reasons
+          ),
+          imageURL: store.getAvatarImage(),
+          lawyerName: store.getLawyersName(),
+          onSendReason: { (entity, reason) in
+            store.selectedReason = entity
+            store.reason = reason
+            Task {
+              await store.requestCancelation()
+            }
             
-            HStack {
-              Image("check-circle", bundle: .module)
-              Text("Berhasil mendapatkan promo")
-                .foregroundStyle(Color.success900)
-                .captionLexend(size: 14)
-              Button {
-                withAnimation(.easeInOut(duration: 0.3)) {
-                  store.showSnackBar = false
-                }
-              } label: {
-                Image("ic_close", bundle: .module)
+            GLogger(
+              .info,
+              layer: "Presentation",
+              message: "send reason \(entity.id) : \( entity.title) : \(reason)"
+            )
+          }
+        )
+        
+      } onDismissed: {
+        Task {
+          await store.onDismissedReasonBottomSheet()
+        }
+      }
+      
+      BottomSheetView(
+        isPresented: $store.isPresentDetailConsultationBottomSheet,
+        dismissable: true
+      ) {
+        DetailConsultationContentView(
+          category: store.getCategoryBottomSheet(),
+          duration: store.getDurationBottomSheet(),
+          type: store.getTypeBottomSheet(),
+          desc: store.getDetailIssueName()
+        )
+      } onDismissed: {
+        
+      }
+      
+      if store.showSnackBar {
+        GeometryReader { proxy in
+          let frame = proxy.frame(in: .local)
+          
+          HStack {
+            Image("check-circle", bundle: .module)
+            Text("Berhasil mendapatkan promo")
+              .foregroundStyle(Color.success900)
+              .captionLexend(size: 14)
+            Button {
+              withAnimation(.easeInOut(duration: 0.3)) {
+                store.showSnackBar = false
               }
+            } label: {
+              Image("ic_close", bundle: .module)
             }
-            .padding(.all, 8)
-            .background(Color.success050)
-            .clipShape(RoundedRectangle(cornerRadius: 8))
-            .overlay {
-              RoundedRectangle(cornerRadius: 8).stroke(Color.success200)
-            }
-            .position(x: frame.midX, y: frame.minY + 30)
-            .onAppear {
-              Task {
-                try? await Task.sleep(nanoseconds: 3_000_000_000)
-                withAnimation(.easeInOut(duration: 0.3)) {
-                  store.showSnackBar = false
-                }
+          }
+          .padding(.all, 8)
+          .background(Color.success050)
+          .clipShape(RoundedRectangle(cornerRadius: 8))
+          .overlay {
+            RoundedRectangle(cornerRadius: 8).stroke(Color.success200)
+          }
+          .position(x: frame.midX, y: frame.minY + 30)
+          .onAppear {
+            Task {
+              try? await Task.sleep(nanoseconds: 3_000_000_000)
+              withAnimation(.easeInOut(duration: 0.3)) {
+                store.showSnackBar = false
               }
             }
           }
         }
       }
-      .animation(.easeInOut(duration: 0.3), value: store.showSnackBar) // Animate based on showSnackBar
-   
+    }
+    .animation(.easeInOut(duration: 0.3), value: store.showSnackBar) // Animate based on showSnackBar
+    
   }
   
   @ViewBuilder

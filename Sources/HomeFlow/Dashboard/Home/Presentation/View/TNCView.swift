@@ -11,7 +11,7 @@ import GnDKit
 import AprodhitKit
 
 struct TNCView: View {
-  
+  @Environment(\.dismiss) var dismiss
   @State var contentHeight: CGFloat = 0
   let constantHeight: CGFloat?
   let htmlText: String
@@ -26,9 +26,22 @@ struct TNCView: View {
   
   var body: some View {
     VStack(alignment: .leading, spacing: 8) {
+      HStack {
+        Spacer()
+        
+        Button {
+          dismiss()
+        } label: {
+          Image(systemName: "xmark")
+            .foregroundStyle(Color.black)
+            .titleStyle(size: 14)
+        }
+        .padding(.top, 16)
+        .padding(.horizontal, 16)
+      }
+      
       Text("Syarat & Ketentuan")
         .titleLexend(size: 16)
-        .padding(.top, 16)
       
       if let constantHeight = constantHeight {
         HTMLWebView(
@@ -43,6 +56,8 @@ struct TNCView: View {
         )
         .frame(height: contentHeight)
       }
+      
+      Spacer()
     }
     .padding(.horizontal, 16)
   }

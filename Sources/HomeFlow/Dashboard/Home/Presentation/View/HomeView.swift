@@ -1472,6 +1472,7 @@ public struct HomeView: View {
                     comment: ""
                   )
                 )
+                .lineLimit(3)
                 .titleLexend(size: 14)
                 .padding(.top, 8)
                 
@@ -1481,6 +1482,7 @@ public struct HomeView: View {
                     comment: ""
                   )
                 )
+                .lineLimit(3)
                 .foregroundStyle(Color.gray600)
                 .captionLexend(size: 12)
                 .padding(.trailing, 32)
@@ -1491,7 +1493,6 @@ public struct HomeView: View {
             .padding(.vertical, 4)
             .frame(
               maxWidth: .infinity,
-              maxHeight: 125,
               alignment: .leading
             )
             .padding(.horizontal, 12)
@@ -1510,7 +1511,7 @@ public struct HomeView: View {
           }
           
         }
-        .frame(height: 80)
+        .frame(height: 100)
         
         HStack(spacing: 16) {
           Divider()
@@ -1524,7 +1525,6 @@ public struct HomeView: View {
             .frame(maxWidth: .infinity, maxHeight: 1)
             .background(Color.gray100)
         }
-        
         
         HStack(alignment: .center, spacing: 8) {
           Image("search_advocate", bundle: .module)
@@ -1551,22 +1551,23 @@ public struct HomeView: View {
             )
             .foregroundColor(Color.gray600)
             .captionLexend(size: 12)
+            .lineLimit(3)
             .padding(.bottom, 8)
           }
         }
         .padding(.vertical, 4)
         .frame(
           maxWidth: .infinity,
-          maxHeight: 125,
+          maxHeight: 150,
           alignment: .leading
         )
         .padding(.horizontal, 12)
-        .background(Color.init(hex: 0xF3FBFF))
+        .background(Color.primaryInfo050)
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .overlay(
           RoundedRectangle(cornerRadius: 8)
             .stroke(
-              Color.init(hex: 0xEEF2F7),
+              Color.primaryInfo200,
               lineWidth: 1
             )
         )
@@ -1575,7 +1576,7 @@ public struct HomeView: View {
         }
         
       }
-      .frame(minHeight: 50)
+      .frame(minHeight: 80)
     }
     .padding(.horizontal, 16)
     .padding(.bottom, 80)

@@ -83,7 +83,7 @@ struct VoucherTnCBottomSheetView: View {
           voucher.isUsed ? onTapCancelled(voucher) : onTapUsed(voucher)
         } label: {
           Text(voucher.isUsed ? "Batal" : "Pakai")
-            .foregroundStyle(Color.buttonActiveColor)
+            .foregroundStyle(voucher.isUsed ? Color.red : Color.buttonActiveColor)
             .titleLexend(size: 14)
         }
         
