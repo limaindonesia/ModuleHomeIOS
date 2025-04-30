@@ -323,6 +323,8 @@ struct PaymentView: View {
             Image("ic_vector", bundle: .module)
             
             Image("ic_star", bundle: .module)
+              .resizable()
+              .frame(width: 10, height: 10)
             
             Text(rating)
               .foregroundColor(.darkGray400)

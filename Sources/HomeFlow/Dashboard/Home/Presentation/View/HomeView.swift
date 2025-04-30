@@ -911,26 +911,6 @@ public struct HomeView: View {
         }
         .padding(.leading, 16)
         
-        /*
-         HStack {
-         Text(
-         NSLocalizedString(
-         Constant.Home.Text.ONLINE_ADVOCATE,
-         comment: ""
-         )
-         )
-         .foregroundColor(Color.black)
-         .bodyStyle(size: 20)
-         
-         Spacer()
-         
-         SeeAllView(text: Constant.Home.Text.SEE_ALL) {
-         store.navigateToSeeAllAdvocate()
-         }
-         }
-         .padding(.horizontal, 16)
-         */
-        
         Spacer()
         
         ScrollView(.horizontal, showsIndicators: false) {
@@ -948,6 +928,7 @@ public struct HomeView: View {
                 isDiscount: advocate.isDiscount,
                 //MARK: need to fix
                 isProbono: false,
+                voucherCampaign: advocate.getVoucherCampaign(),
                 onTap: {
                   store.navigateToDetailAdvocate(advocate)
                 },
