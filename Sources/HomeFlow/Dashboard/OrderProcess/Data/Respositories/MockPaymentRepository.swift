@@ -45,7 +45,8 @@ public struct MockPaymentRepository: PaymentRepositoryLogic,
       amount: "",
       tnc: "",
       descriptions: "",
-      duration: 0
+      duration: 0,
+      quota: 1
     )
     
   }
@@ -136,14 +137,16 @@ public struct MockPaymentRepository: PaymentRepositoryLogic,
         code: "BRONZE12",
         tnc: "<p>ini syarat dan ketentuan</p>",
         expiredDate: Date(),
-        isUsed: false
+        isUsed: false,
+        quota: 1
       ),
       .init(
         name: "Bronze Shell",
         code: "BRONZE99",
         tnc: "<p>ini syarat dan ketentuan</p>",
         expiredDate: Date(),
-        isUsed: false
+        isUsed: false,
+        quota: 10
       )
     ]
   }

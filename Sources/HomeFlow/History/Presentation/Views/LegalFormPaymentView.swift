@@ -95,6 +95,10 @@ struct LegalFormPaymentView: View {
               store.showVoucherBottomSheet()
               await store.applyVoucher(voucher.code)
             }
+          } onTapCancelled: { code in
+            Task {
+              await store.removeVoucher()
+            }
           }
         }
         

@@ -35,8 +35,7 @@ public struct HomeView: View {
       
       BottomSheetView(isPresented: $store.isConsultationNowSheetPresented) {
         consultationNowBottomSheetContent {
-          store.hideConsultationNowBottomSheet()
-          store.navigateToDetailSKTM()
+          
         } onTapConsultation: {
           store.hideConsultationNowBottomSheet()
           store.navigateToAdvocateListWithSkill()
@@ -44,9 +43,16 @@ public struct HomeView: View {
           store.hideConsultationNowBottomSheet()
           store.navigateToDecisionTree()
         } onTapProbono: {
-          store.hideConsultationNowBottomSheet()
           store.navigateToProbonoService()
         }
+
+//        consultationAIBottomSheetContent {
+//          store.hideConsultationNowBottomSheet()
+//          store.navigateToAdvocateListWithSkill()
+//        } onTapDecisionTree: {
+//          store.hideConsultationNowBottomSheet()
+//          store.navigateToDecisionTree()
+//        }
       } onDismissed: {
         store.hideConsultationNowBottomSheet()
       }
@@ -787,7 +793,7 @@ public struct HomeView: View {
           .background(.white)
           .clipShape(RoundedRectangle(cornerRadius: 8))
         }
-
+        
         Button {
           store.navigateToNotary()
         } label: {
@@ -803,7 +809,7 @@ public struct HomeView: View {
           .background(.white)
           .clipShape(RoundedRectangle(cornerRadius: 8))
         }
-       
+        
       }
       .padding(.horizontal, 16)
       
@@ -871,7 +877,7 @@ public struct HomeView: View {
       .background(Color.primaryInfo700)
       .clipShape(CustomCorner(corners: [.bottomLeft, .bottomRight], radius: 12))
       
-     
+      
     }
     .background(
       LinearGradient(
@@ -1387,6 +1393,187 @@ public struct HomeView: View {
     }
     .padding(.horizontal, 16)
     .padding(.bottom, 80)
+  }
+  
+  @ViewBuilder
+  func consultationAIBottomSheetContent(
+    onTapConsultation: @escaping () -> Void,
+    onTapDecisionTree: @escaping () -> Void
+  ) -> some View {
+    
+    VStack(alignment: .leading, spacing: 16) {
+      
+      VStack(alignment: .leading, spacing: 16) {
+        Text(
+          NSLocalizedString(
+            Constant.Home.Text.CONSULTATION_TITLE,
+            comment: ""
+          )
+        )
+        .titleLexend(size: 20)
+        
+        Text(
+          NSLocalizedString(
+            Constant.Home.Text.CONSULTATION_SUB_TITLE,
+            comment: ""
+          )
+        )
+        .captionLexend(size: 14)
+      }
+      .frame(minHeight: 30)
+      
+      VStack(alignment: .leading, spacing: 16) {
+        
+        ZStack {
+          GeometryReader { proxy in
+            let frame = proxy.frame(in: .global)
+            
+            VStack {
+              Text("Direkomendasikan")
+                .foregroundStyle(Color.white)
+                .captionLexend(size: 10)
+            }
+            .padding(.vertical, 4)
+            .padding(.horizontal, 12)
+            .background(
+              LinearGradient(
+                colors: [Color(hex: 0xFA4D56), Color(hex: 0xFFA8AC)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+              )
+            )
+            .clipShape(
+              CustomCorner(
+                corners: [.topLeft, .topRight, .bottomLeft],
+                radius: 16
+              )
+            )
+            .position(x: frame.maxX - 72)
+            .zIndex(1)
+            
+            HStack(alignment: .center, spacing: 8) {
+              Image("AI", bundle: .module)
+                .resizable()
+                .frame(width: 48, height: 48)
+                .aspectRatio(contentMode: .fill)
+                .padding(.horizontal, 8)
+              
+              VStack(alignment: .leading, spacing: 4) {
+                Text(
+                  NSLocalizedString(
+                    Constant.Home.Text.AI_CONSULTATION_TITLE,
+                    comment: ""
+                  )
+                )
+                .lineLimit(3)
+                .titleLexend(size: 14)
+                .padding(.top, 8)
+                
+                Text(
+                  NSLocalizedString(
+                    Constant.Home.Text.AI_CONSULTATION_SUB_TITLE,
+                    comment: ""
+                  )
+                )
+                .lineLimit(3)
+                .foregroundStyle(Color.gray600)
+                .captionLexend(size: 12)
+                .padding(.trailing, 32)
+                .padding(.bottom, 8)
+              }
+              
+            }
+            .padding(.vertical, 4)
+            .frame(
+              maxWidth: .infinity,
+              minHeight: 100,
+              alignment: .leading
+            )
+            .padding(.horizontal, 12)
+            .background(Color.primaryInfo100)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .overlay(
+              RoundedRectangle(cornerRadius: 8)
+                .stroke(
+                  Color.primaryInfo200,
+                  lineWidth: 1
+                )
+            )
+            .onTapGesture {
+              onTapDecisionTree()
+            }
+          }
+          
+        }
+        .frame(height: 100)
+        
+        HStack(spacing: 16) {
+          Divider()
+            .frame(maxWidth: .infinity, maxHeight: 1)
+            .background(Color.gray100)
+          
+          Text("Atau")
+            .captionLexend(size: 12)
+          
+          Divider()
+            .frame(maxWidth: .infinity, maxHeight: 1)
+            .background(Color.gray100)
+        }
+        
+        HStack(alignment: .center, spacing: 8) {
+          Image("search_advocate", bundle: .module)
+            .resizable()
+            .frame(width: 48, height: 48)
+            .aspectRatio(contentMode: .fill)
+            .padding(.horizontal, 8)
+          
+          VStack(alignment: .leading, spacing: 4) {
+            Text(
+              NSLocalizedString(
+                Constant.Home.Text.SHOW_ALL_ADVOCATE,
+                comment: ""
+              )
+            )
+            .titleLexend(size: 14)
+            .padding(.top, 8)
+            
+            Text(
+              NSLocalizedString(
+                Constant.Home.Text.SUB_SHOW_ALL_ADVOCATE,
+                comment: ""
+              )
+            )
+            .foregroundColor(Color.gray600)
+            .captionLexend(size: 12)
+            .lineLimit(3)
+            .padding(.bottom, 8)
+          }
+        }
+        .padding(.vertical, 4)
+        .frame(
+          maxWidth: .infinity,
+          minHeight: 80,
+          alignment: .leading
+        )
+        .padding(.horizontal, 12)
+        .background(Color.primaryInfo050)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(
+          RoundedRectangle(cornerRadius: 8)
+            .stroke(
+              Color.primaryInfo200,
+              lineWidth: 1
+            )
+        )
+        .onTapGesture {
+          onTapConsultation()
+        }
+        
+      }
+      .frame(minHeight: 80)
+    }
+    .padding(.horizontal, 16)
+    .padding(.bottom, 120)
   }
   
   @ViewBuilder

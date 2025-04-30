@@ -10,42 +10,66 @@ import GnDKit
 import AprodhitKit
 
 struct VoucherTnCBottomSheetView: View {
-  
+  @Environment(\.dismiss) var dismiss
   @State var contentHeight: CGFloat = 0
   let constantHeight: CGFloat?
   
   public let voucher: EligibleVoucherEntity
   public var onTapUsed: (EligibleVoucherEntity) -> Void
+  public var onTapCancelled: (EligibleVoucherEntity) -> Void
   
   init(
     voucher: EligibleVoucherEntity,
     constantHeight: CGFloat? = nil,
-    onTapUsed: @escaping (EligibleVoucherEntity) -> Void
+    onTapUsed: @escaping (EligibleVoucherEntity) -> Void,
+    onTapCancelled: @escaping (EligibleVoucherEntity) -> Void
   ) {
     self.voucher = voucher
-    self.onTapUsed = onTapUsed
     self.constantHeight = constantHeight
+    self.onTapUsed = onTapUsed
+    self.onTapCancelled = onTapCancelled
   }
   
   var body: some View {
-    VStack(alignment: .leading, spacing: 8) {
-      Text("Syarat & Ketentuan")
-        .titleLexend(size: 16)
+    VStack {
+      HStack {
+        Spacer()
+        
+        Button {
+          dismiss()
+        } label: {
+          Image(systemName: "xmark")
+            .foregroundStyle(Color.black)
+            .titleStyle(size: 14)
+        }
         .padding(.top, 16)
-      
-      if let constantHeight = constantHeight {
-        HTMLWebView(
-          htmlContent: voucher.getHTMLText(),
-          contentHeight: .constant(constantHeight)
-        )
-        .frame(height: constantHeight)
-      } else {
-        HTMLWebView(
-          htmlContent: voucher.getHTMLText(),
-          contentHeight: $contentHeight
-        )
-        .frame(height: contentHeight)
+        .padding(.horizontal, 16)
       }
+
+      ScrollView {
+        VStack(alignment: .leading, spacing: 8) {
+          Text("Syarat & Ketentuan")
+            .titleLexend(size: 16)
+            .padding(.top, 16)
+          
+          if let constantHeight = constantHeight {
+            HTMLWebView(
+              htmlContent: voucher.getHTMLText(),
+              contentHeight: .constant(constantHeight)
+            )
+            .frame(height: constantHeight)
+          } else {
+            HTMLWebView(
+              htmlContent: voucher.getHTMLText(),
+              contentHeight: $contentHeight
+            )
+            .frame(height: contentHeight)
+          }
+        }
+        .padding(.horizontal, 16)
+      }
+      
+      Spacer()
       
       HStack {
         Image("ticket-discount", bundle: .module)
@@ -56,24 +80,24 @@ struct VoucherTnCBottomSheetView: View {
         Spacer()
         
         Button {
-          onTapUsed(voucher)
+          voucher.isUsed ? onTapCancelled(voucher) : onTapUsed(voucher)
         } label: {
-          Text("Pakai")
-            .foregroundStyle(Color.buttonActiveColor)
+          Text(voucher.isUsed ? "Batal" : "Pakai")
+            .foregroundStyle(voucher.isUsed ? Color.red : Color.buttonActiveColor)
             .titleLexend(size: 14)
         }
         
       }
       .padding(.horizontal, 16)
-      .frame(maxWidth: .infinity, idealHeight: 44)
+      .frame(maxWidth: .infinity, minHeight: 50)
       .background(Color.primaryInfo100)
       .clipShape(RoundedRectangle(cornerRadius: 8))
       .overlay {
         RoundedRectangle(cornerRadius: 8)
           .stroke(Color.primaryInfo050, lineWidth: 1)
       }
+      .padding(.horizontal, 16)
     }
-    .padding(.horizontal, 16)
   }
   
 }
@@ -82,6 +106,10 @@ struct VoucherTnCBottomSheetView: View {
   VoucherTnCBottomSheetView(
     voucher: .init(),
     onTapUsed: { code in
+      
+    },
+    onTapCancelled: { code in
+      
     }
   )
 }

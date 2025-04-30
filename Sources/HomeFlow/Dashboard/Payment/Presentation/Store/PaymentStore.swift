@@ -523,7 +523,8 @@ public class PaymentStore: ObservableObject {
         code: voucher.code,
         tnc: voucher.tnc,
         expiredDate: Date(),
-        isUsed: false
+        isUsed: false,
+        quota: voucher.quota
       )
       updateVoucherArrays()
       showSnackBar = true

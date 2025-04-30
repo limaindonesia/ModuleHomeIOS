@@ -67,6 +67,27 @@ struct PaymentView: View {
         )
         .padding(.horizontal, 16)
       }
+      .padding(.top, 8)
+      .fullScreenCover(isPresented: $store.isPresentVoucherTnCBottomSheet, content: {
+        VoucherTnCBottomSheetView(
+          voucher: store.eligibleVoucherEntity
+        ) { voucher in
+          Task {
+            store.eligibleVoucherEntity = voucher
+            store.updateVoucherArrays()
+            store.hideVoucherTncBottomSheet()
+            await store.applyVoucher(voucher.code)
+          }
+        } onTapCancelled: { voucher in
+          Task {
+            store.hideVoucherTncBottomSheet()
+            await store.removeVoucher()
+          }
+        }
+      })
+      .fullScreenCover(isPresented: $store.isPresentTncBottomSheet, content: {
+        TNCView(htmlText: store.eligibleVoucherEntity.getHTMLText())
+      })
       .onAppear {
         Task {
           await store.fetchUserSession()
@@ -79,25 +100,7 @@ struct PaymentView: View {
         }
       }
       
-      BottomSheetNewView(
-        isPresented: $store.isPresentVoucherTnCBottomSheet,
-        constantHeight: 400
-      ) {
-        VoucherTnCBottomSheetView(
-          voucher: store.eligibleVoucherEntity,
-          constantHeight: 250
-        ) { voucher in
-          Task {
-            store.eligibleVoucherEntity = voucher
-            store.updateVoucherArrays()
-            store.hideVoucherTncBottomSheet()
-            store.showVoucherBottomSheet()
-            await store.applyVoucher(voucher.code)
-          }
-        }
-      }
-      
-      BottomSheetView(isPresented: $store.isPresentVoucherBottomSheet) {
+      BottomSheetNewView(isPresented: $store.isPresentVoucherBottomSheet) {
         VoucherBottomSheetView(
           activateButton: $store.activateButton,
           voucher: $store.voucherCode,
@@ -143,15 +146,12 @@ struct PaymentView: View {
         }
       }
       
-      BottomSheetNewView(
-        isPresented: $store.isPresentTncBottomSheet,
-        constantHeight: 400
-      ) {
-        TNCView(
-          htmlText: store.eligibleVoucherEntity.getHTMLText(),
-          constantHeight: 250
-        )
-      }
+//      BottomSheetNewView(
+//        isPresented: $store.isPresentTncBottomSheet,
+//        constantHeight: 400
+//      ) {
+//
+//      }
       
       BottomSheetView(isPresented: $store.isPresentWarningPaymentBottomSheet) {
         WarningPaymentContentView(

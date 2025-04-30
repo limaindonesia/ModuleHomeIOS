@@ -21,6 +21,7 @@ public struct VoucherEntity: Transformable {
   public let tnc: String
   public let descriptions: String
   public let duration: Int
+  public let quota: Int
 
   public init() {
     self.success = false
@@ -29,6 +30,7 @@ public struct VoucherEntity: Transformable {
     self.descriptions = ""
     self.amount = ""
     self.duration = 0
+    self.quota = 0
   }
 
   public init(
@@ -37,7 +39,8 @@ public struct VoucherEntity: Transformable {
     amount: String,
     tnc: String,
     descriptions: String,
-    duration: Int
+    duration: Int,
+    quota: Int
   ) {
     self.success = success
     self.code = code
@@ -45,6 +48,7 @@ public struct VoucherEntity: Transformable {
     self.tnc = tnc
     self.descriptions = descriptions
     self.duration = duration
+    self.quota = quota
   }
 
   static func map(from response: VoucherResponseModel) -> VoucherEntity {
@@ -54,7 +58,8 @@ public struct VoucherEntity: Transformable {
       amount: response.data?.amount ?? "",
       tnc: response.data?.tnc ?? "",
       descriptions: response.data?.description ?? "",
-      duration: response.data?.duration ?? 0
+      duration: response.data?.duration ?? 0,
+      quota: response.data?.quota ?? 0
     )
 
   }

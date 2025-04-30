@@ -98,7 +98,8 @@ public struct OrderEntity: Transformable {
         amount: voucher.amount ?? "",
         tnc: voucher.tnc ?? "",
         descriptions: voucher.description ?? "",
-        duration: voucher.duration ?? 0
+        duration: voucher.duration ?? 0,
+        quota: 0
       )
     }
     
