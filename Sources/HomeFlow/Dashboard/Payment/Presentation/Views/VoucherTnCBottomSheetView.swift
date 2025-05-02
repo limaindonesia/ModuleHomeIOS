@@ -74,7 +74,7 @@ struct VoucherTnCBottomSheetView: View {
       HStack {
         Image("ticket-discount", bundle: .module)
         
-        Text(voucher.name)
+        Text(voucher.code)
           .titleLexend(size: 14)
         
         Spacer()
