@@ -424,9 +424,18 @@ struct PaymentView: View {
       .background(Color.primaryInfo050)
       .cornerRadius(8)
       
-      Text(store.getVoucherDuration())
-        .foregroundColor(Color.gray500)
-        .bodyLexend(size: 10)
+      HStack(spacing: 10) {
+        Text(store.getVoucherDuration())
+          .foregroundColor(Color.gray500)
+          .bodyLexend(size: 10)
+        
+        Spacer()
+        
+        KFImage(URL(string: store.getURLImage()))
+          .resizable()
+          .aspectRatio(contentMode: .fit)
+          .frame(height: 24)
+      }
       
       Button {
         onTapTnc()

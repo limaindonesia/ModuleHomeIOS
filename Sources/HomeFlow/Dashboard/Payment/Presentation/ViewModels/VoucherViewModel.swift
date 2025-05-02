@@ -13,6 +13,7 @@ public class VoucherViewModel {
   public private(set) var code: String
   public private(set) var amount: String
   public var tnc: String
+  public var image_url: String
   public var duration: Int
 
   public init() {
@@ -20,6 +21,7 @@ public class VoucherViewModel {
     self.code = ""
     self.amount = ""
     self.tnc = ""
+    self.image_url = ""
     self.duration = 0
   }
 
@@ -28,12 +30,14 @@ public class VoucherViewModel {
     code: String,
     amount: String,
     tnc: String,
+    image_url: String,
     duration: Int
   ) {
     self.success = success
     self.code = code
     self.amount = amount
     self.tnc = tnc
+    self.image_url = image_url
     self.duration = duration
   }
 

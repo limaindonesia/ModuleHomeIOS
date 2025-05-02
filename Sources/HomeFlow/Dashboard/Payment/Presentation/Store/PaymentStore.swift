@@ -325,6 +325,8 @@ public class PaymentStore: ObservableObject {
     do {
       let entity = try await paymentRepository.requestOrderByNumber(headers, parameters)
       orderViewModel = OrderEntity.mapTo(entity)
+      // MARK: setup for first time auto load
+      voucherViewModel.image_url = entity.voucherAuto?.image_url ?? ""
       indicateSuccess()
       calculateTimeRemainig()
       handleAutoApplyVoucher(entity)
@@ -636,6 +638,10 @@ public class PaymentStore: ObservableObject {
   
   public func getVoucherDuration() -> String {
     return "Durasi konsultasi akan selama \(voucherViewModel.duration) menit"
+  }
+  
+  public func getURLImage() -> String {
+    return voucherViewModel.image_url
   }
   
   public func isProbono() -> Bool {

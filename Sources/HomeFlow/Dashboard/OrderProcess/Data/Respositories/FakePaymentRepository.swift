@@ -58,6 +58,7 @@ public struct FakePaymentRepository: PaymentRepositoryLogic {
       amount: "",
       tnc: "",
       descriptions: "",
+      image_url: "",
       duration: 0,
       quota: 1
     )

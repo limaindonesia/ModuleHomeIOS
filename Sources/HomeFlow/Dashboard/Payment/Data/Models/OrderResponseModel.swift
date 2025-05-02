@@ -417,7 +417,7 @@ public struct OrderResponseModel: Codable {
   
   // MARK: - Voucher
   public struct Voucher: Codable {
-    public let code, amount, tnc, description: String?
+    public let code, amount, tnc, description, image_url: String?
     public let duration: Int?
     
     public init(from decoder: any Decoder) throws {
@@ -426,6 +426,7 @@ public struct OrderResponseModel: Codable {
       self.amount = try container.decodeIfPresent(String.self, forKey: OrderResponseModel.Voucher.CodingKeys.amount)
       self.tnc = try container.decodeIfPresent(String.self, forKey: OrderResponseModel.Voucher.CodingKeys.tnc)
       self.description = try container.decodeIfPresent(String.self, forKey: OrderResponseModel.Voucher.CodingKeys.description)
+      self.image_url = try container.decodeIfPresent(String.self, forKey: OrderResponseModel.Voucher.CodingKeys.image_url)
       self.duration = try container.decodeIfPresent(Int.self, forKey: OrderResponseModel.Voucher.CodingKeys.duration)
     }
     

@@ -20,6 +20,7 @@ public struct VoucherEntity: Transformable {
   public let amount: String
   public let tnc: String
   public let descriptions: String
+  public let image_url: String
   public let duration: Int
   public let quota: Int
 
@@ -29,6 +30,7 @@ public struct VoucherEntity: Transformable {
     self.tnc = ""
     self.descriptions = ""
     self.amount = ""
+    self.image_url = ""
     self.duration = 0
     self.quota = 0
   }
@@ -39,6 +41,7 @@ public struct VoucherEntity: Transformable {
     amount: String,
     tnc: String,
     descriptions: String,
+    image_url: String,
     duration: Int,
     quota: Int
   ) {
@@ -47,6 +50,7 @@ public struct VoucherEntity: Transformable {
     self.amount = amount
     self.tnc = tnc
     self.descriptions = descriptions
+    self.image_url = image_url
     self.duration = duration
     self.quota = quota
   }
@@ -58,6 +62,7 @@ public struct VoucherEntity: Transformable {
       amount: response.data?.amount ?? "",
       tnc: response.data?.tnc ?? "",
       descriptions: response.data?.description ?? "",
+      image_url: response.data?.image_url ?? "",
       duration: response.data?.duration ?? 0,
       quota: response.data?.quota ?? 0
     )
@@ -70,6 +75,7 @@ public struct VoucherEntity: Transformable {
       code: entity.code,
       amount: entity.amount,
       tnc: entity.tnc,
+      image_url: entity.image_url,
       duration: entity.duration
     )
   }
