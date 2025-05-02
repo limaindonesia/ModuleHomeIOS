@@ -362,7 +362,9 @@ public class PaymentStore: ObservableObject {
       indicateSuccess()
       
       viewModel = VoucherEntity.mapTo(entity)
-      lawyerInfoViewModel.duration = "\(viewModel.duration) Menit"
+      if viewModel.duration > 0 {
+        lawyerInfoViewModel.duration = "\(viewModel.duration) Menit"
+      }
       showSnackBar = true
       activateButton = false
       
