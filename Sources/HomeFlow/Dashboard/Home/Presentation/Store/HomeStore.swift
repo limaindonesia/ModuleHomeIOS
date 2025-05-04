@@ -1088,7 +1088,8 @@ public class HomeStore: ObservableObject {
       duration: "\(userCases.booking?.duration ?? 0) Menit",
       yearExp: "\(userCases.lawyer?.year_exp ?? 0) Tahun",
       avgRating: "\(userCases.lawyer?.avg_ratings ?? "")",
-      totalConsultations: "\(userCases.lawyer?.total_consultations ?? 0) Konsultasi"
+      totalConsultations: "\(userCases.lawyer?.total_consultations ?? 0) Konsultasi",
+      location: userCases.lawyer?.getLocation() ?? ""
     )
     
     ongoingNavigator.navigateToPayment(lawyerInfoViewModel)
@@ -1112,7 +1113,8 @@ public class HomeStore: ObservableObject {
         duration: "\(userCases.booking?.duration ?? 0) Menit",
         yearExp: "\(userCases.lawyer?.year_exp ?? 0) Tahun",
         avgRating: "\(userCases.lawyer?.avg_ratings ?? "")",
-        totalConsultations: "\(userCases.lawyer?.total_consultations ?? 0) Konsultasi"
+        totalConsultations: "\(userCases.lawyer?.total_consultations ?? 0) Konsultasi",
+        location: userCases.lawyer?.getLocation() ?? ""
       )
       var selectedPaymentCategory: PaymentCategory = .VA
       let latestSelectedPayment = UserDefaults.standard.object(forKey: "latestSelectedPayment") as? String

@@ -194,7 +194,10 @@ struct PriceCategoryView: View {
       detailIssues: "",
       yearExp: "",
       avgRating: "",
-      totalConsultations: ""),
-    onSelectCategory: { _ in }
+      totalConsultations: "",
+      location: ""
+    ),
+    onSelectCategory: { _ in
+    }
   )
 }

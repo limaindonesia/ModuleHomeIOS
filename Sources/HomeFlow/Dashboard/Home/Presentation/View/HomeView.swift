@@ -34,25 +34,13 @@ public struct HomeView: View {
       loadContent(width: 0)
       
       BottomSheetView(isPresented: $store.isConsultationNowSheetPresented) {
-        consultationNowBottomSheetContent {
-          
-        } onTapConsultation: {
+        consultationAIBottomSheetContent {
           store.hideConsultationNowBottomSheet()
           store.navigateToAdvocateListWithSkill()
         } onTapDecisionTree: {
           store.hideConsultationNowBottomSheet()
           store.navigateToDecisionTree()
-        } onTapProbono: {
-          store.navigateToProbonoService()
         }
-
-//        consultationAIBottomSheetContent {
-//          store.hideConsultationNowBottomSheet()
-//          store.navigateToAdvocateListWithSkill()
-//        } onTapDecisionTree: {
-//          store.hideConsultationNowBottomSheet()
-//          store.navigateToDecisionTree()
-//        }
       } onDismissed: {
         store.hideConsultationNowBottomSheet()
       }
