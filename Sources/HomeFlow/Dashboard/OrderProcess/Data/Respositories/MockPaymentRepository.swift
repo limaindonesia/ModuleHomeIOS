@@ -47,7 +47,8 @@ public struct MockPaymentRepository: PaymentRepositoryLogic,
       descriptions: "",
       image_url: "",
       duration: 0,
-      quota: 1
+      quota: 1,
+      status: ""
     )
     
   }
@@ -139,7 +140,8 @@ public struct MockPaymentRepository: PaymentRepositoryLogic,
         tnc: "<p>ini syarat dan ketentuan</p>",
         expiredDate: Date(),
         isUsed: false,
-        quota: 1
+        quota: 1,
+        status: ""
       ),
       .init(
         name: "Bronze Shell",
@@ -147,7 +149,8 @@ public struct MockPaymentRepository: PaymentRepositoryLogic,
         tnc: "<p>ini syarat dan ketentuan</p>",
         expiredDate: Date(),
         isUsed: false,
-        quota: 10
+        quota: 10,
+        status: ""
       )
     ]
   }

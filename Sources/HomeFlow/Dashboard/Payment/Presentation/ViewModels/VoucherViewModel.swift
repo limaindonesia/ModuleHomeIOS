@@ -15,6 +15,8 @@ public class VoucherViewModel {
   public var tnc: String
   public var image_url: String
   public var duration: Int
+  public var status: String
+  public var quota: Int
 
   public init() {
     self.success = false
@@ -23,6 +25,8 @@ public class VoucherViewModel {
     self.tnc = ""
     self.image_url = ""
     self.duration = 0
+    self.status = ""
+    self.quota = 0
   }
 
   public init(
@@ -31,7 +35,9 @@ public class VoucherViewModel {
     amount: String,
     tnc: String,
     image_url: String,
-    duration: Int
+    duration: Int,
+    status: String,
+    quota: Int
   ) {
     self.success = success
     self.code = code
@@ -39,6 +45,8 @@ public class VoucherViewModel {
     self.tnc = tnc
     self.image_url = image_url
     self.duration = duration
+    self.status = status
+    self.quota = quota
   }
 
   public func setCode(_ code: String) {

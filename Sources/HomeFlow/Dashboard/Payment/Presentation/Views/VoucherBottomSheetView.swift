@@ -95,7 +95,7 @@ struct VoucherBottomSheetView: View {
             onTap(voucher)
           }
         } label: {
-          Text("Terapakan")
+          Text("Terapkan")
             .foregroundColor(
               activateButton ? Color.white : Color.darkGray300
             )
@@ -147,8 +147,14 @@ struct VoucherBottomSheetView: View {
             .padding(.vertical, 4)
           
         } else {
-          voucherRowView(voucher: voucher)
-            .padding(.vertical, 4)
+          if voucher.status == "INVALID" && voucher.quota == 0  {
+            stackedVoucherCardView(voucher: voucher)
+              .padding(.vertical, 4)
+          } else {
+            voucherRowView(voucher: voucher)
+              .padding(.vertical, 4)
+          }
+          
         }
       }
     }
@@ -181,6 +187,7 @@ struct VoucherBottomSheetView: View {
         
         VStack(alignment: .leading, spacing: 8) {
           Text(voucher.name)
+            .foregroundStyle(voucher.status == "INVALID" && voucher.quota == 0 ? Color.gray400 : Color.black)
             .titleLexend(size: 14)
           
           Button {
@@ -213,24 +220,30 @@ struct VoucherBottomSheetView: View {
             height: 30
           ) {
             onCancelVoucher(voucher)
-            voucher.isUsed = false
           }
         } else {
-          ButtonPrimary(
-            title: "Pakai",
-            color: voucher.isUsed ? Color.white : .buttonActiveColor,
-            height: 30
-          ) {
+          Button {
             onUseVoucher(voucher)
-            voucher.isUsed = true
+          } label: {
+            Text("Pakai")
+              .font(Font(UIFont.dmSansFont(style: .title(size: 14))))
+              .foregroundColor(voucher.status == "INVALID" && voucher.quota == 0 ? Color.gray300 : Color.white )
+              .frame(
+                maxWidth: 50,
+                minHeight: 30
+              )
+              .padding(.horizontal, 5)
           }
+          .background(
+            RoundedRectangle(cornerRadius: 8).fill(voucher.status == "INVALID" && voucher.quota == 0 ? Color.gray100 : voucher.isUsed ? Color.white : Color.buttonActiveColor)
+          )
         }
         
       }
     }
     .padding(.all, 12)
     .frame(maxWidth: .infinity, alignment: .leading)
-    .background(voucher.isUsed ? Color.primaryInfo050 : Color.white)
+    .background(voucher.status == "INVALID" && voucher.quota == 0 ? Color.gray050 : voucher.isUsed ? Color.primaryInfo050 : Color.white)
     .clipShape(RoundedRectangle(cornerRadius: 8))
     .shadow(color: Color.gray200, radius: 5)
     .padding(.horizontal, 16)
@@ -258,6 +271,7 @@ struct VoucherBottomSheetView: View {
           
           VStack(alignment: .leading, spacing: 8) {
             Text(voucher.name)
+              .foregroundStyle(voucher.status == "INVALID" && voucher.quota == 0 ? Color.gray400 : Color.black)
               .titleLexend(size: 14)
             
             Button {
@@ -299,24 +313,30 @@ struct VoucherBottomSheetView: View {
               height: 30
             ) {
               onCancelVoucher(voucher)
-              voucher.isUsed = false
             }
           } else {
-            ButtonPrimary(
-              title: "Pakai",
-              color: voucher.isUsed ? Color.white : .buttonActiveColor,
-              height: 30
-            ) {
+            Button {
               onUseVoucher(voucher)
-              voucher.isUsed = true
+            } label: {
+              Text("Pakai")
+                .font(Font(UIFont.dmSansFont(style: .title(size: 14))))
+                .foregroundColor(voucher.status == "INVALID" && voucher.quota == 0 ? Color.gray300 : Color.white )
+                .frame(
+                  maxWidth: 50,
+                  minHeight: 30
+                )
+                .padding(.horizontal, 5)
             }
+            .background(
+              RoundedRectangle(cornerRadius: 8).fill(voucher.status == "INVALID" && voucher.quota == 0 ? Color.gray100 : voucher.isUsed ? Color.white : Color.buttonActiveColor)
+            )
           }
           
         }
       }
       .padding(.all, 12)
       .frame(maxWidth: .infinity, alignment: .leading)
-      .background(voucher.isUsed ? Color.primaryInfo050 : Color.white)
+      .background(voucher.status == "INVALID" && voucher.quota == 0 ? Color.gray050 : voucher.isUsed ? Color.primaryInfo050 : Color.white)
       .clipShape(RoundedRectangle(cornerRadius: 8))
       .shadow(color: Color.gray200, radius: 5)
       .padding(.horizontal, 16)
@@ -340,7 +360,9 @@ struct VoucherBottomSheetView: View {
           code: "BRONZE12",
           tnc: "",
           expiredDate: Date(),
-          isUsed: false, quota: 1
+          isUsed: false,
+          quota: 1,
+          status: ""
         ),
         EligibleVoucherEntity(
           name: "Bronze Shell",
@@ -348,7 +370,8 @@ struct VoucherBottomSheetView: View {
           tnc: "",
           expiredDate: Date(),
           isUsed: true,
-          quota: 86
+          quota: 86,
+          status: ""
         )
       ]
     ),

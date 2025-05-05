@@ -26,7 +26,7 @@ public struct VoucherResponseModel: Codable {
   }
   
   public struct DataClass: Codable {
-    public let code, amount, tnc, image_url, description: String?
+    public let code, amount, tnc, image_url, description, status: String?
     public let duration: Int?
     public let quota: Int?
     
@@ -38,6 +38,7 @@ public struct VoucherResponseModel: Codable {
       self.image_url = ""
       self.duration = 0
       self.quota = 0
+      self.status = ""
     }
     
     public init(from decoder: any Decoder) throws {
@@ -49,6 +50,7 @@ public struct VoucherResponseModel: Codable {
       self.image_url = try container.decodeIfPresent(String.self, forKey: VoucherResponseModel.DataClass.CodingKeys.image_url)
       self.duration = try container.decodeIfPresent(Int.self, forKey: VoucherResponseModel.DataClass.CodingKeys.duration)
       self.quota = try container.decodeIfPresent(Int.self, forKey: VoucherResponseModel.DataClass.CodingKeys.quota)
+      self.status = try container.decodeIfPresent(String.self, forKey: VoucherResponseModel.DataClass.CodingKeys.status)
     }
   }
   

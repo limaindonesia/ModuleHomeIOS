@@ -50,6 +50,8 @@ public class PaymentStore: ObservableObject {
   @Published var voucherCount: Int = 0
   @Published public var elligibleVoucherEntities: [EligibleVoucherEntity] = []
   @Published public var showSnackBar: Bool = false
+  @Published public var isManualVoucherNotInListActive: Bool = false
+  @Published public var isBottomSheetNeedToForceDismiss: Bool = false
  
   public var paymentTimeRemaining: CurrentValueSubject<TimeInterval, Never> = .init(0)
   public var message = CurrentValueSubject<String, Never>("")
@@ -294,6 +296,24 @@ public class PaymentStore: ObservableObject {
     voucherViewModel = await requestVoucher(code)
     
     if voucherViewModel.success {
+      if !elligibleVoucherEntities.isEmpty && isManualVoucherNotInListActive == false  {
+        let copyArray = elligibleVoucherEntities
+        elligibleVoucherEntities.removeAll()
+        elligibleVoucherEntities.append(EligibleVoucherEntity(
+          name: voucherViewModel.code,
+          code: voucherViewModel.code,
+          tnc: voucherViewModel.tnc,
+          expiredDate: Date(),
+          isUsed: true,
+          quota: eligibleVoucherEntity.quota,
+          status: "")
+        )
+        for item in copyArray {
+          elligibleVoucherEntities.append(item)
+        }
+        isManualVoucherNotInListActive = true
+        isBottomSheetNeedToForceDismiss = true
+      }
       voucherFilled = true
       setDuration(voucherViewModel.duration)
       await requestOrderByNumber()
@@ -305,6 +325,11 @@ public class PaymentStore: ObservableObject {
   public func removeVoucher() async {
     let success = await requestRemoveVoucher()
     if success {
+      if !elligibleVoucherEntities.isEmpty && isManualVoucherNotInListActive == true  {
+        elligibleVoucherEntities.removeFirst()
+        isManualVoucherNotInListActive = false
+        isBottomSheetNeedToForceDismiss = true
+      }
       voucherViewModel.setCode("")
       eligibleVoucherEntity = .init()
       voucherFilled = false
@@ -330,6 +355,10 @@ public class PaymentStore: ObservableObject {
       indicateSuccess()
       calculateTimeRemainig()
       handleAutoApplyVoucher(entity)
+      if isBottomSheetNeedToForceDismiss {
+        hideVoucherBottomSheet()
+        isBottomSheetNeedToForceDismiss = false
+      }
     } catch {
       guard let error = error as? ErrorMessage else { return }
       indicateError(error: error)
@@ -528,7 +557,8 @@ public class PaymentStore: ObservableObject {
         tnc: voucher.tnc,
         expiredDate: Date(),
         isUsed: false,
-        quota: voucher.quota
+        quota: voucher.quota,
+        status: ""
       )
       updateVoucherArrays()
       showSnackBar = true

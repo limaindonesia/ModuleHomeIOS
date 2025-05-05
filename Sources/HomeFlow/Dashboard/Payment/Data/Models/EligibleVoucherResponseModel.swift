@@ -22,11 +22,11 @@ public struct EligibleVoucherResponseModel: Codable {
   }
   
   public struct Datum: Codable {
-    public let name, code, tnc, endDate: String?
+    public let name, code, tnc, endDate, status: String?
     public let quota: Int?
     
     enum CodingKeys: String, CodingKey {
-      case name, code, tnc, quota
+      case name, code, tnc, quota, status
       case endDate = "end_date"
     }
     
@@ -37,6 +37,7 @@ public struct EligibleVoucherResponseModel: Codable {
       self.tnc = try container.decodeIfPresent(String.self, forKey: .tnc)
       self.endDate = try container.decodeIfPresent(String.self, forKey: .endDate)
       self.quota = try container.decodeIfPresent(Int.self, forKey: .quota)
+      self.status = try container.decodeIfPresent(String.self, forKey: .status)
     }
   }
 }

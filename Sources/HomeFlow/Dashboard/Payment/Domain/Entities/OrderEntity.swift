@@ -100,7 +100,8 @@ public struct OrderEntity: Transformable {
         descriptions: voucher.description ?? "",
         image_url: voucher.image_url ?? "",
         duration: voucher.duration ?? 0,
-        quota: 0
+        quota: 0,
+        status: voucher.status ?? ""
       )
     }
     

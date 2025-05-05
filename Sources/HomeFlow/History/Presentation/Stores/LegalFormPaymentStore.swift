@@ -460,7 +460,8 @@ public class LegalFormPaymentStore: ObservableObject {
         tnc: voucher.tnc,
         expiredDate: Date(),
         isUsed: false,
-        quota: voucher.quota
+        quota: voucher.quota,
+        status: voucher.status
       )
       updateVoucherArrays()
       showSnackBar = true
