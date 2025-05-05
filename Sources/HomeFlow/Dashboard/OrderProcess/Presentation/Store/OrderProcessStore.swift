@@ -533,7 +533,8 @@ public class OrderProcessStore: ObservableObject {
       detailIssues: issueText,
       yearExp: advocate.getExperience(),
       avgRating: advocate.getRating(),
-      totalConsultations: advocate.getTotalConsultation()
+      totalConsultations: advocate.getTotalConsultation(),
+      location: advocate.getLocation()
     )
   }
   
@@ -661,9 +662,10 @@ public class OrderProcessStore: ObservableObject {
         category: getCategoryPagePayment(),
         type: getTypePagePayment(),
         duration: getDurationPagePayment(),
-        yearExp: "\(lawyerInfoViewModel.yearExp ?? "")",
-        avgRating: "\(lawyerInfoViewModel.avgRating ?? "")",
-        totalConsultations: "\(lawyerInfoViewModel.totalConsultations ?? "")"
+        yearExp: "\(lawyerInfoViewModel.yearExp)",
+        avgRating: "\(lawyerInfoViewModel.avgRating)",
+        totalConsultations: "\(lawyerInfoViewModel.totalConsultations)",
+        location: lawyerInfoViewModel.location
         
       )
       
