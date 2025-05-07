@@ -328,8 +328,8 @@ public class PaymentStore: ObservableObject {
       if !elligibleVoucherEntities.isEmpty && isManualVoucherNotInListActive == true  {
         elligibleVoucherEntities.removeFirst()
         isManualVoucherNotInListActive = false
-        isBottomSheetNeedToForceDismiss = true
       }
+      isBottomSheetNeedToForceDismiss = true
       voucherViewModel.setCode("")
       eligibleVoucherEntity = .init()
       voucherFilled = false
