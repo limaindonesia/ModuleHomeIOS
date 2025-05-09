@@ -69,6 +69,7 @@ public class PaymentStore: ObservableObject {
   public var voucherTnC: String = ""
   public var eligibleVoucherEntity: EligibleVoucherEntity = .init()
   public var copyEligibleVoucher: [EligibleVoucherEntity] = []
+  public var voucherFilledFirstTime: Bool = false
   
   private var subscriptions = Set<AnyCancellable>()
   
@@ -572,6 +573,31 @@ public class PaymentStore: ObservableObject {
       voucherViewModel.setCode(voucher.code)
       voucherViewModel.setAmount(voucher.amount)
       setDuration(voucher.duration)
+      if !voucherFilledFirstTime {
+        voucherFilledFirstTime = true
+        copyEligibleVoucher = elligibleVoucherEntities
+        elligibleVoucherEntities.removeAll()
+        if let index = copyEligibleVoucher.firstIndex(where: { $0.code == voucher.code}) {
+          elligibleVoucherEntities.append(EligibleVoucherEntity(
+            name: copyEligibleVoucher[index].name,
+            code: copyEligibleVoucher[index].code,
+            tnc: copyEligibleVoucher[index].tnc,
+            expiredDate: copyEligibleVoucher[index].expiredDate,
+            isUsed: true,
+            quota: copyEligibleVoucher[index].quota,
+            status: copyEligibleVoucher[index].status)
+          )
+        }
+        for item in copyEligibleVoucher {
+          if item.code.lowercased() == voucherViewModel.code.lowercased() {
+
+          } else {
+            elligibleVoucherEntities.append(item)
+          }
+        }
+      } else {
+        updateVoucherArrays()
+      }
       eligibleVoucherEntity = EligibleVoucherEntity(
         name: "",
         code: voucher.code,
@@ -581,7 +607,6 @@ public class PaymentStore: ObservableObject {
         quota: voucher.quota,
         status: ""
       )
-      updateVoucherArrays()
       showSnackBar = true
     } else{
       voucherFilled = false
@@ -629,7 +654,7 @@ public class PaymentStore: ObservableObject {
   }
   
   public func setupFirstDuration() {
-    firstDuration = lawyerInfoViewModel.duration ?? ""
+    firstDuration = lawyerInfoViewModel.duration
   }
   
   public var activatePayButton: AnyPublisher<Bool, Never> {
@@ -689,6 +714,10 @@ public class PaymentStore: ObservableObject {
   
   public func getVoucherDuration() -> String {
     return "Durasi konsultasi akan selama \(voucherViewModel.duration) menit"
+  }
+  
+  public func getDescription() -> String {
+    return voucherViewModel.description
   }
   
   public func getURLImage() -> String {

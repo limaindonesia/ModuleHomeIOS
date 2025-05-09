@@ -17,6 +17,7 @@ public class VoucherViewModel {
   public var duration: Int
   public var status: String
   public var quota: Int
+  public var description: String
 
   public init() {
     self.success = false
@@ -27,6 +28,7 @@ public class VoucherViewModel {
     self.duration = 0
     self.status = ""
     self.quota = 0
+    self.description = ""
   }
 
   public init(
@@ -37,7 +39,8 @@ public class VoucherViewModel {
     image_url: String,
     duration: Int,
     status: String,
-    quota: Int
+    quota: Int,
+    description: String
   ) {
     self.success = success
     self.code = code
@@ -47,6 +50,7 @@ public class VoucherViewModel {
     self.duration = duration
     self.status = status
     self.quota = quota
+    self.description = description
   }
 
   public func setCode(_ code: String) {

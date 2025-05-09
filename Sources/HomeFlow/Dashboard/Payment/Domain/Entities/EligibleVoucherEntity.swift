@@ -65,6 +65,10 @@ public final class EligibleVoucherEntity: TransformableWithoutViewModel, Identif
   }
   
   public var dateStr: String {
+    let diffInDays = Calendar.current.dateComponents([.day], from: expiredDate, to: Date()).day
+    if diffInDays == 0 {
+      return "Berlaku hingga: "
+    }
     return "Berlaku hingga: \(expiredDate.formatted(with: "dd MMMM yyyy"))"
   }
   

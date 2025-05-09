@@ -83,7 +83,8 @@ public struct VoucherEntity: Transformable {
       image_url: entity.image_url,
       duration: entity.duration,
       status: entity.status,
-      quota: entity.quota
+      quota: entity.quota,
+      description: entity.descriptions
     )
   }
 

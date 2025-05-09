@@ -425,7 +425,7 @@ struct PaymentView: View {
       .cornerRadius(8)
       
       HStack(spacing: 10) {
-        Text(store.getVoucherDuration())
+        Text(store.getDescription())
           .foregroundColor(Color.gray500)
           .bodyLexend(size: 10)
         
