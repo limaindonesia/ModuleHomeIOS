@@ -65,7 +65,7 @@ public final class EligibleVoucherEntity: TransformableWithoutViewModel, Identif
   }
   
   public var dateStr: String {
-    return "Belaku hingga: \(expiredDate.formatted(with: "dd MMMM yyyy"))"
+    return "Berlaku hingga: \(expiredDate.formatted(with: "dd MMMM yyyy"))"
   }
   
   public func getHTMLText() -> String {

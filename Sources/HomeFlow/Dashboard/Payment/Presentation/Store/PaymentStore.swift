@@ -68,6 +68,7 @@ public class PaymentStore: ObservableObject {
   public var idCardEntity: IDCardEntity = .init()
   public var voucherTnC: String = ""
   public var eligibleVoucherEntity: EligibleVoucherEntity = .init()
+  public var copyEligibleVoucher: [EligibleVoucherEntity] = []
   
   private var subscriptions = Set<AnyCancellable>()
   
@@ -297,19 +298,35 @@ public class PaymentStore: ObservableObject {
     
     if voucherViewModel.success {
       if !elligibleVoucherEntities.isEmpty && isManualVoucherNotInListActive == false  {
-        let copyArray = elligibleVoucherEntities
+        copyEligibleVoucher = elligibleVoucherEntities
         elligibleVoucherEntities.removeAll()
-        elligibleVoucherEntities.append(EligibleVoucherEntity(
-          name: voucherViewModel.code,
-          code: voucherViewModel.code,
-          tnc: voucherViewModel.tnc,
-          expiredDate: Date(),
-          isUsed: true,
-          quota: eligibleVoucherEntity.quota,
-          status: "")
-        )
-        for item in copyArray {
-          elligibleVoucherEntities.append(item)
+        if  eligibleVoucherEntity.code.lowercased() == voucherViewModel.code.lowercased() {
+          elligibleVoucherEntities.append(EligibleVoucherEntity(
+            name: eligibleVoucherEntity.name,
+            code: eligibleVoucherEntity.code,
+            tnc: eligibleVoucherEntity.tnc,
+            expiredDate: eligibleVoucherEntity.expiredDate,
+            isUsed: true,
+            quota: eligibleVoucherEntity.quota,
+            status: "")
+          )
+        } else {
+          elligibleVoucherEntities.append(EligibleVoucherEntity(
+            name: eligibleVoucherEntity.name == "" ? voucherViewModel.code : eligibleVoucherEntity.name,
+            code: voucherViewModel.code,
+            tnc: voucherViewModel.tnc,
+            expiredDate: Date(),
+            isUsed: true,
+            quota: eligibleVoucherEntity.quota,
+            status: "")
+          )
+        }
+        for item in copyEligibleVoucher {
+          if item.code.lowercased() == voucherViewModel.code.lowercased() {
+
+          } else {
+            elligibleVoucherEntities.append(item)
+          }
         }
         isManualVoucherNotInListActive = true
         isBottomSheetNeedToForceDismiss = true
@@ -326,7 +343,11 @@ public class PaymentStore: ObservableObject {
     let success = await requestRemoveVoucher()
     if success {
       if !elligibleVoucherEntities.isEmpty && isManualVoucherNotInListActive == true  {
-        elligibleVoucherEntities.removeFirst()
+        if self.copyEligibleVoucher.contains(where: { $0.code.lowercased() == eligibleVoucherEntity.code.lowercased()  }) {
+          
+        } else {
+          elligibleVoucherEntities.removeFirst()
+        }
         isManualVoucherNotInListActive = false
       }
       isBottomSheetNeedToForceDismiss = true
