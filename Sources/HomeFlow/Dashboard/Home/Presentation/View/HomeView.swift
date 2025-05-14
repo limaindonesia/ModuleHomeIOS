@@ -107,7 +107,7 @@ public struct HomeView: View {
     .ignoresSafeArea(edges: .all)
     .onAppear {
       Task {
-        //        await store.fetchActiveDocuments()
+        await store.fetchUserSession()
         await store.fetchOngoingUserCases()
         await store.requestMe()
         await store.checkBottomSheet()

@@ -208,6 +208,14 @@ public class HomeStore: ObservableObject {
     }
   }
   
+  public func fetchUserSession() async {
+    do {
+      userSessionData = try await userSessionDataSource.fetchData()
+    } catch {
+      GLogger(.info, layer: "Presentation", message: "error \(error)")
+    }
+  }
+  
   private func endUserSession() {
     Task {
       let removed = try? await userSessionDataSource.deleteData()
@@ -469,9 +477,9 @@ public class HomeStore: ObservableObject {
     
     if let session = result {
       isLoggedIn = true
-      userSessionData = session
       client = Prefs.getClient()
-      name = client?.name ?? ""
+      userSessionData = session
+      name = session.name
     } else {
       isLoggedIn = false
       name = ""
