@@ -12,6 +12,7 @@ import Lottie
 import Combine
 import Kingfisher
 import PromotionModule
+import AprodhitAuthModule
 
 public struct HomeView: View {
   @ObservedObject var store: HomeStore
@@ -32,6 +33,14 @@ public struct HomeView: View {
     ZStack {
       
       loadContent(width: 0)
+      
+      BottomSheetView(isPresented: $store.isPresentLoginBottomSheet) {
+        LoginBottomSheetContentView(store: store)
+      }
+      
+      BottomSheetView(isPresented: $store.isPresentOTPBottomSheet) {
+        OTPBottomSheetContentView(store: store)
+      }
       
       BottomSheetView(isPresented: $store.isConsultationNowSheetPresented) {
         consultationAIBottomSheetContent {
@@ -1691,7 +1700,10 @@ public struct HomeView: View {
       refundNavigator: MockNavigator(),
       probonoNavigator: MockNavigator(),
       notaryResponder: MockNavigator(),
-      promotionListNavigator: MockNavigator()
+      promotionListNavigator: MockNavigator(),
+      loginRepository: MockLoginRepository(),
+      otpRepository: MockOTPRepository(),
+      otpNavigator: MockNavigator()
     )
   )
 }

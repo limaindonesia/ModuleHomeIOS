@@ -161,6 +161,13 @@ public class HomeViewController: NiblessViewController {
         self?.hideTabbar(state)
       }.store(in: &subscriptions)
 
+    store.$isPresentLoginBottomSheet
+      .receive(on: RunLoop.current)
+      .subscribe(on: DispatchQueue.main)
+      .sink { [weak self] state in
+        self?.hideTabbar(state)
+      }.store(in: &subscriptions)
+    
   }
   
   private func releaseBottomSheet() {

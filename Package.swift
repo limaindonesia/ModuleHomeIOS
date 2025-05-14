@@ -15,6 +15,7 @@ let package = Package(
   dependencies: [
     .package(path: "AprodhitKit"),
     .package(path: "PromotionModule"),
+    .package(path: "AprodhitAuthModule"),
     .package(
       url: "https://gitlab.com/pixelheart/gndkit.git",
       branch: "develop"
@@ -36,6 +37,7 @@ let package = Package(
       dependencies: [
         "AprodhitKit",
         "PromotionModule",
+        "AprodhitAuthModule",
         .product(name: "GnDKit", package: "gndkit"),
         .product(name: "Lottie", package: "lottie-ios"),
         .product(name: "AppsFlyerLib", package: "AppsFlyerFramework")

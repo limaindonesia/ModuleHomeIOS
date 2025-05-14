@@ -13,6 +13,8 @@ import Combine
 import Environment
 import AppsFlyerLib
 import PromotionModule
+import AprodhitAuthModule
+import SwiftUI
 
 @MainActor
 public class HomeStore: ObservableObject {
@@ -43,6 +45,9 @@ public class HomeStore: ObservableObject {
   private let probonoNavigator: ProbonoNavigator
   private let notaryResponder: NotaryResponder
   private let promotionListNavigator: PromotionListNavigator
+  private let loginRepository: LoginRepositoryLogic
+  private let otpNavigator: OTPNavigator
+  private let otpRepository: OTPRepositoryLogic
   
   public let monitor = NWPathMonitor()
   let dispatchQueue = DispatchQueue(label: "Monitor")
@@ -86,6 +91,12 @@ public class HomeStore: ObservableObject {
   @Published public var price: String = ""
   @Published public var meViewModel: MeViewModel = .init()
   @Published public var activeViewModels: [DocumentBaseViewModel] = []
+  @Published public var usernameError: Bool = false
+  @Published public var username: String = ""
+  @Published public var usernameErrorMessage: String = ""
+  @Published public var errorColor: Color = .white
+  @Published public var isPresentLoginBottomSheet: Bool = false
+  @Published public var isPresentOTPBottomSheet: Bool = false
   
   //Variables
   
@@ -102,7 +113,6 @@ public class HomeStore: ObservableObject {
   public var systemImages: [String] = ["bg_home1","bg_home2","bg_home3","bg_home4"]
   public var systemImagesX: [Int] = [24,39,54,69]
   public var promotionListEntites: [PromotionEntity] = []
-  
   
   public init(
     userSessionDataSource: UserSessionDataSourceLogic,
@@ -128,7 +138,10 @@ public class HomeStore: ObservableObject {
     refundNavigator: RefundNavigator,
     probonoNavigator: ProbonoNavigator,
     notaryResponder: NotaryResponder,
-    promotionListNavigator: PromotionListNavigator
+    promotionListNavigator: PromotionListNavigator,
+    loginRepository: LoginRepositoryLogic,
+    otpRepository: OTPRepositoryLogic,
+    otpNavigator: OTPNavigator
   ) {
     self.userSessionDataSource = userSessionDataSource
     self.homeRepository = homeRepository
@@ -154,6 +167,9 @@ public class HomeStore: ObservableObject {
     self.notaryResponder = notaryResponder
     self.promotionListNavigator = promotionListNavigator
     self.promotionRepository = promotionRepository
+    self.loginRepository = loginRepository
+    self.otpRepository = otpRepository
+    self.otpNavigator = otpNavigator
     
     Task {
       await requestPromotionBanner()
@@ -233,6 +249,26 @@ public class HomeStore: ObservableObject {
   
   //MARK: - Fetch Data from API
   
+  @MainActor
+  public func requestLogin() async {
+    guard !usernameError else { return }
+    
+    indicateLoading()
+    
+    do {
+      _ = try await loginRepository.requestSignIn(
+        parameters: .init(username: username)
+      )
+      
+      navigateToOTP()
+      indicateSuccess()
+      
+    } catch {
+      guard let error = error as? ErrorMessage else { return }
+      indicateError(error: error)
+    }
+  }
+  
   public func fetchPromotionLists() async {
     do {
       promotionListEntites = try await promotionRepository.fetchPromotionLists(
@@ -243,6 +279,8 @@ public class HomeStore: ObservableObject {
       
     }
   }
+  
+  
   
   @MainActor
   public func requestMe() async {
@@ -644,6 +682,30 @@ public class HomeStore: ObservableObject {
   
   //MARK: - Other function
   
+  private var validatePhoneNumber: AnyPublisher<Bool, Never> {
+    $username
+      .dropFirst(2)
+      .map{
+        return ($0.hasPrefix("+62") || $0.hasPrefix("0"))
+        && Int($0) != nil
+        && ($0.count > 9 && $0.count < 13)
+      }
+      .eraseToAnyPublisher()
+  }
+  
+  private var validateEmail: AnyPublisher<Bool, Never> {
+    $username
+      .dropFirst(2)
+      .map{ $0.isValidEmail() }
+      .eraseToAnyPublisher()
+  }
+  
+  public var validUsername: AnyPublisher<Bool, Never> {
+    Publishers.CombineLatest(validateEmail, validatePhoneNumber).map { email, phone in
+      return email || phone
+    }.eraseToAnyPublisher()
+  }
+  
   public func hasPromotion() -> Bool {
     return !promotionListEntites.isEmpty
   }
@@ -673,9 +735,9 @@ public class HomeStore: ObservableObject {
         date: entity.getDateString(),
         price: entity.price
       ) {
-//        self.navigateToDetailOrder(entity)
+        //        self.navigateToDetailOrder(entity)
       } onTapButton: {
-//        self.showBottomSheet()
+        //        self.showBottomSheet()
       }
     }
     
@@ -776,18 +838,18 @@ public class HomeStore: ObservableObject {
   }
   
   /*private func processSKTMAndReplaceOnlineLawyerState(_ status: String) {
-    
-    let arrayOfAdvocates: [Advocate] = onlinedAdvocates
-    
-    if status == Constant.Home.Text.ACTIVE {
-      for i in 0 ..< arrayOfAdvocates.count {
-        //MARK: need to fix
-        //arrayOfAdvocates[i].is_probono = true
-      }
-      
-      onlinedAdvocates = arrayOfAdvocates
-    }
-  }*/
+   
+   let arrayOfAdvocates: [Advocate] = onlinedAdvocates
+   
+   if status == Constant.Home.Text.ACTIVE {
+   for i in 0 ..< arrayOfAdvocates.count {
+   //MARK: need to fix
+   //arrayOfAdvocates[i].is_probono = true
+   }
+   
+   onlinedAdvocates = arrayOfAdvocates
+   }
+   }*/
   
   public func getImageURL() -> URL? {
     return userCases.lawyer?.getImageName()
@@ -831,7 +893,7 @@ public class HomeStore: ObservableObject {
     return attributedString
   }
   
-  //MARK: - Indicator
+  //MARK: - Indicate
   
   private func indicateLoading() {
     isLoading = true
@@ -914,6 +976,10 @@ public class HomeStore: ObservableObject {
     }
   }
   
+  public func showLoginBottomSheet() {
+    isPresentLoginBottomSheet = true
+  }
+  
   //MARK: - Navigator
   
   public func navigateToSeeAllAdvocate() {
@@ -927,6 +993,11 @@ public class HomeStore: ObservableObject {
   }
   
   public func navigateToDetailAdvocate(_ advocate: Advocate) {
+    guard let _ = userSessionData?.remoteSession.remoteToken else {
+      showLoginBottomSheet()
+      return
+    }
+    
     let index = onlinedAdvocates.firstIndex { i in
       advocate.id == i.id
     }!
@@ -1181,6 +1252,19 @@ public class HomeStore: ObservableObject {
     promotionListNavigator.navigateToPromotion()
   }
   
+  public func navigateToOTP() {
+    let parameter = LoginParameter(
+      username: username,
+      password: "",
+      isEmail: username.isValidEmail(),
+      state: .isLogin
+    )
+    
+    isPresentOTPBottomSheet = true
+    
+    AppsFlyerConfig.trackingLoginSubmit(event: .af_login_submit, emailOrPhone: username)
+  }
+  
   //MARK: - BottomSheet
   
   func showCategoryBottomSheet() {
@@ -1227,14 +1311,42 @@ public class HomeStore: ObservableObject {
         endUserSession()
       }.store(in: &subscriptions)
     
-//    $sktmModel
-//      .receive(on: RunLoop.main)
-//      .subscribe(on: RunLoop.main)
-//      .sink { model in
-//        if let status = model?.data?.status {
-//          self.processSKTMAndReplaceOnlineLawyerState(status)
-//        }
-//      }.store(in: &subscriptions)
+    //    $sktmModel
+    //      .receive(on: RunLoop.main)
+    //      .subscribe(on: RunLoop.main)
+    //      .sink { model in
+    //        if let status = model?.data?.status {
+    //          self.processSKTMAndReplaceOnlineLawyerState(status)
+    //        }
+    //      }.store(in: &subscriptions)
+    
+    validateEmail
+      .removeDuplicates()
+      .sink { valid in
+        if valid {
+          self.usernameErrorMessage = "Kode OTP akan dikirim ke email"
+          self.errorColor = .successColor
+        }
+      }.store(in: &subscriptions)
+    
+    validatePhoneNumber
+      .removeDuplicates()
+      .sink { valid in
+        if valid {
+          self.usernameErrorMessage = "Kode OTP akan dikirim ke Whatsapp"
+          self.errorColor = .successColor
+        }
+      }.store(in: &subscriptions)
+    
+    validUsername
+      .removeDuplicates()
+      .subscribe(on: DispatchQueue.main)
+      .sink { [weak self] valid in
+        if !valid {
+          self?.usernameErrorMessage = "Format masukkan belum sesuai"
+          self?.errorColor = .danger500
+        }
+      }.store(in: &subscriptions)
   }
   
 }
