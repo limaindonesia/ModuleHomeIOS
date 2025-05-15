@@ -15,6 +15,7 @@ import AppsFlyerLib
 import PromotionModule
 import AprodhitAuthModule
 import SwiftUI
+import OneSignalFramework
 
 @MainActor
 public class HomeStore: ObservableObject {
@@ -91,15 +92,17 @@ public class HomeStore: ObservableObject {
   @Published public var price: String = ""
   @Published public var meViewModel: MeViewModel = .init()
   @Published public var activeViewModels: [DocumentBaseViewModel] = []
-  @Published public var usernameError: Bool = false
   @Published public var username: String = ""
+  @Published public var usernameError: Bool = false
   @Published public var usernameErrorMessage: String = ""
   @Published public var errorColor: Color = .white
   @Published public var isPresentLoginBottomSheet: Bool = false
   @Published public var isPresentOTPBottomSheet: Bool = false
+  @Published public var otp: [String] = Array(repeating: "", count: 6)
+  @Published public var showTimer: Bool = true
+  @Published public var timeRemaining: TimeInterval = 5
   
   //Variables
-  
   private var socket: AprodhitKit.SocketServiceProtocol!
   private var userSessionData: UserSessionData? = nil
   private var client: DataOPClient? = nil
@@ -113,6 +116,7 @@ public class HomeStore: ObservableObject {
   public var systemImages: [String] = ["bg_home1","bg_home2","bg_home3","bg_home4"]
   public var systemImagesX: [Int] = [24,39,54,69]
   public var promotionListEntites: [PromotionEntity] = []
+  public var isEmail: Bool = false
   
   public init(
     userSessionDataSource: UserSessionDataSourceLogic,
@@ -269,6 +273,51 @@ public class HomeStore: ObservableObject {
     }
   }
   
+  @MainActor
+  public func requestOTP() async {
+    indicateLoading()
+    
+    do {
+      let response = try await otpRepository.requestOTP(
+        params: OTPParamRequest(
+          username: isEmail ? username : manipulatePhoneNumber(),
+          otp: otp.joined(),
+          type: .isLogin
+        )
+      )
+      
+      indicateSuccess()
+      
+      await saveUserSession(response)
+      saveToUserDefaults(response)
+      
+    } catch {
+      guard let error = error as? ErrorMessage else { return }
+      indicateError(error: error)
+    }
+  }
+  
+  @MainActor
+  public func resendOTP() async {
+    indicateLoading()
+    
+    do {
+      let _ = try await otpRepository.resendOTP(
+        params: OTPParamRequest(
+          username: isEmail ? username : manipulatePhoneNumber(),
+          type: .isLogin
+        )
+      )
+      
+      indicateSuccess()
+      timeRemaining = 60
+      showTimer = true
+    } catch {
+      guard let error = error as? ErrorMessage else { return }
+      indicateError(error: error)
+    }
+  }
+  
   public func fetchPromotionLists() async {
     do {
       promotionListEntites = try await promotionRepository.fetchPromotionLists(
@@ -279,8 +328,6 @@ public class HomeStore: ObservableObject {
       
     }
   }
-  
-  
   
   @MainActor
   public func requestMe() async {
@@ -682,6 +729,32 @@ public class HomeStore: ObservableObject {
   
   //MARK: - Other function
   
+  private func saveUserSession(_ response: LoginValidateOtpPostResp) async {
+    do {
+      let _ = try await userSessionDataSource.saveData(
+        with: response.data?.relation?.id ?? 0,
+        name: response.data?.name ?? "",
+        remoteToken: response.data?.token ?? "",
+        firebaseToken: "",
+        dateCreated: response.data?.verified_at?.toDate() ?? Date()
+      )
+    } catch {
+      guard let error = error as? ErrorMessage else { return }
+      indicateError(error: error)
+    }
+  }
+  
+  private func saveToUserDefaults(_ resp: LoginValidateOtpPostResp) {
+    Prefs.saveClientPrefsWithToken(data: resp.data!)
+    let id = resp.data?.relation?.id ?? 0
+    let email = resp.data?.email ?? ""
+    let phone = "+" + (resp.data?.phone ?? "")
+    
+    OneSignal.login("\(id)")
+    OneSignal.User.addEmail(email)
+    OneSignal.User.addSms(phone)
+  }
+  
   private var validatePhoneNumber: AnyPublisher<Bool, Never> {
     $username
       .dropFirst(2)
@@ -843,7 +916,6 @@ public class HomeStore: ObservableObject {
    
    if status == Constant.Home.Text.ACTIVE {
    for i in 0 ..< arrayOfAdvocates.count {
-   //MARK: need to fix
    //arrayOfAdvocates[i].is_probono = true
    }
    
@@ -891,6 +963,36 @@ public class HomeStore: ObservableObject {
     attributedString.font = .lexendFont(style: .title(size: 12))
     
     return attributedString
+  }
+  
+  public func getOTPTitle() -> String {
+    if isEmail {
+      return "Kami telah mengirimkan 6 angka kode OTP melalui Email Anda"
+    }
+    
+    return "Kami telah mengirimkan 6 angka kode OTP melalui Whatsapp Anda"
+  }
+  
+  public func getOTPImage() -> String {
+    return isEmail ? "ic_email" : "ic_whatsapp"
+  }
+  
+  public func getChangeTitle() -> String {
+    return isEmail ? "Salah memasukkan Email" : "Salah memasukkan Nomor Ponsel"
+  }
+  
+  public func getButtonChangeTitle() -> String {
+    return isEmail ? "Ubah Alamat Email" : "Ubah Nomor Ponsel"
+  }
+  
+  public func manipulatePhoneNumber() -> String {
+    var result = username
+    if username.isValidPhone() && String(username.first?.description ?? "") == "0" {
+      let number = String(username.dropFirst())
+      result = "62" + number
+    }
+    
+    return result
   }
   
   //MARK: - Indicate
@@ -978,6 +1080,19 @@ public class HomeStore: ObservableObject {
   
   public func showLoginBottomSheet() {
     isPresentLoginBottomSheet = true
+    username = ""
+    usernameErrorMessage = ""
+    usernameError = false
+  }
+  
+  public func showOTPBottomSheet() {
+    timeRemaining = 60
+    isPresentLoginBottomSheet = false
+    isPresentOTPBottomSheet = true
+    otp = Array(repeating: "", count: 6)
+    isEmail = username.isValidEmail()
+    
+    AppsFlyerConfig.trackingLoginSubmit(event: .af_login_submit, emailOrPhone: username)
   }
   
   //MARK: - Navigator
@@ -1260,8 +1375,7 @@ public class HomeStore: ObservableObject {
       state: .isLogin
     )
     
-    isPresentOTPBottomSheet = true
-    
+    otpNavigator.navigateToOTP(parameter: parameter)
     AppsFlyerConfig.trackingLoginSubmit(event: .af_login_submit, emailOrPhone: username)
   }
   

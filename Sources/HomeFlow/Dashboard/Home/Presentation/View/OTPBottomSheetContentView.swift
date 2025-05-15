@@ -8,18 +8,22 @@
 import SwiftUI
 import AprodhitKit
 import GnDKit
+import AprodhitAuthModule
 
 public struct OTPBottomSheetContentView: View {
+  
+  @ObservedObject public var store: HomeStore
+  @FocusState private var focusedIndex: Int?
   
   public var body: some View {
     VStack(spacing: 24) {
       HStack(alignment: .center, spacing: 8) {
-        Image(store.getImage(), bundle: .module)
+        Image(store.getOTPImage(), bundle: .module)
           .resizable()
           .aspectRatio(contentMode: .fit)
           .frame(width: 48, height: 48)
         
-        Text(store.getTitle())
+        Text(store.getOTPTitle())
           .foregroundStyle(Color.darkTextColor)
           .bodyLexend(size: 14)
       }
@@ -32,7 +36,7 @@ public struct OTPBottomSheetContentView: View {
         .background(Color.primaryInfo050)
         .clipShape(RoundedRectangle(cornerRadius: 6))
       
-      otpTextView()
+      OTPTextView(otp: $store.otp, focusedIndex: focusedIndex)
         .padding(.horizontal, 16)
       
       if store.showTimer {
@@ -41,13 +45,13 @@ public struct OTPBottomSheetContentView: View {
             .foregroundStyle(Color.darkTextColor)
             .bodyLexend(size: 14)
           
-          TimerTextView(
+          AprodhitKit.TimerTextView(
             timeRemaining: store.timeRemaining,
             textColor: .primaryInfo600
           ) { value in
             store.timeRemaining = value
           } onTimerTimeUp: {
-            store.hideTimer()
+            store.showTimer = false
           }
         }
       } else {
