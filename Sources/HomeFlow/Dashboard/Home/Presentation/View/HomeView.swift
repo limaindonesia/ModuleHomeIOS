@@ -38,10 +38,6 @@ public struct HomeView: View {
         LoginBottomSheetContentView(store: store)
       }
       
-      BottomSheetView(isPresented: $store.isPresentOTPBottomSheet) {
-        OTPBottomSheetContentView(store: store)
-      }
-      
       BottomSheetView(isPresented: $store.isConsultationNowSheetPresented) {
         consultationAIBottomSheetContent {
           store.hideConsultationNowBottomSheet()
@@ -111,6 +107,17 @@ public struct HomeView: View {
       //        .frame(width: 72, height: 72)
       //        .padding(.bottom, 50)
       //      }
+      
+      if store.showSnackbar {
+        GeometryReader { proxy in
+          let frame = proxy.frame(in: .local)
+          SnackBar(
+            showSnackBar: $store.showSnackbar,
+            message: NSLocalizedString(Constant.Text.SUCCESSFUL_LOGIN, comment: "")
+          )
+          .position(x: frame.midX, y: frame.minY + 100)
+        }
+      }
       
     }
     .ignoresSafeArea(edges: .all)
@@ -1703,7 +1710,7 @@ public struct HomeView: View {
       promotionListNavigator: MockNavigator(),
       loginRepository: MockLoginRepository(),
       otpRepository: MockOTPRepository(),
-      otpNavigator: MockNavigator()
+      registerNavigator: MockNavigator()
     )
   )
 }

@@ -47,8 +47,8 @@ public class HomeStore: ObservableObject {
   private let notaryResponder: NotaryResponder
   private let promotionListNavigator: PromotionListNavigator
   private let loginRepository: LoginRepositoryLogic
-  private let otpNavigator: OTPNavigator
   private let otpRepository: OTPRepositoryLogic
+  private let registerNavigator: RegisterNavigator
   
   public let monitor = NWPathMonitor()
   let dispatchQueue = DispatchQueue(label: "Monitor")
@@ -101,6 +101,7 @@ public class HomeStore: ObservableObject {
   @Published public var otp: [String] = Array(repeating: "", count: 6)
   @Published public var showTimer: Bool = true
   @Published public var timeRemaining: TimeInterval = 5
+  @Published public var showSnackbar: Bool = false
   
   //Variables
   private var socket: AprodhitKit.SocketServiceProtocol!
@@ -145,7 +146,7 @@ public class HomeStore: ObservableObject {
     promotionListNavigator: PromotionListNavigator,
     loginRepository: LoginRepositoryLogic,
     otpRepository: OTPRepositoryLogic,
-    otpNavigator: OTPNavigator
+    registerNavigator: RegisterNavigator
   ) {
     self.userSessionDataSource = userSessionDataSource
     self.homeRepository = homeRepository
@@ -173,7 +174,7 @@ public class HomeStore: ObservableObject {
     self.promotionRepository = promotionRepository
     self.loginRepository = loginRepository
     self.otpRepository = otpRepository
-    self.otpNavigator = otpNavigator
+    self.registerNavigator = registerNavigator
     
     Task {
       await requestPromotionBanner()
@@ -228,6 +229,7 @@ public class HomeStore: ObservableObject {
     }
   }
   
+  @MainActor
   public func fetchUserSession() async {
     do {
       userSessionData = try await userSessionDataSource.fetchData()
@@ -1368,15 +1370,12 @@ public class HomeStore: ObservableObject {
   }
   
   public func navigateToOTP() {
-    let parameter = LoginParameter(
-      username: username,
-      password: "",
-      isEmail: username.isValidEmail(),
-      state: .isLogin
-    )
-    
-    otpNavigator.navigateToOTP(parameter: parameter)
+    isPresentOTPBottomSheet = true
     AppsFlyerConfig.trackingLoginSubmit(event: .af_login_submit, emailOrPhone: username)
+  }
+  
+  public func navigateToRegister() {
+    registerNavigator.navigateToRegister()
   }
   
   //MARK: - BottomSheet
@@ -1410,6 +1409,10 @@ public class HomeStore: ObservableObject {
   
   func hideRefundBottomSheet() {
     isPresentRefundBottomSheet = true
+  }
+  
+  func hideLoginBottomSheet() {
+    isPresentLoginBottomSheet = false
   }
   
   //MARK: - Observer

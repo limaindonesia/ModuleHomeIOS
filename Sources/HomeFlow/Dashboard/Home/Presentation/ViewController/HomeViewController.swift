@@ -10,9 +10,12 @@ import SwiftUI
 import GnDKit
 import AprodhitKit
 import Combine
+import AprodhitAuthModule
 
 public class HomeViewController: NiblessViewController {
   
+  private let userSessionDataSource: UserSessionDataSourceLogic
+  private let networkService: NetworkServiceLogic
   private let storeFactory: HomeStoreFactory
   private var store: HomeStore!
   
@@ -20,7 +23,13 @@ public class HomeViewController: NiblessViewController {
   
   private var subscriptions = Set<AnyCancellable>()
 
-  public init(storeFactory: HomeStoreFactory) {
+  public init(
+    userSessionDataSource: UserSessionDataSourceLogic,
+    networkService: NetworkServiceLogic,
+    storeFactory: HomeStoreFactory
+  ) {
+    self.userSessionDataSource = userSessionDataSource
+    self.networkService = networkService
     self.storeFactory = storeFactory
     store = storeFactory.makeHomeStore()
     super.init()
@@ -30,7 +39,7 @@ public class HomeViewController: NiblessViewController {
     super.viewWillAppear(animated)
 
     navigationController?.setNavigationBarHidden(true, animated: false)
-    
+    GLogger(.info, layer: "Presentation", message: "view will appear")
     store.startSocket()
   }
 
@@ -175,6 +184,18 @@ public class HomeViewController: NiblessViewController {
         self?.hideTabbar(state)
       }.store(in: &subscriptions)
     
+    store.$isPresentOTPBottomSheet
+      .dropFirst()
+      .receive(on: RunLoop.current)
+      .subscribe(on: DispatchQueue.main)
+      .sink { [weak self] state in
+        if state {
+          self?.presentOTPViewController()
+        } else {
+          self?.hideOTPViewController()
+        }
+      }.store(in: &subscriptions)
+    
   }
   
   private func releaseBottomSheet() {
@@ -182,5 +203,50 @@ public class HomeViewController: NiblessViewController {
     refundBottomSheetManager.releaseBottomSheet()
     refundBottomSheetManager = nil
   }
+  
+  public func presentOTPViewController() {
+    let viewControllerToPresent = OTPViewController(
+      storeFactory: self,
+      username: store.username,
+      type: .isLogin
+    ) { [weak self] in
+      self?.hideOTPViewController()
+    }
+    
+    viewControllerToPresent.modalPresentationStyle = .fullScreen
+    
+    navigationController?.present(viewControllerToPresent, animated: true)
+  }
 
+  public func hideOTPViewController() {
+    navigationController?.dismiss(animated: true) { [weak self] in
+      self?.store.hideLoginBottomSheet()
+      self?.store.showSnackbar = true
+      Task {
+        await self?.store.onRefresh()
+      }
+    }
+  }
+  
+}
+
+extension HomeViewController: OTPStoreFactory {
+  
+  public func makeOTPStore(
+    username: String,
+    type: EnumOTPAccountState
+  ) -> OTPStore {
+    
+    let remote = OTPRemoteDataSourceImpl(service: networkService)
+    let repository = OTPRepositoryImpl(remote: remote)
+    
+    return OTPStore(
+      username: username,
+      type: type,
+      otpRepository: repository,
+      userSessionDataSource: userSessionDataSource,
+      dashboardResponder: MockNavigator()
+    )
+  }
+  
 }

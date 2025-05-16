@@ -49,7 +49,7 @@ public struct LoginBottomSheetContentView: View {
         Text("Belum punya akun Perqara?")
           .captionLexend(size: 16)
         Button {
-          
+          store.navigateToRegister()
         } label: {
           Text("Daftar disini")
             .foregroundStyle(Color.primaryInfo600)
