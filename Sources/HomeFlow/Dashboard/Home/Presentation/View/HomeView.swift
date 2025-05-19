@@ -111,7 +111,7 @@ public struct HomeView: View {
       if store.showSnackbar {
         GeometryReader { proxy in
           let frame = proxy.frame(in: .local)
-          SnackBar(
+          SnackBarView(
             showSnackBar: $store.showSnackbar,
             message: NSLocalizedString(Constant.Text.SUCCESSFUL_LOGIN, comment: "")
           )
