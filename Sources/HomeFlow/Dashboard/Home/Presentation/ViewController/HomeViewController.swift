@@ -22,7 +22,7 @@ public class HomeViewController: NiblessViewController {
   public var refundBottomSheetManager: DismissableActionBottomSheetManager!
   
   private var subscriptions = Set<AnyCancellable>()
-
+  
   public init(
     userSessionDataSource: UserSessionDataSourceLogic,
     networkService: NetworkServiceLogic,
@@ -34,57 +34,57 @@ public class HomeViewController: NiblessViewController {
     store = storeFactory.makeHomeStore()
     super.init()
   }
-
+  
   public override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
-
+    
     navigationController?.setNavigationBarHidden(true, animated: false)
-    GLogger(.info, layer: "Presentation", message: "view will appear")
+    
     store.startSocket()
   }
-
+  
   public override func viewWillDisappear(_ animated: Bool) {
     super.viewWillDisappear(animated)
     
-//    navigationController?.setNavigationBarHidden(false, animated: false)
+    //    navigationController?.setNavigationBarHidden(false, animated: false)
     
     store.stopSocket()
-
+    
   }
-
+  
   public override func loadView() {
     super.loadView()
-
+    
     let rootView = UIHostingController(rootView: HomeView(store: store))
     addFullScreen(childViewController: rootView)
   }
-
+  
   public override func viewDidLoad() {
     super.viewDidLoad()
-
+    
     NLog(
       .info,
       layer: "Presentation",
       message: "currentVC \(String(describing: HomeViewController.self))"
     )
-
+    
     view.backgroundColor = .white
     
     observeStore()
   }
-
+  
   public override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
-
+    
     view.frame = .init(
       x: 0,
       y: 0,
       width: screen.width,
       height: screen.height + 80
     )
-
+    
   }
-
+  
   func hideTabbar(_ state: Bool) {
     self.tabBarController?.tabBar.isHidden = state
   }
@@ -148,7 +148,7 @@ public class HomeViewController: NiblessViewController {
         self?.hideTabbar(false)
       }.store(in: &subscriptions)
   }
-
+  
   fileprivate func observeStore() {
     
     store.$isPresentRefundBottomSheet
@@ -162,14 +162,14 @@ public class HomeViewController: NiblessViewController {
           }
         }
       }.store(in: &subscriptions)
-
+    
     store.$hideTabBar
       .receive(on: RunLoop.current)
       .subscribe(on: DispatchQueue.main)
       .sink { [weak self] state in
         self?.hideTabbar(state)
       }.store(in: &subscriptions)
-
+    
     store.$isPresentLoginBottomSheet
       .receive(on: RunLoop.current)
       .subscribe(on: DispatchQueue.main)
@@ -217,7 +217,7 @@ public class HomeViewController: NiblessViewController {
     
     navigationController?.present(viewControllerToPresent, animated: true)
   }
-
+  
   public func hideOTPViewController() {
     navigationController?.dismiss(animated: true) { [weak self] in
       self?.store.hideLoginBottomSheet()
