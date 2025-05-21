@@ -221,7 +221,7 @@ public class HomeViewController: NiblessViewController {
   public func hideOTPViewController() {
     navigationController?.dismiss(animated: true) { [weak self] in
       self?.store.hideLoginBottomSheet()
-      self?.store.showSnackbar = true
+      self?.store.showLoginSnackbar = true
       Task {
         await self?.store.onRefresh()
       }

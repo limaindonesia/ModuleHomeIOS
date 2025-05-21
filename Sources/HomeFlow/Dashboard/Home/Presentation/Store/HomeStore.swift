@@ -101,7 +101,7 @@ public class HomeStore: ObservableObject {
   @Published public var otp: [String] = Array(repeating: "", count: 6)
   @Published public var showTimer: Bool = true
   @Published public var timeRemaining: TimeInterval = 5
-  @Published public var showSnackbar: Bool = false
+  @Published public var showLoginSnackbar: Bool = false
   
   //Variables
   private var socket: AprodhitKit.SocketServiceProtocol!
@@ -183,9 +183,9 @@ public class HomeStore: ObservableObject {
     
     Task {
       showShimmer = true
-      let result = await fetchUserSessionData()
+      await fetchUserSession()
       
-      if let session = result {
+      if let session = userSessionData {
         isLoggedIn = true
         userSessionData = session
         client = Prefs.getClient()
@@ -221,15 +221,14 @@ public class HomeStore: ObservableObject {
   
   //MARK: - Fetch Data from Local
   
-  private func fetchUserSessionData() async -> UserSessionData? {
-    do {
-      return try await userSessionDataSource.fetchData()
-    } catch {
-      return nil
-    }
-  }
+//  private func fetchUserSessionData() async -> UserSessionData? {
+//    do {
+//      return try await userSessionDataSource.fetchData()
+//    } catch {
+//      return nil
+//    }
+//  }
   
-  @MainActor
   public func fetchUserSession() async {
     do {
       userSessionData = try await userSessionDataSource.fetchData()
@@ -251,6 +250,23 @@ public class HomeStore: ObservableObject {
     Prefs.removeClient()
     Prefs.removeSession()
     
+  }
+  
+  public func updateUserSession() async {
+    guard let userSession = userSessionData else { return }
+    
+    do {
+      let _ = try await userSessionDataSource.saveData(
+        with: userSession.clientID,
+        name: userSession.name,
+        remoteToken: userSession.remoteSession.remoteToken,
+        firebaseToken: userSession.remoteSession.firebaseToken,
+        dateCreated: userSession.remoteSession.dateCreated,
+        showLogin: false
+      )
+    } catch {
+      GLogger(.error, layer: "Presentation", message: "error \(error)")
+    }
   }
   
   //MARK: - Fetch Data from API
@@ -560,9 +576,9 @@ public class HomeStore: ObservableObject {
     indicateLoading()
     hideTabBar = true
     
-    let result = await fetchUserSessionData()
+    await fetchUserSession()
     
-    if let session = result {
+    if let session = userSessionData {
       isLoggedIn = true
       client = Prefs.getClient()
       userSessionData = session
@@ -1462,6 +1478,16 @@ public class HomeStore: ObservableObject {
         if !valid {
           self?.usernameErrorMessage = "Format masukkan belum sesuai"
           self?.errorColor = .danger500
+        }
+      }.store(in: &subscriptions)
+    
+    $showLoginSnackbar
+      .dropFirst()
+      .sink { [weak self] state in
+        if !state {
+          Task {
+            await self?.updateUserSession()
+          }
         }
       }.store(in: &subscriptions)
   }
