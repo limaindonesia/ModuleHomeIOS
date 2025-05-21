@@ -12,6 +12,7 @@ import Lottie
 import Combine
 import Kingfisher
 import PromotionModule
+import AprodhitAuthModule
 
 public struct HomeView: View {
   @ObservedObject var store: HomeStore
@@ -32,6 +33,10 @@ public struct HomeView: View {
     ZStack {
       
       loadContent(width: 0)
+      
+      BottomSheetView(isPresented: $store.isPresentLoginBottomSheet) {
+        LoginBottomSheetContentView(store: store)
+      }
       
       BottomSheetView(isPresented: $store.isConsultationNowSheetPresented) {
         consultationAIBottomSheetContent {
@@ -103,11 +108,22 @@ public struct HomeView: View {
       //        .padding(.bottom, 50)
       //      }
       
+      if store.showLoginSnackbar {
+        GeometryReader { proxy in
+          let frame = proxy.frame(in: .local)
+          SnackBarView(
+            showSnackBar: $store.showLoginSnackbar,
+            message: NSLocalizedString(Constant.Text.SUCCESSFUL_LOGIN, comment: "")
+          )
+          .position(x: frame.midX, y: frame.minY + 100)
+        }
+      }
+      
     }
     .ignoresSafeArea(edges: .all)
     .onAppear {
       Task {
-        //        await store.fetchActiveDocuments()
+        await store.fetchUserSession()
         await store.fetchOngoingUserCases()
         await store.requestMe()
         await store.checkBottomSheet()
@@ -1691,7 +1707,10 @@ public struct HomeView: View {
       refundNavigator: MockNavigator(),
       probonoNavigator: MockNavigator(),
       notaryResponder: MockNavigator(),
-      promotionListNavigator: MockNavigator()
+      promotionListNavigator: MockNavigator(),
+      loginRepository: MockLoginRepository(),
+      otpRepository: MockOTPRepository(),
+      registerNavigator: MockNavigator()
     )
   )
 }
