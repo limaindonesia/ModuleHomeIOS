@@ -11,5 +11,5 @@ import AprodhitKit
 public protocol OrderServiceRepositoryLogic {
   func fetchOrderService(
   _ headers: HeaderRequest,
-  _ parameters: OrderServiceParamRequest) async throws -> [OrderServiceEntity]
+  _ parameters: OrderServiceParamRequest) async throws -> [OrderServiceEntityHome]
 }
