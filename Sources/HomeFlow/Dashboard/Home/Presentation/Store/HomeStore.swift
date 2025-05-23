@@ -221,17 +221,18 @@ public class HomeStore: ObservableObject {
   
   //MARK: - Fetch Data from Local
   
-//  private func fetchUserSessionData() async -> UserSessionData? {
-//    do {
-//      return try await userSessionDataSource.fetchData()
-//    } catch {
-//      return nil
-//    }
-//  }
+  //  private func fetchUserSessionData() async -> UserSessionData? {
+  //    do {
+  //      return try await userSessionDataSource.fetchData()
+  //    } catch {
+  //      return nil
+  //    }
+  //  }
   
   public func fetchUserSession() async {
     do {
       userSessionData = try await userSessionDataSource.fetchData()
+      showLoginSnackbar = userSessionData?.showLogin ?? false
     } catch {
       GLogger(.info, layer: "Presentation", message: "error \(error)")
     }
