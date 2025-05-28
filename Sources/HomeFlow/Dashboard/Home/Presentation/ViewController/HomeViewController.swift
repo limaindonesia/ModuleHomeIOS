@@ -41,12 +41,12 @@ public class HomeViewController: NiblessViewController {
     navigationController?.setNavigationBarHidden(true, animated: false)
     
     store.startSocket()
+    
+    Task { await store.requestUserSession() }
   }
   
   public override func viewWillDisappear(_ animated: Bool) {
     super.viewWillDisappear(animated)
-    
-    //    navigationController?.setNavigationBarHidden(false, animated: false)
     
     store.stopSocket()
     

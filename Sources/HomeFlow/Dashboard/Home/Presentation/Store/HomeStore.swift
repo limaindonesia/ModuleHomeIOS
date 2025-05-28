@@ -583,7 +583,7 @@ public class HomeStore: ObservableObject {
       isLoggedIn = true
       client = Prefs.getClient()
       userSessionData = session
-      name = session.name
+      name = client?.name ?? ""
     } else {
       isLoggedIn = false
       name = ""
@@ -747,6 +747,20 @@ public class HomeStore: ObservableObject {
   }
   
   //MARK: - Other function
+  
+  public func requestUserSession() async {
+    await fetchUserSession()
+    
+    if let session = userSessionData {
+      isLoggedIn = true
+      client = Prefs.getClient()
+      userSessionData = session
+      name = client?.name ?? ""
+    } else {
+      isLoggedIn = false
+      name = ""
+    }
+  }
   
   private func saveUserSession(_ response: LoginValidateOtpPostResp) async {
     do {
