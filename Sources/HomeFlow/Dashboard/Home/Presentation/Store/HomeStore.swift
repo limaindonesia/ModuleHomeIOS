@@ -102,6 +102,7 @@ public class HomeStore: ObservableObject {
   @Published public var showTimer: Bool = true
   @Published public var timeRemaining: TimeInterval = 5
   @Published public var showLoginSnackbar: Bool = false
+  @Published public var isPresentRegister: Bool = false
   
   //Variables
   private var socket: AprodhitKit.SocketServiceProtocol!
@@ -1392,7 +1393,7 @@ public class HomeStore: ObservableObject {
   }
   
   public func navigateToRegister() {
-    registerNavigator.navigateToRegister()
+    isPresentRegister = true
   }
   
   //MARK: - BottomSheet
