@@ -113,7 +113,7 @@ public struct HomeView: View {
           let frame = proxy.frame(in: .local)
           SnackBarView(
             showSnackBar: $store.showLoginSnackbar,
-            message: NSLocalizedString(Constant.Text.SUCCESSFUL_LOGIN, comment: "")
+            message: NSLocalizedString(Constant.Text.LOGGED_IN_SUCCESSFUL, comment: "")
           )
           .position(x: frame.midX, y: frame.minY + 100)
         }

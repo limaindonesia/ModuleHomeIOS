@@ -221,17 +221,18 @@ public class HomeStore: ObservableObject {
   
   //MARK: - Fetch Data from Local
   
-//  private func fetchUserSessionData() async -> UserSessionData? {
-//    do {
-//      return try await userSessionDataSource.fetchData()
-//    } catch {
-//      return nil
-//    }
-//  }
+  //  private func fetchUserSessionData() async -> UserSessionData? {
+  //    do {
+  //      return try await userSessionDataSource.fetchData()
+  //    } catch {
+  //      return nil
+  //    }
+  //  }
   
   public func fetchUserSession() async {
     do {
       userSessionData = try await userSessionDataSource.fetchData()
+      showLoginSnackbar = userSessionData?.showLogin ?? false
     } catch {
       GLogger(.info, layer: "Presentation", message: "error \(error)")
     }
@@ -582,7 +583,7 @@ public class HomeStore: ObservableObject {
       isLoggedIn = true
       client = Prefs.getClient()
       userSessionData = session
-      name = session.name
+      name = client?.name ?? ""
     } else {
       isLoggedIn = false
       name = ""
@@ -746,6 +747,20 @@ public class HomeStore: ObservableObject {
   }
   
   //MARK: - Other function
+  
+  public func requestUserSession() async {
+    await fetchUserSession()
+    
+    if let session = userSessionData {
+      isLoggedIn = true
+      client = Prefs.getClient()
+      userSessionData = session
+      name = client?.name ?? ""
+    } else {
+      isLoggedIn = false
+      name = ""
+    }
+  }
   
   private func saveUserSession(_ response: LoginValidateOtpPostResp) async {
     do {
