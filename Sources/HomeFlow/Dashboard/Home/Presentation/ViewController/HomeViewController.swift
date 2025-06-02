@@ -43,6 +43,16 @@ public class HomeViewController: NiblessViewController {
     store.startSocket()
     
     Task { await store.requestUserSession() }
+    
+    let successDeleteAccount = UserDefaults.standard.object(forKey: "accountDeleted") as? Bool  ?? false
+    if successDeleteAccount{
+      store.showSuccessDeleteAccount()
+      UserDefaults.standard.removeObject(forKey: "accountDeleted")
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+        self.hideTabbar(true)
+      }
+    }
+    
   }
   
   public override func viewWillDisappear(_ animated: Bool) {

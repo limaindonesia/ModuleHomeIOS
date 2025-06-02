@@ -34,6 +34,10 @@ public struct HomeView: View {
       
       loadContent(width: 0)
       
+      BottomSheetView(isPresented: $store.isPresentSuccessDeleteAccount) {
+        DeleteAccountBottomSheetContentView(store: store)
+      }
+      
       BottomSheetView(isPresented: $store.isPresentLoginBottomSheet) {
         LoginBottomSheetContentView(store: store)
       }

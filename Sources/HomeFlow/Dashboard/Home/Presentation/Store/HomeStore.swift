@@ -97,6 +97,7 @@ public class HomeStore: ObservableObject {
   @Published public var usernameErrorMessage: String = ""
   @Published public var errorColor: Color = .white
   @Published public var isPresentLoginBottomSheet: Bool = false
+  @Published public var isPresentSuccessDeleteAccount: Bool = false
   @Published public var isPresentOTPBottomSheet: Bool = false
   @Published public var otp: [String] = Array(repeating: "", count: 6)
   @Published public var showTimer: Bool = true
@@ -1116,6 +1117,16 @@ public class HomeStore: ObservableObject {
     username = ""
     usernameErrorMessage = ""
     usernameError = false
+  }
+  
+  public func showSuccessDeleteAccount() {
+    isPresentSuccessDeleteAccount = true
+    hideTabBar = true
+  }
+  
+  public func hideSuccessDeleteAccount() {
+    isPresentSuccessDeleteAccount = false
+    hideTabBar = false
   }
   
   public func showOTPBottomSheet() {
