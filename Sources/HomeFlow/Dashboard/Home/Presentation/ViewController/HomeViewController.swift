@@ -151,6 +151,15 @@ public class HomeViewController: NiblessViewController {
   
   fileprivate func observeStore() {
     
+    store.$isPresentRegister
+      .receive(on: RunLoop.current)
+      .subscribe(on: DispatchQueue.main)
+      .sink { [weak self] state in
+        if state {
+          self?.presentRegister()
+        }
+      }.store(in: &subscriptions)
+    
     store.$isPresentRefundBottomSheet
       .receive(on: RunLoop.current)
       .subscribe(on: DispatchQueue.main)
@@ -228,6 +237,21 @@ public class HomeViewController: NiblessViewController {
     }
   }
   
+  public func presentRegister() {
+    let viewControllerToPresent = SignUpViewController(storeFactory: self)
+    viewControllerToPresent.tapBack = {
+      self.hideRegister()
+    }
+    viewControllerToPresent.modalPresentationStyle = .fullScreen
+    navigationController?.present(viewControllerToPresent, animated: true)
+  }
+  
+  public func hideRegister() {
+    navigationController?.dismiss(animated: true) { [weak self] in
+      
+    }
+  }
+  
 }
 
 extension HomeViewController: OTPStoreFactory {
@@ -246,6 +270,23 @@ extension HomeViewController: OTPStoreFactory {
       otpRepository: repository,
       userSessionDataSource: userSessionDataSource,
       dashboardResponder: MockNavigator()
+    )
+  }
+  
+}
+
+extension HomeViewController: RegisterStoreFactory {
+  
+  public func makeRegisterStore() -> RegisterStore {
+    let remote = RegisterRemoteDataSourceImpl(service: networkService)
+    let repository = RegisterRepositoryImpl(remote: remote)
+    
+    return RegisterStore(
+      repository: repository,
+      tncNavigator: MockNavigator(),
+      privacyNavigator: MockNavigator(),
+      loginNavigator: MockNavigator(),
+      otpNavigator: MockNavigator()
     )
   }
   
