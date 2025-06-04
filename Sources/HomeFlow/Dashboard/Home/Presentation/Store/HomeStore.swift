@@ -1418,7 +1418,7 @@ public class HomeStore: ObservableObject {
   }
   
   public func navigateToRegister() {
-    isPresentRegister = true
+    registerNavigator.navigateToRegister()
   }
   
   //MARK: - BottomSheet
