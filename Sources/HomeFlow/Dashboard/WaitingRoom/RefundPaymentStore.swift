@@ -9,12 +9,14 @@ import Foundation
 import AprodhitKit
 import Combine
 import UIKit
+import FirebaseAnalytics
 
 public class RefundPaymentStore {
   
   public let paymentCategory: PaymentCategory
   public let title: String
   public let userCase: UserCases
+  public let tracker: AnalyticsManager
   
   public var navigateToForm = PassthroughSubject<Bool, Never>()
   public var gotoConsultationHistory = PassthroughSubject<Bool, Never>()
@@ -22,20 +24,25 @@ public class RefundPaymentStore {
   public init(
     title: String,
     userCase: UserCases,
-    paymentCategory: PaymentCategory
+    paymentCategory: PaymentCategory,
+    tracker: AnalyticsManager
   ) {
     self.title = title
     self.userCase = userCase
     self.paymentCategory = paymentCategory
+    self.tracker = tracker
   }
   
   public func navigateTo() {
     if paymentCategory == .VA {
       navigateToForm.send(true)
+      trackFormButton()
       return
     }
     
     gotoConsultationHistory.send(true)
+    trackHistoryButton()
+    
   }
   
   public func getDescriptions() -> String {
@@ -56,5 +63,25 @@ public class RefundPaymentStore {
     
     return attributedTitle
   }
-
+  
+  func trackFormButton() {
+    tracker.trackEvent(
+      with: "fb_isi_form_button_waiting_room_page",
+      parameters: [
+        "timestap" : Date().formatted(with: "YYYY-MM-DD HH:mm:ss"),
+        "platform" : "iOS"
+      ]
+    )
+  }
+  
+  func trackHistoryButton() {
+    tracker.trackEvent(
+      with: "fb_lht_rwyt_knslts_btn_waiting_room_pg",
+      parameters: [
+        "timestap" : Date().formatted(with: "YYYY-MM-DD HH:mm:ss"),
+        "platform" : "iOS"
+      ]
+    )
+  }
+  
 }
