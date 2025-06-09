@@ -18,6 +18,7 @@ public class HomeViewController: NiblessViewController {
   private let networkService: NetworkServiceLogic
   private let storeFactory: HomeStoreFactory
   private var store: HomeStore!
+  private let mainViewModel: MainTabbarViewModel
   
   public var refundBottomSheetManager: DismissableActionBottomSheetManager!
   
@@ -26,12 +27,14 @@ public class HomeViewController: NiblessViewController {
   public init(
     userSessionDataSource: UserSessionDataSourceLogic,
     networkService: NetworkServiceLogic,
-    storeFactory: HomeStoreFactory
+    storeFactory: HomeStoreFactory,
+    mainViewModel: MainTabbarViewModel
   ) {
     self.userSessionDataSource = userSessionDataSource
     self.networkService = networkService
     self.storeFactory = storeFactory
     store = storeFactory.makeHomeStore()
+    self.mainViewModel = mainViewModel
     super.init()
   }
   
@@ -293,10 +296,10 @@ extension HomeViewController: RegisterStoreFactory {
     
     return RegisterStore(
       repository: repository,
-      tncNavigator: MockNavigator(),
-      privacyNavigator: MockNavigator(),
-      loginNavigator: MockNavigator(),
-      otpNavigator: MockNavigator()
+      tncNavigator: mainViewModel,
+      privacyNavigator: mainViewModel,
+      loginNavigator: mainViewModel,
+      otpNavigator: mainViewModel
     )
   }
   
