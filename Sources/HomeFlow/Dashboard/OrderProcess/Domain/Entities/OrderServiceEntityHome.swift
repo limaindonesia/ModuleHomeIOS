@@ -9,9 +9,9 @@
 import Foundation
 import AprodhitKit
 
-public struct OrderServiceEntity: Transformable {
+public struct OrderServiceEntityHome: Transformable {
   typealias D = OrderServiceItemData
-  typealias E = OrderServiceEntity
+  typealias E = OrderServiceEntityHome
   typealias VM = OrderServiceViewModel
 
   public let name: String
@@ -22,7 +22,7 @@ public struct OrderServiceEntity: Transformable {
   public let originalPrice: Int
   public let iconURL: String
 
-  static func mapTo(_ entity: OrderServiceEntity) -> OrderServiceViewModel {
+  static func mapTo(_ entity: OrderServiceEntityHome) -> OrderServiceViewModel {
     return OrderServiceViewModel(
       id: 0,
       name: entity.name,
@@ -45,8 +45,8 @@ public struct OrderServiceEntity: Transformable {
     )
   }
 
-  static func map(from data: OrderServiceItemData) -> OrderServiceEntity {
-    return OrderServiceEntity(name: data.name ?? "",
+  static func map(from data: OrderServiceItemData) -> OrderServiceEntityHome {
+    return OrderServiceEntityHome(name: data.name ?? "",
                               type: data.type ?? "",
                               status: data.status ?? "",
                               duration: data.duration ?? 0,

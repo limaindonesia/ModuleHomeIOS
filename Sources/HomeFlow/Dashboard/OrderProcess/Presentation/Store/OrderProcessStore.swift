@@ -10,6 +10,8 @@ import AprodhitKit
 import GnDKit
 import Combine
 import UIKit
+import SwiftUI
+import NaturalLanguage
 
 public class OrderProcessStore: ObservableObject {
   
@@ -25,6 +27,8 @@ public class OrderProcessStore: ObservableObject {
   private let sktmNavigator: SKTMNavigator
   private let userSessionDataSource: UserSessionDataSourceLogic
   private let probonoNavigator: ProbonoNavigator
+  private let aiRepository: AIRepositoryLogic
+  private let advocateNavigator: OnlineAdvocateNavigator
   
   @Published public var orderServiceFilled: Bool = false
   @Published public var detailCostFilled: Bool = false
@@ -41,10 +45,19 @@ public class OrderProcessStore: ObservableObject {
   @Published public var error: ErrorMessage = .init()
   @Published public var priceCategories: [PriceCategoryViewModel] = []
   @Published public var orderServiceViewModel: [OrderServiceViewModel] = []
+  @Published public var descriptions: String = ""
+  @Published public var descriptionErrorColor: Color = .gray600
+  @Published public var descriptionErrorMessage: String = "Minimal 10 kata"
+  @Published public var isAIActive: Bool = false
+  @Published public var isAIProcessing: Bool = false
+  @Published public var isPresentUndismissableError: Bool = false
+  @Published var errorMessage: ErrorMessageWithAction = .init()
+  @Published var isPresentError: Bool = false
+  @Published var didBack: Bool = false
   
   public var priceCategoriesCopy: [PriceCategoryViewModel] = []
   private var treatmentEntities: [TreatmentEntity] = []
-  private var orderServiceEntities: [OrderServiceEntity] = []
+  private var orderServiceEntities: [OrderServiceEntityHome] = []
   private var userSessionData: UserSessionData?
   public var isLoading: Bool = false
   public var message: String = ""
@@ -65,6 +78,8 @@ public class OrderProcessStore: ObservableObject {
     self.sktmNavigator = MockNavigator()
     self.probonoNavigator = MockNavigator()
     self.probonoRepository = MockGetKTPRepository()
+    self.aiRepository = MockAIRepositoryLogic()
+    self.advocateNavigator = MockNavigator()
   }
   
   public init(
@@ -78,7 +93,9 @@ public class OrderProcessStore: ObservableObject {
     probonoRepository: GetKTPDataRepositoryLogic,
     paymentNavigator: PaymentNavigator,
     sktmNavigator: SKTMNavigator,
-    probonoNavigator: ProbonoNavigator
+    probonoNavigator: ProbonoNavigator,
+    aiRepository: AIRepositoryLogic,
+    advocateNavigator: OnlineAdvocateNavigator
   ) {
     self.advocate = advocate
     self.selectedPriceCategories = selectedPriceCategories
@@ -91,6 +108,8 @@ public class OrderProcessStore: ObservableObject {
     self.paymentNavigator = paymentNavigator
     self.sktmNavigator = sktmNavigator
     self.probonoNavigator = probonoNavigator
+    self.aiRepository = aiRepository
+    self.advocateNavigator = advocateNavigator
     
     setSelectedDetailPriceAdvocate()
     setLawyerInfo()
@@ -102,6 +121,49 @@ public class OrderProcessStore: ObservableObject {
   }
   
   //MARK: - API
+  
+  @MainActor
+  func aiImproveAction() async {
+    guard isAIActive else { return }
+    
+    isAIProcessing = true
+    isAIActive = false
+    
+    do {
+      let entity = try await aiRepository.fetchImproveDescription(
+        header: .init(token: userSessionData?.remoteSession.remoteToken),
+        parameters: AIImproveParamRequest(
+          description: descriptions
+        )
+      )
+      
+      if entity.success {
+        descriptions = entity.description
+        resetDescriptionState()
+        return
+      }
+      
+      handleError(error: entity.error ?? .init())
+      resetDescriptionState()
+      
+    } catch {
+      guard let error = error as? ErrorMessage else {
+        resetDescriptionState()
+        return
+      }
+      
+      errorMessage = ErrorMessageWithAction(
+        id: error.id,
+        imageName: "ai_undefined_error",
+        title: error.title,
+        message: error.message,
+        action: {}
+      )
+      
+      resetDescriptionState()
+      showUndismissableErrorMessage()
+    }
+  }
   
   @MainActor
   public func fetchProbonoStatus() async {
@@ -133,7 +195,7 @@ public class OrderProcessStore: ObservableObject {
       type: "INSTANT_CONSULTATION",
       lawyerId: lawyerInfoViewModel.id,
       skillId: selectedPriceCategories.skillId,
-      description: issueText,
+      description: descriptions,
       orderType: getOrderType()
     )
     
@@ -194,6 +256,76 @@ public class OrderProcessStore: ObservableObject {
   }
   
   //MARK: - Other function
+  func handleError(error: AIImprovementError) {
+    if error.type == .UNRECOGNIZED_DESCRIPTION {
+      errorMessage = ErrorMessageWithAction(
+        id: 1,
+        imageName: getImage(error.type),
+        title: error.title,
+        message: error.message,
+        buttonText: "Ubah Deskripsi Masalah",
+        action: hideErrorMessage
+      )
+      
+      showErrorMessage()
+      return
+    }
+    
+    if error.type == .LIMIT_ACCESS {
+      errorMessage = ErrorMessageWithAction(
+        id: 2,
+        imageName: getImage(error.type),
+        title: error.title,
+        message: error.message,
+        buttonText: "Mengerti",
+        action: hideErrorMessage
+      )
+      
+      showUndismissableErrorMessage()
+      return
+    }
+    
+    if error.type == .SERVICE_UNAVAILABLE {
+      errorMessage = ErrorMessageWithAction(
+        id: 3,
+        imageName: getImage(error.type),
+        title: error.title,
+        message: error.message,
+        buttonText: "Mengerti",
+        action: hideErrorMessage
+      )
+      
+      showUndismissableErrorMessage()
+      return
+    }
+  }
+  
+  func hideErrorMessage() {
+    isPresentError = false
+  }
+  
+  func showErrorMessage() {
+    isPresentError = true
+  }
+  
+  func getImage(_ type: AIImprovementErrorType) -> String {
+    let imageName: [AIImprovementErrorType : String] = [
+      .LIMIT_ACCESS : "ai_limit_error",
+      .SERVICE_UNAVAILABLE : "ic_no_connection",
+      .UNRECOGNIZED_DESCRIPTION : "ai_undefined_error"
+    ]
+    
+    return imageName[type] ?? ""
+  }
+  
+  func showUndismissableErrorMessage() {
+    isPresentUndismissableError = true
+  }
+  
+  func resetDescriptionState() {
+    isAIProcessing = false
+    isAIActive = false
+  }
   
   public func isOrderProbono() -> Bool {
     return typeSelected == "PROBONO"
@@ -658,7 +790,7 @@ public class OrderProcessStore: ObservableObject {
         isDiscount: lawyerInfoViewModel.isDiscount,
         isProbono: isOrderProbono(),
         orderNumber: orderNumber,
-        detailIssues: issueText,
+        detailIssues: descriptions,
         category: getCategoryPagePayment(),
         type: getTypePagePayment(),
         duration: getDurationPagePayment(),
@@ -739,9 +871,49 @@ public class OrderProcessStore: ObservableObject {
     isLoading = false
   }
   
+  func detectSentences(from text: String) -> [String] {
+    let tokenizer = NLTokenizer(unit: .word)
+    tokenizer.string = text
+    var sentences: [String] = []
+    
+    tokenizer.enumerateTokens(in: text.startIndex..<text.endIndex) { range, _ in
+      let sentence = String(text[range])
+      sentences.append(sentence.trimmingCharacters(in: .whitespacesAndNewlines))
+      return true
+    }
+    
+    return sentences
+  }
+  
+  func navigateBack() {
+    didBack = true
+  }
+  
+  func navigateToAdvocateLists() {
+    advocateNavigator.navigateToListAdvocate(
+      categoryAdvocate: "",
+      listCategoryID: [],
+      listSkillAdvocate: [],
+      listingType: "",
+      sktmModel: nil
+    )
+  }
+  
   //MARK: - Observer
   
   private func observer() {
+    $descriptions
+      .sink { [weak self] str in
+        guard let length = self?.detectSentences(from: str).count
+        else { return }
+        self?.isAIActive = length >= 10
+        if length > 10 {
+          self?.descriptionErrorColor = Color.gray600
+        } else {
+          self?.isScrollToTop = true
+        }
+      }.store(in: &subscriptions)
+    
     $error
       .dropFirst()
       .receive(on: RunLoop.main)
@@ -797,4 +969,38 @@ public class OrderProcessStore: ObservableObject {
 
 public protocol OrderProcessStoreFactory {
   func makeOrderProcessStore() -> OrderProcessStore
+}
+
+struct ErrorMessageWithAction: Error {
+  public let id: Int
+  public let imageName: String
+  public let title: String
+  public let message: String
+  public let buttonText: String
+  public var action: () -> Void
+  
+  init() {
+    self.id = 0
+    self.title = ""
+    self.message = ""
+    self.imageName = ""
+    self.buttonText = ""
+    self.action = {}
+  }
+  
+  init(
+    id: Int,
+    imageName: String,
+    title: String,
+    message: String,
+    buttonText: String = "Mengerti",
+    action: @escaping () -> Void
+  ) {
+    self.id = id
+    self.imageName = imageName
+    self.title = title
+    self.message = message
+    self.buttonText = buttonText
+    self.action = action
+  }
 }

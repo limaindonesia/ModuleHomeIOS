@@ -14,6 +14,7 @@ public struct OrderProcessView: View {
   
   @ObservedObject var store: OrderProcessStore
   @State private var reader: ScrollViewProxy?
+  @FocusState var isFocused: Bool
   
   private init() {
     self.store = .init()
@@ -28,15 +29,18 @@ public struct OrderProcessView: View {
       VStack {
         ScrollViewReader { proxy in
           ScrollView(showsIndicators: false) {
+            
             VStack(spacing: 12) {
               showLawyerInfo()
                 .padding(.horizontal, 16)
               
-              issueView {
-                store.showChangeCategory()
-              }
-              .id(1)
-              .padding(.horizontal, 16)
+//              issueView {
+//                store.showChangeCategory()
+//              }
+              explanationView()
+                .padding(.horizontal, 16)
+//              .id(1)
+//              .padding(.horizontal, 16)
             }
             .padding(.top, 16)
             
@@ -83,6 +87,45 @@ public struct OrderProcessView: View {
           await store.fetchUserSession()
           await store.fetchProbonoStatus()
         }
+      }
+      
+      if store.isAIProcessing {
+        Color.black.opacity(0.6)
+          .zIndex(1)
+        
+        ShimmerText()
+          .position(x: UIScreen.main.bounds.midX - 16, y: UIScreen.main.bounds.height / 2 - 200)
+          .padding(.horizontal, 16)
+          .zIndex(2)
+      }
+      
+      BottomSheetView(isPresented: $store.isPresentError) {
+        AIErrorBottomContentView(
+          imageName: store.errorMessage.imageName,
+          title: store.errorMessage.title,
+          description: store.errorMessage.message,
+          buttonText: store.errorMessage.buttonText,
+          onTap: {
+            store.hideErrorMessage()
+          }
+        )
+      }
+      
+      BottomSheetView(
+        isPresented: $store.isPresentUndismissableError,
+        dismissable: false
+      ) {
+        AIUndismissableBottomContentView(
+          imageName: store.errorMessage.imageName,
+          title: store.errorMessage.title,
+          description: store.errorMessage.message,
+          onTapAdvocateLists: {
+            store.navigateToAdvocateLists()
+          },
+          onTapBack: {
+            store.navigateBack()
+          }
+        )
       }
       
       BottomSheetView(isPresented: $store.isPresentBottomSheet) {
@@ -428,8 +471,282 @@ public struct OrderProcessView: View {
     .shadow(color: .gray200, radius: 8)
   }
   
+  @ViewBuilder
+  func explanationView() -> some View {
+    VStack(alignment: .leading, spacing: 8) {
+      Text("Ceritakan Masalah Hukum Anda")
+        .titleLexend(size: 16)
+        .padding(.bottom, 8)
+      
+      Text("AI kami akan mencocokkan Anda dengan advokat yang relevan dan berpengalaman.")
+        .captionLexend(size: 12)
+      
+      descriptionTextView()
+        .coordinateSpace(name: "DESCRIPTION")
+      
+    }
+    .padding(.all, 12)
+    .background(Color.white)
+    .clipShape(RoundedRectangle(cornerRadius: 12))
+    .shadow(color: Color.gray100, radius: 5)
+  }
+  
+  @ViewBuilder
+  func descriptionTextView() -> some View {
+    VStack(alignment: .leading, spacing: 8) {
+      VStack(alignment: .leading) {
+        TextView(
+          text: $store.descriptions,
+          textStyle: .lexendFont(style: .caption(size: 16)),
+          textColor: .darkTextColor,
+          backgroundColor: .gray050,
+          placeholderText: "Contoh: Saya memiliki permasalahan hutang, tapi saya tidak tahu harus bagaimana",
+          placeholderColor: .gray200
+        )
+        .overlay(
+          RoundedRectangle(cornerRadius: 6)
+            .stroke(store.descriptionErrorColor, lineWidth: 2)
+        )
+        .focused($isFocused)
+      }
+      .frame(maxWidth: .infinity, minHeight: 88)
+      .background(Color.gray050)
+      .cornerRadius(6)
+      
+      HStack {
+        Text(store.descriptionErrorMessage)
+          .foregroundStyle(store.descriptionErrorColor)
+          .captionLexend(size: 12)
+        
+        Spacer()
+        
+        Button {
+          isFocused = false
+          Task {
+            await store.aiImproveAction()
+          }
+        } label: {
+          HStack {
+            Image(store.isAIActive ? "ic_write" : "ic_write_mono", bundle: .module)
+              .resizable()
+              .aspectRatio(contentMode: .fit)
+              .frame(width: 16, height: 16)
+            
+            Text("Edit Otomatis (AI)")
+              .foregroundStyle(store.isAIActive ? Color.gray600 : Color.gray300)
+              .captionLexend(size: 10)
+          }
+          .padding(.vertical, 4)
+          .padding(.horizontal, 8)
+          .clipShape(RoundedRectangle(cornerRadius: 8))
+          .overlay {
+            RoundedRectangle(cornerRadius: 12)
+              .stroke(Color.gray300, lineWidth: 1)
+          }
+        }
+      }
+    }
+  }
+  
 }
 
 #Preview {
   OrderProcessView(store: .init())
+}
+
+import SwiftUI
+
+struct ShimmerText: View {
+  @State private var isAnimating = false
+  private let fixedColumn = [
+    GridItem(.flexible(minimum: 100, maximum: 300)),
+    GridItem(.flexible(minimum: 100, maximum: 300))
+  ]
+  
+  var body: some View {
+    VStack {
+      LazyVGrid(columns: fixedColumn, alignment: .leading) {
+        
+        ForEach(0..<5) { _ in
+          RoundedRectangle(cornerRadius: 4)
+            .fill(Color.gray100)
+            .overlay(
+              shimmerOverlay
+            )
+            .mask(
+              RoundedRectangle(cornerRadius: 8)
+            )
+        }
+        
+      }
+    }
+    .padding(.all, 8)
+    .padding(.vertical, 8)
+    .frame(maxWidth: .infinity, maxHeight: 88)
+    .background(Color.white)
+    .clipShape(RoundedRectangle(cornerRadius: 8))
+    .padding(.all, 8)
+    .shadow(radius: 5)
+    .onAppear {
+      withAnimation(Animation.linear(duration: 2)
+        .repeatForever(autoreverses: false)) {
+          isAnimating = true
+        }
+    }
+  }
+  
+  private var shimmerOverlay: some View {
+    LinearGradient(gradient: Gradient(colors: [.clear, .white.opacity(0.6), .clear]),
+                   startPoint: .topLeading,
+                   endPoint: .bottomTrailing)
+    .rotationEffect(.degrees(30))
+    .offset(x: isAnimating ? 200 : -200)
+  }
+}
+
+#Preview{
+  ShimmerText()
+    .frame(height: 50)
+}
+
+
+public struct AIErrorBottomContentView: View {
+  
+  private let imageName: String
+  private let title: String
+  private let description: String
+  private let buttonText: String
+  private var onTap: () -> Void
+  
+  public init(
+    imageName: String,
+    title: String,
+    description: String,
+    buttonText: String,
+    onTap: @escaping () -> Void
+  ) {
+    self.imageName = imageName
+    self.title = title
+    self.description = description
+    self.buttonText = buttonText
+    self.onTap = onTap
+  }
+  
+  public var body: some View {
+    VStack(alignment: .leading) {
+      VStack(alignment: .center, spacing: 8) {
+        Image(imageName, bundle: .main)
+          .resizable()
+          .frame(width: 120, height: 120)
+        
+        Text(title)
+          .titleLexend(size: 20)
+        
+      }.frame(maxWidth: .infinity, alignment: .center)
+      
+      Text(description)
+        .captionLexend(size: 16)
+        .padding(.top, 8)
+      
+      ButtonSecondary(
+        title: buttonText,
+        backgroundColor: .white,
+        tintColor: .buttonActiveColor,
+        width: .infinity,
+        height: 40
+      ) {
+        onTap()
+      }
+      .padding(.top, 8)
+    }
+    .padding(.horizontal, 16)
+    .padding(.bottom, 30)
+  }
+  
+}
+
+#Preview {
+  AIErrorBottomContentView(
+    imageName: "ai_limit_error",
+    title: "Mencapai Batas Pemakaian AI",
+    description: "Batas penggunaan fitur perbaikan deskripsi dengan AI telah tercapai (10x). Anda bisa langsung menggunakan hasil terakhir atau ubah manual jika diperlukan",
+    buttonText: "Ubah deskripsi masalah",
+    onTap: {}
+  )
+}
+
+
+public struct AIUndismissableBottomContentView: View {
+  
+  private let imageName: String
+  private let title: String
+  private let description: String
+  private var onTapAdvocateLists: () -> Void
+  private var onTapBack: () -> Void
+  
+  public init(
+    imageName: String,
+    title: String,
+    description: String,
+    onTapAdvocateLists: @escaping () -> Void,
+    onTapBack: @escaping () -> Void
+  ) {
+    self.imageName = imageName
+    self.title = title
+    self.description = description
+    self.onTapAdvocateLists = onTapAdvocateLists
+    self.onTapBack = onTapBack
+  }
+  
+  public var body: some View {
+    VStack(alignment: .leading) {
+      VStack(alignment: .center, spacing: 8) {
+        Image(imageName, bundle: .main)
+          .resizable()
+          .frame(width: 120, height: 120)
+        
+        Text(title)
+          .titleLexend(size: 20)
+        
+      }
+      .frame(maxWidth: .infinity, alignment: .center)
+      .padding(.bottom, 8)
+      
+      Text(description)
+        .captionLexend(size: 16)
+        .padding(.top, 8)
+      
+      ButtonPrimary(
+        title: "Lihat Daftar Advokat",
+        color: .buttonActiveColor,
+        width: .infinity,
+        height: 40
+      ) {
+        onTapAdvocateLists()
+      }
+      
+      ButtonSecondary(
+        title: "Kembali ke Beranda",
+        backgroundColor: .white,
+        tintColor: .buttonActiveColor,
+        width: .infinity,
+        height: 40
+      ) {
+        onTapBack()
+      }
+      .padding(.top, 8)
+    }
+    .padding(.horizontal, 16)
+    .padding(.bottom, 30)
+  }
+}
+
+#Preview {
+  AIUndismissableBottomContentView(
+    imageName: "ai_limit_error",
+    title: "Akses Sementara Dibatasi",
+    description: "Kami mendeteksi pola penggunaan yang tidak biasa. Anda tidak menggunakan fitur AI ini untuk sementara waktu.",
+    onTapAdvocateLists: {},
+    onTapBack: {}
+  )
 }
