@@ -219,7 +219,10 @@ public struct OrderProcessView: View {
         originalPrice: store.lawyerInfoViewModel.originalPrice,
         isDiscount: store.lawyerInfoViewModel.isDiscount,
         isProbono: store.lawyerInfoViewModel.isProbono,
-        timeStr: store.timeConsultation
+        timeStr: store.timeConsultation,
+        experience: store.getExperience(),
+        rating: store.getRating(),
+        totalConsultation: store.getTotalConsultation()
       )
     }
   }
@@ -293,155 +296,52 @@ public struct OrderProcessView: View {
     originalPrice: String,
     isDiscount: Bool,
     isProbono: Bool,
-    timeStr: String
+    timeStr: String,
+    experience: String,
+    rating: String,
+    totalConsultation: String
   ) -> some View {
-    VStack {
-      HStack(spacing: 12) {
-        CircleAvatarImageView(
-          imageURL,
-          width: 48,
-          height: 48
-        )
+    HStack (spacing: 12) {
+      CircleAvatarImageView(
+        imageURL,
+        width: 48,
+        height: 48
+      )
+      .padding(.leading, 16)
+      
+      VStack(alignment: .leading, spacing: 4) {
+        Text(name)
+          .titleLexend(size: 14)
         
-        VStack(alignment: .leading, spacing: 4) {
-          Text(name)
-            .titleLexend(size: 14)
+        HStack {
+          Image("briefcase", bundle: .module)
           
-          Text(agency)
+          Text(experience)
             .foregroundColor(.darkGray400)
-            .bodyLexend(size: 14)
+            .bodyLexend(size: 12)
+          
+          Image("ic_vector", bundle: .module)
+          
+          Image("ic_star", bundle: .module)
+            .resizable()
+            .frame(width: 10, height: 10)
+          
+          Text(rating)
+            .foregroundColor(.darkGray400)
+            .bodyLexend(size: 12)
+          
+          Text(totalConsultation)
+            .foregroundColor(.darkGray300)
+            .bodyLexend(size: 10)
+          
         }
-        
-        Spacer()
-        
-        Image("ic_order_service_right_arrow", bundle: .module)
-        
       }
-      .padding(.all, 12)
+      .padding(.top, 16)
+      .padding(.bottom, 16)
+      
+      Spacer()
     }
     .frame(maxWidth: .infinity, maxHeight: 80)
-    .background(Color.white)
-    .cornerRadius(12)
-    .shadow(color: .gray200, radius: 8)
-  }
-  
-  @ViewBuilder
-  func issueView(onTap: @escaping () -> Void) -> some View {
-    VStack(alignment: .leading, spacing: 8) {
-      Text("Tuliskan Deskripsi Masalah")
-        .foregroundColor(.titleColor)
-        .titleLexend(size: 14)
-        .padding(.horizontal, 12)
-        .padding(.top, 12)
-      
-      Text("Mohon ceritakan masalah yang akan Anda konsultasikan")
-        .bodyLexend(size: 12)
-        .padding(.horizontal, 12)
-        .padding(.trailing, 50)
-      
-      ZStack(alignment: .topLeading) {
-        VStack {
-          TextView(
-            text: $store.issueText,
-            textStyle: .lexendFont(style: .caption(size: 12)),
-            textColor: .darkTextColor,
-            backgroundColor: .gray050
-          )
-          .overlay(
-            RoundedRectangle(cornerRadius: 6)
-              .stroke(
-                store.isTextValid ? Color.gray500 : Color.red,
-                lineWidth: 2
-              )
-          )
-        }
-        .frame(maxWidth: .infinity, idealHeight: 88)
-        .background(Color.gray050)
-        .cornerRadius(6)
-        .padding(.horizontal, 12)
-        
-        if store.issueText.isEmpty {
-          Text("Contoh: Saya memiliki permasalahan hutang, tapi saya tidak tahu harus bagaimana")
-            .foregroundColor(Color(.placeholderText))
-            .captionLexend(size: 12)
-            .padding(.horizontal, 16)
-            .padding(.vertical, 5)
-            .allowsHitTesting(false)
-        }
-        
-      }
-      
-      
-      Text(store.errorText)
-        .foregroundColor(store.isTextValid ? Color.gray500 : Color.red)
-        .bodyLexend(size: 12)
-        .padding(.horizontal, 12)
-        .padding(.bottom, 16)
-      
-      Divider()
-        .frame(maxWidth: .infinity, maxHeight: 1)
-        .background(Color.gray200)
-        .padding(.horizontal, 12)
-      
-      HStack {
-        Text("Kategori Hukum")
-          .titleLexend(size: 14)
-          .padding(.horizontal, 12)
-        
-        Spacer()
-        
-        Button{
-          onTap()
-        } label: {
-          Text("Ubah")
-            .foregroundColor(Color.buttonActiveColor)
-            .titleLexend(size: 14)
-        }
-      }
-      .padding(.top, 10)
-      .padding(.horizontal, 12)
-      
-      HStack(
-        alignment: .center,
-        spacing: 8
-      ) {
-        Text(store.getIssueName())
-          .foregroundColor(Color.gray700)
-          .titleLexend(size: 14)
-          .padding(.horizontal, 8)
-          .padding(.vertical, 6)
-          .background(Color.clear)
-          .cornerRadius(14)
-      }
-      
-      .padding(.horizontal, 12)
-      .padding(.vertical, 8)
-      .frame(maxWidth: .infinity, alignment: .leading)
-      .background(Color.primaryInfo050)
-      .cornerRadius(8)
-      .padding(.horizontal, 12)
-      
-      HStack(
-        alignment: .center,
-        spacing: 8
-      ) {
-        Image("ic_warning", bundle: .module)
-          .resizable()
-          .frame(width: 24, height: 24)
-        
-        Text("Mohon pastikan kategori hukum yang Anda pilih sudah sesuai")
-          .foregroundColor(.warning900)
-          .captionLexend(size: 12)
-      }
-      .padding(.horizontal, 12)
-      .padding(.vertical, 8)
-      .frame(maxWidth: .infinity, alignment: .leading)
-      .background(Color(red: 0.99, green: 0.96, blue: 0.9))
-      .cornerRadius(8)
-      .padding(.horizontal, 12)
-      .padding(.bottom, 12)
-    }
-    .frame(maxWidth: .infinity, minHeight: 180)
     .background(Color.white)
     .cornerRadius(12)
     .shadow(color: .gray200, radius: 8)
@@ -474,11 +374,11 @@ public struct OrderProcessView: View {
   @ViewBuilder
   func explanationView() -> some View {
     VStack(alignment: .leading, spacing: 8) {
-      Text("Ceritakan Masalah Hukum Anda")
+      Text("Tuliskan Deskripsi Masalah")
         .titleLexend(size: 16)
         .padding(.bottom, 8)
       
-      Text("AI kami akan mencocokkan Anda dengan advokat yang relevan dan berpengalaman.")
+      Text("Mohon ceritakan masalah yang akan Anda konsultasikan")
         .captionLexend(size: 12)
       
       descriptionTextView()
@@ -488,7 +388,7 @@ public struct OrderProcessView: View {
     .padding(.all, 12)
     .background(Color.white)
     .clipShape(RoundedRectangle(cornerRadius: 12))
-    .shadow(color: Color.gray100, radius: 5)
+    .shadow(color: Color.gray200, radius: 5)
   }
   
   @ViewBuilder
@@ -505,7 +405,7 @@ public struct OrderProcessView: View {
         )
         .overlay(
           RoundedRectangle(cornerRadius: 6)
-            .stroke(store.descriptionErrorColor, lineWidth: 2)
+            .stroke(store.isShowErrorTextView() ? Color.danger500 : store.descriptionErrorColor , lineWidth: 2)
         )
         .focused($isFocused)
       }
@@ -515,7 +415,7 @@ public struct OrderProcessView: View {
       
       HStack {
         Text(store.descriptionErrorMessage)
-          .foregroundStyle(store.descriptionErrorColor)
+          .foregroundStyle(store.isShowErrorTextView() ? Color.danger500 : store.descriptionErrorColor)
           .captionLexend(size: 12)
         
         Spacer()

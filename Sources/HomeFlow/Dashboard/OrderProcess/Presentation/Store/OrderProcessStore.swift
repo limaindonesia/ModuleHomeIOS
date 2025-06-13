@@ -32,7 +32,6 @@ public class OrderProcessStore: ObservableObject {
   
   @Published public var orderServiceFilled: Bool = false
   @Published public var detailCostFilled: Bool = false
-  @Published public var issueText: String = ""
   @Published public var errorText: String = "Minimal 10 karakter"
   @Published public var lawyerInfoViewModel: LawyerInfoViewModel = .init()
   @Published public var isPresentBottomSheet: Bool = false
@@ -49,6 +48,7 @@ public class OrderProcessStore: ObservableObject {
   @Published public var descriptionErrorColor: Color = .gray600
   @Published public var descriptionErrorMessage: String = "Minimal 10 kata"
   @Published public var isAIActive: Bool = false
+  @Published public var isTextViewAlreadyEdit: Bool = false
   @Published public var isAIProcessing: Bool = false
   @Published public var isPresentUndismissableError: Bool = false
   @Published var errorMessage: ErrorMessageWithAction = .init()
@@ -281,7 +281,7 @@ public class OrderProcessStore: ObservableObject {
         action: hideErrorMessage
       )
       
-      showUndismissableErrorMessage()
+      showErrorMessage()
       return
     }
     
@@ -295,7 +295,7 @@ public class OrderProcessStore: ObservableObject {
         action: hideErrorMessage
       )
       
-      showUndismissableErrorMessage()
+      showErrorMessage()
       return
     }
   }
@@ -324,7 +324,6 @@ public class OrderProcessStore: ObservableObject {
   
   func resetDescriptionState() {
     isAIProcessing = false
-    isAIActive = false
   }
   
   public func isOrderProbono() -> Bool {
@@ -381,6 +380,18 @@ public class OrderProcessStore: ObservableObject {
       }
     }
     return ""
+  }
+  
+  public func getExperience() -> String {
+    return "\(lawyerInfoViewModel.yearExp ?? "")"
+  }
+  
+  public func getRating() -> String {
+    return lawyerInfoViewModel.avgRating ?? ""
+  }
+  
+  public func getTotalConsultation() -> String {
+    return "(\(lawyerInfoViewModel.totalConsultations ?? ""))"
   }
   
   public func getCategoryPagePayment() -> String {
@@ -662,7 +673,7 @@ public class OrderProcessStore: ObservableObject {
       isDiscount: advocate.isDiscount,
       isProbono: sktmQuota > 0,
       orderNumber: "",
-      detailIssues: issueText,
+      detailIssues: descriptions,
       yearExp: advocate.getExperience(),
       avgRating: advocate.getRating(),
       totalConsultations: advocate.getTotalConsultation(),
@@ -671,10 +682,7 @@ public class OrderProcessStore: ObservableObject {
   }
   
   public func setErrorText() {
-    if issueText.count == 0 {
-      errorText = "Deskripsi masalah wajib diisi"
-    }
-    isTextValid = false
+    isTextViewAlreadyEdit = true
   }
   
   public func processNavigation() {
@@ -690,6 +698,16 @@ public class OrderProcessStore: ObservableObject {
   
   public func isProbono() -> Bool {
     return idCardEntity.status == .ACTIVE
+  }
+  
+  public func isShowErrorTextView() -> Bool {
+    if isAIActive && isTextViewAlreadyEdit {
+      return false
+    } else if isAIActive == false && isTextViewAlreadyEdit == false {
+      return false
+    } else {
+      return true
+    }
   }
   
   private func getTimeConsultation(from entities: [TreatmentEntity]) {
@@ -906,9 +924,15 @@ public class OrderProcessStore: ObservableObject {
       .sink { [weak self] str in
         guard let length = self?.detectSentences(from: str).count
         else { return }
+        if str.count > 0 {
+          self?.isTextViewAlreadyEdit = true
+        } else {
+          self?.isTextViewAlreadyEdit = false
+        }
         self?.isAIActive = length >= 10
         if length > 10 {
           self?.descriptionErrorColor = Color.gray600
+          self?.isScrollToTop = false
         } else {
           self?.isScrollToTop = true
         }
@@ -937,21 +961,6 @@ public class OrderProcessStore: ObservableObject {
 //      .sink { message in
 //        print("$detailCostFilled")
 //      }.store(in: &subscriptions)
-    
-    $issueText
-      .dropFirst()
-      .flatMap { self.isValidText($0) }
-      .receive(on: RunLoop.main)
-      .subscribe(on: RunLoop.main)
-      .sink { state in
-        self.isTextValid = state
-        self.isScrollToTop = !state
-        if self.issueText.count < 10 {
-          self.errorText = "Minimal 10 karakter"
-        } else {
-          self.errorText = ""
-        }
-      }.store(in: &subscriptions)
     
     $isProbonoActive
       .dropFirst()
