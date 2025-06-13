@@ -19,13 +19,14 @@ public struct OrderServiceRepository: OrderServiceRepositoryLogic {
 
   public func fetchOrderService(
   _ headers: HeaderRequest,
-  _ parameters: OrderServiceParamRequest) async throws -> [OrderServiceEntity] {
+  _ parameters: OrderServiceParamRequest) async throws -> [OrderServiceEntityHome] {
     do {
       let model = try await remote.fetchOrderService(
         headers.toHeaders(),
         parameters.toParam()
       )
-      return model.data.map(OrderServiceEntity.map(from:))
+      
+      return model.data.map(OrderServiceEntityHome.map(from:))
     } catch {
       guard let error = error as? NetworkErrorMessage
       else {
