@@ -71,6 +71,16 @@ public class OrderProcessViewController: NiblessViewController {
       .sink { _ in
         self.showChangeCategoryPopUp()
       }.store(in: &subscriptions)
+    
+    store.$didBack
+      .receive(on: DispatchQueue.main)
+      .subscribe(on: DispatchQueue.main)
+      .sink { [weak self] state in
+        if state {
+          self?.navigationController?.popToRootViewController(animated: false)
+        }
+      }.store(in: &subscriptions)
+    
   }
 
   private func showChangeCategoryPopUp() {

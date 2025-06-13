@@ -15,7 +15,7 @@ public struct MockOrderServiceRepository: OrderServiceRepositoryLogic {
   public func fetchOrderService(
     _ headers: HeaderRequest,
     _ parameters: OrderServiceParamRequest
-  )  async throws -> [OrderServiceEntity] {
+  )  async throws -> [OrderServiceEntityHome] {
     return [
       .init(
         name: "Probono (Chat Saja)",
