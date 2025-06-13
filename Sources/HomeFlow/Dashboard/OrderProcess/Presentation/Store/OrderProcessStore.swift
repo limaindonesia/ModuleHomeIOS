@@ -49,6 +49,7 @@ public class OrderProcessStore: ObservableObject {
   @Published public var descriptionErrorMessage: String = "Minimal 10 kata"
   @Published public var isAIActive: Bool = false
   @Published public var isTextViewAlreadyEdit: Bool = false
+  @Published public var isTextViewCountMoreTen: Bool = false
   @Published public var isAIProcessing: Bool = false
   @Published public var isPresentUndismissableError: Bool = false
   @Published var errorMessage: ErrorMessageWithAction = .init()
@@ -324,6 +325,7 @@ public class OrderProcessStore: ObservableObject {
   
   func resetDescriptionState() {
     isAIProcessing = false
+    isAIActive = false
   }
   
   public func isOrderProbono() -> Bool {
@@ -701,9 +703,9 @@ public class OrderProcessStore: ObservableObject {
   }
   
   public func isShowErrorTextView() -> Bool {
-    if isAIActive && isTextViewAlreadyEdit {
+    if isTextViewCountMoreTen && isTextViewAlreadyEdit {
       return false
-    } else if isAIActive == false && isTextViewAlreadyEdit == false {
+    } else if isTextViewCountMoreTen == false && isTextViewAlreadyEdit == false {
       return false
     } else {
       return true
@@ -930,6 +932,7 @@ public class OrderProcessStore: ObservableObject {
           self?.isTextViewAlreadyEdit = false
         }
         self?.isAIActive = length >= 10
+        self?.isTextViewCountMoreTen = length >= 10
         if length > 10 {
           self?.descriptionErrorColor = Color.gray600
           self?.isScrollToTop = false
