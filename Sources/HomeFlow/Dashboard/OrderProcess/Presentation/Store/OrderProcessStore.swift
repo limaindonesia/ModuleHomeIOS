@@ -406,6 +406,9 @@ public class OrderProcessStore: ObservableObject {
   }
   
   public func getTotalConsultation() -> String {
+    if lawyerInfoViewModel.totalConsultations.first?.description ?? "" == "0" {
+      return ""
+    }
     return "(\(lawyerInfoViewModel.totalConsultations ?? ""))"
   }
   
