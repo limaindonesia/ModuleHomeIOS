@@ -30,6 +30,7 @@ public class OrderProcessStore: ObservableObject {
   private let aiRepository: AIRepositoryLogic
   private let advocateNavigator: OnlineAdvocateNavigator
   
+  @Published public var showTimer: Bool = false
   @Published public var orderServiceFilled: Bool = false
   @Published public var detailCostFilled: Bool = false
   @Published public var errorText: String = "Minimal 10 karakter"
@@ -47,14 +48,18 @@ public class OrderProcessStore: ObservableObject {
   @Published public var descriptions: String = ""
   @Published public var descriptionErrorColor: Color = .gray600
   @Published public var descriptionErrorMessage: String = "Minimal 10 kata"
+  @Published public var descriptionAIText: String = "Edit Otomatis (AI)"
   @Published public var isAIActive: Bool = false
   @Published public var isTextViewAlreadyEdit: Bool = false
   @Published public var isTextViewCountMoreTen: Bool = false
   @Published public var isAIProcessing: Bool = false
   @Published public var isPresentUndismissableError: Bool = false
+  @Published public var timeRemaining = 0
+  
   @Published var errorMessage: ErrorMessageWithAction = .init()
   @Published var isPresentError: Bool = false
   @Published var didBack: Bool = false
+  var timer = Timer.publish(every: 100000, on: .main, in: .common).autoconnect()
   
   public var priceCategoriesCopy: [PriceCategoryViewModel] = []
   private var treatmentEntities: [TreatmentEntity] = []
@@ -118,7 +123,6 @@ public class OrderProcessStore: ObservableObject {
     priceCategoriesCopy = priceCategories
     
     observer()
-    
   }
   
   //MARK: - API
@@ -143,7 +147,12 @@ public class OrderProcessStore: ObservableObject {
         resetDescriptionState()
         return
       }
-      
+      //2025-06-13T10:39:03.000000Z
+      if !entity.availableAt.isEmpty {
+        let interval = Date().distance(to: entity.availableAt.toDate() ?? Date())
+        timeRemaining = Int(interval)
+        timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+      }
       handleError(error: entity.error ?? .init())
       resetDescriptionState()
       
@@ -317,6 +326,10 @@ public class OrderProcessStore: ObservableObject {
     ]
     
     return imageName[type] ?? ""
+  }
+  
+  public func secondsToMinutesSeconds(_ seconds: Int) -> (Int, Int) {
+      return ((seconds % 3600) / 60, (seconds % 3600) % 60)
   }
   
   func showUndismissableErrorMessage() {
@@ -933,7 +946,7 @@ public class OrderProcessStore: ObservableObject {
         }
         self?.isAIActive = length >= 10
         self?.isTextViewCountMoreTen = length >= 10
-        if length > 10 {
+        if length >= 10 {
           self?.descriptionErrorColor = Color.gray600
           self?.isScrollToTop = false
         } else {
