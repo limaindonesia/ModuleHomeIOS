@@ -432,9 +432,18 @@ public struct OrderProcessView: View {
               .aspectRatio(contentMode: .fit)
               .frame(width: 16, height: 16)
             
-            Text("Edit Otomatis (AI)")
+            Text(store.descriptionAIText)
               .foregroundStyle(store.isAIActive ? Color.gray600 : Color.gray300)
               .captionLexend(size: 10)
+              .onReceive(store.timer) { time in
+                if store.timeRemaining > 0 {
+                  store.timeRemaining -= 1
+                  let (m,s) = store.secondsToMinutesSeconds(store.timeRemaining)
+                  store.descriptionAIText = "Tersedia dalam \(m):\(s)"
+                } else {
+                  store.descriptionAIText = "Edit Otomatis (AI)"
+                }
+              }
           }
           .padding(.vertical, 4)
           .padding(.horizontal, 8)
