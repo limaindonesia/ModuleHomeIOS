@@ -10,7 +10,7 @@ import AprodhitKit
 import GnDKit
 
 struct LawyerInfoProbonoView: View {
-
+  
   private let imageURL: URL?
   private let name: String
   private let agency: String
@@ -20,7 +20,7 @@ struct LawyerInfoProbonoView: View {
   private let timeStr: String
   @Binding private var isProbono: Bool
   @Binding private var toggleActive: Bool
-
+  
   init(
     imageURL: URL?,
     name: String,
@@ -42,7 +42,7 @@ struct LawyerInfoProbonoView: View {
     self.timeStr = timeStr
     self._toggleActive = toggleActive
   }
-
+  
   var body: some View {
     VStack {
       HStack(spacing: 12) {
@@ -51,99 +51,51 @@ struct LawyerInfoProbonoView: View {
           width: 48,
           height: 48
         )
-
+        
         VStack(alignment: .leading, spacing: 4) {
           Text(name)
             .titleLexend(size: 14)
-
+          
           Text(agency)
             .foregroundColor(.darkGray400)
             .bodyLexend(size: 14)
         }
-
+        
         Spacer()
-
+        
         Image("ic_order_service_right_arrow", bundle: .module)
-
+        
       }
       .padding(.horizontal, 12)
       .padding(.top, 12)
-//
-//      HStack {
-//        if isProbono {
-//          probonoPriceView()
-//        } else {
-//          regularPriceView()
-//        }
-//
-//        Circle()
-//          .fill(Color.darkGray300)
-//          .frame(width: 6, height: 6)
-//
-//        HStack(spacing: 2) {
-//          Image("ic_timer", bundle: .module)
-//
-//          Text(timeStr)
-//            .foregroundColor(Color.gray600)
-//            .bodyLexend(size: 12)
-//        }
-//
-//        Spacer()
-//      }
-//      .padding(.all, 12)
-//
-//      Divider()
-//        .frame(height: 1)
-//        .foregroundColor(Color.black)
-//        .padding(.horizontal, 12)
-//
-//      HStack {
-//        ToggleView(
-//          isActive: $toggleActive,
-//          tapAction: {
-//            isProbono = toggleActive
-//          }
-//        )
-//
-//        Text("Gunakan Kuota Pro Bono")
-//          .foregroundColor(Color.darkTextColor)
-//          .captionLexend(size: 12)
-//
-//        Spacer()
-//
-//        Text("Kuota: 3")
-//          .captionLexend(size: 12)
-//      }
-//      .padding(.all, 12)
-
     }
     .frame(maxWidth: .infinity, minHeight: 80)
     .background(Color.white)
     .cornerRadius(12)
     .shadow(color: .gray200, radius: 8)
   }
-
+  
   @ViewBuilder
   func probonoPriceView() -> some View {
     Text("Gratis")
       .foregroundColor(Color.buttonActiveColor)
       .titleLexend(size: 14)
   }
-
+  
   @ViewBuilder
   func regularPriceView() -> some View {
     HStack {
       Text(price)
         .foregroundColor(Color.buttonActiveColor)
         .titleLexend(size: 14)
-
+      
       HStack(spacing: 4) {
         StrikethroughText(
           text: originalPrice,
           color: .darkTextColor,
           thickness: 1
         )
-
+        
         if isDiscount {
           DiscountView()
         }

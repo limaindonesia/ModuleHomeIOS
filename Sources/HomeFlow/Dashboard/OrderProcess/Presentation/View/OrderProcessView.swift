@@ -288,66 +288,6 @@ public struct OrderProcessView: View {
   }
   
   @ViewBuilder
-  func lawyerInfoView(
-    imageURL: URL?,
-    name: String,
-    agency: String,
-    price: String,
-    originalPrice: String,
-    isDiscount: Bool,
-    isProbono: Bool,
-    timeStr: String,
-    experience: String,
-    rating: String,
-    totalConsultation: String
-  ) -> some View {
-    HStack (spacing: 12) {
-      CircleAvatarImageView(
-        imageURL,
-        width: 48,
-        height: 48
-      )
-      .padding(.leading, 16)
-      
-      VStack(alignment: .leading, spacing: 4) {
-        Text(name)
-          .titleLexend(size: 14)
-        
-        HStack {
-          Image("briefcase", bundle: .module)
-          
-          Text(experience)
-            .foregroundColor(.darkGray400)
-            .bodyLexend(size: 12)
-          
-          Image("ic_vector", bundle: .module)
-          
-          Image("ic_star", bundle: .module)
-            .resizable()
-            .frame(width: 10, height: 10)
-          
-          Text(rating)
-            .foregroundColor(.darkGray400)
-            .bodyLexend(size: 12)
-          
-          Text(totalConsultation)
-            .foregroundColor(.darkGray300)
-            .bodyLexend(size: 10)
-          
-        }
-      }
-      .padding(.top, 16)
-      .padding(.bottom, 16)
-      
-      Spacer()
-    }
-    .frame(maxWidth: .infinity, maxHeight: 80)
-    .background(Color.white)
-    .cornerRadius(12)
-    .shadow(color: .gray200, radius: 8)
-  }
-  
-  @ViewBuilder
   func requestProbonoView(onTap: @escaping () -> Void) -> some View {
     VStack(spacing: 0) {
       HStack {
