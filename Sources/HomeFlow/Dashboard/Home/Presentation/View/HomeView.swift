@@ -163,6 +163,10 @@ public struct HomeView: View {
         store.navigateToProbonoService()
       }.padding(.top, 355)
       
+      kemenPPAHotline {
+        store.navigateToProbonoService()
+      }
+      
       activeAdvocates(store.onlinedAdvocates)
         .padding(.top, 32)
     }
@@ -754,6 +758,168 @@ public struct HomeView: View {
     .clipShape(RoundedRectangle(cornerRadius: 8))
     .shadow(color: .gray200, radius: 10, x: 0, y: 15)
     .padding(.horizontal, 16)
+  }
+  
+  @ViewBuilder
+  func kemenPPABottomSheetView(
+    onTapKemenPPA: @escaping () -> Void
+  ) -> some View {
+    ZStack(alignment: .bottomTrailing) {
+      
+      HStack() {
+        Image("ic_kemenPPA_family", bundle: .module)
+          .frame(width: 112,height: 60)
+      }
+      .frame(width: 112, height: 60)
+      .padding(.bottom, 10)
+      .padding(.trailing, 12)
+      .zIndex(1)
+      
+      VStack(spacing: 0) {
+        Text("Dapatkan Bantuan Hukum Gratis")
+          .foregroundStyle(Color.gray800)
+          .titleLexend(size: 14)
+          .padding(.top, 10)
+          .padding(.bottom, 12)
+          .padding(.leading, 12)
+          .frame(maxWidth: .infinity, alignment: .leading)
+        
+        Text("Advokat terpercaya siap mendampingi perempuan dan anak korban kekerasan melalui konsultasi")
+          .foregroundStyle(Color.gray600)
+          .captionLexend(size: 12)
+          .padding(.leading, 12)
+          .padding(.trailing, 12)
+          .lineSpacing(4)
+          .padding(.bottom, 4)
+          .frame(maxWidth: .infinity, alignment: .leading)
+        
+        Text("hukum gratis.")
+          .foregroundStyle(Color.gray600)
+          .captionLexend(size: 12)
+          .padding(.leading, 12)
+          .padding(.bottom, 12)
+          .frame(maxWidth: .infinity, alignment: .leading)
+        
+        HStack(spacing: 0) {
+          Image("ic_logo_kemenPPA", bundle: .module)
+            .frame(width: 84,height: 30)
+            .padding(.leading, 16)
+            .padding(.bottom, 5)
+          
+          Image("ic_logo_peradi", bundle: .module)
+            .frame(width: 84,height: 30)
+            .padding(.bottom, 5)
+          
+          Spacer()
+        }
+      }
+      .background(
+        LinearGradient(
+          colors: [Color.gradient1KemenPPAHome, Color.gradient2KemenPPAHome],
+          startPoint: .leading,
+          endPoint: .trailing
+        )
+      )
+      .clipShape(RoundedRectangle(cornerRadius: 12))
+      .overlay {
+        RoundedRectangle(cornerRadius: 12).stroke(
+          Color.danger200,
+          lineWidth: 1
+        )
+      }
+    }
+    
+  }
+  
+  @ViewBuilder
+  func kemenPPAHotline(
+    onTapKemenPPA: @escaping () -> Void
+  ) -> some View {
+    ZStack(alignment: .topLeading) {
+      
+      HStack() {
+        Text("Hotline")
+          .foregroundStyle(Color.white)
+          .multilineTextAlignment(.center)
+          .captionLexend(size: 10)
+          .frame(width: 59, height: 20)
+      }
+      .background(
+        LinearGradient(
+          colors: [Color.danger500, Color.gradientKemenPPAHomeHotline],
+          startPoint: .leading,
+          endPoint: .trailing
+        )
+      )
+      .clipShape(RoundedRectangle(cornerRadius: 12))
+      .overlay {
+        RoundedRectangle(cornerRadius: 12).stroke(
+          Color.danger200,
+          lineWidth: 1
+        )
+      }
+      .padding(.leading, 32)
+      .frame(width: 59, height: 20)
+      .zIndex(1)
+      
+      VStack(spacing: 8) {
+        
+        HStack(spacing: 8) {
+          Text("Layanan Pengaduan Perlindungan Perempuan & Anak")
+            .titleLexend(size: 12)
+            .padding(.top, 10)
+            .padding(.leading, 16)
+          
+          Spacer()
+          
+          Image("arrow-right_kemenPPA", bundle: .module)
+            .frame(width: 24,height: 24)
+            .padding(.top, 10)
+            .padding(.trailing, 16)
+        }
+        
+        HStack(spacing: 0) {
+          Image("ic_logo_kemenPPA", bundle: .module)
+            .frame(width: 84,height: 30)
+            .padding(.leading, 16)
+            .padding(.bottom, 5)
+          
+          Image("ic_logo_peradi", bundle: .module)
+            .frame(width: 84,height: 30)
+            .padding(.bottom, 5)
+          
+          HStack {
+            
+          }
+          .frame(width: 1,height: 13)
+          .background(Color.danger300)
+          .padding(.bottom, 5)
+          
+          Image("ic_logo_perqara", bundle: .module)
+            .frame(width: 84,height: 30)
+            .padding(.bottom, 5)
+          
+          Spacer()
+        }
+      }
+      .background(
+        LinearGradient(
+          colors: [Color.gradient1KemenPPAHome, Color.gradient2KemenPPAHome],
+          startPoint: .leading,
+          endPoint: .trailing
+        )
+      )
+      .clipShape(RoundedRectangle(cornerRadius: 12))
+      .overlay {
+        RoundedRectangle(cornerRadius: 12).stroke(
+          Color.danger200,
+          lineWidth: 1
+        )
+      }
+      .padding(.horizontal, 16)
+      .padding(.top, 10)
+    }
+    
   }
   
   @ViewBuilder
@@ -1561,6 +1727,14 @@ public struct HomeView: View {
           onTapConsultation()
         }
         
+        HStack(spacing: 16) {
+          Text("Apakah Anda Korban Kekerasan?")
+            .captionLexend(size: 14)
+        }
+        
+        kemenPPABottomSheetView {
+          store.navigateToProbonoService()
+        }
       }
       .frame(minHeight: 80)
     }
