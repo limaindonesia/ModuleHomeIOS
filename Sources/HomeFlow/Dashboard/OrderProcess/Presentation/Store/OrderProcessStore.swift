@@ -37,6 +37,7 @@ public class OrderProcessStore: ObservableObject {
   @Published public var lawyerInfoViewModel: LawyerInfoViewModel = .init()
   @Published public var isPresentBottomSheet: Bool = false
   @Published public var isPresentChangeCategoryIssue: Bool = false
+  @Published public var isPresentReasonToContinue: Bool = true
   @Published public var timeConsultation: String = ""
   @Published public var isTextValid: Bool = true
   @Published public var isScrollToTop: Bool = true
@@ -55,12 +56,14 @@ public class OrderProcessStore: ObservableObject {
   @Published public var isAIProcessing: Bool = false
   @Published public var isPresentUndismissableError: Bool = false
   @Published public var timeRemaining = 0
+  @Published public var selected: String? = nil
+  @Published public var errorMessage: ErrorMessageWithAction = .init()
+  @Published public var isPresentError: Bool = false
+  @Published public var didBack: Bool = false
+  @Published public var incident: String = ""
+  @Published public var incidentErrorMessage: String = "Minimal 10 kata"
   
-  @Published var errorMessage: ErrorMessageWithAction = .init()
-  @Published var isPresentError: Bool = false
-  @Published var didBack: Bool = false
-  var timer = Timer.publish(every: 100000, on: .main, in: .common).autoconnect()
-  
+  public let options = ["Korban/ Pelapor", "Pelaku/ Terlapor", "Keluarga/ Kerabat"]
   public var priceCategoriesCopy: [PriceCategoryViewModel] = []
   private var treatmentEntities: [TreatmentEntity] = []
   private var orderServiceEntities: [OrderServiceEntityHome] = []
@@ -71,6 +74,7 @@ public class OrderProcessStore: ObservableObject {
   private var detailPriceAdvocate: DetailPriceAdvocate?
   public var idCardEntity: IDCardEntity = .init()
   private var subscriptions = Set<AnyCancellable>()
+  var timer = Timer.publish(every: 100000, on: .main, in: .common).autoconnect()
   
   public init() {
     self.advocate = .init()
@@ -329,7 +333,7 @@ public class OrderProcessStore: ObservableObject {
   }
   
   public func secondsToMinutesSeconds(_ seconds: Int) -> (Int, Int) {
-      return ((seconds % 3600) / 60, (seconds % 3600) % 60)
+    return ((seconds % 3600) / 60, (seconds % 3600) % 60)
   }
   
   func showUndismissableErrorMessage() {
@@ -506,17 +510,17 @@ public class OrderProcessStore: ObservableObject {
           if item.price == item.originalPrice {
             isDiscount = false
           }
-    //      var isSKTM = false
-    //      if item.type == "PROBONO" {
-    //        isSKTM = true
-    //        if getSKTMQuota() > 0 {
-    //          price = "GRATIS"
-    //          descPrice = "kuota tersedia: \(getSKTMQuota())"
-    //        } else {
-    //          price = "GRATIS"
-    //          descPrice = "S&K Berlaku"
-    //        }
-    //      }
+          //      var isSKTM = false
+          //      if item.type == "PROBONO" {
+          //        isSKTM = true
+          //        if getSKTMQuota() > 0 {
+          //          price = "GRATIS"
+          //          descPrice = "kuota tersedia: \(getSKTMQuota())"
+          //        } else {
+          //          price = "GRATIS"
+          //          descPrice = "S&K Berlaku"
+          //        }
+          //      }
           var isSaving = false
           if item.type == "REGULAR_AUDIO_VIDEO" {
             isSaving = true
@@ -565,17 +569,17 @@ public class OrderProcessStore: ObservableObject {
         if item.price == item.originalPrice {
           isDiscount = false
         }
-  //      var isSKTM = false
-  //      if item.type == "PROBONO" {
-  //        isSKTM = true
-  //        if getSKTMQuota() > 0 {
-  //          price = "GRATIS"
-  //          descPrice = "kuota tersedia: \(getSKTMQuota())"
-  //        } else {
-  //          price = "GRATIS"
-  //          descPrice = "S&K Berlaku"
-  //        }
-  //      }
+        //      var isSKTM = false
+        //      if item.type == "PROBONO" {
+        //        isSKTM = true
+        //        if getSKTMQuota() > 0 {
+        //          price = "GRATIS"
+        //          descPrice = "kuota tersedia: \(getSKTMQuota())"
+        //        } else {
+        //          price = "GRATIS"
+        //          descPrice = "S&K Berlaku"
+        //        }
+        //      }
         var isSaving = false
         if item.type == "REGULAR_AUDIO_VIDEO" {
           isSaving = true
@@ -664,7 +668,7 @@ public class OrderProcessStore: ObservableObject {
     }
     return false
   }
-    
+  
   public func setSelectedDetailPriceAdvocate() {
     for item in advocate.detail {
       if item?.skill_id == selectedPriceCategories.skillId {
@@ -680,7 +684,7 @@ public class OrderProcessStore: ObservableObject {
     if let quota = sktmModel?.data?.quota, quota > 0  {
       sktmQuota = quota
     }
-  
+    
     lawyerInfoViewModel = LawyerInfoViewModel(
       id: advocate.id ?? 0,
       imageURL: advocate.getImageName(),
@@ -849,24 +853,24 @@ public class OrderProcessStore: ObservableObject {
       skills: []
     )
     
-//    guard let _ = userSessionData else {
-//      sktmNavigator.navigateToUploadSKTM()
-//      return
-//    }
-//    
-//    guard let status = sktmModel?.data?.status else {
-//      sktmNavigator.navigateToUploadSKTM()
-//      return
-//    }
-//    
-//    if status == "ON_PROCESS" || status == "ACTIVE"
-//        || status == "EMPTY_QUOTA" || status == "EXPIRED"
-//        || status == "FAILED" {
-//      
-//      sktmNavigator.navigateToDetailSKTM(sktmModel)
-//    } else {
-//      sktmNavigator.navigateToUploadSKTM()
-//    }
+    //    guard let _ = userSessionData else {
+    //      sktmNavigator.navigateToUploadSKTM()
+    //      return
+    //    }
+    //
+    //    guard let status = sktmModel?.data?.status else {
+    //      sktmNavigator.navigateToUploadSKTM()
+    //      return
+    //    }
+    //
+    //    if status == "ON_PROCESS" || status == "ACTIVE"
+    //        || status == "EMPTY_QUOTA" || status == "EXPIRED"
+    //        || status == "FAILED" {
+    //
+    //      sktmNavigator.navigateToDetailSKTM(sktmModel)
+    //    } else {
+    //      sktmNavigator.navigateToUploadSKTM()
+    //    }
     
   }
   
@@ -965,21 +969,21 @@ public class OrderProcessStore: ObservableObject {
         
       }.store(in: &subscriptions)
     
-//    $orderServiceFilled
-//      .dropFirst()
-//      .receive(on: RunLoop.main)
-//      .subscribe(on: RunLoop.main)
-//      .sink { message in
-//        print("$orderServiceFilled")
-//      }.store(in: &subscriptions)
-//    
-//    $detailCostFilled
-//      .dropFirst()
-//      .receive(on: RunLoop.main)
-//      .subscribe(on: RunLoop.main)
-//      .sink { message in
-//        print("$detailCostFilled")
-//      }.store(in: &subscriptions)
+    //    $orderServiceFilled
+    //      .dropFirst()
+    //      .receive(on: RunLoop.main)
+    //      .subscribe(on: RunLoop.main)
+    //      .sink { message in
+    //        print("$orderServiceFilled")
+    //      }.store(in: &subscriptions)
+    //
+    //    $detailCostFilled
+    //      .dropFirst()
+    //      .receive(on: RunLoop.main)
+    //      .subscribe(on: RunLoop.main)
+    //      .sink { message in
+    //        print("$detailCostFilled")
+    //      }.store(in: &subscriptions)
     
     $isProbonoActive
       .dropFirst()
@@ -999,7 +1003,7 @@ public protocol OrderProcessStoreFactory {
   func makeOrderProcessStore() -> OrderProcessStore
 }
 
-struct ErrorMessageWithAction: Error {
+public struct ErrorMessageWithAction: Error {
   public let id: Int
   public let imageName: String
   public let title: String
@@ -1007,7 +1011,7 @@ struct ErrorMessageWithAction: Error {
   public let buttonText: String
   public var action: () -> Void
   
-  init() {
+  public init() {
     self.id = 0
     self.title = ""
     self.message = ""
@@ -1016,7 +1020,7 @@ struct ErrorMessageWithAction: Error {
     self.action = {}
   }
   
-  init(
+  public init(
     id: Int,
     imageName: String,
     title: String,

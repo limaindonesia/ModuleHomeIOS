@@ -211,7 +211,7 @@ public struct OrderProcessView: View {
         toggleActive: $store.isProbonoActive
       )
     } else {
-      lawyerInfoView(
+      LawyerInfoView(
         imageURL: store.lawyerInfoViewModel.imageURL,
         name: store.lawyerInfoViewModel.name,
         agency: store.lawyerInfoViewModel.agency,

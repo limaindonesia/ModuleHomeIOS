@@ -23,13 +23,22 @@ struct OrderProcessKemenPPPA: View {
           ScrollView(showsIndicators: false) {
             
             VStack(spacing: 12) {
-              showLawyerInfo()
-                .padding(.horizontal, 16)
+              lawyerInfoView(
+                imageURL: store.lawyerInfoViewModel.imageURL,
+                name: store.lawyerInfoViewModel.name,
+                agency: store.lawyerInfoViewModel.agency,
+                price: store.lawyerInfoViewModel.price,
+                originalPrice: store.lawyerInfoViewModel.originalPrice,
+                isDiscount: store.lawyerInfoViewModel.isDiscount,
+                isProbono: store.lawyerInfoViewModel.isProbono,
+                timeStr: store.timeConsultation
+              )
+              .padding(.horizontal, 16)
               
               explanationView()
                 .padding(.horizontal, 16)
             }
-            .padding(.top, 16)
+            .padding(.vertical, 16)
             
           }
           .onAppear {
@@ -39,26 +48,13 @@ struct OrderProcessKemenPPPA: View {
         
         Spacer()
         
-        PaymentBottomView(
-          title: "Biaya",
-          price: store.getPriceBottom(),
-          totalAdjustment: "",
-          buttonText: "Ke Pembayaran",
-          isVoucherApplied: false,
-          isButtonActive: store.buttonActive,
-          onTap: {
-            if store.buttonActive {
-              if store.isScrollToTop {
-                store.setErrorText()
-                withAnimation(.smooth) {
-                  self.reader?.scrollTo(1, anchor: .topTrailing)
-                }
-              } else {
-                store.processNavigation()
-              }
-            }
-          }
-        )
+        PositiveButton(
+          title: "Lanjutkan Proses",
+          isActive: true
+        ) {
+          
+        }
+        .frame(maxWidth: .infinity, maxHeight: 40)
         .padding(.horizontal, 16)
       }
       .onAppear {
@@ -129,44 +125,103 @@ struct OrderProcessKemenPPPA: View {
         .frame(height: store.getHeightChangeBottomSheet())
       }
       
+      BottomSheetNewView(isPresented: $store.isPresentReasonToContinue) {
+        ReasonToContinueConsultationView(
+          store: ReasonToContinueStore(arrayReasons: []),
+          onSendReason: { (entity, anotherReason) in
+            
+          }
+        )
+      }
     }
     .ignoresSafeArea(.keyboard)
   }
   
   @ViewBuilder
-  func showLawyerInfo() -> some View {
-    if store.isProbono() {
-      LawyerInfoProbonoView(
-        imageURL: store.lawyerInfoViewModel.imageURL,
-        name: store.lawyerInfoViewModel.name,
-        agency: store.lawyerInfoViewModel.agency,
-        price: store.getPriceProbonoOnly(),
-        originalPrice: store.lawyerInfoViewModel.originalPrice,
-        isDiscount: store.lawyerInfoViewModel.isDiscount,
-        isProbono: $store.isProbonoActive,
-        timeStr: store.timeConsultation,
-        toggleActive: $store.isProbonoActive
+  func lawyerInfoView(
+    imageURL: URL?,
+    name: String,
+    agency: String,
+    price: String,
+    originalPrice: String,
+    isDiscount: Bool,
+    isProbono: Bool,
+    timeStr: String
+  ) -> some View {
+    HStack (spacing: 12) {
+      CircleAvatarImageView(
+        imageURL,
+        width: 48,
+        height: 48
       )
-    } else {
-      LawyerInfoView(
-        imageURL: store.lawyerInfoViewModel.imageURL,
-        name: store.lawyerInfoViewModel.name,
-        agency: store.lawyerInfoViewModel.agency,
-        price: store.lawyerInfoViewModel.price,
-        originalPrice: store.lawyerInfoViewModel.originalPrice,
-        isDiscount: store.lawyerInfoViewModel.isDiscount,
-        isProbono: store.lawyerInfoViewModel.isProbono,
-        timeStr: store.timeConsultation,
-        experience: store.getExperience(),
-        rating: store.getRating(),
-        totalConsultation: store.getTotalConsultation()
-      )
+      .padding(.leading, 16)
+      
+      VStack(alignment: .leading, spacing: 4) {
+        Text(name)
+          .titleLexend(size: 14)
+          .lineLimit(2)
+        
+        HStack {
+          Image("location", bundle: .module)
+            .resizable()
+            .frame(width: 12, height: 12)
+          
+          Text(store.lawyerInfoViewModel.location)
+            .foregroundColor(.darkGray400)
+            .bodyLexend(size: 12)
+        }
+        
+        HStack {
+          Image("medal-star", bundle: .module)
+            .resizable()
+            .frame(width: 12, height: 12)
+          
+          Text(store.lawyerInfoViewModel.location)
+            .foregroundColor(.darkGray400)
+            .bodyLexend(size: 12)
+        }
+      }
+      .padding(.top, 16)
+      .padding(.bottom, 16)
+      
+      Spacer()
+      
+      Button {
+        
+      } label: {
+        Image("ic_chevron_down", bundle: .module)
+          .resizable()
+          .frame(width: 24, height: 24)
+          .padding(.trailing, 8)
+      }
+      
     }
+    .frame(maxWidth: .infinity, maxHeight: 80)
+    .background(Color.white)
+    .cornerRadius(12)
+    .shadow(color: .gray200, radius: 8)
   }
   
   @ViewBuilder
   func explanationView() -> some View {
-    VStack(alignment: .leading, spacing: 8) {
+    VStack(alignment: .leading, spacing: 12) {
+      VStack {
+        Text("Konsultasi 60 menit via chat atau panggilan suara/ video sesuai ketersediaan advokat")
+          .captionLexend(size: 12)
+          .frame(maxWidth: .infinity, alignment: .leading)
+      }
+      .padding(.horizontal, 12)
+      .padding(.vertical, 8)
+      .frame(maxWidth: .infinity)
+      .background(Color.primaryInfo050)
+      .clipShape(RoundedRectangle(cornerRadius: 8))
+      .overlay {
+        RoundedRectangle(cornerRadius: 8).stroke(
+          Color.primary200,
+          lineWidth: 1
+        )
+      }
+      
       Text("Tuliskan Deskripsi Masalah")
         .titleLexend(size: 16)
         .padding(.bottom, 8)
@@ -176,6 +231,101 @@ struct OrderProcessKemenPPPA: View {
       
       descriptionTextView()
         .coordinateSpace(name: "DESCRIPTION")
+      
+      Divider()
+        .frame(maxWidth: .infinity)
+        .background(Color.gray200)
+      
+      Text("Jenis Kekerasan")
+        .titleLexend(size: 14)
+      
+      HStack {
+        Text("Mohon pilih jenis kekerasan yang sesuai dengan masalah anda")
+          .foregroundStyle(Color.gray400)
+          .captionLexend(size: 12)
+        
+        Spacer()
+        
+        Button {
+          withAnimation(.bouncy) {
+            
+          }
+        } label: {
+          HStack {
+            Text("Pilih")
+              .foregroundStyle(Color.buttonActiveColor)
+              .titleLexend(size: 12)
+            Image("arrow-down", bundle: .module)
+          }
+        }
+        
+      }
+      
+      Divider()
+        .frame(maxWidth: .infinity)
+        .background(Color.gray200)
+      
+      VStack(alignment: .leading, spacing: 8) {
+        Text("Posisi Anda sebagai Pemohon Konsultasi")
+          .bodyLexend(size: 12)
+        
+        ForEach(store.options, id: \.self) { option in
+          RadioButtonView(
+            label: option,
+            isSelected: store.selected == option,
+            action: {
+              store.selected = option
+            }
+          )
+        }
+        
+      }
+      
+      PTextField(
+        title: "Nomor Induk Kependudukan",
+        placeHolder: "Nomor yang tertera di KTP/ KK",
+        value: .constant(""),
+        errorMessage: .constant("")
+      )
+      
+      HStack {
+        RoundedCheckBoxView(isSelected: false) {}
+        
+        Text("Belum punya KTP")
+          .bodyLexend(size: 14)
+      }
+      
+      VStack(alignment: .leading, spacing: 5) {
+        Text("Lokasi Kejadian")
+          .bodyLexend(size: 12)
+        
+        VStack {
+          TextView(
+            text: $store.incident,
+            textStyle: .lexendFont(style: .caption(size: 14)),
+            textColor: .darkTextColor,
+            backgroundColor: .gray050,
+            placeholderText: "Lokasi kejadian kekerasan dalam konsultasi ini",
+            placeholderColor: .gray200
+          )
+          .overlay(
+            RoundedRectangle(cornerRadius: 6)
+              .stroke(
+                true ? Color.gray200 : Color.red,
+                lineWidth: 2
+              )
+          )
+        }
+        .frame(maxWidth: .infinity, idealHeight: 88)
+        .background(Color.gray050)
+        .cornerRadius(6)
+        
+        if !store.incidentErrorMessage.isEmpty {
+          Text(store.incidentErrorMessage)
+            .foregroundColor(Color.red)
+            .captionStyle(size: 12)
+        }
+      }
       
     }
     .padding(.all, 12)
@@ -231,8 +381,8 @@ struct OrderProcessKemenPPPA: View {
               .onReceive(store.timer) { time in
                 if store.timeRemaining > 0 {
                   store.timeRemaining -= 1
-                  let (m,s) = store.secondsToMinutesSeconds(store.timeRemaining)
-                  store.descriptionAIText = "Tersedia dalam \(m):\(s)"
+                  let (minutes, second) = store.secondsToMinutesSeconds(store.timeRemaining)
+                  store.descriptionAIText = "Tersedia dalam \(minutes):\(second)"
                 } else {
                   store.descriptionAIText = "Edit Otomatis (AI)"
                 }
@@ -249,6 +399,15 @@ struct OrderProcessKemenPPPA: View {
       }
     }
   }
+  
+  @ViewBuilder
+  func reasonToContinueConsultation() -> some View {
+    VStack {
+      Text("Alasan Konsultasi Lanjutan")
+      
+    }
+  }
+  
 }
 
 #Preview {

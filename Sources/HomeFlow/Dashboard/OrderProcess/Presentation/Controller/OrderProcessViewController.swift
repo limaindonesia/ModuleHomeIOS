@@ -40,7 +40,7 @@ public class OrderProcessViewController: NiblessViewController {
   public override func loadView() {
     super.loadView()
 
-    let rootView = UIHostingController(rootView: OrderProcessView(store: store))
+    let rootView = UIHostingController(rootView: OrderProcessKemenPPPA(store: store))
     addFullScreen(childViewController: rootView)
   }
 
