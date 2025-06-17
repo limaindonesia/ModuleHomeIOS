@@ -232,7 +232,7 @@ public class ConsultationHistoryStore: ObservableObject {
       categoryAdvocate: "",
       listCategoryID: [],
       listSkillAdvocate: [],
-      listingType: "",
+      listingType: "GENERAL",
       sktmModel: nil
     )
   }

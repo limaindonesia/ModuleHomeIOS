@@ -164,7 +164,7 @@ public struct HomeView: View {
       }.padding(.top, 355)
       
       kemenPPAHotline {
-        store.navigateToProbonoService()
+        store.navigateToKemenPPA()
       }
       
       activeAdvocates(store.onlinedAdvocates)
@@ -813,6 +813,9 @@ public struct HomeView: View {
           Spacer()
         }
       }
+      .onTapGesture {
+        onTapKemenPPA()
+      }
       .background(
         LinearGradient(
           colors: [Color.gradient1KemenPPAHome, Color.gradient2KemenPPAHome],
@@ -918,6 +921,8 @@ public struct HomeView: View {
       }
       .padding(.horizontal, 16)
       .padding(.top, 10)
+    }.onTapGesture {
+      onTapKemenPPA()
     }
     
   }
@@ -1733,7 +1738,8 @@ public struct HomeView: View {
         }
         
         kemenPPABottomSheetView {
-          store.navigateToProbonoService()
+          store.hideConsultationNowBottomSheet()
+          store.navigateToKemenPPA()
         }
       }
       .frame(minHeight: 80)
@@ -1872,7 +1878,8 @@ public struct HomeView: View {
       promotionListNavigator: MockNavigator(),
       loginRepository: MockLoginRepository(),
       otpRepository: MockOTPRepository(),
-      registerNavigator: MockNavigator()
+      registerNavigator: MockNavigator(),
+      kemenPPANavigator: MockNavigator()
     )
   )
 }
