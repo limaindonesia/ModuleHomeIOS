@@ -930,7 +930,7 @@ public class OrderProcessStore: ObservableObject {
       categoryAdvocate: "",
       listCategoryID: [],
       listSkillAdvocate: [],
-      listingType: "",
+      listingType: "GENERAL",
       sktmModel: nil
     )
   }
