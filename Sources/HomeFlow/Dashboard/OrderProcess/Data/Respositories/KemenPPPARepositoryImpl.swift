@@ -7,32 +7,68 @@
 
 public class KemenPPPARepositoryImpl: KemenPPPARepositoryLogic {
   
+  private let remote: KemenPPPARemoteDataSourceLogic
+  
+  public init(remote: KemenPPPARemoteDataSourceLogic) {
+    self.remote = remote
+  }
+  
   public func fetchCategories() async throws -> [ViolenceCategoryEntity] {
     return [
       .init(
         id: 1,
-        title: "Kekerasan Berbasis Gender Siber (KBGS)",
-        description: "Termasuk pemukulan, penyiksaan, atau tindakan fisik..."
+        title: "Kekerasan Fisik dan Psikis",
+        description: "Termasuk pemukulan, penyiksaan, atau tindakan fisik lain yang menyakiti perempuan dan/atau anak, maupun kekerasan psikis yang berupa ancaman, intimidasi, atau perlakuan yang menyebabkan trauma mental."
       ),
       .init(
         id: 2,
-        title: "Kekerasan Fisik",
-        description: "Tindakan menyakiti tubuh secara langsung."
+        title: "Kekerasan Seksual",
+        description: "Pelecehan, pemaksaan hubungan seksual, atau tindakan lain yang bersifat seksual tanpa persetujuan."
       ),
       .init(
         id: 3,
-        title: "Kekerasan Psikis",
-        description: "Bentuk intimidasi, ancaman atau tekanan mental."
+        title: "Kekerasan Berbasis Gender Siber (KBGS)",
+        description: "Ancaman atau penyebaran materi seksual secara daring, termasuk oleh mantan pasangan atau akun anonim ."
       ),
       .init(
         id: 4,
-        title: "Kekerasan Seksual",
-        description: "Pemaksaan hubungan atau tindakan seksual."
+        title: "Eksploitasi dan Perdagangan Orang (TPPO)",
+        description: "Kasus eksploitasi seksual, pekerja anak, atau perdagangan perempuan dan anak."
       ),
       .init(
         id: 5,
-        title: "Eksploitasi Ekonomi",
-        description: "Paksaan kerja tanpa imbalan atau eksploitasi finansial."
+        title: "Penelantaran Anak",
+        description: "Ketidakpedulian terhadap kebutuhan dasar anak, termasuk makanan, pendidikan, dan perlindungan."
+      ),
+      .init(
+        id: 6,
+        title: "Perkawinan Anak",
+        description: "Pernikahan yang melibatkan anak di bawah umur, yang melanggar hak-hak anak."
+      ),
+      .init(
+        id: 7,
+        title: "Anak Berhadapan dengan Hukum (ABH)",
+        description: "Anak yang menjadi pelaku, korban, atau saksi dalam proses hukum."
+      ),
+      .init(
+        id: 8,
+        title: "Diskriminasi terhadap Perempuan dan Anak",
+        description: "Perlakuan tidak adil berdasarkan gender atau usia dalam berbagai aspek kehidupan."
+      ),
+      .init(
+        id: 9,
+        title: "Kekerasan dalam Rumah Tangga (KDRT)",
+        description: "Segala bentuk kekerasan yang terjadi dalam lingkungan keluarga."
+      ),
+      .init(
+        id: 10,
+        title: "Kasus Anak Berkebutuhan Khusus (ABK)",
+        description: "Perlindungan terhadap anak dengan disabilitas atau kebutuhan khusus."
+      ),
+      .init(
+        id: 11,
+        title: "Kasus Perempuan dalam Situasi Khusus",
+        description: "Perempuan penyintas bencana, konflik sosial, atau imigran."
       )
     ]
   }
