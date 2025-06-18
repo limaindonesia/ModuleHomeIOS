@@ -71,6 +71,15 @@ public class ReasonToContinueStore: ObservableObject {
     return reason.title
   }
 
+  public func getSelectedReason() -> ReasonEntity {
+    guard let reason = selectedReason else { return .init() }
+    if reason.id == arrayReasons.last?.id {
+      return ReasonEntity(id: reason.id, title: reasonText)
+    }
+
+    return ReasonEntity(id: reason.id, title: reason.title)
+  }
+  
   private func chooseAnotherReason(_ id: Int) -> AnyPublisher<Bool, Never> {
     return Future<Bool, Never> { completion in
       completion(.success(id == self.arrayReasons.last?.id))
