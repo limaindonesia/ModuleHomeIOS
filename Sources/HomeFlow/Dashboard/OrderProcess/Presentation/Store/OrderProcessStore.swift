@@ -11,7 +11,6 @@ import GnDKit
 import Combine
 import UIKit
 import SwiftUI
-import NaturalLanguage
 
 public class OrderProcessStore: ObservableObject {
   
@@ -37,12 +36,11 @@ public class OrderProcessStore: ObservableObject {
   @Published public var lawyerInfoViewModel: LawyerInfoViewModel = .init()
   @Published public var isPresentBottomSheet: Bool = false
   @Published public var isPresentChangeCategoryIssue: Bool = false
-  @Published public var isPresentReasonToContinue: Bool = true
   @Published public var timeConsultation: String = ""
   @Published public var isTextValid: Bool = true
   @Published public var isScrollToTop: Bool = true
   @Published public var isProbonoActive: Bool = false
-  @Published public var buttonActive: Bool = false
+  @Published public var buttonActive: Bool = true
   @Published public var error: ErrorMessage = .init()
   @Published public var priceCategories: [PriceCategoryViewModel] = []
   @Published public var orderServiceViewModel: [OrderServiceViewModel] = []
@@ -56,14 +54,11 @@ public class OrderProcessStore: ObservableObject {
   @Published public var isAIProcessing: Bool = false
   @Published public var isPresentUndismissableError: Bool = false
   @Published public var timeRemaining = 0
-  @Published public var selected: String? = nil
   @Published public var errorMessage: ErrorMessageWithAction = .init()
   @Published public var isPresentError: Bool = false
   @Published public var didBack: Bool = false
-  @Published public var incident: String = ""
-  @Published public var incidentErrorMessage: String = "Minimal 10 kata"
+  @Published public var selected: String? = nil
   
-  public let options = ["Korban/ Pelapor", "Pelaku/ Terlapor", "Keluarga/ Kerabat"]
   public var priceCategoriesCopy: [PriceCategoryViewModel] = []
   private var treatmentEntities: [TreatmentEntity] = []
   private var orderServiceEntities: [OrderServiceEntityHome] = []
@@ -73,7 +68,7 @@ public class OrderProcessStore: ObservableObject {
   public var typeSelected: String = ""
   private var detailPriceAdvocate: DetailPriceAdvocate?
   public var idCardEntity: IDCardEntity = .init()
-  private var subscriptions = Set<AnyCancellable>()
+  public var subscriptions = Set<AnyCancellable>()
   var timer = Timer.publish(every: 100000, on: .main, in: .common).autoconnect()
   
   public init() {
@@ -128,6 +123,7 @@ public class OrderProcessStore: ObservableObject {
     
     observer()
   }
+  
   
   //MARK: - API
   
@@ -270,6 +266,7 @@ public class OrderProcessStore: ObservableObject {
   }
   
   //MARK: - Other function
+  
   func handleError(error: AIImprovementError) {
     if error.type == .UNRECOGNIZED_DESCRIPTION {
       errorMessage = ErrorMessageWithAction(
@@ -402,18 +399,18 @@ public class OrderProcessStore: ObservableObject {
   }
   
   public func getExperience() -> String {
-    return "\(lawyerInfoViewModel.yearExp ?? "")"
+    return "\(lawyerInfoViewModel.yearExp)"
   }
   
   public func getRating() -> String {
-    return lawyerInfoViewModel.avgRating ?? ""
+    return lawyerInfoViewModel.avgRating
   }
   
   public func getTotalConsultation() -> String {
     if lawyerInfoViewModel.totalConsultations.first?.description ?? "" == "0" {
       return ""
     }
-    return "(\(lawyerInfoViewModel.totalConsultations ?? ""))"
+    return "(\(lawyerInfoViewModel.totalConsultations))"
   }
   
   public func getCategoryPagePayment() -> String {
@@ -738,6 +735,15 @@ public class OrderProcessStore: ObservableObject {
     timeConsultation = "\(entity.duration) Menit"
   }
   
+  public func getApplicantOptions() -> [ApplicantEntity] {
+    return [
+      .init(id: 1, title: "Korban/ Pelapor"),
+      .init(id: 2, title: "Pelaku/ Terlapor"),
+      .init(id: 3, title: "Keluarga/ Kerabat")
+    ]
+  }
+  
+  
   //MARK: - Fetch Local
   
   public func fetchUserSession() async {
@@ -881,6 +887,7 @@ public class OrderProcessStore: ObservableObject {
   public func navigateToUploadSKTM() {
     sktmNavigator.navigateToUploadSKTM()
   }
+
   
   //MARK: - Indicate
   
@@ -911,20 +918,6 @@ public class OrderProcessStore: ObservableObject {
     isLoading = false
   }
   
-  func detectSentences(from text: String) -> [String] {
-    let tokenizer = NLTokenizer(unit: .word)
-    tokenizer.string = text
-    var sentences: [String] = []
-    
-    tokenizer.enumerateTokens(in: text.startIndex..<text.endIndex) { range, _ in
-      let sentence = String(text[range])
-      sentences.append(sentence.trimmingCharacters(in: .whitespacesAndNewlines))
-      return true
-    }
-    
-    return sentences
-  }
-  
   func navigateBack() {
     didBack = true
   }
@@ -941,11 +934,10 @@ public class OrderProcessStore: ObservableObject {
   
   //MARK: - Observer
   
-  private func observer() {
+  open func observer() {
     $descriptions
       .sink { [weak self] str in
-        guard let length = self?.detectSentences(from: str).count
-        else { return }
+        let length = str.detectSentences().count
         if str.count > 0 {
           self?.isTextViewAlreadyEdit = true
         } else {
@@ -956,6 +948,7 @@ public class OrderProcessStore: ObservableObject {
         if length >= 10 {
           self?.descriptionErrorColor = Color.gray600
           self?.isScrollToTop = false
+          self?.buttonActive = true
         } else {
           self?.isScrollToTop = true
         }
@@ -1000,7 +993,10 @@ public class OrderProcessStore: ObservableObject {
 }
 
 public protocol OrderProcessStoreFactory {
-  func makeOrderProcessStore() -> OrderProcessStore
+  func makeOrderProcessStore(
+    advocate: Advocate,
+    selectedPriceCategory: PriceCategoryViewModel
+  ) -> OrderProcessStore
 }
 
 public struct ErrorMessageWithAction: Error {
