@@ -12,11 +12,11 @@ import GnDKit
 public struct ReasonToContinueConsultationView: View {
   
   @ObservedObject public var store: ReasonToContinueStore
-  private var onSendReason: (ReasonEntity, String) -> Void
+  private var onSendReason: (ReasonEntity) -> Void
   
   public init(
     store: ReasonToContinueStore,
-    onSendReason: @escaping (ReasonEntity, String) -> Void
+    onSendReason: @escaping (ReasonEntity) -> Void
   ) {
     self.store = store
     self.onSendReason = onSendReason
@@ -48,10 +48,7 @@ public struct ReasonToContinueConsultationView: View {
             height: 48
           ) {
             if store.enableButton {
-              onSendReason(
-                store.arrayReasons[store.selectedIndex ?? 0],
-                store.reasonText
-              )
+              onSendReason(store.getSelectedReason())
             }
           }
           
@@ -104,11 +101,15 @@ public struct ReasonToContinueConsultationView: View {
       text: store.arrayReasons[index].title,
       isSelected: store.selectedIndex == index
     ) {
-      store.selectedIndex = index
-      store.selectedReason = store.arrayReasons[index]
+      withAnimation {
+        store.selectedIndex = index
+        store.selectedReason = store.arrayReasons[index]
+      }
       
       if index == store.arrayReasons.count - 1 {
-        store.resetReasonText()
+        withAnimation {
+          store.resetReasonText()
+        }
       }
       
     }
@@ -118,8 +119,13 @@ public struct ReasonToContinueConsultationView: View {
 
 #Preview {
   ReasonToContinueConsultationView(
-    store: ReasonToContinueStore(arrayReasons: []),
-    onSendReason: { (entity, anotherReason) in
+    store: ReasonToContinueStore(arrayReasons: [
+      ReasonEntity(id: 1, title: "Adanya Perkembangan Kasus / Bukti Tambahan"),
+      ReasonEntity(id: 2, title: "Membutuhkan Pendapat Lain"),
+      ReasonEntity(id: 3, title: "Membutuhkan Pendapat Lain"),
+      ReasonEntity(id: 4, title: "Lainnya")
+    ]),
+    onSendReason: { _ in
       
     }
   )
