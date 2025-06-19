@@ -138,7 +138,8 @@ public class OrderProcessStore: ObservableObject {
       let entity = try await aiRepository.fetchImproveDescription(
         header: .init(token: userSessionData?.remoteSession.remoteToken),
         parameters: AIImproveParamRequest(
-          description: descriptions
+          description: descriptions,
+          type: .withoutKemenPPPA
         )
       )
       
