@@ -14,7 +14,7 @@ public struct PaymentRejectionRequest: Paramable {
     self.id = id
   }
   
-  func toParam() -> [String : Any] {
+  public func toParam() -> [String : Any] {
     return ["id" : id]
   }
 }

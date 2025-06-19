@@ -10,25 +10,25 @@ import AprodhitKit
 import GnDKit
 
 public struct PaymentParamRequest: Paramable {
-
+  
   public let orderNumber: String
   public let consultationGuideAnswerId: Int?
   public let voucherCode: String?
   public let paymentChannelCategory: String?
-
+  
   public init(
     orderNumber: String,
-    consultationGuideAnswerId: Int? = nil,
-    voucherCode: String? = nil,
-    paymentChannelCategory: String? = nil
+    consultationGuideAnswerId: Int?,
+    voucherCode: String?,
+    paymentChannelCategory: String?
   ) {
     self.orderNumber = orderNumber
     self.consultationGuideAnswerId = consultationGuideAnswerId
     self.voucherCode = voucherCode
     self.paymentChannelCategory = paymentChannelCategory
   }
-
-  func toParam() -> [String : Any] {
+  
+  public func toParam() -> [String : Any] {
     
     var parameters: [String : Any] = ["order_no" : orderNumber]
     

@@ -17,8 +17,7 @@ public struct CancelReasonRequestParams: Paramable {
     self.type = type
   }
   
-  
-  func toParam() -> [String : Any] {
+  public func toParam() -> [String : Any] {
     if let type = type {
       return ["order_type" : type]
     }

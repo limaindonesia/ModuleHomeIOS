@@ -8,13 +8,13 @@
 import SwiftUI
 import GnDKit
 import AprodhitKit
-import ProbonoIDCardModule
 
 struct OrderProcessKemenPPPAView: View {
   
   @ObservedObject var store: OrderProcessKemenPPPAStore
   @State private var reader: ScrollViewProxy?
   @FocusState var isFocused: Bool
+  @StateObject private var keyboard = KeyboardObserver()
   
   var body: some View {
     ZStack {
@@ -37,6 +37,7 @@ struct OrderProcessKemenPPPAView: View {
               explanationView()
                 .padding(.horizontal, 16)
             }
+            .padding(.bottom, keyboard.keyboardHeight)
             .padding(.vertical, 16)
             
           }
@@ -54,9 +55,7 @@ struct OrderProcessKemenPPPAView: View {
           height: 40,
           isActive: store.buttonActive
         ) {
-          Task {
-            await store.requestToProcessKemenPPPA()
-          }
+          store.requestToProcessKemenPPPA()
         }
         .frame(maxWidth: .infinity, maxHeight: 40)
         .padding(.horizontal, 16)
@@ -154,7 +153,9 @@ struct OrderProcessKemenPPPAView: View {
       CustomBottomSheetView(isPresented: $store.isPresentPrivacyKemenPPPA) {
         PrivacyPolicyKemenPPPAView(htmlText: store.htmlText) {
           store.isPresentPrivacyKemenPPPA = false
-          store.navigateToWaitingRoom()
+          Task {
+            await store.createConsultation()
+          }
         }
       }
     }
@@ -335,6 +336,7 @@ struct OrderProcessKemenPPPAView: View {
     .background(Color.white)
     .clipShape(RoundedRectangle(cornerRadius: 12))
     .shadow(color: Color.gray200, radius: 5)
+    .focused($isFocused)
   }
   
   @ViewBuilder
@@ -465,6 +467,7 @@ struct OrderProcessKemenPPPAView: View {
         Button {
           withAnimation(.bouncy) {
             store.isPresentViolenceBottomSheet = true
+            isFocused = false
           }
         } label: {
           HStack {
@@ -497,6 +500,7 @@ struct OrderProcessKemenPPPAView: View {
           isSelected: store.selectedApplicant == option,
           action: {
             store.selectedApplicant = option
+            isFocused = false
           }
         )
       }

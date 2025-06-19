@@ -11,7 +11,7 @@ public struct CategoryParamRequest: Paramable {
 
   let name: String
 
-  func toParam() -> [String : Any] {
+  public func toParam() -> [String : Any] {
     return ["name": name]
   }
 

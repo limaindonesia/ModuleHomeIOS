@@ -8,6 +8,7 @@
 import Foundation
 import AprodhitKit
 import GnDKit
+import Combine
 
 public class OrderProcessKemenPPPAStore: OrderProcessStore {
   
@@ -80,7 +81,8 @@ public class OrderProcessKemenPPPAStore: OrderProcessStore {
   @MainActor
   public func fetchKemenPPPACategory() async {
     do {
-      violences = try await kemenPPPARepository.fetchCategories()
+      let token = userSessionData?.remoteSession.remoteToken
+      violences = try await kemenPPPARepository.fetchCategories(headers: HeaderRequest(token: token))
     } catch {
       guard let error = error as? ErrorMessage else { return }
       indicateError(error)
@@ -91,7 +93,8 @@ public class OrderProcessKemenPPPAStore: OrderProcessStore {
   @MainActor
   public func fetchReasonKemenPPPA() async {
     do {
-      reasonsKemenPPPA = try await kemenPPPARepository.fetchReasonsKemenPPPA()
+      let token = userSessionData?.remoteSession.remoteToken
+      reasonsKemenPPPA = try await kemenPPPARepository.fetchReasonsKemenPPPA(headers: HeaderRequest(token: token))
     } catch {
       guard let error = error as? ErrorMessage else { return }
       indicateError(error)
@@ -99,7 +102,17 @@ public class OrderProcessKemenPPPAStore: OrderProcessStore {
   }
   
   @MainActor
-  public func requestToProcessKemenPPPA() async {
+  public func fetchPrivacyPolicyKemenPPPA() async {
+    do {
+      let token = userSessionData?.remoteSession.remoteToken
+      htmlText = try await kemenPPPARepository.fetchPrivacyPolicyKemenPPPA(headers: HeaderRequest(token: token))
+    } catch {
+      guard let error = error as? ErrorMessage else { return }
+      indicateError(error)
+    }
+  }
+  
+  public func requestToProcessKemenPPPA() {
     descriptionErrorMessage = ""
     violenceErrorMessage = ""
     applicantErrorMessage = ""
@@ -135,18 +148,45 @@ public class OrderProcessKemenPPPAStore: OrderProcessStore {
     }
     
     isPresentPrivacyKemenPPPA = true
-    
   }
   
   @MainActor
-  public func fetchPrivacyPolicyKemenPPPA() async {
+  public func createConsultation() async {
+    let consultation = KemenPPPAParamRequest.Consultation(
+      orderType: "KEMENPPPA",
+      lawyerID: lawyerInfoViewModel.id,
+      skillID: advocate.detail.first??.skill_id ?? 0,
+      description: descriptions
+    )
+    
+    let form = KemenPPPAParamRequest.Form(
+      reasonFollowUpConsultation: selectedReason?.title,
+      relation: selectedApplicant!.title,
+      identifier: identityNumber,
+      caseLocation: incident
+    )
+    
+    let kemenPPPAParamRequest = KemenPPPAParamRequest(
+      type: "INSTANT_CONSULTATION",
+      consultation: consultation,
+      form: form
+    )
+    
     do {
-      htmlText = try await kemenPPPARepository.fetchPrivacyPolicyKemenPPPA()
+      let token = userSessionData?.remoteSession.remoteToken
+      let roomKey = try await kemenPPPARepository.requestCreateConsultationKemenPPPA(
+        headers: HeaderRequest(token: token),
+        params: kemenPPPAParamRequest
+      )
+      
+      navigateToWaitingRoom(roomKey)
     } catch {
       guard let error = error as? ErrorMessage else { return }
       indicateError(error)
     }
+    
   }
+  
   
   //MARK: - Other Function
   
@@ -154,8 +194,8 @@ public class OrderProcessKemenPPPAStore: OrderProcessStore {
   
   //MARK: - Navigator
   
-  public func navigateToWaitingRoom() {
-    waitingRoomNavigator.navigateToWaitingRoom(userCases: .init(), roomKey: "")
+  public func navigateToWaitingRoom(_ roomKey: String) {
+    waitingRoomNavigator.navigateToWaitingRoom(userCases: .init(), roomKey: roomKey)
   }
   
   
@@ -171,6 +211,7 @@ public class OrderProcessKemenPPPAStore: OrderProcessStore {
   
   public func indicateError(_ error: ErrorMessage) {
     isLoading = false
+    self.error = error
   }
   
   public override func observer() {

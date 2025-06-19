@@ -98,6 +98,13 @@ public class OrderProcessViewController: NiblessViewController {
         }
       }.store(in: &subscriptions)
     
+    kemenPPPAStore.$error
+      .dropFirst()
+      .receive(on: RunLoop.main)
+      .subscribe(on: RunLoop.main)
+      .sink { message in
+        self.present(errorMessage: message)
+      }.store(in: &subscriptions)
   }
 
   private func showChangeCategoryPopUp() {

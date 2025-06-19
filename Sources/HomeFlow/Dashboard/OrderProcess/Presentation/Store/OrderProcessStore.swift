@@ -62,7 +62,7 @@ public class OrderProcessStore: ObservableObject {
   public var priceCategoriesCopy: [PriceCategoryViewModel] = []
   private var treatmentEntities: [TreatmentEntity] = []
   private var orderServiceEntities: [OrderServiceEntityHome] = []
-  private var userSessionData: UserSessionData?
+  public internal(set) var userSessionData: UserSessionData?
   public var isLoading: Bool = false
   public var message: String = ""
   public var typeSelected: String = ""
@@ -147,7 +147,7 @@ public class OrderProcessStore: ObservableObject {
         resetDescriptionState()
         return
       }
-      //2025-06-13T10:39:03.000000Z
+      
       if !entity.availableAt.isEmpty {
         let interval = Date().distance(to: entity.availableAt.toDate() ?? Date())
         timeRemaining = Int(interval)

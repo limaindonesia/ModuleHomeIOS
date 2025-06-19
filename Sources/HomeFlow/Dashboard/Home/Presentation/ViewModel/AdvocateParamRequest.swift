@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol Paramable {
+public protocol Paramable {
   func toParam() -> [String: Any]
 }
 
@@ -15,7 +15,7 @@ public struct AdvocateParamRequest: Paramable, Equatable {
 
   let isOnline: Bool?
 
-  func toParam() -> [String : Any] {
+  public func toParam() -> [String : Any] {
 
     var parameters: [String: Any] = [:]
 

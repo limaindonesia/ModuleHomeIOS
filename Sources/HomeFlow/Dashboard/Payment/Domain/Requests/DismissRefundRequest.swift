@@ -15,7 +15,7 @@ public struct DismissRefundRequest: Paramable {
     self.id = id
   }
   
-  func toParam() -> [String : Any] {
+  public func toParam() -> [String : Any] {
     return ["consultation_id" : id]
   }
 }

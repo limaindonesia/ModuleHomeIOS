@@ -40,7 +40,7 @@ public struct UserCasesParamRequest: Paramable {
     self.page = page
   }
   
-  func toParam() -> [String : Any] {
+  public func toParam() -> [String : Any] {
     
     var params: [String : Any] = ["type" : type.rawValue]
     

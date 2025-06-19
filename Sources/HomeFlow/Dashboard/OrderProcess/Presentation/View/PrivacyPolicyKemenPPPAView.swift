@@ -90,9 +90,10 @@ public struct PrivacyPolicyKemenPPPAView: View {
         height: 40,
         isActive: agreed
       ) {
-        
+        onNext()
       }
       .padding(.horizontal, 16)
+      .padding(.bottom)
     }
   }
   
