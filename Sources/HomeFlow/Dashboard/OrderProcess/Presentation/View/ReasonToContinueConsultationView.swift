@@ -8,17 +8,31 @@
 import SwiftUI
 import AprodhitKit
 import GnDKit
+import Combine
 
 public struct ReasonToContinueConsultationView: View {
   
-  @ObservedObject public var store: ReasonToContinueStore
+  public let arrayReasons: [ReasonEntity]
+  @Binding var selectedReason: ReasonEntity?
+  @Binding var reasonText: String
   private var onSendReason: (ReasonEntity) -> Void
   
+  @State var didTapReject: Bool = false
+  @State var didTapCancel: Bool = false
+  @State var showTextView: Bool = false
+  @State var enableButton: Bool = false
+  @State var reasonTextErrorMessage: String = ""
+  @State var isTextValid: Bool = true
+  
   public init(
-    store: ReasonToContinueStore,
+    arrayReasons: [ReasonEntity],
+    selectedReason: Binding<ReasonEntity?>,
+    reasonText: Binding<String>,
     onSendReason: @escaping (ReasonEntity) -> Void
   ) {
-    self.store = store
+    self.arrayReasons = arrayReasons
+    self._selectedReason = selectedReason
+    self._reasonText = reasonText
     self.onSendReason = onSendReason
   }
   
@@ -30,37 +44,37 @@ public struct ReasonToContinueConsultationView: View {
           Text("Alasan Konsultasi Lanjutan")
             .titleLexend(size: 20)
           
-          ForEach(0..<store.arrayReasons.count, id: \.self) { index in
+          ForEach(0..<arrayReasons.count, id: \.self) { index in
             optionView(index)
               .padding(.leading, 2)
           }
           
-          if store.showTextView {
+          if showTextView {
             reasonTextView()
           }
           
           ButtonPrimary(
             title: "Pilih",
-            color: store.enableButton
+            color: enableButton
             ? Color.buttonActiveColor
             : Color.gray100,
             width: .infinity,
             height: 48
           ) {
-            if store.enableButton {
-              onSendReason(store.getSelectedReason())
+            if enableButton {
+              onSendReason(selectedReason!)
             }
           }
           
         }
         .padding(.vertical, 8)
       }
-      .onAppear {
-        store.selectedIndex = store.findSelectedIndex()
-      }
       .keyboardResponsive()
     }
     .padding(.horizontal, 16)
+    .onAppear {
+      chooseAnotherReason(selectedReason?.id)
+    }
   }
   
   @ViewBuilder
@@ -68,24 +82,27 @@ public struct ReasonToContinueConsultationView: View {
     VStack(alignment: .leading) {
       VStack {
         TextView(
-          text: $store.reasonText,
+          text: $reasonText,
           textStyle: .lexendFont(style: .caption(size: 12)),
           textColor: .darkTextColor,
-          backgroundColor: store.selectedIndex == store.arrayReasons.last?.id ? .clear : .gray050
+          backgroundColor: selectedReason?.id == arrayReasons.last?.id ? .clear : .gray050
         )
         .overlay(
           RoundedRectangle(cornerRadius: 6)
             .stroke(
-              store.isTextValid ? Color.gray500 : Color.red,
+              isTextValid ? Color.gray500 : Color.red,
               lineWidth: 2
             )
         )
+        .onChange(of: reasonText) { _ in
+          enableButton = enabledButtonOnlyWhenChoosingAnotherReason()
+        }
       }
       .frame(maxWidth: .infinity, idealHeight: 88)
       .background(Color.gray050)
       .cornerRadius(6)
       
-      if !store.isTextValid {
+      if !isTextValid {
         Text("*Minimal 10 Karakter")
           .foregroundColor(Color.danger500)
           .bodyLexend(size: 12)
@@ -98,35 +115,60 @@ public struct ReasonToContinueConsultationView: View {
   @ViewBuilder
   func optionView(_ index: Int) -> some View {
     OptionView(
-      text: store.arrayReasons[index].title,
-      isSelected: store.selectedIndex == index
+      text: arrayReasons[index].title,
+      isSelected: selectedReason?.id == arrayReasons[index].id
     ) {
       withAnimation {
-        store.selectedIndex = index
-        store.selectedReason = store.arrayReasons[index]
+        selectedReason = arrayReasons[index]
+        chooseAnotherReason(selectedReason?.id ?? 0)
+        enableButton = enabledButtonOnlyWhenChoosingAnotherReason()
       }
       
-      if index == store.arrayReasons.count - 1 {
+      if index == arrayReasons.count - 1 {
         withAnimation {
-          store.resetReasonText()
+          resetReasonText()
         }
       }
       
     }
     
   }
+  
+  public func resetReasonText() {
+    isTextValid = true
+  }
+  
+  private func enabledButtonOnlyWhenChoosingAnotherReason() -> Bool {
+    if selectedReason?.id == arrayReasons.last?.id {
+      return !reasonText.isEmpty && reasonText.count >= 10
+    }
+    
+    return true
+  }
+
+  public func isValidText(_ text: String) -> AnyPublisher<Bool, Never> {
+    return Future<Bool, Never> { promise in
+      promise(.success(text.count > 10))
+    }.eraseToAnyPublisher()
+  }
+  
+  public func chooseAnotherReason(_ id: Int?) {
+    showTextView = id == arrayReasons.last?.id
+    reasonText = id == arrayReasons.last?.id ? reasonText : ""
+  }
+  
 }
 
 #Preview {
   ReasonToContinueConsultationView(
-    store: ReasonToContinueStore(arrayReasons: [
+    arrayReasons: [
       ReasonEntity(id: 1, title: "Adanya Perkembangan Kasus / Bukti Tambahan"),
       ReasonEntity(id: 2, title: "Membutuhkan Pendapat Lain"),
       ReasonEntity(id: 3, title: "Membutuhkan Pendapat Lain"),
       ReasonEntity(id: 4, title: "Lainnya")
-    ]),
-    onSendReason: { _ in
-      
-    }
+    ],
+    selectedReason: .constant(nil),
+    reasonText: .constant(""),
+    onSendReason: { _ in }
   )
 }

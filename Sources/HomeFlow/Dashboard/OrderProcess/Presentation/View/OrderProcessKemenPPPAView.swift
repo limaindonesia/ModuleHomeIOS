@@ -131,9 +131,9 @@ struct OrderProcessKemenPPPAView: View {
       
       BottomSheetView(isPresented: $store.isPresentReasonToContinue) {
         ReasonToContinueConsultationView(
-          store: ReasonToContinueStore(
-            arrayReasons: store.reasonsKemenPPPA
-          ),
+          arrayReasons: store.reasonsKemenPPPA,
+          selectedReason: $store.selectedReason,
+          reasonText: $store.reasonToContinueText,
           onSendReason: { entity in
             store.selectedReason = entity
             store.isPresentReasonToContinue = false
@@ -354,7 +354,12 @@ struct OrderProcessKemenPPPAView: View {
         )
         .overlay(
           RoundedRectangle(cornerRadius: 6)
-            .stroke(store.isShowErrorTextView() ? Color.danger500 : store.descriptionErrorColor , lineWidth: 2)
+            .stroke(
+              store.isShowErrorTextView()
+              ? Color.danger500
+              : store.descriptionErrorColor,
+              lineWidth: 2
+            )
         )
         .focused($isFocused)
       }

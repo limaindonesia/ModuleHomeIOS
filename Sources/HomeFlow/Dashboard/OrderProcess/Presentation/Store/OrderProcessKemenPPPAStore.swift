@@ -32,6 +32,7 @@ public class OrderProcessKemenPPPAStore: OrderProcessStore {
   @Published public var applicantOptions: [ApplicantEntity] = []
   @Published public var reasonsKemenPPPA: [ReasonEntity] = []
   @Published public var selectedReason: ReasonEntity?
+  @Published public var reasonToContinueText: String = ""
   
   public init(
     advocate: Advocate,

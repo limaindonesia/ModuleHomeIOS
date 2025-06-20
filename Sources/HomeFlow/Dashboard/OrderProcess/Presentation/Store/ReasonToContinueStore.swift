@@ -12,23 +12,26 @@ public class ReasonToContinueStore: ObservableObject {
   
   public let arrayReasons: [ReasonEntity]
   var consultationID: Int?
-
-  @Published public var selectedReason: ReasonEntity? = nil
+  
+  @Published public var selectedReason: ReasonEntity?
   @Published var reasonText: String = ""
   @Published var didTapReject: Bool = false
   @Published var didTapCancel: Bool = false
   @Published var showTextView: Bool = false
   @Published var enableButton: Bool = false
   @Published var reasonTextErrorMessage: String = ""
-  @Published var selectedID: Int = 0
   @Published var selectedIndex: Int? = nil
   @Published var isTextValid: Bool = true
   
   public var subscriptions = Set<AnyCancellable>()
 
-  public init(arrayReasons: [ReasonEntity]) {
+  public init(
+    arrayReasons: [ReasonEntity],
+    selectedReason: ReasonEntity?
+  ) {
     self.arrayReasons = arrayReasons
-
+    self.selectedReason = selectedReason
+    
     $selectedReason
       .compactMap { $0 }
       .flatMap { item in
@@ -97,13 +100,17 @@ public class ReasonToContinueStore: ObservableObject {
   }
   
   public func findSelectedIndex() -> Int? {
-    return arrayReasons.firstIndex{ $0.id == selectedID }
+    return arrayReasons.firstIndex{ $0.id == selectedReason?.id }
   }
   
   public func isValidText(_ text: String) -> AnyPublisher<Bool, Never> {
     return Future<Bool, Never> { promise in
       promise(.success(text.count > 10))
     }.eraseToAnyPublisher()
+  }
+  
+  public func chooseAnotherReason(_ id: Int) {
+    showTextView = id == self.arrayReasons.last?.id
   }
   
 }

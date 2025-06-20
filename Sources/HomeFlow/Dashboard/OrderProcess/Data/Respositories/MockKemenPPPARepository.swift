@@ -72,12 +72,11 @@ public class MockKemenPPPARepository: KemenPPPARepositoryLogic {
   }
   
   public func fetchReasonsKemenPPPA(headers: HeaderRequest) async throws -> [ReasonEntity] {
-    //    return [
-    //      .init(id: 1, title: "Adanya Perkembangan Kasus / Bukti Tambahan"),
-    //      .init(id: 2, title: "Membutuhkan Pendapat Lain"),
-    //      .init(id: 3, title: "Lainnya")
-    //    ]
-    return []
+    return [
+      .init(id: 1, title: "Adanya Perkembangan Kasus / Bukti Tambahan"),
+      .init(id: 2, title: "Membutuhkan Pendapat Lain"),
+      .init(id: 3, title: "Lainnya")
+    ]
   }
   
   public func fetchPrivacyPolicyKemenPPPA(headers: HeaderRequest) async throws -> String {

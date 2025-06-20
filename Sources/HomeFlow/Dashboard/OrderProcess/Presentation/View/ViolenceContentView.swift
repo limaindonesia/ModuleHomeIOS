@@ -95,24 +95,25 @@ public struct ViolenceContentView: View {
     }
     .padding(.leading, 16)
     .padding(.vertical, 16)
-    .background(Color.white)
+    .background(selected == violence ? Color.primaryInfo050 : Color.white)
     .clipShape(RoundedRectangle(cornerRadius: 12))
     .overlay {
       RoundedRectangle(cornerRadius: 12)
-        .stroke(Color.gray200, lineWidth: 1)
+        .stroke(
+          selected == violence
+          ? Color.primaryInfo200
+          : Color.gray200,
+          lineWidth: 1
+        )
     }
     .padding(.horizontal, 16)
     .padding(.vertical, 3)
     .onTapGesture {
-      selected = violence
+      withAnimation {
+        selected = violence
+      }
     }
     
-  }
-  
-  private func selectAction() {
-    for violence in violences {
-      
-    }
   }
   
 }
