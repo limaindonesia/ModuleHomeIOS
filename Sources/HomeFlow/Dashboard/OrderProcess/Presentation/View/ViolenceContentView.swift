@@ -12,17 +12,18 @@ public struct ViolenceContentView: View {
   
   //dependency
   private let violences: [ViolenceCategoryEntity]
-  @Binding private var isPresent: Bool
-  
   @State private var selected: ViolenceCategoryEntity?
+  @Binding private var isPresent: Bool
   private var onSelect: (ViolenceCategoryEntity?) -> Void
   
   public init(
     violences: [ViolenceCategoryEntity],
+    selected: ViolenceCategoryEntity?,
     isPresent: Binding<Bool>,
     onSelect: @escaping (ViolenceCategoryEntity?) -> Void
   ) {
     self.violences = violences
+    self.selected = selected
     self._isPresent = isPresent
     self.onSelect = onSelect
   }
@@ -108,11 +109,18 @@ public struct ViolenceContentView: View {
     
   }
   
+  private func selectAction() {
+    for violence in violences {
+      
+    }
+  }
+  
 }
 
 #Preview {
   ViolenceContentView(
     violences: [],
+    selected: nil,
     isPresent: .constant(true)
   ) { _ in
     

@@ -144,6 +144,7 @@ struct OrderProcessKemenPPPAView: View {
       CustomBottomSheetView(isPresented: $store.isPresentViolenceBottomSheet) {
         ViolenceContentView(
           violences: store.violences,
+          selected: store.selectedViolence,
           isPresent: $store.isPresentViolenceBottomSheet
         ) { violence in
           store.selectedViolence = violence
