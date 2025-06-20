@@ -220,16 +220,19 @@ public class OrderProcessKemenPPPAStore: OrderProcessStore {
     $selectedViolence
       .sink { [weak self] _ in
         self?.buttonActive = true
+        self?.violenceErrorMessage = ""
       }.store(in: &subscriptions)
     
     $selectedApplicant
       .sink { [weak self] _ in
         self?.buttonActive = true
+        self?.applicantErrorMessage = ""
       }.store(in: &subscriptions)
     
     $identityNumber
       .sink { [weak self] _ in
         self?.buttonActive = true
+        self?.identityNumberErrorMessage = ""
       }.store(in: &subscriptions)
     
     $incident

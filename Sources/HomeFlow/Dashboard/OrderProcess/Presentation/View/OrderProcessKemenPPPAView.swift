@@ -364,7 +364,7 @@ struct OrderProcessKemenPPPAView: View {
       
       HStack {
         Text("Minimal 10 kata")
-          .foregroundStyle(Color.gray600)
+          .foregroundStyle(store.descriptionErrorColor)
           .captionLexend(size: 12)
         
         Spacer()
