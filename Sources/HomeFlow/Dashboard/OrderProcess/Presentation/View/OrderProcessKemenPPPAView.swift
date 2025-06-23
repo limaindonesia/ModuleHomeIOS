@@ -52,8 +52,7 @@ struct OrderProcessKemenPPPAView: View {
           title: "Lanjutkan Proses",
           color: .buttonActiveColor,
           width: .infinity,
-          height: 40,
-          isActive: store.buttonActive
+          height: 40
         ) {
           store.requestToProcessKemenPPPA()
         }
