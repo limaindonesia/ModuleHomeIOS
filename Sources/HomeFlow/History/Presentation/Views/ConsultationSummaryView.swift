@@ -40,22 +40,9 @@ public struct ConsultationSummaryView: View {
   func successView() -> some View {
     VStack(spacing: 12) {
       
-      if showHistoryChat() {
-        chatHistoryView()
-      } else {
-        chatHiddenInfo()
-      }
+      historyView()
       
-      if isSkillHasEdited {
-        categoryEdited()
-        Text("Terakhir diperbarui : \(editedDate)")
-          .captionLexend(size: 12)
-          .frame(maxWidth: .infinity, alignment: .leading)
-          .padding(.horizontal, 16)
-        
-      } else {
-        category()
-      }
+      categoryView()
       
       if isRatingEmpty() {
         HStack {
@@ -162,38 +149,6 @@ public struct ConsultationSummaryView: View {
       }
       .padding(.horizontal, 16)
     }
-  }
-  
-  @ViewBuilder
-  func category() -> some View {
-    VStack(alignment: .leading, spacing: 12) {
-      Text("Kategori Konsultasi:")
-        .foregroundStyle(Color.darkTextColor)
-        .bodyLexend(size: 12)
-      
-      HStack(spacing: 8) {
-        LabelView(
-          title: issue,
-          textColor: Color.primaryInfo600,
-          radius: 12
-        )
-        
-        LabelView(
-          title: subIssue,
-          textColor: Color.gray500,
-          radius: 12
-        )
-      }
-    }
-    .padding(.horizontal, 8)
-    .padding(.vertical, 8)
-    .background(Color.white)
-    .frame(maxWidth: .infinity, alignment: .leading)
-    .clipShape(RoundedRectangle(cornerRadius: 8))
-    .overlay {
-      RoundedRectangle(cornerRadius: 8).stroke(Color.gray100, lineWidth: 1)
-    }
-    .padding(.horizontal, 16)
   }
   
   @ViewBuilder
@@ -339,6 +294,59 @@ public struct ConsultationSummaryView: View {
       Text("Advokat sedang menyiapkan ringkasan konsultasi. Anda akan mendapatkan notifikasi setelah tersedia.")
         .captionLexend(size: 16)
         .multilineTextAlignment(.center)
+    }
+  }
+  
+  @ViewBuilder
+  func categoryView() ->  some View {
+    if isSkillHasEdited {
+      categoryEdited()
+      
+      if !editedDate.isEmpty {
+        Text("Terakhir diperbarui : \(editedDate)")
+          .captionLexend(size: 12)
+          .frame(maxWidth: .infinity, alignment: .leading)
+          .padding(.horizontal, 16)
+      }
+      
+    } else {
+      VStack(alignment: .leading, spacing: 12) {
+        Text("Kategori Konsultasi:")
+          .foregroundStyle(Color.darkTextColor)
+          .bodyLexend(size: 12)
+        
+        HStack(spacing: 8) {
+          LabelView(
+            title: issue,
+            textColor: Color.primaryInfo600,
+            radius: 12
+          )
+          
+          LabelView(
+            title: subIssue,
+            textColor: Color.gray500,
+            radius: 12
+          )
+        }
+      }
+      .padding(.horizontal, 8)
+      .padding(.vertical, 8)
+      .background(Color.white)
+      .frame(maxWidth: .infinity, alignment: .leading)
+      .clipShape(RoundedRectangle(cornerRadius: 8))
+      .overlay {
+        RoundedRectangle(cornerRadius: 8).stroke(Color.gray100, lineWidth: 1)
+      }
+      .padding(.horizontal, 16)
+    }
+  }
+  
+  @ViewBuilder
+  func historyView() -> some View {
+    if showHistoryChat() {
+      chatHistoryView()
+    } else {
+      chatHiddenInfo()
     }
   }
   
