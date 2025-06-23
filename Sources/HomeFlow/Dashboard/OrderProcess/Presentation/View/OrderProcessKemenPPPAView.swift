@@ -287,6 +287,7 @@ struct OrderProcessKemenPPPAView: View {
         value: $store.identityNumber,
         errorMessage: $store.identityNumberErrorMessage
       )
+      .disabled(store.didNotHaveIdentity)
       
       HStack {
         RoundedCheckBoxView(isSelected: store.didNotHaveIdentity) {

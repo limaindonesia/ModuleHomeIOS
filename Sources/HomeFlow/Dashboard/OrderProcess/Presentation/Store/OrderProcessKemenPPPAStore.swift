@@ -139,16 +139,13 @@ public class OrderProcessKemenPPPAStore: OrderProcessStore {
     if incident.isEmpty {
       incidentErrorMessage = "Lokasi kejadian harus diisi"
     }
-    
-    if descriptions.isEmpty || selectedViolence == nil
-        || selectedApplicant == nil || identityNumber.isEmpty
-        || incident.isEmpty {
-      
-      buttonActive = false
-      return
+  
+    if didNotHaveIdentity {
+      checkWithoutIdentity()
+    } else {
+      checkWithIdentity()
     }
     
-    isPresentPrivacyKemenPPPA = true
   }
   
   @MainActor
@@ -163,7 +160,7 @@ public class OrderProcessKemenPPPAStore: OrderProcessStore {
     let form = KemenPPPAParamRequest.Form(
       reasonFollowUpConsultation: selectedReason?.title,
       relation: selectedApplicant!.title,
-      identifier: identityNumber,
+      identifier: didNotHaveIdentity ? "" : identityNumber,
       caseLocation: incident
     )
     
@@ -191,6 +188,22 @@ public class OrderProcessKemenPPPAStore: OrderProcessStore {
   
   //MARK: - Other Function
   
+  private func checkWithIdentity() {
+    if descriptions.isEmpty || selectedViolence == nil || selectedApplicant == nil
+        || identityNumber.isEmpty || incident.isEmpty {
+      buttonActive = false
+      return
+    }
+    isPresentPrivacyKemenPPPA = true
+  }
+  
+  private func checkWithoutIdentity() {
+    if descriptions.isEmpty || selectedViolence == nil || selectedApplicant == nil || incident.isEmpty {
+      buttonActive = false
+      return
+    }
+    isPresentPrivacyKemenPPPA = true
+  }
   
   
   //MARK: - Navigator
