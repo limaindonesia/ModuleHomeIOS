@@ -49,6 +49,10 @@ public struct ConsultationSummaryView: View {
       if isSkillHasEdited {
         categoryEdited()
         Text("Terakhir diperbarui : \(editedDate)")
+          .captionLexend(size: 12)
+          .frame(maxWidth: .infinity, alignment: .leading)
+          .padding(.horizontal, 16)
+        
       } else {
         category()
       }
@@ -380,12 +384,12 @@ extension ConsultationSummaryView {
   }
   
   public var isSkillHasEdited: Bool {
-    guard let oldSkill = userCases.skill?.name,
-          let newSkill = userCases.summary?.skill?.name else {
+    guard let oldSkill = userCases.skill?.id,
+          let newSkill = userCases.summary?.skill?.id else {
       return false
     }
     
-    return oldSkill.lowercased().contains(newSkill.lowercased())
+    return oldSkill != newSkill
   }
   
   public var editedDate: String {
@@ -398,11 +402,7 @@ extension ConsultationSummaryView {
   }
   
   public var isSummaryHasBeenSent: Bool {
-    guard let _ = userCases.summary else {
-      return false
-    }
-    
-    return true
+    return userCases.summary?.matter != nil
   }
   
   public func showHistoryChat() -> Bool {
