@@ -13,13 +13,16 @@ public struct ConsultationSummaryView: View {
   
   public var userCases: UserCases
   public var onTapShowChat: ((UserCases, Int, String) -> Void)?
+  public var onTapReview: ((UserCases) -> Void)?
   
   public init(
     userCases: UserCases,
-    onTapShowChat: (@escaping ((UserCases, Int, String) -> Void))
+    onTapShowChat: (@escaping ((UserCases, Int, String) -> Void)),
+    onTapReview: (@escaping (UserCases) -> Void)
   ) {
     self.userCases = userCases
     self.onTapShowChat = onTapShowChat
+    self.onTapReview = onTapReview
   }
   
   public var body: some View {
@@ -62,7 +65,7 @@ public struct ConsultationSummaryView: View {
           Spacer()
           
           Button {
-            
+            onTapReview?(userCases)
           } label: {
             Text("Beri Penilaian")
               .foregroundStyle(Color.buttonActiveColor)
@@ -420,7 +423,7 @@ extension ConsultationSummaryView {
   
   public func isRatingEmpty() -> Bool {
     guard let rating = userCases.lawyer_rating?.value else { return false }
-    return rating > 0
+    return rating == 0
   }
   
   public func navigateToChat(
