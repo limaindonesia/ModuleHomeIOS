@@ -299,7 +299,7 @@ public struct ConsultationSummaryView: View {
   func chatHiddenInfo() -> some View {
     HStack(alignment: .top) {
       Text("Demi keamanan privasi, chat konsultasi otomatis terhapus setelah 24 jam sesi selesai.")
-        .foregroundStyle(Color.warning600)
+        .foregroundStyle(Color.warning800)
         .captionLexend(size: 12)
       
       Spacer()
@@ -308,7 +308,7 @@ public struct ConsultationSummaryView: View {
         
       } label: {
         Image(systemName: "xmark")
-          .foregroundStyle(Color.warning600)
+          .foregroundStyle(Color.warning800)
       }
       
     }
