@@ -25,6 +25,7 @@ public class OrderProcessKemenPPPAStore: OrderProcessStore {
   @Published public var applicantErrorMessage: String = ""
   @Published public var incidentErrorMessage: String = ""
   @Published public var identityNumberErrorMessage: String = ""
+  @Published public var reasonErrorMessage: String = ""
   @Published public var htmlText: String = ""
   @Published public var selectedApplicant: ApplicantEntity?
   @Published public var selectedViolence: ViolenceCategoryEntity?
@@ -132,8 +133,14 @@ public class OrderProcessKemenPPPAStore: OrderProcessStore {
       applicantErrorMessage = "Posisi pemohon harus diisi"
     }
     
+    if selectedReason == nil {
+      reasonErrorMessage = "Alasan konsultasi lanjutan harus diisi"
+    }
+    
     if !didNotHaveIdentity && identityNumber.isEmpty {
       identityNumberErrorMessage = "NIK harus diisi"
+    } else if !didNotHaveIdentity && identityNumber.count < 16 {
+      identityNumberErrorMessage = "Minimal 16 digit"
     }
     
     if incident.isEmpty {
@@ -230,6 +237,19 @@ public class OrderProcessKemenPPPAStore: OrderProcessStore {
   
   public override func observer() {
     super.observer()
+    
+    $didNotHaveIdentity
+      .sink { [weak self] state in
+        if state { 
+          self?.identityNumber = ""
+        }
+      }.store(in: &subscriptions)
+    
+    $selectedReason
+      .sink { [weak self] _ in
+        self?.buttonActive = true
+        self?.reasonErrorMessage = ""
+      }.store(in: &subscriptions)
     
     $selectedViolence
       .sink { [weak self] _ in

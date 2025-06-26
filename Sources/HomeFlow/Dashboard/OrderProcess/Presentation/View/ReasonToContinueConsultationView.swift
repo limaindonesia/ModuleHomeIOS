@@ -94,7 +94,8 @@ public struct ReasonToContinueConsultationView: View {
               lineWidth: 2
             )
         )
-        .onChange(of: reasonText) { _ in
+        .onChange(of: reasonText) { newValue in
+          isTextValid = isValidText(newValue)
           enableButton = enabledButtonOnlyWhenChoosingAnotherReason()
         }
       }
@@ -103,7 +104,7 @@ public struct ReasonToContinueConsultationView: View {
       .cornerRadius(6)
       
       if !isTextValid {
-        Text("*Minimal 10 Karakter")
+        Text("Mohon masukkan minimal 10 karakter")
           .foregroundColor(Color.danger500)
           .bodyLexend(size: 12)
           .padding(.bottom, 16)
@@ -145,11 +146,9 @@ public struct ReasonToContinueConsultationView: View {
     
     return true
   }
-
-  public func isValidText(_ text: String) -> AnyPublisher<Bool, Never> {
-    return Future<Bool, Never> { promise in
-      promise(.success(text.count > 10))
-    }.eraseToAnyPublisher()
+  
+  public func isValidText(_ text: String) -> Bool {
+    return text.count > 10
   }
   
   public func chooseAnotherReason(_ id: Int?) {

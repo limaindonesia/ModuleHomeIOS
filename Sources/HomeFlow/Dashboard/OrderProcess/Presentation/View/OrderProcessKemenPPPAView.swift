@@ -446,6 +446,13 @@ struct OrderProcessKemenPPPAView: View {
       .onTapGesture {
         store.isPresentReasonToContinue = true
       }
+      
+      if !store.reasonErrorMessage.isEmpty {
+        Text(store.reasonErrorMessage)
+          .foregroundStyle(Color.danger500)
+          .captionLexend(size: 10)
+          .padding(.top, 4)
+      }
     }
   }
   
