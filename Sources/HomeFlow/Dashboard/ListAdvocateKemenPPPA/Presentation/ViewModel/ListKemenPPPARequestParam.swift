@@ -16,7 +16,7 @@ public struct ListKemenPPPARequestParam: Paramable, Equatable {
   let cities: [Int]?
   let provinces: [Int]?
 
-  func toParam() -> [String : Any] {
+  public func toParam() -> [String : Any] {
 
     var parameters: [String: Any] = [:]
 

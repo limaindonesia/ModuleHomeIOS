@@ -11,7 +11,6 @@ import GnDKit
 import Combine
 import UIKit
 import SwiftUI
-import NaturalLanguage
 
 public class OrderProcessStore: ObservableObject {
   
@@ -41,7 +40,7 @@ public class OrderProcessStore: ObservableObject {
   @Published public var isTextValid: Bool = true
   @Published public var isScrollToTop: Bool = true
   @Published public var isProbonoActive: Bool = false
-  @Published public var buttonActive: Bool = false
+  @Published public var buttonActive: Bool = true
   @Published public var error: ErrorMessage = .init()
   @Published public var priceCategories: [PriceCategoryViewModel] = []
   @Published public var orderServiceViewModel: [OrderServiceViewModel] = []
@@ -55,22 +54,22 @@ public class OrderProcessStore: ObservableObject {
   @Published public var isAIProcessing: Bool = false
   @Published public var isPresentUndismissableError: Bool = false
   @Published public var timeRemaining = 0
-  
-  @Published var errorMessage: ErrorMessageWithAction = .init()
-  @Published var isPresentError: Bool = false
-  @Published var didBack: Bool = false
-  var timer = Timer.publish(every: 100000, on: .main, in: .common).autoconnect()
+  @Published public var errorMessage: ErrorMessageWithAction = .init()
+  @Published public var isPresentError: Bool = false
+  @Published public var didBack: Bool = false
+  @Published public var selected: String? = nil
   
   public var priceCategoriesCopy: [PriceCategoryViewModel] = []
   private var treatmentEntities: [TreatmentEntity] = []
   private var orderServiceEntities: [OrderServiceEntityHome] = []
-  private var userSessionData: UserSessionData?
+  public internal(set) var userSessionData: UserSessionData?
   public var isLoading: Bool = false
   public var message: String = ""
   public var typeSelected: String = ""
   private var detailPriceAdvocate: DetailPriceAdvocate?
   public var idCardEntity: IDCardEntity = .init()
-  private var subscriptions = Set<AnyCancellable>()
+  public var subscriptions = Set<AnyCancellable>()
+  var timer = Timer.publish(every: 100000, on: .main, in: .common).autoconnect()
   
   public init() {
     self.advocate = .init()
@@ -125,6 +124,7 @@ public class OrderProcessStore: ObservableObject {
     observer()
   }
   
+  
   //MARK: - API
   
   @MainActor
@@ -138,7 +138,8 @@ public class OrderProcessStore: ObservableObject {
       let entity = try await aiRepository.fetchImproveDescription(
         header: .init(token: userSessionData?.remoteSession.remoteToken),
         parameters: AIImproveParamRequest(
-          description: descriptions
+          description: descriptions,
+          type: .withoutKemenPPPA
         )
       )
       
@@ -147,7 +148,7 @@ public class OrderProcessStore: ObservableObject {
         resetDescriptionState()
         return
       }
-      //2025-06-13T10:39:03.000000Z
+      
       if !entity.availableAt.isEmpty {
         let interval = Date().distance(to: entity.availableAt.toDate() ?? Date())
         timeRemaining = Int(interval)
@@ -266,6 +267,7 @@ public class OrderProcessStore: ObservableObject {
   }
   
   //MARK: - Other function
+  
   func handleError(error: AIImprovementError) {
     if error.type == .UNRECOGNIZED_DESCRIPTION {
       errorMessage = ErrorMessageWithAction(
@@ -329,7 +331,7 @@ public class OrderProcessStore: ObservableObject {
   }
   
   public func secondsToMinutesSeconds(_ seconds: Int) -> (Int, Int) {
-      return ((seconds % 3600) / 60, (seconds % 3600) % 60)
+    return ((seconds % 3600) / 60, (seconds % 3600) % 60)
   }
   
   func showUndismissableErrorMessage() {
@@ -398,18 +400,18 @@ public class OrderProcessStore: ObservableObject {
   }
   
   public func getExperience() -> String {
-    return "\(lawyerInfoViewModel.yearExp ?? "")"
+    return "\(lawyerInfoViewModel.yearExp)"
   }
   
   public func getRating() -> String {
-    return lawyerInfoViewModel.avgRating ?? ""
+    return lawyerInfoViewModel.avgRating
   }
   
   public func getTotalConsultation() -> String {
     if lawyerInfoViewModel.totalConsultations.first?.description ?? "" == "0" {
       return ""
     }
-    return "(\(lawyerInfoViewModel.totalConsultations ?? ""))"
+    return "(\(lawyerInfoViewModel.totalConsultations))"
   }
   
   public func getCategoryPagePayment() -> String {
@@ -506,17 +508,17 @@ public class OrderProcessStore: ObservableObject {
           if item.price == item.originalPrice {
             isDiscount = false
           }
-    //      var isSKTM = false
-    //      if item.type == "PROBONO" {
-    //        isSKTM = true
-    //        if getSKTMQuota() > 0 {
-    //          price = "GRATIS"
-    //          descPrice = "kuota tersedia: \(getSKTMQuota())"
-    //        } else {
-    //          price = "GRATIS"
-    //          descPrice = "S&K Berlaku"
-    //        }
-    //      }
+          //      var isSKTM = false
+          //      if item.type == "PROBONO" {
+          //        isSKTM = true
+          //        if getSKTMQuota() > 0 {
+          //          price = "GRATIS"
+          //          descPrice = "kuota tersedia: \(getSKTMQuota())"
+          //        } else {
+          //          price = "GRATIS"
+          //          descPrice = "S&K Berlaku"
+          //        }
+          //      }
           var isSaving = false
           if item.type == "REGULAR_AUDIO_VIDEO" {
             isSaving = true
@@ -565,17 +567,17 @@ public class OrderProcessStore: ObservableObject {
         if item.price == item.originalPrice {
           isDiscount = false
         }
-  //      var isSKTM = false
-  //      if item.type == "PROBONO" {
-  //        isSKTM = true
-  //        if getSKTMQuota() > 0 {
-  //          price = "GRATIS"
-  //          descPrice = "kuota tersedia: \(getSKTMQuota())"
-  //        } else {
-  //          price = "GRATIS"
-  //          descPrice = "S&K Berlaku"
-  //        }
-  //      }
+        //      var isSKTM = false
+        //      if item.type == "PROBONO" {
+        //        isSKTM = true
+        //        if getSKTMQuota() > 0 {
+        //          price = "GRATIS"
+        //          descPrice = "kuota tersedia: \(getSKTMQuota())"
+        //        } else {
+        //          price = "GRATIS"
+        //          descPrice = "S&K Berlaku"
+        //        }
+        //      }
         var isSaving = false
         if item.type == "REGULAR_AUDIO_VIDEO" {
           isSaving = true
@@ -664,7 +666,7 @@ public class OrderProcessStore: ObservableObject {
     }
     return false
   }
-    
+  
   public func setSelectedDetailPriceAdvocate() {
     for item in advocate.detail {
       if item?.skill_id == selectedPriceCategories.skillId {
@@ -680,7 +682,7 @@ public class OrderProcessStore: ObservableObject {
     if let quota = sktmModel?.data?.quota, quota > 0  {
       sktmQuota = quota
     }
-  
+    
     lawyerInfoViewModel = LawyerInfoViewModel(
       id: advocate.id ?? 0,
       imageURL: advocate.getImageName(),
@@ -733,6 +735,15 @@ public class OrderProcessStore: ObservableObject {
     let entity = entities.filter{ $0.type == type }.first!
     timeConsultation = "\(entity.duration) Menit"
   }
+  
+  public func getApplicantOptions() -> [ApplicantEntity] {
+    return [
+      .init(id: 1, title: "Korban/ Pelapor"),
+      .init(id: 2, title: "Pelaku/ Terlapor"),
+      .init(id: 3, title: "Keluarga/ Kerabat")
+    ]
+  }
+  
   
   //MARK: - Fetch Local
   
@@ -849,24 +860,24 @@ public class OrderProcessStore: ObservableObject {
       skills: []
     )
     
-//    guard let _ = userSessionData else {
-//      sktmNavigator.navigateToUploadSKTM()
-//      return
-//    }
-//    
-//    guard let status = sktmModel?.data?.status else {
-//      sktmNavigator.navigateToUploadSKTM()
-//      return
-//    }
-//    
-//    if status == "ON_PROCESS" || status == "ACTIVE"
-//        || status == "EMPTY_QUOTA" || status == "EXPIRED"
-//        || status == "FAILED" {
-//      
-//      sktmNavigator.navigateToDetailSKTM(sktmModel)
-//    } else {
-//      sktmNavigator.navigateToUploadSKTM()
-//    }
+    //    guard let _ = userSessionData else {
+    //      sktmNavigator.navigateToUploadSKTM()
+    //      return
+    //    }
+    //
+    //    guard let status = sktmModel?.data?.status else {
+    //      sktmNavigator.navigateToUploadSKTM()
+    //      return
+    //    }
+    //
+    //    if status == "ON_PROCESS" || status == "ACTIVE"
+    //        || status == "EMPTY_QUOTA" || status == "EXPIRED"
+    //        || status == "FAILED" {
+    //
+    //      sktmNavigator.navigateToDetailSKTM(sktmModel)
+    //    } else {
+    //      sktmNavigator.navigateToUploadSKTM()
+    //    }
     
   }
   
@@ -877,6 +888,7 @@ public class OrderProcessStore: ObservableObject {
   public func navigateToUploadSKTM() {
     sktmNavigator.navigateToUploadSKTM()
   }
+
   
   //MARK: - Indicate
   
@@ -907,20 +919,6 @@ public class OrderProcessStore: ObservableObject {
     isLoading = false
   }
   
-  func detectSentences(from text: String) -> [String] {
-    let tokenizer = NLTokenizer(unit: .word)
-    tokenizer.string = text
-    var sentences: [String] = []
-    
-    tokenizer.enumerateTokens(in: text.startIndex..<text.endIndex) { range, _ in
-      let sentence = String(text[range])
-      sentences.append(sentence.trimmingCharacters(in: .whitespacesAndNewlines))
-      return true
-    }
-    
-    return sentences
-  }
-  
   func navigateBack() {
     didBack = true
   }
@@ -938,11 +936,10 @@ public class OrderProcessStore: ObservableObject {
   
   //MARK: - Observer
   
-  private func observer() {
+  open func observer() {
     $descriptions
       .sink { [weak self] str in
-        guard let length = self?.detectSentences(from: str).count
-        else { return }
+        let length = str.detectSentences().count
         if str.count > 0 {
           self?.isTextViewAlreadyEdit = true
         } else {
@@ -953,6 +950,7 @@ public class OrderProcessStore: ObservableObject {
         if length >= 10 {
           self?.descriptionErrorColor = Color.gray600
           self?.isScrollToTop = false
+          self?.buttonActive = true
         } else {
           self?.isScrollToTop = true
         }
@@ -966,21 +964,21 @@ public class OrderProcessStore: ObservableObject {
         
       }.store(in: &subscriptions)
     
-//    $orderServiceFilled
-//      .dropFirst()
-//      .receive(on: RunLoop.main)
-//      .subscribe(on: RunLoop.main)
-//      .sink { message in
-//        print("$orderServiceFilled")
-//      }.store(in: &subscriptions)
-//    
-//    $detailCostFilled
-//      .dropFirst()
-//      .receive(on: RunLoop.main)
-//      .subscribe(on: RunLoop.main)
-//      .sink { message in
-//        print("$detailCostFilled")
-//      }.store(in: &subscriptions)
+    //    $orderServiceFilled
+    //      .dropFirst()
+    //      .receive(on: RunLoop.main)
+    //      .subscribe(on: RunLoop.main)
+    //      .sink { message in
+    //        print("$orderServiceFilled")
+    //      }.store(in: &subscriptions)
+    //
+    //    $detailCostFilled
+    //      .dropFirst()
+    //      .receive(on: RunLoop.main)
+    //      .subscribe(on: RunLoop.main)
+    //      .sink { message in
+    //        print("$detailCostFilled")
+    //      }.store(in: &subscriptions)
     
     $isProbonoActive
       .dropFirst()
@@ -997,10 +995,13 @@ public class OrderProcessStore: ObservableObject {
 }
 
 public protocol OrderProcessStoreFactory {
-  func makeOrderProcessStore() -> OrderProcessStore
+  func makeOrderProcessStore(
+    advocate: Advocate,
+    selectedPriceCategory: PriceCategoryViewModel
+  ) -> OrderProcessStore
 }
 
-struct ErrorMessageWithAction: Error {
+public struct ErrorMessageWithAction: Error {
   public let id: Int
   public let imageName: String
   public let title: String
@@ -1008,7 +1009,7 @@ struct ErrorMessageWithAction: Error {
   public let buttonText: String
   public var action: () -> Void
   
-  init() {
+  public init() {
     self.id = 0
     self.title = ""
     self.message = ""
@@ -1017,7 +1018,7 @@ struct ErrorMessageWithAction: Error {
     self.action = {}
   }
   
-  init(
+  public init(
     id: Int,
     imageName: String,
     title: String,

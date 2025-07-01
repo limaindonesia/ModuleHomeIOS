@@ -11,7 +11,7 @@ public struct FilterCityKemenPPPARequestParam: Paramable, Equatable {
 
   let provinceId: Int?
 
-  func toParam() -> [String : Any] {
+  public func toParam() -> [String : Any] {
 
     var parameters: [String: Any] = [:]
 

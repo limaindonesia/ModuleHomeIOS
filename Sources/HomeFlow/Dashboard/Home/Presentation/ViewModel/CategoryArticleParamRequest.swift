@@ -10,7 +10,7 @@ import Foundation
 public struct ArticleParamRequest: Paramable {
   public let name: String
 
-  func toParam() -> [String : Any] {
+  public func toParam() -> [String : Any] {
     return ["category": name]
   }
 }

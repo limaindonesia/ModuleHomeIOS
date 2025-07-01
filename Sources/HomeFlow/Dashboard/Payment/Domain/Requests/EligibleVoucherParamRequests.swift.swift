@@ -15,7 +15,7 @@ public struct EligibleVoucherParamRequests: Paramable {
     self.orderNumber = orderNumber
   }
   
-  func toParam() -> [String : Any] {
+  public func toParam() -> [String : Any] {
     return ["order_no" : orderNumber]
   }
 }

@@ -17,7 +17,7 @@ public struct OrderServiceParamRequest: Paramable {
     self.lawyerSkillPriceId = lawyerSkillPriceId
   }
 
-  func toParam() -> [String : Any] {
+  public func toParam() -> [String : Any] {
     return [
       "lawyer_skill_price_id" : lawyerSkillPriceId,
     ]

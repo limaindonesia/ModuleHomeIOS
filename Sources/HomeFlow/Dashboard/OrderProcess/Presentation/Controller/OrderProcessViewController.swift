@@ -15,13 +15,30 @@ import Combine
 public class OrderProcessViewController: NiblessViewController {
 
   private let store: OrderProcessStore
+  private let kemenPPPAStore: OrderProcessKemenPPPAStore
+  
   public var bottomSheetManager: BottomSheetManager!
 
   //Variable
   private var subscriptions = Set<AnyCancellable>()
 
-  public init(store: OrderProcessStore) {
-    self.store = store
+  public init(
+    advocate: Advocate,
+    selectedPriceCategory: PriceCategoryViewModel,
+    storeFactory: OrderProcessStoreFactory,
+    kemenPPPAStoreFactory: OrderProcessKemenPPPAStoreFactory
+  ) {
+    
+    self.store = storeFactory.makeOrderProcessStore(
+      advocate: advocate,
+      selectedPriceCategory: selectedPriceCategory
+    )
+    
+    self.kemenPPPAStore = kemenPPPAStoreFactory.makeOrderProcessKemenPPPAStore(
+      advocate: advocate,
+      selectedPriceCategory: selectedPriceCategory
+    )
+    
     super.init()
   }
 
@@ -40,7 +57,8 @@ public class OrderProcessViewController: NiblessViewController {
   public override func loadView() {
     super.loadView()
 
-    let rootView = UIHostingController(rootView: OrderProcessView(store: store))
+    let rootView = UIHostingController(rootView: OrderProcessKemenPPPAView(store: kemenPPPAStore))
+//    let rootView = UIHostingController(rootView: OrderProcessView(store: store))
     addFullScreen(childViewController: rootView)
   }
 
@@ -81,6 +99,13 @@ public class OrderProcessViewController: NiblessViewController {
         }
       }.store(in: &subscriptions)
     
+    kemenPPPAStore.$error
+      .dropFirst()
+      .receive(on: RunLoop.main)
+      .subscribe(on: RunLoop.main)
+      .sink { message in
+        self.present(errorMessage: message)
+      }.store(in: &subscriptions)
   }
 
   private func showChangeCategoryPopUp() {

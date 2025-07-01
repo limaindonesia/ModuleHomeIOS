@@ -14,7 +14,7 @@ public struct AdvocateAvaibilityRequestParam: Paramable, Equatable {
   let lawyerID: String?
   
 
-  func toParam() -> [String : Any] {
+  public func toParam() -> [String : Any] {
 
     var parameters: [String: Any] = [:]
 
