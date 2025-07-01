@@ -14,18 +14,21 @@ import UIKit
 import SwiftUI
 import NaturalLanguage
 
-public class KemenPPAStore: ObservableObject {
+public class KemenPPPAStore: ObservableObject {
   
   //Dependency
   private let advocateNavigator: OnlineAdvocateNavigator
-  
+  private let kemenPPPANavigator: KemenPPPANavigator
   
   public init() {
     self.advocateNavigator = MockNavigator()
+    self.kemenPPPANavigator = MockNavigator()
   }
   
-  public init(advocateNavigator: OnlineAdvocateNavigator) {
+  public init(advocateNavigator: OnlineAdvocateNavigator,
+              kemenPPPANavigator: KemenPPPANavigator) {
     self.advocateNavigator = advocateNavigator
+    self.kemenPPPANavigator = kemenPPPANavigator
     
   }
   
@@ -33,13 +36,7 @@ public class KemenPPAStore: ObservableObject {
   
   @MainActor
   public func navigateToAdvocateList() {
-    advocateNavigator.navigateToListAdvocate(
-      categoryAdvocate: "",
-      listCategoryID: [],
-      listSkillAdvocate: [],
-      listingType: "GENERAL",
-      sktmModel: nil
-    )
+    kemenPPPANavigator.navigateToAdvocateListKemenPPPA()
   }
   
 }

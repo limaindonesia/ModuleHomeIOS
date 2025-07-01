@@ -13,11 +13,11 @@ import GnDKit
 import AprodhitKit
 import Combine
 
-public class KemenPPAViewController: NiblessViewController {
+public class KemenPPPAViewController: NiblessViewController {
 
-  private let store: KemenPPAStore
+  private let store: KemenPPPAStore
 
-  public init(store: KemenPPAStore) {
+  public init(store: KemenPPPAStore) {
     self.store = store
     super.init()
   }
@@ -37,16 +37,17 @@ public class KemenPPAViewController: NiblessViewController {
   public override func loadView() {
     super.loadView()
 
-    let rootView = UIHostingController(rootView: KemenPPAView(store: store))
+    let rootView = UIHostingController(rootView: KemenPPPAView(store: store))
     addFullScreen(childViewController: rootView)
   }
 
   public override func viewDidLoad() {
     super.viewDidLoad()
-
+    
     standardNavBar(title: "Tentang Layanan")
-
+    
     view.backgroundColor = UIColor.gray050
+    
   }
 
   deinit {

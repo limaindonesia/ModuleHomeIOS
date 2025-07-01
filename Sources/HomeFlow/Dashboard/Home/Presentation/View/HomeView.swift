@@ -163,8 +163,8 @@ public struct HomeView: View {
         store.navigateToProbonoService()
       }.padding(.top, 355)
       
-      kemenPPAHotline {
-        store.navigateToKemenPPA()
+      kemenPPPAHotline {
+        store.navigateToKemenPPPA()
       }
       
       activeAdvocates(store.onlinedAdvocates)
@@ -761,13 +761,13 @@ public struct HomeView: View {
   }
   
   @ViewBuilder
-  func kemenPPABottomSheetView(
-    onTapKemenPPA: @escaping () -> Void
+  func kemenPPPABottomSheetView(
+    onTapKemenPPPA: @escaping () -> Void
   ) -> some View {
     ZStack(alignment: .bottomTrailing) {
       
       HStack() {
-        Image("ic_kemenPPA_family", bundle: .module)
+        Image("ic_kemenPPPA_family", bundle: .module)
           .frame(width: 112,height: 60)
       }
       .frame(width: 112, height: 60)
@@ -801,7 +801,7 @@ public struct HomeView: View {
           .frame(maxWidth: .infinity, alignment: .leading)
         
         HStack(spacing: 0) {
-          Image("ic_logo_kemenPPA", bundle: .module)
+          Image("ic_logo_kemenPPPA", bundle: .module)
             .frame(width: 84,height: 30)
             .padding(.leading, 16)
             .padding(.bottom, 5)
@@ -814,11 +814,11 @@ public struct HomeView: View {
         }
       }
       .onTapGesture {
-        onTapKemenPPA()
+        onTapKemenPPPA()
       }
       .background(
         LinearGradient(
-          colors: [Color.gradient1KemenPPAHome, Color.gradient2KemenPPAHome],
+          colors: [Color.gradient1KemenPPPAHome, Color.gradient2KemenPPPAHome],
           startPoint: .leading,
           endPoint: .trailing
         )
@@ -835,8 +835,8 @@ public struct HomeView: View {
   }
   
   @ViewBuilder
-  func kemenPPAHotline(
-    onTapKemenPPA: @escaping () -> Void
+  func kemenPPPAHotline(
+    onTapKemenPPPA: @escaping () -> Void
   ) -> some View {
     ZStack(alignment: .topLeading) {
       
@@ -849,7 +849,7 @@ public struct HomeView: View {
       }
       .background(
         LinearGradient(
-          colors: [Color.danger500, Color.gradientKemenPPAHomeHotline],
+          colors: [Color.danger500, Color.gradientKemenPPPAHomeHotline],
           startPoint: .leading,
           endPoint: .trailing
         )
@@ -875,14 +875,14 @@ public struct HomeView: View {
           
           Spacer()
           
-          Image("arrow-right_kemenPPA", bundle: .module)
+          Image("arrow-right_kemenPPPA", bundle: .module)
             .frame(width: 24,height: 24)
             .padding(.top, 10)
             .padding(.trailing, 16)
         }
         
         HStack(spacing: 0) {
-          Image("ic_logo_kemenPPA", bundle: .module)
+          Image("ic_logo_kemenPPPA", bundle: .module)
             .frame(width: 84,height: 30)
             .padding(.leading, 16)
             .padding(.bottom, 5)
@@ -907,7 +907,7 @@ public struct HomeView: View {
       }
       .background(
         LinearGradient(
-          colors: [Color.gradient1KemenPPAHome, Color.gradient2KemenPPAHome],
+          colors: [Color.gradient1KemenPPPAHome, Color.gradient2KemenPPPAHome],
           startPoint: .leading,
           endPoint: .trailing
         )
@@ -922,7 +922,7 @@ public struct HomeView: View {
       .padding(.horizontal, 16)
       .padding(.top, 10)
     }.onTapGesture {
-      onTapKemenPPA()
+      onTapKemenPPPA()
     }
     
   }
@@ -1737,9 +1737,9 @@ public struct HomeView: View {
             .captionLexend(size: 14)
         }
         
-        kemenPPABottomSheetView {
+        kemenPPPABottomSheetView {
           store.hideConsultationNowBottomSheet()
-          store.navigateToKemenPPA()
+          store.navigateToKemenPPPA()
         }
       }
       .frame(minHeight: 80)
@@ -1879,7 +1879,7 @@ public struct HomeView: View {
       loginRepository: MockLoginRepository(),
       otpRepository: MockOTPRepository(),
       registerNavigator: MockNavigator(),
-      kemenPPANavigator: MockNavigator()
+      kemenPPPANavigator: MockNavigator()
     )
   )
 }

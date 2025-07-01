@@ -11,16 +11,16 @@ import AprodhitKit
 import GnDKit
 import Lottie
 
-public struct KemenPPAView: View {
+public struct KemenPPPAView: View {
   
-  @ObservedObject var store: KemenPPAStore
+  @ObservedObject var store: KemenPPPAStore
   @State private var reader: ScrollViewProxy?
   
   private init() {
     self.store = .init()
   }
   
-  public init(store: KemenPPAStore) {
+  public init(store: KemenPPPAStore) {
     self.store = store
   }
   
@@ -31,7 +31,7 @@ public struct KemenPPAView: View {
           ScrollView(showsIndicators: false) {
             
             VStack(spacing: 12) {
-              Image("ic_kemenPPA_service", bundle: .module)
+              Image("ic_kemenPPPA_service", bundle: .module)
                 .resizable()
                 .aspectRatio(contentMode: .fill)
                 .frame(height: 342)
@@ -116,5 +116,5 @@ public struct KemenPPAView: View {
 }
 
 #Preview {
-  KemenPPAView(store: .init())
+  KemenPPPAView(store: .init())
 }

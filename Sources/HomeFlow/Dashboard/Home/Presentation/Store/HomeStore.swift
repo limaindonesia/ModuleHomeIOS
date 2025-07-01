@@ -49,7 +49,7 @@ public class HomeStore: ObservableObject {
   private let loginRepository: LoginRepositoryLogic
   private let otpRepository: OTPRepositoryLogic
   private let registerNavigator: RegisterNavigator
-  private let kemenPPANavigator: KemenPPANavigator
+  private let kemenPPPANavigator: KemenPPPANavigator
   
   public let monitor = NWPathMonitor()
   let dispatchQueue = DispatchQueue(label: "Monitor")
@@ -150,7 +150,7 @@ public class HomeStore: ObservableObject {
     loginRepository: LoginRepositoryLogic,
     otpRepository: OTPRepositoryLogic,
     registerNavigator: RegisterNavigator,
-    kemenPPANavigator: KemenPPANavigator
+    kemenPPPANavigator: KemenPPPANavigator
   ) {
     self.userSessionDataSource = userSessionDataSource
     self.homeRepository = homeRepository
@@ -179,7 +179,7 @@ public class HomeStore: ObservableObject {
     self.loginRepository = loginRepository
     self.otpRepository = otpRepository
     self.registerNavigator = registerNavigator
-    self.kemenPPANavigator = kemenPPANavigator
+    self.kemenPPPANavigator = kemenPPPANavigator
     
     Task {
       await requestPromotionBanner()
@@ -1151,6 +1151,7 @@ public class HomeStore: ObservableObject {
       listCategoryID: [],
       listSkillAdvocate: [],
       listingType: "GENERAL",
+      isKemenPPPA: false,
       sktmModel: sktmModel
     )
   }
@@ -1170,6 +1171,7 @@ public class HomeStore: ObservableObject {
       sktmModel: sktmModel,
       isFromDeeplink: isFromDeeplink,
       slug: "",
+      isKemenPPPA: false,
       navigationController: nil
     )
   }
@@ -1313,8 +1315,8 @@ public class HomeStore: ObservableObject {
     )
   }
   
-  public func navigateToKemenPPA() {
-    kemenPPANavigator.navigateToKemenPPA()
+  public func navigateToKemenPPPA() {
+    kemenPPPANavigator.navigateToAdvocateListKemenPPPA()
   }
   
   public func navigateToPayment() {

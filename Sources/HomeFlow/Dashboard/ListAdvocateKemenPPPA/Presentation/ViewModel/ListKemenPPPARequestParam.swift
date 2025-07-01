@@ -1,0 +1,42 @@
+//
+//  Untitled.swift
+//  HomeFlow
+//
+//  Created by muhammad yusuf on 29/06/25.
+//
+
+
+import Foundation
+
+public struct ListKemenPPPARequestParam: Paramable, Equatable {
+
+  let isOnline: Bool?
+  let limit: Int?
+  let skip: Int?
+  let cities: [Int]?
+  let provinces: [Int]?
+
+  func toParam() -> [String : Any] {
+
+    var parameters: [String: Any] = [:]
+
+    if let isOnline = isOnline {
+      //parameters["is_online"] = isOnline
+    }
+    if let limit = limit {
+      parameters["limit"] = limit
+    }
+    if let skip = skip {
+      parameters["skip"] = skip
+    }
+    if let cities = cities {
+      parameters["city_ids"] = cities
+    }
+    if let provinces = provinces {
+      parameters["agencyProvince_ids"] = provinces
+    }
+    parameters["is_kemenpppa"] = true
+
+    return parameters
+  }
+}
