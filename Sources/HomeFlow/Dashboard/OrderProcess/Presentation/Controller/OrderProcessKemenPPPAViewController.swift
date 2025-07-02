@@ -60,7 +60,6 @@ public class OrderProcessKemenPPPAViewController: BaseViewController {
   private func observeStore() {
     store.$error
       .dropFirst()
-      .removeDuplicates()
       .receive(on: RunLoop.main)
       .subscribe(on: RunLoop.main)
       .sink { message in
