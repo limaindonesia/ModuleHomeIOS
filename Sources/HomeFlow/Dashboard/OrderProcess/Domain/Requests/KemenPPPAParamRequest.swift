@@ -55,7 +55,7 @@ public struct KemenPPPAParamRequest: Paramable {
         "order_type" : orderType,
         "lawyer_id" : lawyerID,
         "skill_id" : skillID,
-        "descriptions" : description
+        "description" : description
       ]
     }
   }
