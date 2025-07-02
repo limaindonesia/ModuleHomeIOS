@@ -538,6 +538,7 @@ struct OrderProcessKemenPPPAView: View {
       treatmentRepository: MockTreatmentRepository(),
       orderServiceRepository: MockOrderServiceRepository(),
       probonoRepository: MockGetKTPRepository(),
+      ongoingRepository: MockPaymentRepository(),
       paymentNavigator: MockNavigator(),
       sktmNavigator: MockNavigator(),
       probonoNavigator: MockNavigator(),

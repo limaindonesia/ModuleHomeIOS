@@ -13,6 +13,7 @@ import Combine
 public class OrderProcessKemenPPPAStore: OrderProcessStore {
   
   private let kemenPPPARepository: KemenPPPARepositoryLogic
+  private let ongoingRepository: OngoingRepositoryLogic
   private let waitingRoomNavigator: WaitingRoomNavigator
   
   @Published public var isPresentReasonToContinue: Bool = false
@@ -35,6 +36,8 @@ public class OrderProcessKemenPPPAStore: OrderProcessStore {
   @Published public var selectedReason: ReasonEntity?
   @Published public var reasonToContinueText: String = ""
   
+  public var userCase: UserCases = .init()
+  
   public init(
     advocate: Advocate,
     selectedPriceCategories: PriceCategoryViewModel,
@@ -45,6 +48,7 @@ public class OrderProcessKemenPPPAStore: OrderProcessStore {
     treatmentRepository: TreatmentRepositoryLogic,
     orderServiceRepository: OrderServiceRepositoryLogic,
     probonoRepository: GetKTPDataRepositoryLogic,
+    ongoingRepository: OngoingRepositoryLogic,
     paymentNavigator: PaymentNavigator,
     sktmNavigator: SKTMNavigator,
     probonoNavigator: ProbonoNavigator,
@@ -55,6 +59,7 @@ public class OrderProcessKemenPPPAStore: OrderProcessStore {
     
     self.kemenPPPARepository = kemenPPPARepository
     self.waitingRoomNavigator = waitingRoomNavigator
+    self.ongoingRepository = ongoingRepository
     
     super.init(
       advocate: advocate,
@@ -184,12 +189,33 @@ public class OrderProcessKemenPPPAStore: OrderProcessStore {
         params: kemenPPPAParamRequest
       )
       
+      await requestOngoingUserCases()
       navigateToWaitingRoom(roomKey)
     } catch {
       guard let error = error as? ErrorMessage else { return }
       indicateError(error)
     }
     
+  }
+  
+  public func requestOngoingUserCases() async {
+    do {
+      guard let token = userSessionData?.remoteSession.remoteToken else {
+        return
+      }
+      
+      let entities = try await ongoingRepository.fetchOngoingUserCases(
+        headers: HeaderRequest(token: token).toHeaders(),
+        parameters: UserCasesParamRequest(type: .ONGOING)
+      )
+      if entities.count > 0 {
+        userCase = entities[0]
+      }
+      
+    } catch {
+      guard let error = error as? ErrorMessage else { return }
+      indicateError(error)
+    }
   }
   
   
@@ -216,7 +242,10 @@ public class OrderProcessKemenPPPAStore: OrderProcessStore {
   //MARK: - Navigator
   
   public func navigateToWaitingRoom(_ roomKey: String) {
-    waitingRoomNavigator.navigateToWaitingRoom(userCases: .init(), roomKey: roomKey)
+    waitingRoomNavigator.navigateToWaitingRoom(
+      userCases: userCase,
+      roomKey: roomKey
+    )
   }
   
   
