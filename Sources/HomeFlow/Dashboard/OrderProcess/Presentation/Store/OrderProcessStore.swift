@@ -929,7 +929,6 @@ public class OrderProcessStore: ObservableObject {
       listCategoryID: [],
       listSkillAdvocate: [],
       listingType: "GENERAL",
-      isKemenPPPA: false,
       sktmModel: nil
     )
   }

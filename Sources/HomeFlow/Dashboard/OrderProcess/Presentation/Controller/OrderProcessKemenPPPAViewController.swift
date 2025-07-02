@@ -1,40 +1,32 @@
 //
-//  OrderProcessViewController.swift
+//  OrderProcessKemenPPPAViewController.swift
+//  HomeFlow
 //
-//
-//  Created by Ilham Prabawa on 22/10/24.
+//  Created by Ilham Prabawa on 02/07/25.
 //
 
-import Foundation
-import SwiftUI
 import UIKit
 import GnDKit
 import AprodhitKit
-import Combine
+import SwiftUI
 
-public class OrderProcessViewController: NiblessViewController {
-
-  private let store: OrderProcessStore
+public class OrderProcessKemenPPPAViewController: BaseViewController {
   
-  public var bottomSheetManager: BottomSheetManager!
-
-  //Variable
-  private var subscriptions = Set<AnyCancellable>()
-
+  private let store: OrderProcessKemenPPPAStore
+  
   public init(
     advocate: Advocate,
     selectedPriceCategory: PriceCategoryViewModel,
-    storeFactory: OrderProcessStoreFactory
+    storeFactory: OrderProcessKemenPPPAStoreFactory
   ) {
     
-    self.store = storeFactory.makeOrderProcessStore(
+    self.store = storeFactory.makeOrderProcessKemenPPPAStore(
       advocate: advocate,
       selectedPriceCategory: selectedPriceCategory
     )
     
-    super.init()
   }
-
+  
   public override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
 
@@ -46,13 +38,14 @@ public class OrderProcessViewController: NiblessViewController {
 
     navigationController?.setNavigationBarHidden(true, animated: false)
   }
-
+  
+  
   public override func loadView() {
     super.loadView()
-    let rootView = UIHostingController(rootView: OrderProcessView(store: store))
+    let rootView = UIHostingController(rootView: OrderProcessKemenPPPAView(store: store))
     addFullScreen(childViewController: rootView)
   }
-
+  
   public override func viewDidLoad() {
     super.viewDidLoad()
 
@@ -63,7 +56,7 @@ public class OrderProcessViewController: NiblessViewController {
     observeStore()
 
   }
-
+  
   private func observeStore() {
     store.$error
       .dropFirst()
@@ -72,13 +65,6 @@ public class OrderProcessViewController: NiblessViewController {
       .subscribe(on: RunLoop.main)
       .sink { message in
         self.present(errorMessage: message)
-      }.store(in: &subscriptions)
-    
-    store.$isPresentChangeCategoryIssue
-      .filter { $0 == true }
-      .receive(on: RunLoop.main)
-      .sink { _ in
-        self.showChangeCategoryPopUp()
       }.store(in: &subscriptions)
     
     store.$didBack
@@ -90,11 +76,7 @@ public class OrderProcessViewController: NiblessViewController {
         }
       }.store(in: &subscriptions)
   }
-
-  private func showChangeCategoryPopUp() {
-    
-  }
-
+  
   deinit {
     GLogger(
       .info,
@@ -104,25 +86,5 @@ public class OrderProcessViewController: NiblessViewController {
       )
     )
   }
-
-}
-
-extension OrderProcessViewController: BottomSheetManagerDelegate {
-  public func dismissSheet() {
-    
-  }
   
-
-  public func presentSheet() {
-//    let popUp = PopUpViewController(payloadListView: [], type: .categoryLawyer)
-//    popUp.delegateCategoryLawyer = self
-//    popUp.categoryLawyer = store.advocate
-//    var isUserHaveQuota = false
-//    if store.getSKTMQuota() > 0 {
-//      isUserHaveQuota = true
-//    }
-//    popUp.isHaveQuotaSKTM = isUserHaveQuota
-//    self.present(popUp, animated: true)
-  }
-
 }

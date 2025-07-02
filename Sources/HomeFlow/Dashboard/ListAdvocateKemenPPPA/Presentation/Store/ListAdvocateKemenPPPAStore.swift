@@ -1,5 +1,5 @@
 //
-//  Untitled.swift
+//  ListAdvocateKemenPPPAStore.swift
 //  HomeFlow
 //
 //  Created by muhammad yusuf on 20/06/25.
@@ -62,7 +62,7 @@ public class ListAdvocateKemenPPPAStore: ObservableObject {
     listKemenPPPARepositoryLogic: ListKemenPPPARepositoryLogic,
     kemenPPPANavigator: KemenPPPANavigator,
     network: NetworkServiceLogic,
-    viewModel: MainTabbarViewModel,
+    viewModel: MainTabbarViewModel
   ) {
     self.userSessionDataSource = userSessionDataSource
     self.advocateNavigator = advocateNavigator
@@ -137,9 +137,7 @@ public class ListAdvocateKemenPPPAStore: ObservableObject {
       }
       
     } catch {
-      guard let error = error as? ErrorMessage
-      else { return "" }
-//      indicateError(message: error)
+      
     }
     
     return message
@@ -160,9 +158,6 @@ public class ListAdvocateKemenPPPAStore: ObservableObject {
       
     } catch {
       isPresentSekeleton = false
-      guard let error = error as? ErrorMessage
-      else { return [] }
-//      indicateError(message: error)
     }
     
     return advocates
@@ -189,7 +184,7 @@ public class ListAdvocateKemenPPPAStore: ObservableObject {
       guard let error = error as? ErrorMessage
       else { return [] }
       
-//      indicateError(message: error)
+      //      indicateError(message: error)
     }
     
     return advocates
@@ -202,9 +197,7 @@ public class ListAdvocateKemenPPPAStore: ObservableObject {
       let items = try await listKemenPPPARepositoryLogic.fetchFilterProvince()
       provinces = items
     } catch {
-      guard let error = error as? ErrorMessage
-      else { return [] }
-//      indicateError(error: error)
+      
     }
     
     return provinces
@@ -221,19 +214,19 @@ public class ListAdvocateKemenPPPAStore: ObservableObject {
       
       print("cityList == \(cityList)")
     } catch {
-      guard let error = error as? ErrorMessage
-      else { return [] }
-//      indicateError(error: error)
+      
     }
     return cities
   }
   
   //MARK: - Other function
+  
   @MainActor
   public func sendNotificationToAllAdvocate() async {
     if isAllAdvocateOfflaneAlreadyPressNotif {
       return
     }
+    
     async let postAdvocateModels = postAdvocateAvailbility(advocate: nil, index: 0)
   }
   
@@ -288,7 +281,7 @@ public class ListAdvocateKemenPPPAStore: ObservableObject {
     cityList = []
     selectedProvinceInt = []
     selectedCityInt = []
-
+    
     Task {
       await fetchAllAPI()
     }
@@ -357,7 +350,7 @@ public class ListAdvocateKemenPPPAStore: ObservableObject {
     let index = listAdvocates.firstIndex { i in
       advocate.id == i.id
     }!
-    advocateNavigator.navigateToOrderProcess(
+    advocateNavigator.navigateToOrderProcessKemenPPPA(
       advocate,
       selectedCategory: CategoryParameter(
         id: index,
@@ -367,8 +360,8 @@ public class ListAdvocateKemenPPPAStore: ObservableObject {
         caseExample: "",
         price:  "",
         originalPrice: "",
-        isSelected: true),
-      sktmModel: nil
+        isSelected: true
+      )
     )
   }
   
@@ -397,6 +390,5 @@ public class ListAdvocateKemenPPPAStore: ObservableObject {
     isLoading = false
     self.message = message
   }
-  
   
 }

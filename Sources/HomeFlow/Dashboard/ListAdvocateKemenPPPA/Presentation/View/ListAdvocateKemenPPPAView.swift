@@ -94,9 +94,7 @@ public struct ListAdvocateKemenPPPAView: View {
           }
         }
         .refreshable {
-          Task {
-            await store.onRefresh()
-          }
+          store.onRefresh()
         }
         .onPreferenceChange(BottomScrollPreferenceKey.self) { value in
             let screenHeight = UIScreen.main.bounds.height

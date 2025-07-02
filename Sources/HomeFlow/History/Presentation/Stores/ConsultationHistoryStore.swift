@@ -233,7 +233,6 @@ public class ConsultationHistoryStore: ObservableObject {
       listCategoryID: [],
       listSkillAdvocate: [],
       listingType: "GENERAL",
-      isKemenPPPA: false,
       sktmModel: nil
     )
   }

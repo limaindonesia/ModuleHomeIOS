@@ -1151,7 +1151,6 @@ public class HomeStore: ObservableObject {
       listCategoryID: [],
       listSkillAdvocate: [],
       listingType: "GENERAL",
-      isKemenPPPA: false,
       sktmModel: sktmModel
     )
   }

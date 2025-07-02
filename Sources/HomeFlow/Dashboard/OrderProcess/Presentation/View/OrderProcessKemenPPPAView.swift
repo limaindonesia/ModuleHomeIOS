@@ -61,7 +61,6 @@ struct OrderProcessKemenPPPAView: View {
       }
       .task {
         await store.fetchUserSession()
-        await store.fetchProbonoStatus()
         await store.fetchReasonKemenPPPA()
         await store.fetchKemenPPPACategory()
         await store.fetchPrivacyPolicyKemenPPPA()
