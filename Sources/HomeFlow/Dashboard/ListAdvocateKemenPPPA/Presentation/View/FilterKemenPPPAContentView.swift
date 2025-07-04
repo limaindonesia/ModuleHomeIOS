@@ -17,6 +17,8 @@ struct FilterKemenPPPAContentView: View {
 
     var allProvinces: [ProvincesList] = []
     var allCities: [CityList] = []
+    var selectedProvinceData: [ProvincesList] = []
+    var selectedCityData: [CityList] = []
     var isProvinceFilter = false
 
     var filteredProvinces: [ProvincesList] {
@@ -40,13 +42,19 @@ struct FilterKemenPPPAContentView: View {
     }
   
     var onApply: (_ provinces: Set<ProvincesList>, _ cities: Set<CityList>) -> Void = { _, _ in }
+    var resetFilterProvince: () -> Void = {}
+    var resetFilterCities: () -> Void = {}
     var onDismiss: () -> Void = { }
 
     public init(
         allProvinces: [ProvincesList],
         allCities: [CityList],
         isProvinceFilter: Bool = false,
+        selectedProvincesArray: [ProvincesList],
+        selectedCitiesArray: [CityList],
         onApply: @escaping (_ provinces: Set<ProvincesList>, _ cities: Set<CityList>) -> Void,
+        resetFilterProvince: @escaping () -> Void,
+        resetFilterCities: @escaping () -> Void,
         onDismiss: @escaping () -> Void
     ) {
         self.allProvinces = allProvinces
@@ -54,11 +62,14 @@ struct FilterKemenPPPAContentView: View {
         self.isProvinceFilter = isProvinceFilter
         self.onApply = onApply
         self.onDismiss = onDismiss
+        self.resetFilterProvince = resetFilterProvince
+        self.resetFilterCities = resetFilterCities
+        self.selectedProvinceData = selectedProvincesArray
+        self.selectedCityData = selectedCitiesArray
     }
     
     var body: some View {
         VStack(spacing: 16) {
-
             HStack {
                Text(isProvinceFilter ? "Pilih Provinsi" : "Pilih Kota")
                 .titleLexend(size: 20)
@@ -68,11 +79,18 @@ struct FilterKemenPPPAContentView: View {
               
               Text("Reset Filter")
                 .font(Font(UIFont.lexendFont(style: .caption(size: 12))))
-                .foregroundStyle(selectedCities.count > 0 ? Color.primaryInfo700 : Color.gray300)
+                .foregroundStyle(isProvinceFilter && selectedProvinces.count > 0 ? Color.primaryInfo700 : selectedCities.count > 0 ? Color.primaryInfo700: Color.gray300)
                 .onTapGesture {
-                  if !isProvinceFilter {
+                  if isProvinceFilter && selectedProvinces.count > 0 {
+                    selectedProvinces.removeAll()
+                    searchText = ""
+                    resetFilterProvince()
+                    onDismiss()
+                  } else {
                     selectedCities.removeAll()
                     searchText = ""
+                    resetFilterCities()
+                    onDismiss()
                   }
                 }
             }
@@ -96,13 +114,15 @@ struct FilterKemenPPPAContentView: View {
                   if isProvinceFilter {
                       ForEach(filteredProvinces, id: \.self) { item in
                           Button(action: {
+                              selectedProvinces.removeAll()
                               selectedProvinces.insert(item)
                               onApply(selectedProvinces, selectedCities)
                           }) {
                               HStack {
+                                let isSelected = selectedProvinces.contains(item)
                                   Text(item.name ?? "")
-                                      .foregroundColor(Color.gray700)
-                                      .captionLexend(size: 14)
+                                      .foregroundColor(isSelected ? Color.primary500 : .gray700)
+                                      .font(Font(UIFont.lexendFont(style: .caption(size: 14))))
                               }
                           }
                           .padding(.horizontal)
@@ -118,7 +138,7 @@ struct FilterKemenPPPAContentView: View {
                           }) {
                               let isSelected = selectedCities.contains(item)
                               let iconName = isSelected ? "checkmark.square.fill" : "square"
-                              let iconColor: Color = isSelected ? Color.primary500 : .gray
+                              let iconColor: Color = isSelected ? Color.primary500 : .gray700
 
                               HStack {
                                   Image(systemName: iconName)
@@ -171,5 +191,14 @@ struct FilterKemenPPPAContentView: View {
         .background(Color.white)
         .cornerRadius(20)
         .ignoresSafeArea(edges: .bottom)
+        .onAppear {
+          if selectedProvinceData.count > 0 {
+            selectedProvinces = Set(selectedProvinceData)
+          }
+        
+          if selectedCityData.count > 0 {
+            selectedCities = Set(selectedCityData)
+          }
+        }
     }
 }

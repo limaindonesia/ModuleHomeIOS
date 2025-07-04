@@ -31,15 +31,17 @@ public struct ListAdvocateKemenPPPAView: View {
       VStack(spacing: 8) {
         Spacer().frame(height: 1)
         
-        FilterKemenPPPAView(
-          province: store.selectedProvinceTitle,
-          city: store.selectedCityTitle,
-          selectedCityCount: store.selectedCityInt.count) {
-            store.showBottomSheetFilterProvince()
-          } onTapCity: {
-            store.showBottomSheetFilterCities()
-          }
-
+        if !store.isSearchActive {
+          FilterKemenPPPAView(
+            province: store.selectedProvinceTitle,
+            city: store.selectedCityTitle,
+            selectedCityCount: store.selectedCityInt.count) {
+              store.showBottomSheetFilterProvince()
+            } onTapCity: {
+              store.showBottomSheetFilterCities()
+            }
+        }
+        
         ScrollViewReader { proxy in
           ScrollView(showsIndicators: false) {
             VStack(spacing: 0) {
@@ -58,21 +60,38 @@ public struct ListAdvocateKemenPPPAView: View {
                 }
               }
               
-              loadListAdvocateKemenPPPA(
-                listAdvocate: store.listAdvocates,
-                onTap: { data in
-                  store.navigateToAdvocateDetail(advocate: data)
-              }, onTapConsultation: { data in
-                Task {
-                  await store.processConsulatation(advocate: data)
+              if store.isListAdvocateEmpty {
+                VStack(spacing: 12) {
+                  Image("Ic_lawyer_not_found", bundle: .module)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 160, height: 160)
+                    .padding(.top , 32)
+                  
+                  Text("Advokat Tidak Tersedia")
+                    .foregroundStyle(Color.gray900)
+                    .titleLexend(size: 14)
+                  
+                  Text(store.isSearchActive ? "Tidak ada Advokat untuk hasil search yang diterapkan" : "Tidak ada Advokat untuk kategori dan filter yang diterapkan")
+                    .foregroundStyle(Color.gray900)
+                    .captionStyle(size: 12)
+                    .padding(.horizontal, 24)
+                  
+                  Spacer()
+                  
+                  Spacer()
                 }
-              })
-              .padding(.horizontal, 16)
-              
-              if store.isLoadMore {
-                ProgressView()
-                  .progressViewStyle(CircularProgressViewStyle())
-                  .padding(.vertical, 16)
+              } else {
+                loadListAdvocateKemenPPPA(
+                  listAdvocate: store.listAdvocates,
+                  onTap: { data in
+                    store.navigateToAdvocateDetail(advocate: data)
+                }, onTapConsultation: { data in
+                  Task {
+                    await store.processConsulatation(advocate: data)
+                  }
+                })
+                .padding(.horizontal, 16)
               }
               
               Color.clear
@@ -85,7 +104,7 @@ public struct ListAdvocateKemenPPPAView: View {
                 )
               
             }
-            .background(Color.gray050)
+            .background(store.isListAdvocateEmpty ? Color.white : Color.gray050)
             .frame(maxWidth: .infinity)
             .padding(.horizontal, 0)
           }
@@ -94,7 +113,9 @@ public struct ListAdvocateKemenPPPAView: View {
           }
         }
         .refreshable {
-          store.onRefresh()
+          Task {
+            await store.onRefresh()
+          }
         }
         .onPreferenceChange(BottomScrollPreferenceKey.self) { value in
             let screenHeight = UIScreen.main.bounds.height
@@ -115,15 +136,22 @@ public struct ListAdvocateKemenPPPAView: View {
           allProvinces: store.provinceList,
           allCities: store.cityList,
           isProvinceFilter: store.isProvinceFilter,
-          onApply: { provinces, cities in
+          selectedProvincesArray: store.selectedProvinceList,
+          selectedCitiesArray: store.selectedCityList) { provinces, cities in
             Task {
               await store.setupLogicFilter(provinces: Array(provinces), cities: Array(cities))
             }
-          },
-          onDismiss: {
+          } resetFilterProvince: {
+            Task {
+              await store.resetFilterProvince()
+            }
+          } resetFilterCities: {
+            Task {
+              await store.resetFilterCities()
+            }
+          } onDismiss: {
             store.hideBottomSheetFilter()
           }
-        )
       }
       
     }
@@ -308,6 +336,9 @@ public struct ListAdvocateKemenPPPAView: View {
             .frame(width: 100)
             .frame(maxHeight: 100)
             .clipped()
+            .onTapGesture {
+              onTap()
+            }
         }
     }
   

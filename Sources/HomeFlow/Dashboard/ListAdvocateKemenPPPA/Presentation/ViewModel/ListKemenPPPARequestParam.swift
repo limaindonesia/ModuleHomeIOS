@@ -10,23 +10,23 @@ import Foundation
 
 public struct ListKemenPPPARequestParam: Paramable, Equatable {
 
-  let isOnline: Bool?
   let limit: Int?
   let skip: Int?
   let cities: [Int]?
   let provinces: [Int]?
+  let userName: String?
 
   public func toParam() -> [String : Any] {
 
     var parameters: [String: Any] = [:]
 
-    if let isOnline = isOnline {
-      //parameters["is_online"] = isOnline
+    if userName ?? "" != "" {
+      parameters["user.name"] = userName
     }
     if let limit = limit {
       parameters["limit"] = limit
     }
-    if let skip = skip {
+    if skip ?? 0 > 0 {
       parameters["skip"] = skip
     }
     if let cities = cities {

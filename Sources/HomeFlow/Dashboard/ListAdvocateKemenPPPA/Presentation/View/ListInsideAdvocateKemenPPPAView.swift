@@ -96,7 +96,7 @@ public struct ListInsideAdvocateKemenPPPAView: View {
               VStack(alignment: .leading, spacing: 4) {
                 Text(name)
                   .foregroundColor(Color.darkTextColor)
-                  .titleStyle(size: 14)
+                  .titleLexend(size: 14)
                   .padding(.bottom, 8)
                   .padding(.top, 8)
                 
@@ -110,7 +110,7 @@ public struct ListInsideAdvocateKemenPPPAView: View {
                       
                       Text(location)
                         .foregroundColor(Color.darkTextColor)
-                        .captionStyle(size: 12)
+                        .captionLexend(size: 12)
                     }
                   }
                   
@@ -122,7 +122,7 @@ public struct ListInsideAdvocateKemenPPPAView: View {
                     
                     Text("Terverifikasi oleh Peradi")
                       .foregroundColor(Color.primaryInfo600)
-                      .captionStyle(size: 12)
+                      .captionLexend(size: 12)
                   }
                 }
                 
@@ -132,7 +132,7 @@ public struct ListInsideAdvocateKemenPPPAView: View {
                     
                     Text(experience)
                       .foregroundColor(Color.darkTextColor)
-                      .captionStyle(size: 12)
+                      .captionLexend(size: 12)
                   }
                   
                   if totalConsultation > 0 {
@@ -148,11 +148,11 @@ public struct ListInsideAdvocateKemenPPPAView: View {
                       
                       Text(rating)
                         .foregroundColor(Color.darkTextColor)
-                        .captionStyle(size: 12)
+                        .captionLexend(size: 12)
                       
                       Text("(\(totalConsultation) Konsultasi)")
                         .foregroundColor(Color.darkTextColor)
-                        .captionStyle(size: 12)
+                        .captionLexend(size: 12)
                     }
                   }
                 }
@@ -202,7 +202,7 @@ public struct ListInsideAdvocateKemenPPPAView: View {
     HStack {
       Text("Gratis")
         .foregroundColor(Color.buttonActiveColor)
-        .titleStyle(size: 14)
+        .titleLexend(size: 14)
       
       Spacer()
       
