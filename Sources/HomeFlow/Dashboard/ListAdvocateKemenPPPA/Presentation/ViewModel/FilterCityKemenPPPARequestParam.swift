@@ -15,7 +15,7 @@ public struct FilterCityKemenPPPARequestParam: Paramable, Equatable {
 
     var parameters: [String: Any] = [:]
 
-    if let provinceId = provinceId {
+    if provinceId != 0 {
       parameters["province_id"] = provinceId
     }
     

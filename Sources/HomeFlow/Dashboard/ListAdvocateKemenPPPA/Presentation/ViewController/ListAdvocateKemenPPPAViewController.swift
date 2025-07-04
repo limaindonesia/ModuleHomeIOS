@@ -33,6 +33,8 @@ public class ListAdvocateKemenPPPAViewController: NiblessViewController {
   
   //Variable
   private var subscriptions = Set<AnyCancellable>()
+  private var searchTimer: Timer?
+  let search = UISearchController(searchResultsController: nil)
 
   public init(
     store: ListAdvocateKemenPPPAStore) {
@@ -62,7 +64,7 @@ public class ListAdvocateKemenPPPAViewController: NiblessViewController {
   public override func viewDidLoad() {
     super.viewDidLoad()
 
-    standardNavBar(title: "Daftar Advokat")
+    setupNavigationBarDefault()
 
     view.backgroundColor = UIColor.gray050
 
@@ -90,6 +92,16 @@ public class ListAdvocateKemenPPPAViewController: NiblessViewController {
         }
       }.store(in: &subscriptions)
     
+    store.$isSearchActive
+      .receive(on: DispatchQueue.main)
+      .subscribe(on: DispatchQueue.main)
+      .sink { [weak self] state in
+        if state {
+          self?.setupNavigationBarSearch()
+          self?.setupSearchBar()
+        }
+      }.store(in: &subscriptions)
+    
     store.$showSnakeBarNotification
       .receive(on: DispatchQueue.main)
       .subscribe(on: DispatchQueue.main)
@@ -99,6 +111,73 @@ public class ListAdvocateKemenPPPAViewController: NiblessViewController {
         }
       }.store(in: &subscriptions)
     
+  }
+  
+  private func setupNavigationBarSearch() {
+    navigationItem.leftBarButtonItems = nil
+    navigationItem.rightBarButtonItem = nil
+    navigationItem.titleView = nil
+    
+    navigationItem.leftBarButtonItem = UIBarButtonItem(
+      image: UIImage(named: "ic_arrow_back")!,
+      style: .plain,
+      target: self,
+      action: #selector(didBack)
+    )
+    
+    navigationItem.leftBarButtonItem!.tintColor = .black
+  }
+  
+  private func setupNavigationBarDefault() {
+    let backBarButton = UIBarButtonItem(
+      image: UIImage(named: "ic_arrow_back")!,
+      style: .plain,
+      target: self,
+      action: #selector(didBack)
+    )
+    
+    let titleLabel = UIBarButtonItem(
+      customView: UILabel(
+        text: "Daftar Advokat",
+        font: .lexendFont(style: .title(size: 16)),
+        textColor: .black,
+        numberOfLines: 1
+      )
+    )
+    
+    navigationItem.leftBarButtonItems = [backBarButton, titleLabel]
+    navigationItem.rightBarButtonItem = UIBarButtonItem(
+      image: UIImage(
+        systemName: "magnifyingglass",
+        compatibleWith: .current
+      ),
+      style: .plain,
+      target: self,
+      action: #selector(changeToSearchMode)
+    )
+    
+    navigationItem.leftBarButtonItem!.tintColor = .black
+    navigationItem.rightBarButtonItem!.tintColor = .black
+    
+    let navBarTitle = UILabel(frame: CGRect(x: 0, y: 0, width: 320, height: 40))
+    navBarTitle.center = CGPoint(x: 0, y: 0)
+    navBarTitle.textAlignment = .left
+    navBarTitle.text = title
+    navBarTitle.font = .dmSansFont(style: .body(size: 18))
+    navigationItem.titleView = navBarTitle
+  }
+  
+  private func setupSearchBar() {
+    navigationItem.titleView = search.searchBar
+    search.searchBar.showsCancelButton = false
+    search.searchBar.placeholder = "Cari nama advokat"
+    search.searchBar.delegate = self
+    search.hidesNavigationBarDuringPresentation = false
+    search.searchBar.searchTextField.autocapitalizationType = .none
+    
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.66) {
+      self.search.searchBar.becomeFirstResponder()
+    }
   }
   
   private func addSkeletonTableView() {
@@ -149,6 +228,11 @@ public class ListAdvocateKemenPPPAViewController: NiblessViewController {
   
   private func hideLoginBottomSheet() {
     loginBottomSheetManager.releaseBottomSheet()
+  }
+  
+  @objc
+  func changeToSearchMode() {
+    store.isSearchActive = true
   }
   
   public func presentOTPViewController(
@@ -244,6 +328,52 @@ extension ListAdvocateKemenPPPAViewController: OTPStoreFactory {
       userSessionDataSource: store.userSessionDataSource,
       dashboardResponder: MockNavigator()
     )
+  }
+  
+}
+//MARK: - Search Bar Delegate
+
+extension ListAdvocateKemenPPPAViewController: UISearchBarDelegate {
+  
+  public func searchBar(
+    _ searchBar: UISearchBar,
+    textDidChange searchText: String
+  ) {
+    
+    if !searchText.isEmpty { return }
+    
+    searchBar.searchTextField.isEnabled = false
+    searchTimer?.invalidate()
+    searchTimer = Timer.scheduledTimer(
+      withTimeInterval: 0.5,
+      repeats: false,
+      block: { [weak self] _ in
+        guard let self = self else { return }
+        searchBar.searchTextField.isEnabled = true
+        self.store.searchName = searchText
+        Task {
+          await self.store.setupLogicSearchEmpty()
+        }
+      }
+    )
+    
+  }
+  
+  public func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+    guard let text = searchBar.text else { return }
+    store.searchName = text
+    
+    if text.isEmpty {
+      Task {
+        await store.setupLogicSearchEmpty()
+      }
+      return
+    }
+    
+    Task {
+      await store.setupLogicSearch()
+    }
+    
   }
   
 }

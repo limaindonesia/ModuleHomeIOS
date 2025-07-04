@@ -24,19 +24,25 @@ public class ListAdvocateKemenPPPAStore: ObservableObject {
   public var viewModel: MainTabbarViewModel
   
   //State
+  @Published public var listAdvocatesFilterStatus: [Advocate] = []
   @Published public var listAdvocates: [Advocate] = []
   @Published public var isPresentSekeleton: Bool = false
   @Published public var isPresentFilter: Bool = false
+  @Published public var searchName: String = ""
   @Published public var selectedProvinceTitle: String = "Provinsi"
   @Published public var selectedCityTitle: String = "Kota"
   @Published public var selectedProvinceInt: [Int] = []
   @Published public var selectedCityInt: [Int] = []
+  @Published public var selectedProvinceList: [ProvincesList] = []
+  @Published public var selectedCityList: [CityList] = []
   @Published public var provinceList: [ProvincesList] = []
   @Published public var cityList: [CityList] = []
   @Published public var isProvinceFilter: Bool = false
+  @Published public var isListAdvocateEmpty: Bool = false
   @Published public var isAllAdvocateOfflane: Bool = false
   @Published public var isAllAdvocateOfflaneAlreadyPressNotif: Bool = false
   @Published public var showLogin: Bool = false
+  @Published public var isSearchActive: Bool = false
   @Published public var showSnakeBarNotification: Bool = false
   @Published public var userSession: UserSessionData?
   @Published public var isLoadMore: Bool = false
@@ -81,11 +87,14 @@ public class ListAdvocateKemenPPPAStore: ObservableObject {
   @MainActor
   public func fetchAllAPI() async {
     async let provinceViewModels = fetchFilterProvince()
+    async let cityViewModels = fetchFilterCity()
     async let advocateViewModels = fetchOnlineAdvocates()
     
     provinceList = await provinceViewModels
+    cityList = await cityViewModels
     listAdvocates = await advocateViewModels
     checkingAllAdvocateStatus()
+    
   }
   
   @MainActor
@@ -98,15 +107,53 @@ public class ListAdvocateKemenPPPAStore: ObservableObject {
       var listAdvocatesLoadMore: [Advocate] = []
       listAdvocatesLoadMore = await advocateViewModels
       
-      for item in listAdvocatesLoadMore {
-        if listAdvocates.contains(where: { $0.id == item.id  }) {
-          
-        } else {
-          listAdvocates.append(item)
-        }
-      }
+      let joinedArray = joinArrays(in: listAdvocates, with: listAdvocatesLoadMore)
+      let resultWithNils = removeDuplicatesRecursively(joinedArray)
+      let finalResult = preserveOriginalIndices(resultWithNils)
+
+      listAdvocates = finalResult.sorted { $0.is_online! && !$1.is_online! }
+      
       checkingAllAdvocateStatus()
     }
+  }
+  
+  private func removeDuplicatesRecursively(
+    _ array: [Advocate],
+    _ seen: Set<Advocate> = [],
+    _ index: Int = 0
+  ) -> [Advocate] {
+    if index >= array.count {
+      return []
+    }
+
+    let currentElement = array[index]
+
+    if seen.contains(currentElement) {
+      return [] + removeDuplicatesRecursively(array, seen, index + 1)
+    } else {
+      return [currentElement] + removeDuplicatesRecursively(array, seen.union([currentElement]), index + 1)
+    }
+  }
+
+  private func preserveOriginalIndices(_ array: [Advocate?]) -> [Advocate] {
+    return array.compactMap { $0 }
+  }
+  
+  private func joinArrays(
+    in array1: [Advocate],
+    with array2: [Advocate]
+  ) -> [Advocate] {
+
+    var joinedArray = array1 + array2
+
+    for i in 0..<min(array1.count, array2.count) {
+      if array1[i].id == array2[i].id {
+        joinedArray[i] = array2[i]
+      }
+    }
+
+    return joinedArray
+
   }
   
   //MARK: - API
@@ -148,7 +195,7 @@ public class ListAdvocateKemenPPPAStore: ObservableObject {
     var advocates: [Advocate] = []
     
     do {
-      let params = ListKemenPPPARequestParam(isOnline: true, limit: limit, skip: skip, cities: nil, provinces: nil)
+      let params = ListKemenPPPARequestParam(limit: limit, skip: skip, cities: nil, provinces: nil, userName: searchName)
       let items = try await listKemenPPPARepositoryLogic.fetchOnlineAdvocates(params: params)
       
       skip = skip + items.count
@@ -169,7 +216,7 @@ public class ListAdvocateKemenPPPAStore: ObservableObject {
     var advocates: [Advocate] = []
     
     do {
-      let params = ListKemenPPPARequestParam(isOnline: true, limit: limit, skip: skip, cities: selectedCityInt, provinces: selectedProvinceInt)
+      let params = ListKemenPPPARequestParam(limit: limit, skip: skip, cities: selectedCityInt, provinces: selectedProvinceInt, userName: searchName)
       let items = try await listKemenPPPARepositoryLogic.fetchOnlineAdvocates(params: params)
       
       if !isLoadMore {
@@ -223,6 +270,10 @@ public class ListAdvocateKemenPPPAStore: ObservableObject {
   
   @MainActor
   public func sendNotificationToAllAdvocate() async {
+    guard let token = userSession?.remoteSession.remoteToken else {
+      showLogin = true
+      return
+    }
     if isAllAdvocateOfflaneAlreadyPressNotif {
       return
     }
@@ -234,15 +285,108 @@ public class ListAdvocateKemenPPPAStore: ObservableObject {
     if listAdvocates.contains(where: { $0.is_online == true }) {
       isAllAdvocateOfflane = false
     } else {
-      isAllAdvocateOfflane = true
+      isAllAdvocateOfflane = isListAdvocateEmpty ? false : true
+    }
+    
+    isListAdvocateEmpty = listAdvocates.count == 0 ? true : false
+  }
+  
+  @MainActor
+  public func setupLogicSearchEmpty() async {
+    await onRefresh()
+  }
+  
+  @MainActor
+  public func setupLogicSearch() async {
+    limit = 10
+    skip = 0
+    isPresentSekeleton = true
+    
+    listAdvocates = []
+    listAdvocatesFilterStatus = []
+    
+    async let advocateViewModels = fetchOnlineAdvocatesFilterLoadMore()
+    
+    var listAdvocateFilter: [Advocate] = []
+    listAdvocateFilter = await advocateViewModels
+    
+    listAdvocatesFilterStatus = listAdvocateFilter
+    
+    let onlineAvailable = listAdvocatesFilterStatus.filter { $0.is_online == true && $0.is_busy == false }
+    let busyOnly = listAdvocatesFilterStatus.filter { $0.is_busy == true }
+    let offline = listAdvocatesFilterStatus.filter { $0.is_online == false }
+
+    listAdvocates = onlineAvailable + busyOnly + offline
+  }
+  
+  @MainActor
+  public func resetFilterProvince() async {
+    if selectedProvinceList.count > 0 {
+      limit = 10
+      skip = 0
+      
+      selectedProvinceTitle = "Provinsi"
+      selectedProvinceInt.removeAll()
+      selectedProvinceList.removeAll()
+      
+      listAdvocates = []
+      listAdvocatesFilterStatus = []
+      cityList = []
+      
+      async let cityViewModels = fetchFilterCity()
+      cityList = await cityViewModels
+      
+      async let advocateViewModels = fetchOnlineAdvocatesFilterLoadMore()
+      
+      var listAdvocateFilter: [Advocate] = []
+      listAdvocateFilter = await advocateViewModels
+      
+      listAdvocatesFilterStatus = listAdvocateFilter
+      
+      let onlineAvailable = listAdvocatesFilterStatus.filter { $0.is_online == true && $0.is_busy == false }
+      let busyOnly = listAdvocatesFilterStatus.filter { $0.is_busy == true }
+      let offline = listAdvocatesFilterStatus.filter { $0.is_online == false }
+
+      listAdvocates = onlineAvailable + busyOnly + offline
+    }
+  }
+  
+  @MainActor
+  public func resetFilterCities() async {
+    if selectedCityList.count > 0 {
+      limit = 10
+      skip = 0
+      
+      selectedCityTitle = "Kota"
+      selectedCityInt.removeAll()
+      selectedCityList.removeAll()
+      
+      listAdvocates = []
+      listAdvocatesFilterStatus = []
+      
+      async let advocateViewModels = fetchOnlineAdvocatesFilterLoadMore()
+      
+      var listAdvocateFilter: [Advocate] = []
+      listAdvocateFilter = await advocateViewModels
+      
+      listAdvocatesFilterStatus = listAdvocateFilter
+      
+      let onlineAvailable = listAdvocatesFilterStatus.filter { $0.is_online == true && $0.is_busy == false }
+      let busyOnly = listAdvocatesFilterStatus.filter { $0.is_busy == true }
+      let offline = listAdvocatesFilterStatus.filter { $0.is_online == false }
+
+      listAdvocates = onlineAvailable + busyOnly + offline
     }
   }
   
   @MainActor
   public func setupLogicFilter(provinces: [ProvincesList], cities: [CityList]) async {
     hideBottomSheetFilter()
+    selectedProvinceList = provinces
+    selectedCityList = cities
     
     if provinces.count > 0 {
+      selectedProvinceInt = []
       for item in provinces {
         selectedProvinceInt.append(item.id ?? 0)
       }
@@ -264,26 +408,56 @@ public class ListAdvocateKemenPPPAStore: ObservableObject {
     isPresentSekeleton = true
     
     listAdvocates = []
+    listAdvocatesFilterStatus = []
     
     async let advocateViewModels = fetchOnlineAdvocatesFilterLoadMore()
     
     var listAdvocateFilter: [Advocate] = []
     listAdvocateFilter = await advocateViewModels
     
-    listAdvocates =  listAdvocateFilter
+    listAdvocatesFilterStatus = listAdvocateFilter
+    
+    let onlineAvailable = listAdvocatesFilterStatus.filter { $0.is_online == true && $0.is_busy == false }
+    let busyOnly = listAdvocatesFilterStatus.filter { $0.is_busy == true }
+    let offline = listAdvocatesFilterStatus.filter { $0.is_online == false }
+
+    listAdvocates = onlineAvailable + busyOnly + offline
+    
+    checkingAllAdvocateStatus()
+    
+    
   }
   
-  public func onRefresh() {
+  @MainActor
+  public func onRefresh() async {
     limit = 10
     skip = 0
+    isListAdvocateEmpty = isSearchActive ? false : isListAdvocateEmpty
     isPresentSekeleton = true
-    provinceList = []
-    cityList = []
-    selectedProvinceInt = []
-    selectedCityInt = []
     
-    Task {
-      await fetchAllAPI()
+    listAdvocates = []
+    listAdvocatesFilterStatus = []
+    
+    
+    if selectedProvinceList.count > 0 || selectedCityList.count > 0 {
+      async let advocateViewModels = fetchOnlineAdvocatesFilterLoadMore()
+      listAdvocatesFilterStatus = await advocateViewModels
+      
+      let onlineAvailable = listAdvocatesFilterStatus.filter { $0.is_online == true && $0.is_busy == false }
+      let busyOnly = listAdvocatesFilterStatus.filter { $0.is_busy == true }
+      let offline = listAdvocatesFilterStatus.filter { $0.is_online == false }
+
+      listAdvocates = onlineAvailable + busyOnly + offline
+      
+    } else {
+      async let advocateViewModels = fetchOnlineAdvocates()
+      listAdvocatesFilterStatus = await advocateViewModels
+      
+      let onlineAvailable = listAdvocatesFilterStatus.filter { $0.is_online == true && $0.is_busy == false }
+      let busyOnly = listAdvocatesFilterStatus.filter { $0.is_busy == true }
+      let offline = listAdvocatesFilterStatus.filter { $0.is_online == false }
+
+      listAdvocates = onlineAvailable + busyOnly + offline
     }
     
   }
@@ -321,6 +495,27 @@ public class ListAdvocateKemenPPPAStore: ObservableObject {
     }
   }
   
+  private func checkingEducation(advocate: Advocate) -> Bool  {
+    var education = ""
+    let s3 = advocate.educations.filter { $0?.degree == "S3" }
+    let s2 = advocate.educations.filter { $0?.degree == "S2" }
+    let s1 = advocate.educations.filter { $0?.degree == "S1" }
+    
+    if !s3.isEmpty {
+      education = s3[0]?.institution_name ?? ""
+    } else if !s2.isEmpty {
+      education = s2[0]?.institution_name ?? ""
+    } else if !s1.isEmpty{
+      education = s1[0]?.institution_name ?? ""
+    }
+    return education == "" ? false : true
+  }
+  
+  private func checkingDescriptions(advocate: Advocate) -> Bool  {
+    var description = ""
+    description = advocate.description ?? ""
+    return description == "" ? false : true
+  }
   
   //MARK: - Navigator
   
@@ -334,15 +529,18 @@ public class ListAdvocateKemenPPPAStore: ObservableObject {
     let index = listAdvocates.firstIndex { i in
       advocate.id == i.id
     }!
-    advocateNavigator.navigateToAdvocateDetail(
-      index: Int(index),
-      advocates: listAdvocates,
-      sktmModel: nil,
-      isFromDeeplink: false,
-      slug: advocate.getSlug(),
-      isKemenPPPA: true,
-      navigationController: nil
-    )
+    if checkingEducation(advocate: advocate) && checkingDescriptions(advocate: advocate) {
+      advocateNavigator.navigateToAdvocateDetail(
+        index: Int(index),
+        advocates: listAdvocates,
+        sktmModel: nil,
+        isFromDeeplink: false,
+        slug: advocate.getSlug(),
+        isKemenPPPA: true,
+        navigationController: nil
+      )
+    }
+    
   }
   
   @MainActor
