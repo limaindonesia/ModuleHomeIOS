@@ -42,6 +42,10 @@ public struct ConsultationSummaryView: View {
       
       historyView()
       
+      if userCases.service_type == "KEMENPPPA" {
+        kemenPPPASuccessView()
+      }
+      
       categoryView()
       
       if isRatingEmpty() {
@@ -322,11 +326,13 @@ public struct ConsultationSummaryView: View {
             radius: 12
           )
           
-          LabelView(
-            title: subIssue,
-            textColor: Color.gray500,
-            radius: 12
-          )
+          if didHaveSubIssue {
+            LabelView(
+              title: subIssue,
+              textColor: Color.gray500,
+              radius: 12
+            )
+          }
         }
       }
       .padding(.horizontal, 8)
@@ -348,6 +354,48 @@ public struct ConsultationSummaryView: View {
     } else {
       chatHiddenInfo()
     }
+  }
+  
+  @ViewBuilder
+  func kemenPPPASuccessView() -> some View {
+    VStack(alignment: .leading, spacing: 4) {
+      
+      Image("kemenpppa_perqara", bundle: .module)
+        .padding(.top, 8)
+      
+      Text("Bantuan hukum perlindungan perempuan & anak, kerja sama KemenPPPA RI & Peradi")
+        .lineLimit(2)
+        .captionLexend(size: 12)
+      
+      LineShape()
+        .stroke(Color.primaryInfo200, style: StrokeStyle(lineWidth: 1, lineJoin: .round, dash: [10, 5]))
+        .frame(maxWidth: .infinity, maxHeight: 1)
+        .padding(.top, 8)
+      
+      Text("Saran Langkah Lanjutan dari Advokat")
+        .titleLexend(size: 14)
+        .padding(.vertical, 4)
+      
+      VStack(alignment: .leading, spacing: 3) {
+        ForEach(getRecommendations(), id: \.self) { point in
+          HStack(alignment: .center, spacing: 8) {
+            Text("•")
+              .bodyLexend(size: 16)
+            Text(point)
+              .captionLexend(size: 12)
+          }
+        }
+      }
+    }
+    .padding(.horizontal, 8)
+    .padding(.vertical, 8)
+    .frame(maxWidth: .infinity)
+    .background(Color.primaryInfo050)
+    .clipShape(RoundedRectangle(cornerRadius: 8))
+    .overlay {
+      RoundedRectangle(cornerRadius: 8).stroke(Color.primaryInfo200)
+    }
+    .padding(.horizontal, 16)
   }
   
 }
@@ -372,6 +420,10 @@ extension ConsultationSummaryView {
   
   public func getExpiredDaysHoursStop() -> String {
     return "Hingga \(expiredDays), pukul \(expiredHoursStop)"
+  }
+  
+  public var didHaveSubIssue: Bool {
+    return userCases.summary?.skill_type?.name != nil
   }
   
   public var subIssue: String {
@@ -432,6 +484,13 @@ extension ConsultationSummaryView {
   public func isRatingEmpty() -> Bool {
     guard let rating = userCases.lawyer_rating?.value else { return false }
     return rating == 0
+  }
+  
+  public func getRecommendations() -> [String] {
+    return userCases
+      .summary?
+      .recommendations?
+      .map { $0.description ?? "" } ?? []
   }
   
   public func navigateToChat(
