@@ -529,6 +529,7 @@ public struct HomeView: View {
         lawyersName: item.lawyer?.getName() ?? "",
         issueType: item.skill?.name ?? "",
         price: item.getPrice(),
+        isFromHistory: false,
         onTap: {
           store.navigateToPayment()
         },
@@ -544,11 +545,12 @@ public struct HomeView: View {
       WaitingForPaymentView(
         imageURL: item.lawyer?.getImageName(),
         statusText: item.getStatus() ?? "",
-        timeRemaining: item.getPaymentTimeRemainig(),
+        timeRemaining: item.getPaymentTimeRemaining(),
         date: item.getDateString(),
         lawyersName: item.lawyer?.getName() ?? "",
         issueType: item.skill?.name ?? "",
         price: item.getPrice(),
+        isFromHistory: false,
         onTap: {
           store.navigateToPaymentCheck()
         },
@@ -567,6 +569,8 @@ public struct HomeView: View {
         date: item.getDateString(),
         lawyersName: item.lawyer?.getName() ?? "",
         issueType: item.skill?.name ?? "",
+        isKemenPPPA: item.getStatusKemenPPPA(),
+        isFromHistory: false,
         onTap: {
           store.navigateToWaitingRoom(isProbono: item.service_type == "PROBONO")
         }
@@ -577,14 +581,22 @@ public struct HomeView: View {
       OngoingConsultationView(
         imageURL: item.lawyer?.getImageName(),
         statusText: item.getStatus() ?? "",
+        timeRemaining: item.getPaymentTimeRemaining(),
         statusColor: Color(hex: item.getStatusColor()),
         statusTextColor: Color(hex: item.getStatusTextColor()),
         date: item.getDateString(),
         lawyersName: item.lawyer?.getName() ?? "",
         issueType: item.skill?.name ?? "",
         buttonText: Constant.Home.Text.BACK_TO_CONSULTATION,
+        isKemenPPPA: item.getStatusKemenPPPA(),
+        isFromHistory: false,
         onTap: {
           store.navigateToConsultationChat()
+        },
+        onTimerTimesUp: {
+          Task {
+            await store.fetchOngoingUserCases()
+          }
         }
       )
       
@@ -593,14 +605,22 @@ public struct HomeView: View {
       OngoingConsultationView(
         imageURL: item.lawyer?.getImageName(),
         statusText: item.getStatus() ?? "",
+        timeRemaining: item.getPaymentTimeRemaining(),
         statusColor: Color(hex: item.getStatusColor()),
         statusTextColor: Color(hex: item.getStatusTextColor()),
         date: item.getDateString(),
         lawyersName: item.lawyer?.getName() ?? "",
         issueType: item.skill?.name ?? "",
         buttonText: item.getButtonText(),
+        isKemenPPPA: item.getStatusKemenPPPA(),
+        isFromHistory: false,
         onTap: {
           store.navigateToWaitingRoom(isProbono: item.service_type == "PROBONO")
+        },
+        onTimerTimesUp: {
+          Task {
+            await store.fetchOngoingUserCases()
+          }
         }
       )
       

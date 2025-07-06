@@ -74,7 +74,7 @@ public struct ListAdvocateKemenPPPAView: View {
                   
                   Text(store.isSearchActive ? "Tidak ada Advokat untuk hasil search yang diterapkan" : "Tidak ada Advokat untuk kategori dan filter yang diterapkan")
                     .foregroundStyle(Color.gray900)
-                    .captionStyle(size: 12)
+                    .captionLexend(size: 12)
                     .padding(.horizontal, 24)
                   
                   Spacer()
