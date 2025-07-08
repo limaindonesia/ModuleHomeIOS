@@ -150,6 +150,8 @@ public class OrderProcessKemenPPPAStore: OrderProcessStore {
     
     if !didNotHaveIdentity && identityNumber.isEmpty {
       identityNumberErrorMessage = "NIK harus diisi"
+    } else if !didNotHaveIdentity && !identityNumber.isValidNumber() {
+      identityNumberErrorMessage = "Harus berupa angka"
     } else if !didNotHaveIdentity && identityNumber.count < 16 {
       identityNumberErrorMessage = "Minimal 16 digit"
     }
@@ -279,21 +281,25 @@ public class OrderProcessKemenPPPAStore: OrderProcessStore {
   
   private func checkWithIdentity() {
     if descriptions.isEmpty || selectedViolence == nil || selectedApplicant == nil
-        || identityNumber.isEmpty || incident.isEmpty {
+        || identityNumber.isEmpty || identityNumber.count < 16
+        || !identityNumber.isValidNumber() || incident.isEmpty {
       buttonActive = false
       return
     }
+    
     isPresentPrivacyKemenPPPA = true
   }
   
   private func checkWithoutIdentity() {
-    if descriptions.isEmpty || selectedViolence == nil || selectedApplicant == nil || incident.isEmpty {
+    if descriptions.isEmpty || selectedViolence == nil
+        || selectedApplicant == nil || incident.isEmpty {
       buttonActive = false
       return
     }
     isPresentPrivacyKemenPPPA = true
   }
   
+
   
   //MARK: - Navigator
   
