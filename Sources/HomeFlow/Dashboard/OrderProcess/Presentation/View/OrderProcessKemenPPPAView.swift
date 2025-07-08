@@ -30,7 +30,10 @@ struct OrderProcessKemenPPPAView: View {
                 originalPrice: store.lawyerInfoViewModel.originalPrice,
                 isDiscount: store.lawyerInfoViewModel.isDiscount,
                 isProbono: store.lawyerInfoViewModel.isProbono,
-                timeStr: store.timeConsultation
+                timeStr: store.timeConsultation,
+                onTap: {
+                  store.isPresentDetailAdvocate = true
+                }
               )
               .padding(.horizontal, 16)
               
@@ -61,6 +64,8 @@ struct OrderProcessKemenPPPAView: View {
       }
       .task {
         await store.fetchUserSession()
+        await store.getLawyerReview()
+        await store.getLawyerRating()
         await store.fetchReasonKemenPPPA()
         await store.fetchKemenPPPACategory()
         await store.fetchPrivacyPolicyKemenPPPA()
@@ -74,6 +79,14 @@ struct OrderProcessKemenPPPAView: View {
           .position(x: UIScreen.main.bounds.midX - 16, y: UIScreen.main.bounds.height / 2 - 200)
           .padding(.horizontal, 16)
           .zIndex(2)
+      }
+      
+      BottomSheetNewView(isPresented: $store.isPresentDetailAdvocate) {
+        AdvocateDetailInfoBottomSheetView(
+          lawyer: store.advocate,
+          reviews: store.reviews,
+          totalReview: store.totalReview
+        )
       }
       
       BottomSheetView(isPresented: $store.isPresentError) {
@@ -172,7 +185,8 @@ struct OrderProcessKemenPPPAView: View {
     originalPrice: String,
     isDiscount: Bool,
     isProbono: Bool,
-    timeStr: String
+    timeStr: String,
+    onTap: @escaping () -> Void
   ) -> some View {
     HStack (spacing: 12) {
       CircleAvatarImageView(
@@ -212,20 +226,19 @@ struct OrderProcessKemenPPPAView: View {
       
       Spacer()
       
-      Button {
-        
-      } label: {
-        Image("ic_chevron_down", bundle: .module)
-          .resizable()
-          .frame(width: 24, height: 24)
-          .padding(.trailing, 8)
-      }
+      Image("ic_chevron_down", bundle: .module)
+        .resizable()
+        .frame(width: 24, height: 24)
+        .padding(.trailing, 8)
       
     }
     .frame(maxWidth: .infinity, maxHeight: 80)
     .background(Color.white)
     .cornerRadius(12)
     .shadow(color: .gray200, radius: 8)
+    .onTapGesture {
+      onTap()
+    }
   }
   
   @ViewBuilder
@@ -539,6 +552,7 @@ struct OrderProcessKemenPPPAView: View {
       orderServiceRepository: MockOrderServiceRepository(),
       probonoRepository: MockGetKTPRepository(),
       ongoingRepository: MockPaymentRepository(),
+      detailAdvocateRepository: MockDetailAdvocateRepository(),
       paymentNavigator: MockNavigator(),
       sktmNavigator: MockNavigator(),
       probonoNavigator: MockNavigator(),
