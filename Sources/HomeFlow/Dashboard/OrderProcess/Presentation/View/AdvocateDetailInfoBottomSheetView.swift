@@ -14,15 +14,18 @@ public struct AdvocateDetailInfoBottomSheetView: View {
   private let lawyer: Advocate
   private let reviews: LawyerReviewList
   private let totalReview: Int
+  private var showMore: () -> Void
   
   public init(
     lawyer: Advocate,
     reviews: LawyerReviewList,
-    totalReview: Int
+    totalReview: Int,
+    showMore: @escaping() -> Void
   ) {
     self.lawyer = lawyer
     self.reviews = reviews
     self.totalReview = totalReview
+    self.showMore = showMore
   }
   
   public var body: some View {
@@ -104,7 +107,7 @@ public struct AdvocateDetailInfoBottomSheetView: View {
           Spacer()
           
           Button {
-            
+            showMore()
           } label: {
             Text("Lihat Semua")
               .foregroundStyle(Color.buttonActiveColor)
@@ -170,6 +173,7 @@ public struct AdvocateDetailInfoBottomSheetView: View {
   AdvocateDetailInfoBottomSheetView(
     lawyer: .init(),
     reviews: .init(),
-    totalReview: 0
+    totalReview: 0,
+    showMore: {}
   )
 }

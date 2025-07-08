@@ -85,7 +85,10 @@ struct OrderProcessKemenPPPAView: View {
         AdvocateDetailInfoBottomSheetView(
           lawyer: store.advocate,
           reviews: store.reviews,
-          totalReview: store.totalReview
+          totalReview: store.totalReview,
+          showMore: {
+            store.navigateToAdvocateDetailReview()
+          }
         )
       }
       

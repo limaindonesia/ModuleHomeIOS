@@ -27,7 +27,7 @@ public class OrderProcessStore: ObservableObject {
   private let userSessionDataSource: UserSessionDataSourceLogic
   private let probonoNavigator: ProbonoNavigator
   private let aiRepository: AIRepositoryLogic
-  private let advocateNavigator: OnlineAdvocateNavigator
+  public let advocateNavigator: OnlineAdvocateNavigator
   
   @Published public var showTimer: Bool = false
   @Published public var orderServiceFilled: Bool = false

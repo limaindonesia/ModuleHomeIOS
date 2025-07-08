@@ -299,7 +299,6 @@ public class OrderProcessKemenPPPAStore: OrderProcessStore {
     isPresentPrivacyKemenPPPA = true
   }
   
-
   
   //MARK: - Navigator
   
@@ -310,6 +309,9 @@ public class OrderProcessKemenPPPAStore: OrderProcessStore {
     )
   }
   
+  public func navigateToAdvocateDetailReview() {
+    advocateNavigator.navigateToDetailReview(advocate)
+  }
   
   //MARK: - Indicate
   
