@@ -20,6 +20,7 @@ struct LawyerInfoProbonoView: View {
   private let timeStr: String
   @Binding private var isProbono: Bool
   @Binding private var toggleActive: Bool
+  var onTap: () -> Void
   
   init(
     imageURL: URL?,
@@ -30,7 +31,8 @@ struct LawyerInfoProbonoView: View {
     isDiscount: Bool,
     isProbono: Binding<Bool>,
     timeStr: String,
-    toggleActive: Binding<Bool>
+    toggleActive: Binding<Bool>,
+    onTap: @escaping () -> Void
   ) {
     self.imageURL = imageURL
     self.name = name
@@ -41,6 +43,7 @@ struct LawyerInfoProbonoView: View {
     self._isProbono = isProbono
     self.timeStr = timeStr
     self._toggleActive = toggleActive
+    self.onTap = onTap
   }
   
   var body: some View {
@@ -73,6 +76,9 @@ struct LawyerInfoProbonoView: View {
     .background(Color.white)
     .cornerRadius(12)
     .shadow(color: .gray200, radius: 8)
+    .onTapGesture {
+      onTap()
+    }
   }
   
   @ViewBuilder
@@ -114,7 +120,8 @@ struct LawyerInfoProbonoView: View {
     isDiscount: false,
     isProbono: .constant(true),
     timeStr: "30 Menit",
-    toggleActive: .constant(true)
+    toggleActive: .constant(true),
+    onTap: {}
   )
   .padding(.horizontal, 16)
 }

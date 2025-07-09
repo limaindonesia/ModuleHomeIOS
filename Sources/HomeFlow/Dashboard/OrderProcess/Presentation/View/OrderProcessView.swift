@@ -34,13 +34,13 @@ public struct OrderProcessView: View {
               showLawyerInfo()
                 .padding(.horizontal, 16)
               
-//              issueView {
-//                store.showChangeCategory()
-//              }
+              //              issueView {
+              //                store.showChangeCategory()
+              //              }
               explanationView()
                 .padding(.horizontal, 16)
-//              .id(1)
-//              .padding(.horizontal, 16)
+              //              .id(1)
+              //              .padding(.horizontal, 16)
             }
             .padding(.top, 16)
             
@@ -82,11 +82,11 @@ public struct OrderProcessView: View {
         )
         .padding(.horizontal, 16)
       }
-      .onAppear {
-        Task {
-          await store.fetchUserSession()
-          await store.fetchProbonoStatus()
-        }
+      .task {
+        await store.fetchUserSession()
+        await store.getLawyerReview()
+        await store.getLawyerRating()
+        await store.fetchProbonoStatus()
       }
       
       if store.isAIProcessing {
@@ -97,6 +97,17 @@ public struct OrderProcessView: View {
           .position(x: UIScreen.main.bounds.midX - 16, y: UIScreen.main.bounds.height / 2 - 200)
           .padding(.horizontal, 16)
           .zIndex(2)
+      }
+      
+      BottomSheetNewView(isPresented: $store.isPresentDetailAdvocate) {
+        AdvocateDetailInfoBottomSheetView(
+          lawyer: store.advocate,
+          reviews: store.reviews,
+          totalReview: store.totalReview,
+          showMore: {
+            store.navigateToAdvocateDetailReview()
+          }
+        )
       }
       
       BottomSheetView(isPresented: $store.isPresentError) {
@@ -208,7 +219,10 @@ public struct OrderProcessView: View {
         isDiscount: store.lawyerInfoViewModel.isDiscount,
         isProbono: $store.isProbonoActive,
         timeStr: store.timeConsultation,
-        toggleActive: $store.isProbonoActive
+        toggleActive: $store.isProbonoActive,
+        onTap: {
+          store.isPresentDetailAdvocate = true
+        }
       )
     } else {
       LawyerInfoView(
@@ -222,7 +236,10 @@ public struct OrderProcessView: View {
         timeStr: store.timeConsultation,
         experience: store.getExperience(),
         rating: store.getRating(),
-        totalConsultation: store.getTotalConsultation()
+        totalConsultation: store.getTotalConsultation(),
+        onTap: {
+          store.isPresentDetailAdvocate = true
+        }
       )
     }
   }

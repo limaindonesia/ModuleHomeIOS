@@ -14,13 +14,11 @@ public class OrderProcessKemenPPPAStore: OrderProcessStore {
   
   private let kemenPPPARepository: KemenPPPARepositoryLogic
   private let ongoingRepository: OngoingRepositoryLogic
-  private let detailAdvocateRepository: DetailAdvocateRepositoryLogic
   private let waitingRoomNavigator: WaitingRoomNavigator
   
   @Published public var isPresentReasonToContinue: Bool = false
   @Published public var isPresentViolenceBottomSheet: Bool = false
   @Published public var isPresentPrivacyKemenPPPA: Bool = false
-  @Published public var isPresentDetailAdvocate: Bool = false
   @Published public var didNotHaveIdentity: Bool = false
   @Published public var incident: String = ""
   @Published public var identityNumber: String = ""
@@ -39,8 +37,6 @@ public class OrderProcessKemenPPPAStore: OrderProcessStore {
   @Published public var reasonToContinueText: String = ""
   
   public var userCase: UserCases = .init()
-  public var reviews: LawyerReviewList = .init()
-  public var totalReview: Int = 0
   
   public init(
     advocate: Advocate,
@@ -65,7 +61,6 @@ public class OrderProcessKemenPPPAStore: OrderProcessStore {
     self.kemenPPPARepository = kemenPPPARepository
     self.waitingRoomNavigator = waitingRoomNavigator
     self.ongoingRepository = ongoingRepository
-    self.detailAdvocateRepository = detailAdvocateRepository
     
     super.init(
       advocate: advocate,
@@ -80,6 +75,7 @@ public class OrderProcessKemenPPPAStore: OrderProcessStore {
       sktmNavigator: sktmNavigator,
       probonoNavigator: probonoNavigator,
       aiRepository: aiRepository,
+      detailAdvocateRepository: detailAdvocateRepository,
       advocateNavigator: advocateNavigator
     )
     
@@ -227,56 +223,6 @@ public class OrderProcessKemenPPPAStore: OrderProcessStore {
     }
   }
   
-  @MainActor
-  public func getLawyerReview() async {
-    do {
-      guard let token = userSessionData?.remoteSession.remoteToken else {
-        return
-      }
-      
-      let response = try await detailAdvocateRepository.getLawyerReview(
-        headers: HeaderRequest(token: token),
-        parameters: ReviewParamRequest(
-          lawyerID: advocate.id ?? 0,
-          limit: 3,
-          page: 1
-        )
-      )
-      
-      guard let data = response.data else { return }
-      reviews = data
-      
-    } catch {
-      guard let error = error as? ErrorMessage else { return }
-      indicateError(error)
-    }
-  }
-  
-  @MainActor
-  public func getLawyerRating() async {
-    do {
-      guard let token = userSessionData?.remoteSession.remoteToken else {
-        return
-      }
-      
-      let response = try await detailAdvocateRepository.getLawyerRating(
-        headers: HeaderRequest(token: token),
-        parameters: ReviewParamRequest(
-          lawyerID: advocate.id ?? 0,
-          limit: 0,
-          page: 0
-        )
-      )
-      
-      guard let data = response.data else { return }
-      totalReview = data.total_review ?? 0
-      
-    } catch {
-      guard let error = error as? ErrorMessage else { return }
-      indicateError(error)
-    }
-  }
-  
   //MARK: - Other Function
   
   private func checkWithIdentity() {
@@ -307,10 +253,6 @@ public class OrderProcessKemenPPPAStore: OrderProcessStore {
       userCases: userCase,
       roomKey: roomKey
     )
-  }
-  
-  public func navigateToAdvocateDetailReview() {
-    advocateNavigator.navigateToDetailReview(advocate)
   }
   
   //MARK: - Indicate

@@ -27,6 +27,7 @@ public class OrderProcessStore: ObservableObject {
   private let userSessionDataSource: UserSessionDataSourceLogic
   private let probonoNavigator: ProbonoNavigator
   private let aiRepository: AIRepositoryLogic
+  private let detailAdvocateRepository: DetailAdvocateRepositoryLogic
   public let advocateNavigator: OnlineAdvocateNavigator
   
   @Published public var showTimer: Bool = false
@@ -58,6 +59,7 @@ public class OrderProcessStore: ObservableObject {
   @Published public var isPresentError: Bool = false
   @Published public var didBack: Bool = false
   @Published public var selected: String? = nil
+  @Published public var isPresentDetailAdvocate: Bool = false
   
   public var priceCategoriesCopy: [PriceCategoryViewModel] = []
   private var treatmentEntities: [TreatmentEntity] = []
@@ -69,6 +71,8 @@ public class OrderProcessStore: ObservableObject {
   private var detailPriceAdvocate: DetailPriceAdvocate?
   public var idCardEntity: IDCardEntity = .init()
   public var subscriptions = Set<AnyCancellable>()
+  public var reviews: LawyerReviewList = .init()
+  public var totalReview: Int = 0
   var timer = Timer.publish(every: 100000, on: .main, in: .common).autoconnect()
   
   public init() {
@@ -85,6 +89,7 @@ public class OrderProcessStore: ObservableObject {
     self.probonoRepository = MockGetKTPRepository()
     self.aiRepository = MockAIRepositoryLogic()
     self.advocateNavigator = MockNavigator()
+    self.detailAdvocateRepository = MockDetailAdvocateRepository()
   }
   
   public init(
@@ -100,6 +105,7 @@ public class OrderProcessStore: ObservableObject {
     sktmNavigator: SKTMNavigator,
     probonoNavigator: ProbonoNavigator,
     aiRepository: AIRepositoryLogic,
+    detailAdvocateRepository: DetailAdvocateRepositoryLogic,
     advocateNavigator: OnlineAdvocateNavigator
   ) {
     self.advocate = advocate
@@ -115,6 +121,7 @@ public class OrderProcessStore: ObservableObject {
     self.probonoNavigator = probonoNavigator
     self.aiRepository = aiRepository
     self.advocateNavigator = advocateNavigator
+    self.detailAdvocateRepository = detailAdvocateRepository
     
     setSelectedDetailPriceAdvocate()
     setLawyerInfo()
@@ -259,6 +266,56 @@ public class OrderProcessStore: ObservableObject {
       )
       
       setOrderServiceArrayModel()
+      
+    } catch {
+      guard let error = error as? ErrorMessage else { return }
+      indicateError(error: error)
+    }
+  }
+  
+  @MainActor
+  public func getLawyerReview() async {
+    do {
+      guard let token = userSessionData?.remoteSession.remoteToken else {
+        return
+      }
+      
+      let response = try await detailAdvocateRepository.getLawyerReview(
+        headers: HeaderRequest(token: token),
+        parameters: ReviewParamRequest(
+          lawyerID: advocate.id ?? 0,
+          limit: 3,
+          page: 1
+        )
+      )
+      
+      guard let data = response.data else { return }
+      reviews = data
+      
+    } catch {
+      guard let error = error as? ErrorMessage else { return }
+      indicateError(error: error)
+    }
+  }
+  
+  @MainActor
+  public func getLawyerRating() async {
+    do {
+      guard let token = userSessionData?.remoteSession.remoteToken else {
+        return
+      }
+      
+      let response = try await detailAdvocateRepository.getLawyerRating(
+        headers: HeaderRequest(token: token),
+        parameters: ReviewParamRequest(
+          lawyerID: advocate.id ?? 0,
+          limit: 0,
+          page: 0
+        )
+      )
+      
+      guard let data = response.data else { return }
+      totalReview = data.total_review ?? 0
       
     } catch {
       guard let error = error as? ErrorMessage else { return }
@@ -889,6 +946,9 @@ public class OrderProcessStore: ObservableObject {
     sktmNavigator.navigateToUploadSKTM()
   }
 
+  public func navigateToAdvocateDetailReview() {
+    advocateNavigator.navigateToDetailReview(advocate)
+  }
   
   //MARK: - Indicate
   
