@@ -15,6 +15,8 @@ public struct ConsultationSummaryView: View {
   public var onTapShowChat: ((UserCases, Int, String) -> Void)?
   public var onTapReview: ((UserCases) -> Void)?
   
+  @State private var wouldOverflow: Bool = false
+  
   public init(
     userCases: UserCases,
     onTapShowChat: (@escaping ((UserCases, Int, String) -> Void)),
@@ -42,11 +44,13 @@ public struct ConsultationSummaryView: View {
       
       historyView()
       
-      if userCases.service_type == "KEMENPPPA" {
-        kemenPPPASuccessView()
+      if userCases.service_type == Constant.Text.KEMENPPPA {
+        kemenPPPABannerView()
+        
+        kemenPPPACategoryView()
+      } else {
+        categoryView()
       }
-      
-      categoryView()
       
       if isRatingEmpty() {
         HStack {
@@ -357,7 +361,7 @@ public struct ConsultationSummaryView: View {
   }
   
   @ViewBuilder
-  func kemenPPPASuccessView() -> some View {
+  func kemenPPPABannerView() -> some View {
     VStack(alignment: .leading, spacing: 4) {
       
       Image("kemenpppa_perqara", bundle: .module)
@@ -398,6 +402,139 @@ public struct ConsultationSummaryView: View {
     .padding(.horizontal, 16)
   }
   
+  @ViewBuilder
+  func kemenPPPACategoryView() -> some View {
+    VStack(alignment: .leading, spacing: 8) {
+      Text("Kategori Konsultasi:")
+        .foregroundStyle(Color.darkTextColor)
+        .bodyLexend(size: 12)
+      
+      TextOverflowDetector(
+        text1: oldIssue,
+        text2: issue,
+        fontSize: 10,
+        fontWeight: .regular,
+        onAppear: { overflow in
+          wouldOverflow = overflow
+        }
+      )
+      
+      if wouldOverflow {
+        VStack(alignment: .leading) {
+          HStack {
+            LabelStrikeThroughView(
+              text: oldIssue,
+              textColor: Color.pink,
+              color: .gray100
+            )
+            
+            Circle()
+              .fill(Color.gray100)
+              .frame(width: 24, height: 24)
+              .overlay {
+                Image("arrow-right", bundle: .module)
+                  .resizable()
+                  .frame(width: 20, height: 20)
+              }
+          }
+          
+          LabelView(
+            title: issue,
+            textColor: Color.primary700,
+            radius: 12
+          )
+        }
+        .padding(.bottom, 8)
+        
+      } else {
+        HStack {
+          LabelStrikeThroughView(
+            text: oldIssue,
+            textColor: Color.pink,
+            color: .gray050
+          )
+          
+          Circle()
+            .fill(Color.gray100)
+            .frame(width: 24, height: 24)
+            .overlay {
+              Image("arrow-right", bundle: .module)
+                .resizable()
+                .frame(width: 20, height: 20)
+            }
+          
+          LabelView(
+            title: issue,
+            textColor: Color.primary700,
+            radius: 12
+          )
+        }
+        .padding(.bottom, 8)
+      }
+      
+      LineShape()
+        .stroke(Color.gray200, style: StrokeStyle(lineWidth: 1, lineJoin: .round, dash: [10, 5]))
+        .frame(maxWidth: .infinity, maxHeight: 1)
+      
+      Text("Advokat telah mengubah kategori konsultasi")
+        .captionLexend(size: 12)
+    }
+    .padding(.horizontal, 8)
+    .padding(.vertical, 8)
+    .background(Color.white)
+    .frame(maxWidth: .infinity, alignment: .leading)
+    .clipShape(RoundedRectangle(cornerRadius: 8))
+    .overlay {
+      RoundedRectangle(cornerRadius: 8).stroke(Color.gray100, lineWidth: 1)
+    }
+    .padding(.horizontal, 16)
+  }
+  
+  @ViewBuilder
+  func issueTagView() -> some View {
+    TextOverflowDetector(
+      text1: issue,
+      text2: subIssue,
+      fontSize: 10,
+      fontWeight: .regular,
+      onAppear: { overflow in
+        wouldOverflow = overflow
+      }
+    )
+    
+    if wouldOverflow {
+      VStack(alignment: .leading) {
+        LabelView(
+          title: issue,
+          textColor: Color.primaryInfo600,
+          radius: 12
+        )
+        
+        LabelView(
+          title: subIssue,
+          textColor: Color.gray600,
+          radius: 12
+        )
+      }
+      .padding(.bottom, 8)
+      
+    } else {
+      HStack {
+        LabelView(
+          title: issue,
+          textColor: Color.primaryInfo600,
+          radius: 20
+        )
+        
+        LabelView(
+          title: subIssue,
+          textColor: Color.gray600,
+          radius: 20
+        )
+      }
+      .padding(.bottom, 8)
+    }
+  }
 }
 
 extension ConsultationSummaryView {
