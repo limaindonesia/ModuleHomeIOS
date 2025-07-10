@@ -82,7 +82,7 @@ struct OrderProcessKemenPPPAView: View {
       }
       
       BottomSheetNewView(isPresented: $store.isPresentDetailAdvocate) {
-        AdvocateDetailInfoBottomSheetView(
+        AdvocateDetailInfoKemenPPPABottomSheetView(
           lawyer: store.advocate,
           reviews: store.reviews,
           totalReview: store.totalReview,

@@ -1,15 +1,15 @@
 //
-//  AdvocateDetailInfoBottomSheetView.swift
+//  AdvocateDetailInfoKemenPPPABottomSheetView.swift
 //  HomeFlow
 //
-//  Created by Ilham Prabawa on 08/07/25.
+//  Created by Ilham Prabawa on 10/07/25.
 //
 
 import SwiftUI
 import AprodhitKit
 import GnDKit
 
-public struct AdvocateDetailInfoBottomSheetView: View {
+public struct AdvocateDetailInfoKemenPPPABottomSheetView: View {
   
   private let lawyer: Advocate
   private let reviews: LawyerReviewList
@@ -66,43 +66,6 @@ public struct AdvocateDetailInfoBottomSheetView: View {
                 .foregroundColor(.primaryInfo600)
                 .bodyLexend(size: 12)
             }
-          }
-        }
-        .padding(.horizontal, 16)
-        
-        HStack {
-          RatingView(rating: lawyer.getRating())
-          
-          Divider()
-            .frame(width: 1)
-            .background(Color.gray200)
-          
-          Text(lawyer.getTotalConsultation())
-            .captionLexend(size: 12)
-          
-          Spacer()
-          
-          Image(systemName: "chevron.right")
-        }
-        .padding(.horizontal, 8)
-        .padding(.vertical, 12)
-        .background(Color.white)
-        .clipShape(RoundedRectangle(cornerRadius: 8))
-        .overlay {
-          RoundedRectangle(cornerRadius: 8).stroke(Color.gray100, lineWidth: 1)
-        }
-        .padding(.horizontal, 16)
-        
-        VStack(alignment: .leading, spacing: 8) {
-          Text("Keahlian")
-            .titleLexend(size: 14)
-          
-          ChipLayout(models: getSkills()) { name in
-            ChipTextView(
-              text: name,
-              textColor: Color.primaryInfo600,
-              backgroundColor: Color.primary050
-            )
           }
         }
         .padding(.horizontal, 16)
@@ -198,7 +161,7 @@ public struct AdvocateDetailInfoBottomSheetView: View {
   
 }
 
-extension AdvocateDetailInfoBottomSheetView {
+extension AdvocateDetailInfoKemenPPPABottomSheetView {
   
   func getSkills() -> [String] {
     let names = lawyer.detail
