@@ -48,6 +48,7 @@ public struct ConsultationSummaryView: View {
         kemenPPPABannerView()
         
         kemenPPPACategoryView()
+        
       } else {
         categoryView()
       }
@@ -161,47 +162,86 @@ public struct ConsultationSummaryView: View {
   
   @ViewBuilder
   func categoryEdited() -> some View {
-    VStack(alignment: .leading, spacing: 12) {
+    VStack(alignment: .leading, spacing: 8) {
       Text("Kategori Konsultasi:")
         .foregroundStyle(Color.darkTextColor)
         .bodyLexend(size: 12)
       
-      VStack(alignment: .leading) {
-        HStack(spacing: 8) {
-          VStack {
-            StrikethroughText(
+      TextOverflowDetector(
+        text1: oldIssue,
+        text2: issue,
+        fontSize: 10,
+        fontWeight: .regular,
+        onAppear: { overflow in
+          wouldOverflow = overflow
+        }
+      )
+      
+      if wouldOverflow {
+        VStack(alignment: .leading) {
+          HStack {
+            LabelStrikeThroughView(
               text: oldIssue,
               textColor: Color.pink,
-              color: Color.pink,
-              thickness: 1
+              color: .gray100
             )
-            .bodyLexend(size: 12)
+            
+            Circle()
+              .fill(Color.gray100)
+              .frame(width: 24, height: 24)
+              .overlay {
+                Image("arrow-right", bundle: .module)
+                  .resizable()
+                  .frame(width: 20, height: 20)
+              }
           }
-          .padding(.all, 6)
-          .background(Color.gray100)
-          .clipShape(RoundedRectangle(cornerRadius: 12))
-          
-          Circle()
-            .fill(Color.gray100)
-            .frame(width: 24, height: 24)
-            .overlay {
-              Image("arrow-right", bundle: .module)
-                .resizable()
-                .frame(width: 20, height: 20)
-            }
           
           LabelView(
             title: issue,
             textColor: Color.primary700,
             radius: 12
           )
+          
+          LabelView(
+            title: subIssue,
+            textColor: Color.gray500,
+            radius: 12
+          )
         }
+        .padding(.bottom, 8)
         
-        LabelView(
-          title: subIssue,
-          textColor: Color.gray500,
-          radius: 12
-        )
+      } else {
+        VStack {
+          HStack {
+            LabelStrikeThroughView(
+              text: oldIssue,
+              textColor: Color.pink,
+              color: .gray050
+            )
+            
+            Circle()
+              .fill(Color.gray100)
+              .frame(width: 24, height: 24)
+              .overlay {
+                Image("arrow-right", bundle: .module)
+                  .resizable()
+                  .frame(width: 20, height: 20)
+              }
+            
+            LabelView(
+              title: issue,
+              textColor: Color.primary700,
+              radius: 12
+            )
+          }
+          
+          LabelView(
+            title: subIssue,
+            textColor: Color.gray500,
+            radius: 12
+          )
+        }
+        .padding(.bottom, 8)
       }
       
       LineShape()
@@ -220,8 +260,6 @@ public struct ConsultationSummaryView: View {
       RoundedRectangle(cornerRadius: 8).stroke(Color.gray100, lineWidth: 1)
     }
     .padding(.horizontal, 16)
-    
-    
   }
   
   @ViewBuilder
@@ -404,28 +442,55 @@ public struct ConsultationSummaryView: View {
   
   @ViewBuilder
   func kemenPPPACategoryView() -> some View {
-    VStack(alignment: .leading, spacing: 8) {
-      Text("Kategori Konsultasi:")
-        .foregroundStyle(Color.darkTextColor)
-        .bodyLexend(size: 12)
-      
-      TextOverflowDetector(
-        text1: oldIssue,
-        text2: issue,
-        fontSize: 10,
-        fontWeight: .regular,
-        onAppear: { overflow in
-          wouldOverflow = overflow
-        }
-      )
-      
-      if wouldOverflow {
-        VStack(alignment: .leading) {
+    VStack {
+      VStack(alignment: .leading, spacing: 8) {
+        Text("Kategori Konsultasi:")
+          .foregroundStyle(Color.darkTextColor)
+          .bodyLexend(size: 12)
+        
+        TextOverflowDetector(
+          text1: oldIssue,
+          text2: issue,
+          fontSize: 10,
+          fontWeight: .regular,
+          onAppear: { overflow in
+            wouldOverflow = overflow
+          }
+        )
+        
+        if wouldOverflow {
+          VStack(alignment: .leading) {
+            HStack {
+              LabelStrikeThroughView(
+                text: oldIssue,
+                textColor: Color.pink,
+                color: .gray100
+              )
+              
+              Circle()
+                .fill(Color.gray100)
+                .frame(width: 24, height: 24)
+                .overlay {
+                  Image("arrow-right", bundle: .module)
+                    .resizable()
+                    .frame(width: 20, height: 20)
+                }
+            }
+            
+            LabelView(
+              title: issue,
+              textColor: Color.primary700,
+              radius: 12
+            )
+          }
+          .padding(.bottom, 8)
+          
+        } else {
           HStack {
             LabelStrikeThroughView(
               text: oldIssue,
               textColor: Color.pink,
-              color: .gray100
+              color: .gray050
             )
             
             Circle()
@@ -436,58 +501,40 @@ public struct ConsultationSummaryView: View {
                   .resizable()
                   .frame(width: 20, height: 20)
               }
+            
+            LabelView(
+              title: issue,
+              textColor: Color.primary700,
+              radius: 12
+            )
           }
-          
-          LabelView(
-            title: issue,
-            textColor: Color.primary700,
-            radius: 12
-          )
+          .padding(.bottom, 8)
         }
-        .padding(.bottom, 8)
         
-      } else {
-        HStack {
-          LabelStrikeThroughView(
-            text: oldIssue,
-            textColor: Color.pink,
-            color: .gray050
-          )
-          
-          Circle()
-            .fill(Color.gray100)
-            .frame(width: 24, height: 24)
-            .overlay {
-              Image("arrow-right", bundle: .module)
-                .resizable()
-                .frame(width: 20, height: 20)
-            }
-          
-          LabelView(
-            title: issue,
-            textColor: Color.primary700,
-            radius: 12
-          )
-        }
-        .padding(.bottom, 8)
+        LineShape()
+          .stroke(Color.gray200, style: StrokeStyle(lineWidth: 1, lineJoin: .round, dash: [10, 5]))
+          .frame(maxWidth: .infinity, maxHeight: 1)
+        
+        Text("Advokat telah mengubah kategori konsultasi")
+          .captionLexend(size: 12)
       }
-      
-      LineShape()
-        .stroke(Color.gray200, style: StrokeStyle(lineWidth: 1, lineJoin: .round, dash: [10, 5]))
-        .frame(maxWidth: .infinity, maxHeight: 1)
-      
-      Text("Advokat telah mengubah kategori konsultasi")
+      .padding(.horizontal, 8)
+      .padding(.vertical, 8)
+      .background(Color.white)
+      .frame(maxWidth: .infinity, alignment: .leading)
+      .clipShape(RoundedRectangle(cornerRadius: 8))
+      .overlay {
+        RoundedRectangle(cornerRadius: 8).stroke(Color.gray100, lineWidth: 1)
+      }
+      .padding(.horizontal, 16)
+    }
+    
+    if !editedDate.isEmpty {
+      Text("Terakhir diperbarui : \(editedDate)")
         .captionLexend(size: 12)
+        .frame(maxWidth: .infinity, alignment: .center)
+        .padding(.horizontal, 16)
     }
-    .padding(.horizontal, 8)
-    .padding(.vertical, 8)
-    .background(Color.white)
-    .frame(maxWidth: .infinity, alignment: .leading)
-    .clipShape(RoundedRectangle(cornerRadius: 8))
-    .overlay {
-      RoundedRectangle(cornerRadius: 8).stroke(Color.gray100, lineWidth: 1)
-    }
-    .padding(.horizontal, 16)
   }
   
   @ViewBuilder
