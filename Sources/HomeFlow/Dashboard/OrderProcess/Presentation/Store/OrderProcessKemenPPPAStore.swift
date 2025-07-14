@@ -49,6 +49,7 @@ public class OrderProcessKemenPPPAStore: OrderProcessStore {
     orderServiceRepository: OrderServiceRepositoryLogic,
     probonoRepository: GetKTPDataRepositoryLogic,
     ongoingRepository: OngoingRepositoryLogic,
+    detailAdvocateRepository: DetailAdvocateRepositoryLogic,
     paymentNavigator: PaymentNavigator,
     sktmNavigator: SKTMNavigator,
     probonoNavigator: ProbonoNavigator,
@@ -74,6 +75,7 @@ public class OrderProcessKemenPPPAStore: OrderProcessStore {
       sktmNavigator: sktmNavigator,
       probonoNavigator: probonoNavigator,
       aiRepository: aiRepository,
+      detailAdvocateRepository: detailAdvocateRepository,
       advocateNavigator: advocateNavigator
     )
     
@@ -144,6 +146,8 @@ public class OrderProcessKemenPPPAStore: OrderProcessStore {
     
     if !didNotHaveIdentity && identityNumber.isEmpty {
       identityNumberErrorMessage = "NIK harus diisi"
+    } else if !didNotHaveIdentity && !identityNumber.isValidNumber() {
+      identityNumberErrorMessage = "Harus berupa angka"
     } else if !didNotHaveIdentity && identityNumber.count < 16 {
       identityNumberErrorMessage = "Minimal 16 digit"
     }
@@ -151,7 +155,7 @@ public class OrderProcessKemenPPPAStore: OrderProcessStore {
     if incident.isEmpty {
       incidentErrorMessage = "Lokasi kejadian harus diisi"
     }
-  
+    
     if didNotHaveIdentity {
       checkWithoutIdentity()
     } else {
@@ -198,6 +202,7 @@ public class OrderProcessKemenPPPAStore: OrderProcessStore {
     
   }
   
+  @MainActor
   public func requestOngoingUserCases() async {
     do {
       guard let token = userSessionData?.remoteSession.remoteToken else {
@@ -218,20 +223,22 @@ public class OrderProcessKemenPPPAStore: OrderProcessStore {
     }
   }
   
-  
   //MARK: - Other Function
   
   private func checkWithIdentity() {
     if descriptions.isEmpty || selectedViolence == nil || selectedApplicant == nil
-        || identityNumber.isEmpty || incident.isEmpty {
+        || identityNumber.isEmpty || identityNumber.count < 16
+        || !identityNumber.isValidNumber() || incident.isEmpty {
       buttonActive = false
       return
     }
+    
     isPresentPrivacyKemenPPPA = true
   }
   
   private func checkWithoutIdentity() {
-    if descriptions.isEmpty || selectedViolence == nil || selectedApplicant == nil || incident.isEmpty {
+    if descriptions.isEmpty || selectedViolence == nil
+        || selectedApplicant == nil || incident.isEmpty {
       buttonActive = false
       return
     }
@@ -247,7 +254,6 @@ public class OrderProcessKemenPPPAStore: OrderProcessStore {
       roomKey: roomKey
     )
   }
-  
   
   //MARK: - Indicate
   
@@ -269,7 +275,7 @@ public class OrderProcessKemenPPPAStore: OrderProcessStore {
     
     $didNotHaveIdentity
       .sink { [weak self] state in
-        if state { 
+        if state {
           self?.identityNumber = ""
         }
       }.store(in: &subscriptions)

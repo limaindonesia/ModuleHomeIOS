@@ -22,6 +22,7 @@ struct LawyerInfoView: View {
   let experience: String
   let rating: String
   let totalConsultation: String
+  var onTap: () -> Void
   
   init(
     imageURL: URL?,
@@ -34,7 +35,8 @@ struct LawyerInfoView: View {
     timeStr: String,
     experience: String,
     rating: String,
-    totalConsultation: String
+    totalConsultation: String,
+    onTap: @escaping () -> Void
   ) {
     self.imageURL = imageURL
     self.name = name
@@ -47,6 +49,7 @@ struct LawyerInfoView: View {
     self.experience = experience
     self.rating = rating
     self.totalConsultation = totalConsultation
+    self.onTap = onTap
   }
   
   var body: some View {
@@ -84,16 +87,25 @@ struct LawyerInfoView: View {
             .bodyLexend(size: 10)
           
         }
+        
       }
       .padding(.top, 16)
       .padding(.bottom, 16)
       
       Spacer()
+      
+      Image("ic_chevron_down", bundle: .module)
+        .resizable()
+        .frame(width: 24, height: 24)
+        .padding(.trailing, 8)
     }
     .frame(maxWidth: .infinity, maxHeight: 80)
     .background(Color.white)
     .cornerRadius(12)
     .shadow(color: .gray200, radius: 8)
+    .onTapGesture {
+      onTap()
+    }
   }
 }
 
@@ -109,6 +121,7 @@ struct LawyerInfoView: View {
     timeStr: "",
     experience: "",
     rating: "",
-    totalConsultation: ""
+    totalConsultation: "",
+    onTap: {}
   )
 }
