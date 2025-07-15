@@ -656,8 +656,6 @@ extension ConsultationSummaryView {
        let expiredChatDay = date.addingHour(by: 24) {
       
       let comparison = expiredChatDay.compare(Date())
-      GLogger(.info, layer: "presentation", message: comparison.rawValue)
-      
       result = comparison.rawValue != -1
       
     }
@@ -666,8 +664,7 @@ extension ConsultationSummaryView {
   }
   
   public func isRatingEmpty() -> Bool {
-    guard let rating = userCases.lawyer_rating?.value else { return false }
-    return rating == 0
+    return userCases.lawyer_rating?.value == nil
   }
   
   public func getRecommendations() -> [String] {
