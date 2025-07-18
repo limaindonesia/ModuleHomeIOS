@@ -151,7 +151,7 @@ public struct WaitingForConfirmationView: View {
                   HStack(spacing: 2) {
                     Text(Constant.Home.Text.BACK_TO_CONSULTATION)
                       .foregroundColor(Color.buttonActiveColor)
-                      .titleStyle(size: 12)
+                      .titleLexend(size: 12)
                     
                     Image("ic_chevron", bundle: .module)
                     

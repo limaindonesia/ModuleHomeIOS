@@ -62,17 +62,17 @@ public struct ListAdvocateKemenPPPAView: View {
               
               if store.isListAdvocateEmpty {
                 VStack(spacing: 12) {
-                  Image("Ic_lawyer_not_found", bundle: .module)
+                  Image(store.isSearchActive ? "Ic_search_not_found" : "Ic_lawyer_not_found", bundle: .module)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 160, height: 160)
                     .padding(.top , 32)
                   
-                  Text("Advokat Tidak Tersedia")
+                  Text(store.isSearchActive ? "Tidak Ada Hasil" : "Advokat Tidak Tersedia")
                     .foregroundStyle(Color.gray900)
                     .titleLexend(size: 14)
                   
-                  Text(store.isSearchActive ? "Tidak ada Advokat untuk hasil search yang diterapkan" : "Tidak ada Advokat untuk kategori dan filter yang diterapkan")
+                  Text(store.isSearchActive ? "Maaf kami tidak menemukan advokat dari kata kunci, coba gunakan yang lain" : "Tidak ada Advokat untuk kategori dan filter yang diterapkan")
                     .foregroundStyle(Color.gray900)
                     .captionLexend(size: 12)
                     .padding(.horizontal, 24)

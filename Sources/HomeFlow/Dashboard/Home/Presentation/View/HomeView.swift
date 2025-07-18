@@ -265,11 +265,11 @@ public struct HomeView: View {
             VStack(alignment: .leading) {
               Text("Selamat datang,")
                 .foregroundColor(.white)
-                .captionStyle(size: 10)
+                .captionLexend(size: 10)
               
               Text(isLoggedIn ? name : "Sobat Perqara!")
                 .foregroundColor(.white)
-                .titleStyle(size: 12)
+                .titleLexend(size: 12)
             }
             
             Spacer()
@@ -372,11 +372,11 @@ public struct HomeView: View {
             VStack(alignment: .leading) {
               Text("Selamat datang,")
                 .foregroundColor(.white)
-                .captionStyle(size: 10)
+                .captionLexend(size: 10)
               
               Text(name)
                 .foregroundColor(.white)
-                .titleStyle(size: 12)
+                .titleLexend(size: 12)
             }
             
             Spacer()
@@ -450,11 +450,11 @@ public struct HomeView: View {
             VStack(alignment: .leading) {
               Text("Selamat datang,")
                 .foregroundColor(.white)
-                .captionStyle(size: 10)
+                .captionLexend(size: 10)
               
               Text(name)
                 .foregroundColor(.white)
-                .titleStyle(size: 12)
+                .titleLexend(size: 12)
             }
             
             Spacer()
@@ -639,14 +639,14 @@ public struct HomeView: View {
             comment: ""
           )
         )
-        .captionStyle(size: 14)
+        .captionLexend(size: 14)
         Text(
           NSLocalizedString(
             Constant.Home.Text.NOT_LOGGEDIN_TITLE2,
             comment: ""
           )
         )
-        .captionStyle(size: 14)
+        .captionLexend(size: 14)
       }
       .frame(maxWidth: .infinity, minHeight: 50, alignment: .leading)
       .padding(.horizontal, 16)
@@ -1171,7 +1171,7 @@ public struct HomeView: View {
         
         HStack {
           Text("Pilih dari Kategori")
-            .bodyStyle(size: 20)
+            .bodyLexend(size: 20)
           
           Spacer()
           
@@ -1244,7 +1244,7 @@ public struct HomeView: View {
     VStack(alignment: .leading) {
       
       Text("Top Advokat Bulan Ini")
-        .bodyStyle(size: 20)
+        .bodyLexend(size: 20)
         .padding(.leading, 16)
         .padding(.bottom, 8)
       
@@ -1273,7 +1273,7 @@ public struct HomeView: View {
     VStack(alignment: .leading) {
       
       Text("Top Instansi Bulan Ini")
-        .bodyStyle(size: 20)
+        .bodyLexend(size: 20)
         .padding(.leading, 16)
         .padding(.bottom, 8)
       
@@ -1311,7 +1311,7 @@ public struct HomeView: View {
             VStack {
               Text(item.name)
                 .foregroundColor(item.selected ? .white : .black)
-                .bodyStyle(size: 12)
+                .bodyLexend(size: 12)
                 .padding(.horizontal, 16)
             }
             .frame(height: 30)
@@ -1356,7 +1356,7 @@ public struct HomeView: View {
               
               Text(item.title)
                 .lineLimit(2)
-                .captionStyle(size: 12)
+                .captionLexend(size: 12)
                 .frame(width: 150, height: 50)
             }
             .onTapGesture {
@@ -1783,7 +1783,7 @@ public struct HomeView: View {
           .frame(width: 50, height: 50)
         
         Text(selectedModel.skillName)
-          .titleStyle(size: 14)
+          .titleLexend(size: 14)
       }
       
       ChipLayout(models: models) { model in
@@ -1799,7 +1799,7 @@ public struct HomeView: View {
         .background(Color.gray100)
       
       Text(selectedModel.getDescriptions())
-        .captionStyle(size: 14)
+        .captionLexend(size: 14)
       
       ButtonPrimary(
         title: "Lihat Advokat",

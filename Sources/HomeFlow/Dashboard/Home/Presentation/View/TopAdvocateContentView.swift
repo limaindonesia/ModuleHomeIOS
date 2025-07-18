@@ -39,11 +39,11 @@ public struct TopAdvocateContentView: View {
         VStack(alignment: .leading) {
           Text("TOP ADVOKAT dan TOP INSTANSI")
             .foregroundColor(Color.white)
-            .titleStyle(size: 14)
+            .titleLexend(size: 14)
 
           Text("Periode: \(month)")
             .foregroundColor(Color.primary500)
-            .titleStyle(size: 14)
+            .titleLexend(size: 14)
             .padding(.vertical, 4)
             .padding(.horizontal, 8)
             .background(Color.primary050)
@@ -78,7 +78,7 @@ public struct TopAdvocateContentView: View {
         label: {
           Text("Selengkapnya")
             .foregroundColor(Color.white)
-            .captionStyle(size: 12)
+            .captionLexend(size: 12)
             .frame(maxWidth: .infinity, maxHeight: 34)
             .padding(.bottom, 12)
         }
@@ -108,7 +108,7 @@ public struct TopAdvocateContentView: View {
       VStack{
         Text("+10")
           .foregroundColor(Color.primary500)
-          .titleStyle(size: 20)
+          .titleLexend(size: 20)
       }.onTapGesture {
         onTap()
       }

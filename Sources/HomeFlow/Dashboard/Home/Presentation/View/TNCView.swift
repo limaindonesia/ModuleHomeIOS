@@ -34,7 +34,7 @@ struct TNCView: View {
         } label: {
           Image(systemName: "xmark")
             .foregroundStyle(Color.black)
-            .titleStyle(size: 14)
+            .titleLexend(size: 14)
         }
         .padding(.top, 16)
         .padding(.horizontal, 16)

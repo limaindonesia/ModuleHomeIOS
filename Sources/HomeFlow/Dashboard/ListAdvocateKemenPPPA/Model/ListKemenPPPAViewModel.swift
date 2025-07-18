@@ -202,7 +202,7 @@ public struct ListKemenPPPAViewModel: Codable, Hashable, Equatable {
   }
   
   public func getLocation() -> String {
-    var agencyName = agency_city?.name ?? ""
+    var agencyName = city?.name ?? ""
     let splitArray = agencyName.components(separatedBy: CharacterSet.whitespaces)
     if splitArray.count > 1 {
       let stringOne = splitArray[0]

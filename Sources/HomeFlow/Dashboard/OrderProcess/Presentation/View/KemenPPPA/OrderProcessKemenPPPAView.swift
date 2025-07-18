@@ -342,7 +342,7 @@ struct OrderProcessKemenPPPAView: View {
         if !store.incidentErrorMessage.isEmpty {
           Text(store.incidentErrorMessage)
             .foregroundColor(Color.danger500)
-            .captionStyle(size: 12)
+            .captionLexend(size: 12)
         }
       }
       .padding(.bottom)

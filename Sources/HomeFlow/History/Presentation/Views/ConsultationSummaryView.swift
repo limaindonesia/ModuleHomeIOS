@@ -91,7 +91,7 @@ public struct ConsultationSummaryView: View {
           
           Text(userCases.summary?.matter ?? "")
             .foregroundStyle(Color.gray500)
-            .captionStyle(size: 14)
+            .captionLexend(size: 14)
         }
         
         Divider()
@@ -104,7 +104,7 @@ public struct ConsultationSummaryView: View {
           
           Text(userCases.summary?.legal_basis ?? "")
             .foregroundStyle(Color.gray500)
-            .captionStyle(size: 14)
+            .captionLexend(size: 14)
         }
         
         Divider()
@@ -117,7 +117,7 @@ public struct ConsultationSummaryView: View {
           
           Text(userCases.summary?.analysis ?? "")
             .foregroundStyle(Color.gray500)
-            .captionStyle(size: 14)
+            .captionLexend(size: 14)
         }
         
         Divider()
@@ -130,7 +130,7 @@ public struct ConsultationSummaryView: View {
           
           Text(userCases.summary?.conclusion ?? "")
             .foregroundStyle(Color.gray500)
-            .captionStyle(size: 14)
+            .captionLexend(size: 14)
         }
         
         LineShape()

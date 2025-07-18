@@ -31,7 +31,7 @@ public struct DetailTopLawyerAgencyView: View {
 
       Text("Periode: Agustus")
         .foregroundColor(Color.primary500)
-        .titleStyle(size: 14)
+        .titleLexend(size: 14)
         .padding(.vertical, 4)
         .padding(.horizontal, 8)
         .background(Color.primary050)
@@ -134,7 +134,7 @@ public struct DetailTopLawyerAgencyView: View {
     VStack(alignment: .leading) {
 
       Text("Top Advokat")
-        .titleStyle(size: 20)
+        .titleLexend(size: 20)
         .padding(.leading, 16)
         .padding(.bottom, 8)
 
@@ -165,7 +165,7 @@ public struct DetailTopLawyerAgencyView: View {
     VStack(alignment: .leading) {
 
       Text("Top Instansi")
-        .titleStyle(size: 20)
+        .titleLexend(size: 20)
         .padding(.leading, 16)
         .padding(.bottom, 8)
 

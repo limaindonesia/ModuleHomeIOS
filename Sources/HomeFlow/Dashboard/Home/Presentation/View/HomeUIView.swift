@@ -123,14 +123,14 @@ import Combine
             comment: ""
           )
         )
-        .captionStyle(size: 14)
+        .captionLexend(size: 14)
         Text(
           NSLocalizedString(
             Constant.Home.Text.NOT_LOGGEDIN_TITLE2,
             comment: ""
           )
         )
-        .captionStyle(size: 14)
+        .captionLexend(size: 14)
       }
       .frame(maxWidth: .infinity, minHeight: 50, alignment: .leading)
       .padding(.horizontal, 16)
@@ -160,15 +160,15 @@ import Combine
           
           Text("Selamat Siang,")
             .foregroundColor(.white)
-            .captionStyle(size: 24)
+            .captionLexend(size: 24)
           
           Text("Leonardus Wiliem!")
             .foregroundColor(.white)
-            .titleStyle(size: 26)
+            .titleLexend(size: 26)
           
           Text("Cari advokat")
             .foregroundColor(.white)
-            .captionStyle(size: 14)
+            .captionLexend(size: 14)
             .padding(.top, 24)
             .padding(.bottom, 8)
           
@@ -214,16 +214,16 @@ import Combine
           
           Text("Konsultasikan Masalah Hukum")
             .foregroundColor(.darkTextColor)
-            .titleStyle(size: 16)
+            .titleLexend(size: 16)
           
           Text("Bersama Peqara, bisa konsultasi hukum kapan pun dan di mana pun")
             .foregroundColor(.darkTextColor)
-            .captionStyle(size: 14)
+            .captionLexend(size: 14)
           
           HStack(alignment: .firstTextBaseline) {
             Text("Ajukan layanan Pro bono?")
               .foregroundColor(.lightTextColor)
-              .captionStyle(size: 12)
+              .captionLexend(size: 12)
               .padding(.top, 8)
             
             Button {
@@ -231,7 +231,7 @@ import Combine
             } label: {
               Text("Lihat detail")
                 .foregroundColor(.buttonActiveColor)
-                .bodyStyle(size: 12)
+                .bodyLexend(size: 12)
             }
           }
         }
@@ -288,7 +288,7 @@ import Combine
               )
             )
             .foregroundColor(Color.black)
-            .bodyStyle(size: 20)
+            .bodyLexend(size: 20)
             
             Spacer()
             
@@ -351,7 +351,7 @@ import Combine
         
         HStack {
           Text("Pilih dari Kategori")
-            .bodyStyle(size: 20)
+            .bodyLexend(size: 20)
           
           Spacer()
           
@@ -407,7 +407,7 @@ import Combine
     VStack(alignment: .leading) {
       
       Text("Top Advokat Bulan Ini")
-        .bodyStyle(size: 20)
+        .bodyLexend(size: 20)
         .padding(.leading, 16)
         .padding(.bottom, 8)
       
@@ -436,7 +436,7 @@ import Combine
     VStack(alignment: .leading) {
       
       Text("Top Instansi Bulan Ini")
-        .bodyStyle(size: 20)
+        .bodyLexend(size: 20)
         .padding(.leading, 16)
         .padding(.bottom, 8)
       
