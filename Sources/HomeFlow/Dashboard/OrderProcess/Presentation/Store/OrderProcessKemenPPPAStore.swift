@@ -169,7 +169,7 @@ public class OrderProcessKemenPPPAStore: OrderProcessStore {
     let consultation = KemenPPPAParamRequest.Consultation(
       orderType: "KEMENPPPA",
       lawyerID: lawyerInfoViewModel.id,
-      skillID: advocate.detail.first??.skill_id ?? 0,
+      skillID: selectedViolence!.id,
       description: descriptions
     )
     
