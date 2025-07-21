@@ -162,6 +162,7 @@ struct OrderProcessKemenPPPAView: View {
           isPresent: $store.isPresentViolenceBottomSheet
         ) { violence in
           store.selectedViolence = violence
+          GLogger(.info, layer: "presentation", message: "selected voilence: \(violence)")
         }
       }
       
