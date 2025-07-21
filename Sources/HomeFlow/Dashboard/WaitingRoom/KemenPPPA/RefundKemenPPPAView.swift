@@ -80,6 +80,7 @@ public class RefundKemenPPPAView: FileOwnerNibView {
         compatibleWith: .none
       )
     )
+    avatarImageView.roundCorners(value: 12)
     titleLabel.text = store.title
     nameLabel.text = store.userCase.lawyer?.getName()
     dateLabel.text = store.userCase.getDateStringKemenPPPAReject()

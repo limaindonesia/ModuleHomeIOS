@@ -136,7 +136,7 @@ public struct WaitingForConfirmationView: View {
 
             if isKemenPPPA {
               ButtonPrimary(
-                title: Constant.Home.Text.BACK_TO_CONSULTATION,
+                title: Constant.Home.Text.BACK_TO_ROOM,
                 color: Color.buttonActiveColor,
                 width: 165,
                 height: 30
@@ -149,7 +149,7 @@ public struct WaitingForConfirmationView: View {
                   onTap()
                 }, label: {
                   HStack(spacing: 2) {
-                    Text(Constant.Home.Text.BACK_TO_CONSULTATION)
+                    Text(Constant.Home.Text.BACK_TO_ROOM)
                       .foregroundColor(Color.buttonActiveColor)
                       .titleLexend(size: 12)
                     

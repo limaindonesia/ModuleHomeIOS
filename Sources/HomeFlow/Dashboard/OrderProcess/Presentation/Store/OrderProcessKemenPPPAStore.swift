@@ -249,10 +249,10 @@ public class OrderProcessKemenPPPAStore: OrderProcessStore {
   //MARK: - Navigator
   
   public func navigateToWaitingRoom(_ roomKey: String) {
-    waitingRoomNavigator.navigateToWaitingRoom(
-      userCases: userCase,
-      roomKey: roomKey
-    )
+    waitingRoomNavigator.navigateToWaitingRoom(userCase: userCase,
+                                               roomKey: roomKey,
+                                               paymentCategory: PaymentCategory.VA,
+                                               isProbono: false)
   }
   
   //MARK: - Indicate
