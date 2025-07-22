@@ -163,9 +163,9 @@ public struct HomeView: View {
         store.navigateToProbonoService()
       }.padding(.top, 355)
       
-      kemenPPPAHotline {
-        store.navigateToKemenPPPA()
-      }
+//      kemenPPPAHotline {
+//        store.navigateToKemenPPPA()
+//      }
       
       activeAdvocates(store.onlinedAdvocates)
         .padding(.top, 32)
@@ -1752,15 +1752,15 @@ public struct HomeView: View {
           onTapConsultation()
         }
         
-        HStack(spacing: 16) {
-          Text("Apakah Anda Korban Kekerasan?")
-            .captionLexend(size: 14)
-        }
-        
-        kemenPPPABottomSheetView {
-          store.hideConsultationNowBottomSheet()
-          store.navigateToKemenPPPA()
-        }
+//        HStack(spacing: 16) {
+//          Text("Apakah Anda Korban Kekerasan?")
+//            .captionLexend(size: 14)
+//        }
+//        
+//        kemenPPPABottomSheetView {
+//          store.hideConsultationNowBottomSheet()
+//          store.navigateToKemenPPPA()
+//        }
       }
       .frame(minHeight: 80)
     }
