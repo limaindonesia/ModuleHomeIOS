@@ -211,7 +211,7 @@ public struct ConsultationSummaryView: View {
         .padding(.bottom, 8)
         
       } else {
-        VStack {
+        VStack(alignment: .leading) {
           HStack {
             LabelStrikeThroughView(
               text: oldIssue,
