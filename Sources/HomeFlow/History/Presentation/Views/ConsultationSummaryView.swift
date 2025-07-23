@@ -83,6 +83,13 @@ public struct ConsultationSummaryView: View {
         .padding(.horizontal, 16)
       }
       
+      if !editedDate.isEmpty {
+        Text("Terakhir diperbarui : \(editedDate)")
+          .captionLexend(size: 12)
+          .frame(maxWidth: .infinity, alignment: .center)
+          .padding(.horizontal, 16)
+      }
+      
       VStack(alignment: .leading, spacing: 12) {
         
         VStack(alignment: .leading, spacing: 4) {
@@ -347,14 +354,6 @@ public struct ConsultationSummaryView: View {
   func categoryView() ->  some View {
     if isSkillHasEdited {
       categoryEdited()
-      
-      if !editedDate.isEmpty {
-        Text("Terakhir diperbarui : \(editedDate)")
-          .captionLexend(size: 12)
-          .frame(maxWidth: .infinity, alignment: .leading)
-          .padding(.horizontal, 16)
-      }
-      
     } else {
       VStack(alignment: .leading, spacing: 12) {
         Text("Kategori Konsultasi:")
