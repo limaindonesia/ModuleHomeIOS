@@ -88,6 +88,7 @@ public struct ConsultationSummaryView: View {
           .captionLexend(size: 12)
           .frame(maxWidth: .infinity, alignment: .center)
           .padding(.horizontal, 16)
+          .padding(.top, 12)
       }
       
       VStack(alignment: .leading, spacing: 12) {
@@ -526,13 +527,6 @@ public struct ConsultationSummaryView: View {
         RoundedRectangle(cornerRadius: 8).stroke(Color.gray100, lineWidth: 1)
       }
       .padding(.horizontal, 16)
-    }
-    
-    if !editedDate.isEmpty {
-      Text("Terakhir diperbarui : \(editedDate)")
-        .captionLexend(size: 12)
-        .frame(maxWidth: .infinity, alignment: .center)
-        .padding(.horizontal, 16)
     }
   }
   
