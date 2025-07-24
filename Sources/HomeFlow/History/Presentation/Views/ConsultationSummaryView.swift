@@ -631,7 +631,7 @@ extension ConsultationSummaryView {
   
   public var editedDate: String {
     if let editedAt = userCases.summary?.edited_at,
-       let dateString = editedAt.toDateNew()?.stringFormat(){
+       let dateString = editedAt.toDateNew()?.stringFormatSummary(){
       return dateString
     }
     
