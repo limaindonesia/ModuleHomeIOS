@@ -226,7 +226,7 @@ struct VoucherBottomSheetView: View {
             onUseVoucher(voucher)
           } label: {
             Text("Pakai")
-              .font(Font(UIFont.dmSansFont(style: .title(size: 14))))
+              .font(Font(UIFont.lexendFont(style: .title(size: 14))))
               .foregroundColor(voucher.status == "INVALID" && voucher.quota == 0 ? Color.gray300 : Color.white )
               .frame(
                 maxWidth: 50,
@@ -319,7 +319,7 @@ struct VoucherBottomSheetView: View {
               onUseVoucher(voucher)
             } label: {
               Text("Pakai")
-                .font(Font(UIFont.dmSansFont(style: .title(size: 14))))
+                .font(Font(UIFont.lexendFont(style: .title(size: 14))))
                 .foregroundColor(voucher.status == "INVALID" && voucher.quota == 0 ? Color.gray300 : Color.white )
                 .frame(
                   maxWidth: 50,

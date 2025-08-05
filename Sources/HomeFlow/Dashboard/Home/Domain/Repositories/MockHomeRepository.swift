@@ -43,6 +43,12 @@ public struct MockHomeRepository: HomeRepositoryLogic,
   
   public init() {}
   
+  public func fetchBannerHome(params: BannerHomeParamRequest) async throws -> [HomeBannerData] {
+    return [
+      HomeBannerData()
+    ]
+  }
+  
   public func fetchOnlineAdvocates(params: AdvocateParamRequest) async throws -> [Advocate] {
     return [
       Advocate(),

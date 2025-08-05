@@ -48,6 +48,30 @@ public struct HomeRepositoryImpl: HomeRepositoryLogic,
     }
   }
   
+  public func fetchBannerHome(
+    params: BannerHomeParamRequest
+  ) async throws -> [HomeBannerData] {
+    do {
+      let model = try await remoteDataSource.fetchBannerHome(params: params.toParam())
+      return model.data ?? []
+    } catch {
+      guard let error = error as? NetworkErrorMessage
+      else {
+        throw ErrorMessage(
+          id: -5,
+          title: "Unkown Error",
+          message: error.localizedDescription
+        )
+      }
+      
+      throw ErrorMessage(
+        id: error.code,
+        title: "Gagal",
+        message: error.description
+      )
+    }
+  }
+  
   public func fetchSkills(
     params: CategoryParamRequest?
   ) async throws -> [AdvocateSkills] {

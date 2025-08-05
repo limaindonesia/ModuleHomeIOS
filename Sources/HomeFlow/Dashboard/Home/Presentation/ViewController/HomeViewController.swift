@@ -180,7 +180,8 @@ public class HomeViewController: NiblessViewController {
       .sink { [weak self] state in
         if state {
           DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            self?.presentRefundBottomSheet()
+            //MARK: disable because bugs always show
+            //self?.presentRefundBottomSheet()
           }
         }
       }.store(in: &subscriptions)

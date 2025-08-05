@@ -41,6 +41,10 @@ public protocol HomeRemoteDataSourceLogic {
     headers: [String : String],
     consultationID: String
   ) async throws -> UserCases
+  
+  func fetchBannerHome(
+    params: [String: Any]
+  ) async throws -> HomeBannerGetResp
 }
 
 public struct HomeRemoteDataSourceImpl: HomeRemoteDataSourceLogic,
@@ -51,6 +55,25 @@ public struct HomeRemoteDataSourceImpl: HomeRemoteDataSourceLogic,
   
   public init(service: NetworkServiceLogic) {
     self.service = service
+  }
+  
+  public func fetchBannerHome(
+    params: [String: Any]
+  ) async throws -> HomeBannerGetResp {
+    let data = try await service.request(
+      with: Endpoint.BANNER_HOME,
+      withMethod: .get,
+      withHeaders: nil,
+      withParameter: params,
+      withEncoding: .url
+    )
+    
+    do {
+      let json = try JSONDecoder().decode(HomeBannerGetResp.self, from: data)
+      return json
+    } catch {
+      throw error
+    }
   }
   
   public func fetchOnlineAdvocates(

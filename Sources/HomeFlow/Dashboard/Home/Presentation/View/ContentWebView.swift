@@ -188,7 +188,7 @@ public class ContentWebView: UIView {
     let textAttributed = NSMutableAttributedString(
       string: text,
       attributes: [
-        NSAttributedString.Key.font: UIFont.dmSansFont(style: .caption(size: 14)),
+        NSAttributedString.Key.font: UIFont.lexendFont(style: .caption(size: 14)),
         NSAttributedString.Key.foregroundColor: UIColor.lightTextColor.cgColor
       ]
     )
@@ -197,7 +197,7 @@ public class ContentWebView: UIView {
     textAttributed.addAttributes(
       [
         NSAttributedString.Key.foregroundColor: UIColor.darkTextColor.cgColor,
-        NSAttributedString.Key.font: UIFont.dmSansFont(style: .title(size: 14))
+        NSAttributedString.Key.font: UIFont.lexendFont(style: .title(size: 14))
       ],
       range: boldRange
     )

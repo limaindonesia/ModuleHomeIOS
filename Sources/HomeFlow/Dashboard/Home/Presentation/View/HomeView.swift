@@ -316,40 +316,46 @@ public struct HomeView: View {
         .position(x: frame.midX, y: 100)
         .zIndex(1)
         
-        ZStack {
-          ForEach(0 ..< store.systemImages.count, id:\.self) { indexDot in
-            Image(
-              store.getImageDot(
-                indexSelectedImage: photosIndex,
-                indexSelectedDot: indexDot
-              ),
-              bundle: .module
-            )
-            .resizable()
-            .aspectRatio(contentMode: .fit)
-            .frame(width: 10,height: 10)
-            .position(x: CGFloat(store.systemImagesX[indexDot]), y: 355)
-          }
-          .zIndex(1)
-          
-          InfinitePageView(
-            selection: $photosIndex,
-            before: { store.correctedIndex(for: $0 - 1) },
-            after: { store.correctedIndex(for: $0 + 1) },
-            view: { index in
-              Image(store.systemImages[index], bundle: .module)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .onTapGesture {
-                  store.navigationBannerHome(index: index)
-                }
+        if !store.bannnerHome.isEmpty {
+          ZStack {
+            ForEach(0 ..< store.bannnerHome.count, id:\.self) { indexDot in
+              Image(
+                store.getImageDot(
+                  indexSelectedImage: photosIndex,
+                  indexSelectedDot: indexDot
+                ),
+                bundle: .module
+              )
+              .resizable()
+              .aspectRatio(contentMode: .fit)
+              .frame(width: 10,height: 10)
+              .position(
+                x: CGFloat(10 + (indexDot * 20)),
+                y: 355
+              )
             }
-          )
-          .position(x: frame.midX, y: 240)
-          .frame(height: 300)
+            .zIndex(1)
+            
+            InfinitePageView(
+              selection: $photosIndex,
+              before: { store.correctedIndex(for: $0 - 1) },
+              after: { store.correctedIndex(for: $0 + 1) },
+              view: { index in
+                KFImage
+                  .url(URL(string: store.bannnerHome[index].mobile_url ?? ""))
+                  .resizable()
+                  .aspectRatio(contentMode: .fill)
+                  .onTapGesture {
+                    store.navigationBannerHome(input: store.bannnerHome[index].deeplink ?? "")
+                  }
+              }
+            )
+            .position(x: frame.midX, y: 240)
+            .frame(height: 300)
+            .zIndex(0)
+          }
           .zIndex(0)
         }
-        .zIndex(0)
       }
       
     }

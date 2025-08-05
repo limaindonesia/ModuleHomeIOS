@@ -56,6 +56,7 @@ public class HomeStore: ObservableObject {
   
   //State
   @Published public var onlinedAdvocates: [Advocate] = []
+  @Published public var bannnerHome: [HomeBannerData] = []
   @Published public var skills: [AdvocateSkills] = []
   @Published public var topAdvocates: [TopAdvocateViewModel] = []
   @Published public var topAgencies: [TopAgencyViewModel] = []
@@ -117,8 +118,6 @@ public class HomeStore: ObservableObject {
   public var reason: String? = nil
   public var idCardEntity: IDCardEntity = .init()
   public var isFromDeeplink: Bool = false
-  public var systemImages: [String] = ["bg_home1","bg_home2","bg_home3","bg_home4"]
-  public var systemImagesX: [Int] = [24,39,54,69]
   public var promotionListEntites: [PromotionEntity] = []
   public var isEmail: Bool = false
   
@@ -242,6 +241,7 @@ public class HomeStore: ObservableObject {
       GLogger(.info, layer: "Presentation", message: "error \(error)")
     }
   }
+  
   
   private func endUserSession() {
     Task {
@@ -376,12 +376,14 @@ public class HomeStore: ObservableObject {
   
   public func fetchAllAPI() async {
     async let advocateViewModels = fetchOnlineAdvocates()
+    async let bannerHomeViewModels = fetchBannerHome()
     async let skillViewModels = fetchSkills()
     async let (topAdvocatesVewModels, topAgencyCitiesViewModels) = fetchTopAdvocates()
     async let categoryViewModels = fetchArticleCategory()
     async let articleViewModels = fetchNewestArticle()
     
     onlinedAdvocates = await advocateViewModels
+    bannnerHome  = await bannerHomeViewModels
     skills = await skillViewModels
     topAdvocates = await topAdvocatesVewModels
     topAgencies = await topAgencyCitiesViewModels
@@ -414,6 +416,27 @@ public class HomeStore: ObservableObject {
     }
     
     return advocates
+  }
+  
+  public func fetchBannerHome() async -> [HomeBannerData] {
+    var datas: [HomeBannerData] = []
+    
+    do {
+      let params = BannerHomeParamRequest(isActive: true, sort: "sortNumber:asc")
+      let items = try await homeRepository.fetchBannerHome(params: params)
+      
+      datas = items.filter { banner in
+        banner.placement?.contains("IOS") == true
+      }
+      
+    } catch {
+      guard let error = error as? ErrorMessage
+      else { return [] }
+      
+      indicateError(error: error)
+    }
+    
+    return datas
   }
   
   private func fetchSkills() async -> [AdvocateSkills] {
@@ -1097,22 +1120,19 @@ public class HomeStore: ObservableObject {
   }
   
   public func correctedIndex(for index: Int) -> Int {
-    let count = systemImages.count
+    let count = bannnerHome.count
     return (count + index) % count
   }
   
-  public func navigationBannerHome(index: Int) {
-    switch index {
-    case 0:
-      navigateToSeeAllAdvocate()
-    case 1:
+  public func navigationBannerHome(input: String) {
+    if input.contains("pajak-perusahaan") {
       navigateToAdvocatesFromPopupBanner()
-    case 2:
+    } else if input.contains("cari-advokat") {
       navigateToSeeAllAdvocate()
-    case 3:
+    } else if input.contains("pendirian-badan-usaha") {
+      navigateToNotary()
+    } else if input.contains("probono") {
       navigateToProbonoService()
-    default:
-      break
     }
   }
   
