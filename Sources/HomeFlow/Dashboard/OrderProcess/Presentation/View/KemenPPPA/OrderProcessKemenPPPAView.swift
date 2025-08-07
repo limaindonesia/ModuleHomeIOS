@@ -325,7 +325,8 @@ struct OrderProcessKemenPPPAView: View {
             textColor: .darkTextColor,
             backgroundColor: .gray050,
             placeholderText: "Lokasi kejadian kekerasan dalam konsultasi ini",
-            placeholderColor: .gray200
+            placeholderColor: .gray200,
+            isError: .constant(false)
           )
           .overlay(
             RoundedRectangle(cornerRadius: 6)
@@ -365,7 +366,8 @@ struct OrderProcessKemenPPPAView: View {
           textColor: .darkTextColor,
           backgroundColor: .gray050,
           placeholderText: "Contoh: Saya memiliki permasalahan hutang, tapi saya tidak tahu harus bagaimana",
-          placeholderColor: .gray200
+          placeholderColor: .gray200,
+          isError: .constant(false)
         )
         .overlay(
           RoundedRectangle(cornerRadius: 6)

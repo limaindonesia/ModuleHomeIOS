@@ -358,7 +358,8 @@ public struct OrderProcessView: View {
           textColor: .darkTextColor,
           backgroundColor: .gray050,
           placeholderText: "Contoh: Saya memiliki permasalahan hutang, tapi saya tidak tahu harus bagaimana",
-          placeholderColor: .gray200
+          placeholderColor: .gray200,
+          isError: .constant(false)
         )
         .overlay(
           RoundedRectangle(cornerRadius: 6)
