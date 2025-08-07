@@ -141,6 +141,7 @@ public class RefundPaymentView: FileOwnerNibView {
     )
     titleLabel.text = store.title
     refundDescriptionLabel.text = store.getDescriptions()
+    refundDescriptionLabel.numberOfLines = 0
     amountValueLabel.text = store.userCase.getPrice()
     nameLabel.text = store.userCase.lawyer?.getName()
     dateLabel.text = store.userCase.getDateString()

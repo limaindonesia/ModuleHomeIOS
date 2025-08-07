@@ -96,6 +96,11 @@ public struct HomeView: View {
         store.hideReasonBottomSheet()
       }
       
+      promotionBanner(
+        $store.isPresentPromotionBanner,
+        imageURL: store.promotionBannerViewModel.popupImageURL
+      )
+      
       if store.showLoginSnackbar {
         GeometryReader { proxy in
           let frame = proxy.frame(in: .local)
@@ -175,6 +180,7 @@ public struct HomeView: View {
   @ViewBuilder
   func homeContentView() -> some View {
     VStack {
+      
       navigationBarView()
         .zIndex(1)
       
@@ -196,7 +202,6 @@ public struct HomeView: View {
            
            activeAdvocates(store.onlinedAdvocates)
            }*/
-          
           activeConsultationView()
           
           topAdvocatesNew(
@@ -1834,7 +1839,7 @@ public struct HomeView: View {
         PromotionBannerView(imageURL: imageURL){
           store.navigateToProbonoService()
         } onTapConsult: {
-          store.navigateToAdvocatesFromPopupBanner()
+          store.navigateToNotary()
         } onTapBlog: {
           store.navigateToBlog()
         } onTapClose: {
