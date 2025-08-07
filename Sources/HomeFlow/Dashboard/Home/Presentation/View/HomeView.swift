@@ -1118,6 +1118,8 @@ public struct HomeView: View {
                 //MARK: need to fix
                 isProbono: false,
                 voucherCampaign: advocate.getVoucherCampaign(),
+                isSamePrice: false,
+                isHaveQuotaSKTM: false,
                 onTap: {
                   store.navigateToDetailAdvocate(advocate)
                 },
