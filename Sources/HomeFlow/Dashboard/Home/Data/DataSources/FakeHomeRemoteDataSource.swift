@@ -34,6 +34,24 @@ public struct FakeHomeRemoteDataSource: HomeRemoteDataSourceLogic,
     return model
   }
   
+  public func fetchBannerHome(
+    params: [String: Any]
+  ) async throws -> HomeBannerGetResp {
+    guard let data = try? loadJSONFromFile(filename: "lawyer-list", inBundle: .module)
+    else {
+      throw URLError(.badURL)
+    }
+    
+    var model: HomeBannerGetResp
+    do {
+      model = try JSONDecoder().decode(HomeBannerGetResp.self, from: data)
+    } catch {
+      throw URLError(.badURL)
+    }
+    
+    return model
+  }
+  
   public func fetchSkills(
     params: [String : Any]?
   ) async throws -> SkillResponseModel {

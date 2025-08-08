@@ -79,7 +79,8 @@ public struct PromotionBannerView: View {
       
       VStack(spacing: 0) {
         Image("system_message_banner_app_value", bundle: .module)
-          .aspectRatio(contentMode: .fit)
+          .aspectRatio(contentMode: .fill)
+          .cornerRadius(10)
           .onTapGesture {
             onTapConsult()
           }

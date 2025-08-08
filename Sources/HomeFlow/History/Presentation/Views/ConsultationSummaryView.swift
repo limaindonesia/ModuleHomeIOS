@@ -14,17 +14,20 @@ public struct ConsultationSummaryView: View {
   public var userCases: UserCases
   public var onTapShowChat: ((UserCases, Int, String) -> Void)?
   public var onTapReview: ((UserCases) -> Void)?
+  public var onSeeNumber: (() -> Void)?
   
   @State private var wouldOverflow: Bool = false
   
   public init(
     userCases: UserCases,
     onTapShowChat: (@escaping ((UserCases, Int, String) -> Void)),
-    onTapReview: (@escaping (UserCases) -> Void)
+    onTapReview: (@escaping (UserCases) -> Void),
+    onSeeNumber: (@escaping () -> Void)
   ) {
     self.userCases = userCases
     self.onTapShowChat = onTapShowChat
     self.onTapReview = onTapReview
+    self.onSeeNumber = onSeeNumber
   }
   
   public var body: some View {
@@ -83,6 +86,14 @@ public struct ConsultationSummaryView: View {
         .padding(.horizontal, 16)
       }
       
+      if !editedDate.isEmpty {
+        Text("Terakhir diperbarui : \(editedDate)")
+          .captionLexend(size: 12)
+          .frame(maxWidth: .infinity, alignment: .center)
+          .padding(.horizontal, 16)
+          .padding(.top, 12)
+      }
+      
       VStack(alignment: .leading, spacing: 12) {
         
         VStack(alignment: .leading, spacing: 4) {
@@ -131,6 +142,44 @@ public struct ConsultationSummaryView: View {
           Text(userCases.summary?.conclusion ?? "")
             .foregroundStyle(Color.gray500)
             .captionLexend(size: 14)
+        }
+        
+        if userCases.summary?.is_allowed_show_advocate_phone ?? false == true {
+          VStack(alignment: .leading, spacing: 8) {
+            HStack(alignment: .center) {
+              VStack(alignment: .leading) {
+                Text("Perlu Nomor Telp Advokat?")
+                  .titleLexend(size: 14)
+                  .foregroundColor(Color.gray700)
+                
+                Spacer()
+                
+                Text("Hubungi advokat langsung jika butuh pendampingan.")
+                  .captionLexend(size: 12)
+                  .foregroundColor(Color.gray800)
+                  .lineLimit(nil)
+              }
+              
+              Spacer()
+              
+              Text("Lihat Nomor")
+                .font(Font(UIFont.lexendFont(style: .title(size: 12))))
+                .foregroundColor(Color.primaryInfo700)
+                .padding(.leading, 8)
+                .onTapGesture {
+                  onSeeNumber?()
+                }
+            }
+            
+            
+          }
+          .padding(16)
+          .background(Color.gray050)
+          .cornerRadius(8)
+          .overlay(
+            RoundedRectangle(cornerRadius: 8)
+              .stroke(Color.gray200, lineWidth: 1)
+          )
         }
         
         LineShape()
@@ -211,7 +260,7 @@ public struct ConsultationSummaryView: View {
         .padding(.bottom, 8)
         
       } else {
-        VStack {
+        VStack(alignment: .leading) {
           HStack {
             LabelStrikeThroughView(
               text: oldIssue,
@@ -347,14 +396,6 @@ public struct ConsultationSummaryView: View {
   func categoryView() ->  some View {
     if isSkillHasEdited {
       categoryEdited()
-      
-      if !editedDate.isEmpty {
-        Text("Terakhir diperbarui : \(editedDate)")
-          .captionLexend(size: 12)
-          .frame(maxWidth: .infinity, alignment: .leading)
-          .padding(.horizontal, 16)
-      }
-      
     } else {
       VStack(alignment: .leading, spacing: 12) {
         Text("Kategori Konsultasi:")
@@ -528,13 +569,6 @@ public struct ConsultationSummaryView: View {
       }
       .padding(.horizontal, 16)
     }
-    
-    if !editedDate.isEmpty {
-      Text("Terakhir diperbarui : \(editedDate)")
-        .captionLexend(size: 12)
-        .frame(maxWidth: .infinity, alignment: .center)
-        .padding(.horizontal, 16)
-    }
   }
   
   @ViewBuilder
@@ -638,7 +672,7 @@ extension ConsultationSummaryView {
   
   public var editedDate: String {
     if let editedAt = userCases.summary?.edited_at,
-       let dateString = editedAt.toDateNew()?.stringFormat(){
+       let dateString = editedAt.toDateNew()?.stringFormatSummary(){
       return dateString
     }
     

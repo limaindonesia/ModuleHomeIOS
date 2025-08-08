@@ -50,8 +50,19 @@ public class RefundPaymentView: FileOwnerNibView {
   
   @IBOutlet weak var fillFormButton: UIButton!
   
-  public init(store: RefundPaymentStore) {
+  @IBOutlet weak var heightLawyerInfoCons: NSLayoutConstraint!
+  
+  @IBOutlet weak var heightTitleLabelCons: NSLayoutConstraint!
+  
+  @IBOutlet weak var widthtcategoryLabelCons: NSLayoutConstraint!
+  
+  @IBOutlet weak var topPaddingCons: NSLayoutConstraint!
+  
+  public var isBottomSheet = false
+  
+  public init(store: RefundPaymentStore, isBottomSheet: Bool) {
     self.store = store
+    self.isBottomSheet = isBottomSheet
     super.init(frame: .zero)
   }
   
@@ -78,8 +89,16 @@ public class RefundPaymentView: FileOwnerNibView {
     amountContainerView.backgroundColor = UIColor.gray100
     
     titleLabel.font = UIFont.lexendFont(style: .title(size: 24))
-    categoryLabel.font = UIFont.lexendFont(style: .body(size: 10))
-    nameLabel.font = UIFont.lexendFont(style: .title(size: 14))
+    
+    categoryLabel.layer.cornerRadius = 12
+    categoryLabel.clipsToBounds = true
+    categoryLabel.textAlignment = .center
+    categoryLabel.font = UIFont.lexendFont(style: .caption(size: 10))
+    categoryLabel.textColor = UIColor.primaryInfo600
+    categoryLabel.backgroundColor = UIColor.primaryInfo100
+    
+    
+    nameLabel.font = UIFont.lexendFont(style: .title(size: 16))
     dateLabel.font = UIFont.lexendFont(style: .caption(size: 10))
     
     refundInfoLabel.font = UIFont.lexendFont(style: .caption(size: 14))
@@ -97,6 +116,18 @@ public class RefundPaymentView: FileOwnerNibView {
     fillFormButton.addTarget(self, action: #selector(didTapButton), for: .touchUpInside)
     
     setupData()
+    
+    logicButtonSheet()
+  }
+  
+  private func logicButtonSheet() {
+    if isBottomSheet {
+      topPaddingCons.constant = 0
+      heightLawyerInfoCons.constant = 0
+      heightTitleLabelCons.constant = 0
+      lawyerContainerView.isHidden = true
+      refundTitleLabel.isHidden = true
+    }
   }
   
   private func setupData() {
@@ -110,10 +141,13 @@ public class RefundPaymentView: FileOwnerNibView {
     )
     titleLabel.text = store.title
     refundDescriptionLabel.text = store.getDescriptions()
+    refundDescriptionLabel.numberOfLines = 0
     amountValueLabel.text = store.userCase.getPrice()
     nameLabel.text = store.userCase.lawyer?.getName()
     dateLabel.text = store.userCase.getDateString()
-    categoryLabel.text = store.userCase.skill?.name
+    let skill = store.userCase.skill?.name ?? ""
+    widthtcategoryLabelCons.constant = skill.width(withConstrainedHeight: 20, font: UIFont.lexendFont(style: .caption(size: 10))) + 10
+    categoryLabel.text = skill
     fillFormButton.setAttributedTitle(store.buttonAttributedTitle(), for: .normal)
   }
 

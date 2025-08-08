@@ -251,6 +251,19 @@ struct MockHomeRemoteDataSource: HomeRemoteDataSourceLogic,
 
     throw URLError(.badServerResponse)
   }
+  
+  func fetchBannerHome(params: [String: Any]) async throws -> HomeBannerGetResp {
+
+    if let mockModel = mockModel {
+      return mockModel
+    }
+
+    if let mockError = mockError {
+      throw mockError
+    }
+
+    throw URLError(.badServerResponse)
+  }
 
   func fetchSkills(
     params: [String : Any]?

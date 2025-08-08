@@ -163,7 +163,7 @@ public class ListAdvocateKemenPPPAViewController: NiblessViewController {
     navBarTitle.center = CGPoint(x: 0, y: 0)
     navBarTitle.textAlignment = .left
     navBarTitle.text = title
-    navBarTitle.font = .dmSansFont(style: .body(size: 18))
+    navBarTitle.font = .lexendFont(style: .body(size: 18))
     navigationItem.titleView = navBarTitle
   }
   

@@ -190,14 +190,21 @@ public struct OngoingConsultationView: View {
                 }, label: {
                   HStack(spacing: 2) {
                     Text(buttonText)
-                      .foregroundColor(Color.buttonActiveColor)
+                      .foregroundColor(buttonText == "Lihat Detail" ? Color.white : Color.buttonActiveColor)
                       .titleLexend(size: 12)
-
-                    Image("ic_chevron", bundle: .module)
+                    if buttonText != "Lihat Detail" {
+                      Image("ic_chevron", bundle: .module)
+                    }
                   }
-
+                  .padding(.horizontal, 8)
+                  .padding(.vertical, 4)
+                  .background(
+                    buttonText == "Lihat Detail" ? Color.buttonActiveColor : Color.clear
+                  )
+                  .cornerRadius(8)
                 }
               )
+
             }
             
             
