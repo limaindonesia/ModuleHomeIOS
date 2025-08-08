@@ -166,7 +166,7 @@ public struct HomeView: View {
         store.navigateToAdvocateList()
       } onTapProbonoService: {
         store.navigateToProbonoService()
-      }.padding(.top, 355)
+      }.padding(.top, store.bannnerHome.count > 0 ? 355 : 115)
       
 //      kemenPPPAHotline {
 //        store.navigateToKemenPPPA()
@@ -356,7 +356,7 @@ public struct HomeView: View {
               }
             )
             .position(x: frame.midX, y: 240)
-            .frame(height: 300)
+            .frame(height: store.bannnerHome.count > 0 ? 300 : 0)
             .zIndex(0)
           }
           .zIndex(0)
