@@ -242,7 +242,6 @@ public class HomeStore: ObservableObject {
     }
   }
   
-  
   private func endUserSession() {
     Task {
       let removed = try? await userSessionDataSource.deleteData()
@@ -357,10 +356,7 @@ public class HomeStore: ObservableObject {
   public func requestMe() async {
     do {
       guard let token = userSessionData?.remoteSession.remoteToken
-      else {
-        GLogger(.info, layer: "Presentation", message: "token nil")
-        return
-      }
+      else { return }
       
       let entity = try await meRepository.requestMe(headers: HeaderRequest(token: token))
       meViewModel = BioEntity.mapTo(entity)
