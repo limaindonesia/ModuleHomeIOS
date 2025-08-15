@@ -264,6 +264,8 @@ public class HomeStore: ObservableObject {
       let _ = try await userSessionDataSource.saveData(
         with: userSession.clientID,
         name: userSession.name,
+        phoneNumber: userSession.phoneNumber,
+        email: userSession.email,
         remoteToken: userSession.remoteSession.remoteToken,
         firebaseToken: userSession.remoteSession.firebaseToken,
         dateCreated: userSession.remoteSession.dateCreated,
@@ -791,6 +793,8 @@ public class HomeStore: ObservableObject {
       let _ = try await userSessionDataSource.saveData(
         with: response.data?.relation?.id ?? 0,
         name: response.data?.name ?? "",
+        phoneNumber: response.data?.phone ?? "",
+        email: response.data?.email ?? "",
         remoteToken: response.data?.token ?? "",
         firebaseToken: "",
         dateCreated: response.data?.verified_at?.toDate() ?? Date()
