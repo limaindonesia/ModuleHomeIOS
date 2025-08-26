@@ -96,10 +96,10 @@ public struct HomeView: View {
         store.hideReasonBottomSheet()
       }
       
-      promotionBanner(
-        $store.isPresentPromotionBanner,
-        imageURL: store.promotionBannerViewModel.popupImageURL
-      )
+//      promotionBanner(
+//        $store.isPresentPromotionBanner,
+//        imageURL: store.promotionBannerViewModel.popupImageURL
+//      )
       
       if store.showLoginSnackbar {
         GeometryReader { proxy in
