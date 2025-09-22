@@ -319,7 +319,7 @@ struct OrderProcessKemenPPPAView: View {
           .bodyLexend(size: 12)
         
         VStack {
-          TextView(
+          TextViewV2(
             text: $store.incident,
             textStyle: .lexendFont(style: .caption(size: 14)),
             textColor: .darkTextColor,
@@ -360,7 +360,7 @@ struct OrderProcessKemenPPPAView: View {
   func descriptionTextView() -> some View {
     VStack(alignment: .leading, spacing: 8) {
       VStack(alignment: .leading) {
-        TextView(
+        TextViewV2(
           text: $store.descriptions,
           textStyle: .lexendFont(style: .caption(size: 16)),
           textColor: .darkTextColor,

@@ -352,7 +352,7 @@ public struct OrderProcessView: View {
   func descriptionTextView() -> some View {
     VStack(alignment: .leading, spacing: 8) {
       VStack(alignment: .leading) {
-        TextView(
+        TextViewV2(
           text: $store.descriptions,
           textStyle: .lexendFont(style: .caption(size: 16)),
           textColor: .darkTextColor,
